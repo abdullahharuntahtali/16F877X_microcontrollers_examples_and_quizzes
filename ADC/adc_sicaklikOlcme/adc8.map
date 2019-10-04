@@ -1,0 +1,64 @@
+MPLINK 4.49, Linker
+Linker Map File - Created Sun Nov 27 23:18:18 2016
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x00011c
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x00008d      
+            142 out of 8454 program addresses used, program memory utilization is 1%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+             BIRLER_ARTIR   0x000061    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+                      DON   0x000087    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+                     DON2   0x000089    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+                 DONUSTUR   0x00001c    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+                  GECIKME   0x000085    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+                 GECIKME2   0x000082    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+             KOMUT_GONDER   0x00006e    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+                KOMUT_YAZ   0x000068    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+                  KONTROL   0x000020    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+                     LOOP   0x000027    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+                     MAIN   0x000001    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+                      OKU   0x00004a    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+              ONLAR_ARTIR   0x00005a    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+                  TEMIZLE   0x000016    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+              VERI_GONDER   0x00007b    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+                 VERI_YAZ   0x000075    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+             YUZLER_ARTIR   0x000053    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                     MAIN   0x000001    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+                  TEMIZLE   0x000016    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+                 DONUSTUR   0x00001c    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+                  KONTROL   0x000020    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+                     LOOP   0x000027    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+                      OKU   0x00004a    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+             YUZLER_ARTIR   0x000053    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+              ONLAR_ARTIR   0x00005a    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+             BIRLER_ARTIR   0x000061    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+                KOMUT_YAZ   0x000068    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+             KOMUT_GONDER   0x00006e    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+                 VERI_YAZ   0x000075    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+              VERI_GONDER   0x00007b    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+                 GECIKME2   0x000082    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+                  GECIKME   0x000085    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+                      DON   0x000087    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+                     DON2   0x000089    program     static C:\Users\yucel\Desktop\picProject\adc8\adc8.asm
+
+

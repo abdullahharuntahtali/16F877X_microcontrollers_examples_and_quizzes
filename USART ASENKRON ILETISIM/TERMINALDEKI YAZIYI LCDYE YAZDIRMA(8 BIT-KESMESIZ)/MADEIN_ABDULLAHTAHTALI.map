@@ -1,0 +1,48 @@
+MPLINK 4.49, Linker
+Linker Map File - Created Tue Dec 11 10:32:03 2018
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x00008c
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000045      
+            70 out of 8454 program addresses used, program memory utilization is 0%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                     DON1   0x00003e    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(8 BIT-KESMESIZ)\MADEIN_ABDULLAHTAHTALI.asm
+                     DON2   0x000041    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(8 BIT-KESMESIZ)\MADEIN_ABDULLAHTAHTALI.asm
+                  GECIKME   0x00003b    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(8 BIT-KESMESIZ)\MADEIN_ABDULLAHTAHTALI.asm
+                KOMUT_YAZ   0x00002b    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(8 BIT-KESMESIZ)\MADEIN_ABDULLAHTAHTALI.asm
+                  KONTROL   0x000019    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(8 BIT-KESMESIZ)\MADEIN_ABDULLAHTAHTALI.asm
+                  LCD_YAZ   0x000022    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(8 BIT-KESMESIZ)\MADEIN_ABDULLAHTAHTALI.asm
+                     MAIN   0x000000    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(8 BIT-KESMESIZ)\MADEIN_ABDULLAHTAHTALI.asm
+                      SON   0x000046    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(8 BIT-KESMESIZ)\MADEIN_ABDULLAHTAHTALI.asm
+                 VERI_YAZ   0x000033    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(8 BIT-KESMESIZ)\MADEIN_ABDULLAHTAHTALI.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                     MAIN   0x000000    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(8 BIT-KESMESIZ)\MADEIN_ABDULLAHTAHTALI.asm
+                  KONTROL   0x000019    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(8 BIT-KESMESIZ)\MADEIN_ABDULLAHTAHTALI.asm
+                  LCD_YAZ   0x000022    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(8 BIT-KESMESIZ)\MADEIN_ABDULLAHTAHTALI.asm
+                KOMUT_YAZ   0x00002b    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(8 BIT-KESMESIZ)\MADEIN_ABDULLAHTAHTALI.asm
+                 VERI_YAZ   0x000033    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(8 BIT-KESMESIZ)\MADEIN_ABDULLAHTAHTALI.asm
+                  GECIKME   0x00003b    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(8 BIT-KESMESIZ)\MADEIN_ABDULLAHTAHTALI.asm
+                     DON1   0x00003e    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(8 BIT-KESMESIZ)\MADEIN_ABDULLAHTAHTALI.asm
+                     DON2   0x000041    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(8 BIT-KESMESIZ)\MADEIN_ABDULLAHTAHTALI.asm
+                      SON   0x000046    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(8 BIT-KESMESIZ)\MADEIN_ABDULLAHTAHTALI.asm
+
+

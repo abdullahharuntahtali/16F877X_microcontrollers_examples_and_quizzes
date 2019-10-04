@@ -1,0 +1,46 @@
+MPLINK 4.49, Linker
+Linker Map File - Created Mon Nov 19 18:49:37 2018
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x000076
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x00003a      
+            59 out of 8454 program addresses used, program memory utilization is 0%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                  ADC_OKU   0x00001a    program     static C:\Users\BRAIN\Desktop\CALISMA\ADC_3V_OLUNCA_YAK\Untitled.asm
+                  GECIKME   0x000032    program     static C:\Users\BRAIN\Desktop\CALISMA\ADC_3V_OLUNCA_YAK\Untitled.asm
+                 GECIKME1   0x000034    program     static C:\Users\BRAIN\Desktop\CALISMA\ADC_3V_OLUNCA_YAK\Untitled.asm
+                 GECIKTIR   0x000036    program     static C:\Users\BRAIN\Desktop\CALISMA\ADC_3V_OLUNCA_YAK\Untitled.asm
+                  KONTROL   0x000017    program     static C:\Users\BRAIN\Desktop\CALISMA\ADC_3V_OLUNCA_YAK\Untitled.asm
+               LED_SONDUR   0x00002e    program     static C:\Users\BRAIN\Desktop\CALISMA\ADC_3V_OLUNCA_YAK\Untitled.asm
+                  LED_YAK   0x00002a    program     static C:\Users\BRAIN\Desktop\CALISMA\ADC_3V_OLUNCA_YAK\Untitled.asm
+                     MAIN   0x000001    program     static C:\Users\BRAIN\Desktop\CALISMA\ADC_3V_OLUNCA_YAK\Untitled.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                     MAIN   0x000001    program     static C:\Users\BRAIN\Desktop\CALISMA\ADC_3V_OLUNCA_YAK\Untitled.asm
+                  KONTROL   0x000017    program     static C:\Users\BRAIN\Desktop\CALISMA\ADC_3V_OLUNCA_YAK\Untitled.asm
+                  ADC_OKU   0x00001a    program     static C:\Users\BRAIN\Desktop\CALISMA\ADC_3V_OLUNCA_YAK\Untitled.asm
+                  LED_YAK   0x00002a    program     static C:\Users\BRAIN\Desktop\CALISMA\ADC_3V_OLUNCA_YAK\Untitled.asm
+               LED_SONDUR   0x00002e    program     static C:\Users\BRAIN\Desktop\CALISMA\ADC_3V_OLUNCA_YAK\Untitled.asm
+                  GECIKME   0x000032    program     static C:\Users\BRAIN\Desktop\CALISMA\ADC_3V_OLUNCA_YAK\Untitled.asm
+                 GECIKME1   0x000034    program     static C:\Users\BRAIN\Desktop\CALISMA\ADC_3V_OLUNCA_YAK\Untitled.asm
+                 GECIKTIR   0x000036    program     static C:\Users\BRAIN\Desktop\CALISMA\ADC_3V_OLUNCA_YAK\Untitled.asm
+
+

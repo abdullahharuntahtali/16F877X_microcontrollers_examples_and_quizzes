@@ -1,0 +1,46 @@
+MPLINK 4.37, Linker
+Linker Map File - Created Fri Dec 24 01:23:00 2010
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x000004
+                   .org_2       code   0x000004    program   0x000032
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000001      
+                            0x000004    0x00001c      
+            27 out of 8453 program addresses used, program memory utilization is 0%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                    Dongu   0x000016    program     static C:\Users\Google\Desktop\Mikro\1_Led_Sayici\Led_Sayici.asm
+                    Gecik   0x000011    program     static C:\Users\Google\Desktop\Mikro\1_Led_Sayici\Led_Sayici.asm
+                    Kesme   0x000004    program     static C:\Users\Google\Desktop\Mikro\1_Led_Sayici\Led_Sayici.asm
+              Sayac2_ayar   0x000012    program     static C:\Users\Google\Desktop\Mikro\1_Led_Sayici\Led_Sayici.asm
+              Sayac3_ayar   0x000014    program     static C:\Users\Google\Desktop\Mikro\1_Led_Sayici\Led_Sayici.asm
+                    Sayma   0x00000d    program     static C:\Users\Google\Desktop\Mikro\1_Led_Sayici\Led_Sayici.asm
+              ana_program   0x000005    program     static C:\Users\Google\Desktop\Mikro\1_Led_Sayici\Led_Sayici.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                    Kesme   0x000004    program     static C:\Users\Google\Desktop\Mikro\1_Led_Sayici\Led_Sayici.asm
+              ana_program   0x000005    program     static C:\Users\Google\Desktop\Mikro\1_Led_Sayici\Led_Sayici.asm
+                    Sayma   0x00000d    program     static C:\Users\Google\Desktop\Mikro\1_Led_Sayici\Led_Sayici.asm
+                    Gecik   0x000011    program     static C:\Users\Google\Desktop\Mikro\1_Led_Sayici\Led_Sayici.asm
+              Sayac2_ayar   0x000012    program     static C:\Users\Google\Desktop\Mikro\1_Led_Sayici\Led_Sayici.asm
+              Sayac3_ayar   0x000014    program     static C:\Users\Google\Desktop\Mikro\1_Led_Sayici\Led_Sayici.asm
+                    Dongu   0x000016    program     static C:\Users\Google\Desktop\Mikro\1_Led_Sayici\Led_Sayici.asm
+
+

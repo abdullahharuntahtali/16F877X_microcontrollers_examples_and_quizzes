@@ -1,0 +1,48 @@
+MPLINK 4.49, Linker
+Linker Map File - Created Tue Nov 20 17:01:10 2018
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x000002
+                   .org_2       code   0x000004    program   0x00005a
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000000      
+                            0x000004    0x000030      
+            46 out of 8454 program addresses used, program memory utilization is 0%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                  GECIKME   0x000028    program     static C:\Users\BRAIN\Desktop\CALISMA\dot_matris_a\Untitled.asm
+                 GECIKME1   0x00002a    program     static C:\Users\BRAIN\Desktop\CALISMA\dot_matris_a\Untitled.asm
+                 GECIKTIR   0x00002c    program     static C:\Users\BRAIN\Desktop\CALISMA\dot_matris_a\Untitled.asm
+                    ISLEM   0x00000d    program     static C:\Users\BRAIN\Desktop\CALISMA\dot_matris_a\Untitled.asm
+                  LOOKUPB   0x000022    program     static C:\Users\BRAIN\Desktop\CALISMA\dot_matris_a\Untitled.asm
+                  LOOKUPC   0x00001c    program     static C:\Users\BRAIN\Desktop\CALISMA\dot_matris_a\Untitled.asm
+                     MAIN   0x000005    program     static C:\Users\BRAIN\Desktop\CALISMA\dot_matris_a\Untitled.asm
+                      YAK   0x000013    program     static C:\Users\BRAIN\Desktop\CALISMA\dot_matris_a\Untitled.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                     MAIN   0x000005    program     static C:\Users\BRAIN\Desktop\CALISMA\dot_matris_a\Untitled.asm
+                    ISLEM   0x00000d    program     static C:\Users\BRAIN\Desktop\CALISMA\dot_matris_a\Untitled.asm
+                      YAK   0x000013    program     static C:\Users\BRAIN\Desktop\CALISMA\dot_matris_a\Untitled.asm
+                  LOOKUPC   0x00001c    program     static C:\Users\BRAIN\Desktop\CALISMA\dot_matris_a\Untitled.asm
+                  LOOKUPB   0x000022    program     static C:\Users\BRAIN\Desktop\CALISMA\dot_matris_a\Untitled.asm
+                  GECIKME   0x000028    program     static C:\Users\BRAIN\Desktop\CALISMA\dot_matris_a\Untitled.asm
+                 GECIKME1   0x00002a    program     static C:\Users\BRAIN\Desktop\CALISMA\dot_matris_a\Untitled.asm
+                 GECIKTIR   0x00002c    program     static C:\Users\BRAIN\Desktop\CALISMA\dot_matris_a\Untitled.asm
+
+

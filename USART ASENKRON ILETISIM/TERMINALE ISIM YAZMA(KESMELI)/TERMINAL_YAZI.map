@@ -1,0 +1,46 @@
+MPLINK 4.49, Linker
+Linker Map File - Created Sun Dec 09 23:16:32 2018
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000002
+                   .cinit    romdata   0x000001    program   0x000004
+                   .org_1       code   0x000004    program   0x0000b0
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000002      
+                            0x000004    0x00005b      
+            91 out of 8454 program addresses used, program memory utilization is 1%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                    DONGU   0x00001d    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALE ISIM YAZMA\ABDULLAH_TAHTALI.asm
+                  GECIKME   0x000053    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALE ISIM YAZMA\ABDULLAH_TAHTALI.asm
+                 GECIKME1   0x000055    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALE ISIM YAZMA\ABDULLAH_TAHTALI.asm
+                 GECIKTIR   0x000057    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALE ISIM YAZMA\ABDULLAH_TAHTALI.asm
+                    KESME   0x00001e    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALE ISIM YAZMA\ABDULLAH_TAHTALI.asm
+                     MAIN   0x000005    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALE ISIM YAZMA\ABDULLAH_TAHTALI.asm
+                      SON   0x00005c    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALE ISIM YAZMA\ABDULLAH_TAHTALI.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                     MAIN   0x000005    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALE ISIM YAZMA\ABDULLAH_TAHTALI.asm
+                    DONGU   0x00001d    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALE ISIM YAZMA\ABDULLAH_TAHTALI.asm
+                    KESME   0x00001e    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALE ISIM YAZMA\ABDULLAH_TAHTALI.asm
+                  GECIKME   0x000053    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALE ISIM YAZMA\ABDULLAH_TAHTALI.asm
+                 GECIKME1   0x000055    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALE ISIM YAZMA\ABDULLAH_TAHTALI.asm
+                 GECIKTIR   0x000057    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALE ISIM YAZMA\ABDULLAH_TAHTALI.asm
+                      SON   0x00005c    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALE ISIM YAZMA\ABDULLAH_TAHTALI.asm
+
+

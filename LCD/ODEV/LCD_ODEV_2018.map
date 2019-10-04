@@ -1,0 +1,68 @@
+MPLINK 4.49, Linker
+Linker Map File - Created Tue Dec 04 14:08:03 2018
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x000002
+                   .org_2       code   0x000004    program   0x0001aa
+.config_2007_LCD_ODEV_2018.O       code   0x002007    program   0x000002
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000000      
+                            0x000004    0x0000d8      
+                            0x002007    0x002007      
+            215 out of 8454 program addresses used, program memory utilization is 2%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                    ARTIR   0x000075    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+                    AZALT   0x00008a    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+                   BIRLER   0x0000a5    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+                   BOL_ON   0x00009e    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+                  BOL_YUZ   0x000097    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+                  GECIKME   0x0000d0    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+                 GECIKME1   0x0000d2    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+                 GECIKTIR   0x0000d4    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+                    KESME   0x000004    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+                    KOMUT   0x0000ac    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+                KOMUT_YAZ   0x0000b3    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+                  KONTROL   0x00004e    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+           KONTROL_SATIR1   0x000011    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+                   LOOKUP   0x0000c5    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+                     MAIN   0x000024    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+                      SON   0x0000d9    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+                 VERI_YAZ   0x0000bc    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                    KESME   0x000004    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+           KONTROL_SATIR1   0x000011    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+                     MAIN   0x000024    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+                  KONTROL   0x00004e    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+                    ARTIR   0x000075    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+                    AZALT   0x00008a    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+                  BOL_YUZ   0x000097    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+                   BOL_ON   0x00009e    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+                   BIRLER   0x0000a5    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+                    KOMUT   0x0000ac    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+                KOMUT_YAZ   0x0000b3    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+                 VERI_YAZ   0x0000bc    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+                   LOOKUP   0x0000c5    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+                  GECIKME   0x0000d0    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+                 GECIKME1   0x0000d2    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+                 GECIKTIR   0x0000d4    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+                      SON   0x0000d9    program     static C:\Users\BRAIN\Desktop\LCD\ODEV\LCD_ODEV_2018.asm
+
+

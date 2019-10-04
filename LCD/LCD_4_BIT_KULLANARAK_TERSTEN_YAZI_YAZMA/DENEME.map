@@ -1,0 +1,52 @@
+MPLINK 4.49, Linker
+Linker Map File - Created Tue Dec 04 09:41:45 2018
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x00007e
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x00003e      
+            63 out of 8454 program addresses used, program memory utilization is 0%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                  GECIKME   0x000036    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_TERSTEN_YAZI_YAZMA\DENEME.asm
+                 GECIKME1   0x000038    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_TERSTEN_YAZI_YAZMA\DENEME.asm
+                 GECIKTIR   0x00003a    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_TERSTEN_YAZI_YAZMA\DENEME.asm
+                    KOMUT   0x000009    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_TERSTEN_YAZI_YAZMA\DENEME.asm
+             KOMUT_GONDER   0x000019    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_TERSTEN_YAZI_YAZMA\DENEME.asm
+                KOMUT_YAZ   0x000013    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_TERSTEN_YAZI_YAZMA\DENEME.asm
+                 LCD_DATA   0x000000    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_TERSTEN_YAZI_YAZMA\DENEME.asm
+                     MAIN   0x000000    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_TERSTEN_YAZI_YAZMA\DENEME.asm
+              VERI_GONDER   0x000026    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_TERSTEN_YAZI_YAZMA\DENEME.asm
+                 VERI_YAZ   0x000020    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_TERSTEN_YAZI_YAZMA\DENEME.asm
+                      YAZ   0x00002d    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_TERSTEN_YAZI_YAZMA\DENEME.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                 LCD_DATA   0x000000    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_TERSTEN_YAZI_YAZMA\DENEME.asm
+                     MAIN   0x000000    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_TERSTEN_YAZI_YAZMA\DENEME.asm
+                    KOMUT   0x000009    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_TERSTEN_YAZI_YAZMA\DENEME.asm
+                KOMUT_YAZ   0x000013    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_TERSTEN_YAZI_YAZMA\DENEME.asm
+             KOMUT_GONDER   0x000019    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_TERSTEN_YAZI_YAZMA\DENEME.asm
+                 VERI_YAZ   0x000020    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_TERSTEN_YAZI_YAZMA\DENEME.asm
+              VERI_GONDER   0x000026    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_TERSTEN_YAZI_YAZMA\DENEME.asm
+                      YAZ   0x00002d    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_TERSTEN_YAZI_YAZMA\DENEME.asm
+                  GECIKME   0x000036    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_TERSTEN_YAZI_YAZMA\DENEME.asm
+                 GECIKME1   0x000038    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_TERSTEN_YAZI_YAZMA\DENEME.asm
+                 GECIKTIR   0x00003a    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_TERSTEN_YAZI_YAZMA\DENEME.asm
+
+

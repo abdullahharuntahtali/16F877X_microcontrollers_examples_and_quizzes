@@ -1,0 +1,2 @@
+Warning[205] C:\USERS\BRAIN\DESKTOP\LCD\LCD_4_BIT_KULLANARAK_2_SATIRADA_YAZI_YAZMA\A.ASM 2 : Found directive in column 1. (__CONFIG)
+Message[302] C:\USERS\BRAIN\DESKTOP\LCD\LCD_4_BIT_KULLANARAK_2_SATIRADA_YAZI_YAZMA\A.ASM 9 : Register in operand not in bank 0.  Ensure that bank bits are correct.

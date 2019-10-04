@@ -1,0 +1,12 @@
+Yaz Okulu(2018)
+çiftler  - dot matris ortasýndaki led yanacak saða sola aþaðý yukarý butonla hareket ettirilcek
+
+3. quiz
+tekler  -bir videoda içerisinde 25 frame var.Bu frameler yakalanmak isteniyor.Yakalamak için gerekli baþlangýç süresini hesapla.Timer1L ve timer1H ye deðeri ata 
+
+çiftler -timer0 ile 500 ms gecikme yap.baþlanguç deðerini ver.
+
+4. quiz
+
+tekler  - bir aðýrlýk sensörü var 0 ve 5 v arasýnda gerilim üretir.1kg = 0.5 v tur.bu aðýrlýk sensörü 5 kilodan fazla ise kýrmýzý led yak
+az ise yeþil led yak (iþin içine analog giriyordu soru tam hatýrlanmýyor)

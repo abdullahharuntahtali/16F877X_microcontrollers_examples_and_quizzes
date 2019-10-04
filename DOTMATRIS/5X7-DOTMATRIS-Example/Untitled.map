@@ -1,0 +1,42 @@
+MPLINK 4.49, Linker
+Linker Map File - Created Sun Nov 04 20:32:09 2018
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x000002
+                   .org_2       code   0x000005    program   0x00003c
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000000      
+                            0x000005    0x000022      
+            31 out of 8454 program addresses used, program memory utilization is 0%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                  GECIKME   0x00001a    program     static C:\Users\PERFECT\Desktop\CALISMA\5X7-DOTMATRIS\Untitled.asm
+                 GECIKME1   0x00001c    program     static C:\Users\PERFECT\Desktop\CALISMA\5X7-DOTMATRIS\Untitled.asm
+                 GECIKTIR   0x00001e    program     static C:\Users\PERFECT\Desktop\CALISMA\5X7-DOTMATRIS\Untitled.asm
+                     ISLE   0x000016    program     static C:\Users\PERFECT\Desktop\CALISMA\5X7-DOTMATRIS\Untitled.asm
+                     MAIN   0x000005    program     static C:\Users\PERFECT\Desktop\CALISMA\5X7-DOTMATRIS\Untitled.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                     MAIN   0x000005    program     static C:\Users\PERFECT\Desktop\CALISMA\5X7-DOTMATRIS\Untitled.asm
+                     ISLE   0x000016    program     static C:\Users\PERFECT\Desktop\CALISMA\5X7-DOTMATRIS\Untitled.asm
+                  GECIKME   0x00001a    program     static C:\Users\PERFECT\Desktop\CALISMA\5X7-DOTMATRIS\Untitled.asm
+                 GECIKME1   0x00001c    program     static C:\Users\PERFECT\Desktop\CALISMA\5X7-DOTMATRIS\Untitled.asm
+                 GECIKTIR   0x00001e    program     static C:\Users\PERFECT\Desktop\CALISMA\5X7-DOTMATRIS\Untitled.asm
+
+

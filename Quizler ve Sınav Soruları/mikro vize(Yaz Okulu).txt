@@ -1,0 +1,5 @@
+1 20 puan )pic 16f877a ile yapýlan içerisindeki donanýmlar hangisi.Bunlarý kullanarak beler yapýlýr
+
+2 40 puan ) display 0 1 2 3  0 1 2 3  0 1 2 3
+
+3 40 puan ) timer1 ile 1 sn gecikme tasarla assembly kodunuz

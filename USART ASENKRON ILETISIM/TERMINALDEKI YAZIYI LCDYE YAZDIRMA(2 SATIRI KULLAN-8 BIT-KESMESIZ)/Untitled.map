@@ -1,0 +1,56 @@
+MPLINK 4.49, Linker
+Linker Map File - Created Tue Dec 11 11:39:59 2018
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x000002
+                   .org_2       code   0x000004    program   0x000098
+  .config_2007_UNTITLED.O       code   0x002007    program   0x000002
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000000      
+                            0x000004    0x00004f      
+                            0x002007    0x002007      
+            78 out of 8454 program addresses used, program memory utilization is 0%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                    BASLA   0x000005    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(2 SATIRI KULLAN-8 BIT-KESMESIZ)\Untitled.asm
+                     DON1   0x000048    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(2 SATIRI KULLAN-8 BIT-KESMESIZ)\Untitled.asm
+                     DON2   0x00004b    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(2 SATIRI KULLAN-8 BIT-KESMESIZ)\Untitled.asm
+                    DONGU   0x000012    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(2 SATIRI KULLAN-8 BIT-KESMESIZ)\Untitled.asm
+                  GECIKME   0x000045    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(2 SATIRI KULLAN-8 BIT-KESMESIZ)\Untitled.asm
+        ILETISIM_AYARLARI   0x000015    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(2 SATIRI KULLAN-8 BIT-KESMESIZ)\Untitled.asm
+                    KESME   0x000004    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(2 SATIRI KULLAN-8 BIT-KESMESIZ)\Untitled.asm
+               KOMUT_ÝÞLE   0x00002f    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(2 SATIRI KULLAN-8 BIT-KESMESIZ)\Untitled.asm
+             LCD_AYARLARI   0x00001f    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(2 SATIRI KULLAN-8 BIT-KESMESIZ)\Untitled.asm
+               SATIR_ATLA   0x00002c    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(2 SATIRI KULLAN-8 BIT-KESMESIZ)\Untitled.asm
+                VERÝ_ÝÞLE   0x000035    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(2 SATIRI KULLAN-8 BIT-KESMESIZ)\Untitled.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                    KESME   0x000004    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(2 SATIRI KULLAN-8 BIT-KESMESIZ)\Untitled.asm
+                    BASLA   0x000005    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(2 SATIRI KULLAN-8 BIT-KESMESIZ)\Untitled.asm
+                    DONGU   0x000012    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(2 SATIRI KULLAN-8 BIT-KESMESIZ)\Untitled.asm
+        ILETISIM_AYARLARI   0x000015    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(2 SATIRI KULLAN-8 BIT-KESMESIZ)\Untitled.asm
+             LCD_AYARLARI   0x00001f    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(2 SATIRI KULLAN-8 BIT-KESMESIZ)\Untitled.asm
+               SATIR_ATLA   0x00002c    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(2 SATIRI KULLAN-8 BIT-KESMESIZ)\Untitled.asm
+               KOMUT_ÝÞLE   0x00002f    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(2 SATIRI KULLAN-8 BIT-KESMESIZ)\Untitled.asm
+                VERÝ_ÝÞLE   0x000035    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(2 SATIRI KULLAN-8 BIT-KESMESIZ)\Untitled.asm
+                  GECIKME   0x000045    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(2 SATIRI KULLAN-8 BIT-KESMESIZ)\Untitled.asm
+                     DON1   0x000048    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(2 SATIRI KULLAN-8 BIT-KESMESIZ)\Untitled.asm
+                     DON2   0x00004b    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(2 SATIRI KULLAN-8 BIT-KESMESIZ)\Untitled.asm
+
+

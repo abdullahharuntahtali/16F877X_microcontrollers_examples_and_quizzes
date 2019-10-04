@@ -1,0 +1,72 @@
+MPLINK 4.40, Linker
+Linker Map File - Created Sun Nov 13 19:15:42 2011
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x000002
+                   .org_2       code   0x000004    program   0x0000d2
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000000      
+                            0x000004    0x00006c      
+            106 out of 8454 program addresses used, program memory utilization is 1%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                   AHARFI   0x00004d    program     static D:\Projeler\tusdeneme\tus.asm
+                     ALTI   0x000041    program     static D:\Projeler\tusdeneme\tus.asm
+              ANA_PROGRAM   0x000061    program     static D:\Projeler\tusdeneme\tus.asm
+                      BES   0x00003e    program     static D:\Projeler\tusdeneme\tus.asm
+                   BHARFI   0x000050    program     static D:\Projeler\tusdeneme\tus.asm
+                      BIR   0x000032    program     static D:\Projeler\tusdeneme\tus.asm
+                   CHARFI   0x000053    program     static D:\Projeler\tusdeneme\tus.asm
+                   DHARFI   0x000056    program     static D:\Projeler\tusdeneme\tus.asm
+                    DOKUZ   0x00004a    program     static D:\Projeler\tusdeneme\tus.asm
+                    DONGU   0x00006c    program     static D:\Projeler\tusdeneme\tus.asm
+                     DORT   0x00003b    program     static D:\Projeler\tusdeneme\tus.asm
+                   EHARFI   0x000059    program     static D:\Projeler\tusdeneme\tus.asm
+                   FHARFI   0x00005c    program     static D:\Projeler\tusdeneme\tus.asm
+                      IKI   0x000035    program     static D:\Projeler\tusdeneme\tus.asm
+                    KESME   0x000004    program     static D:\Projeler\tusdeneme\tus.asm
+              KESME_BÝTÝR   0x00005e    program     static D:\Projeler\tusdeneme\tus.asm
+                    SEKIZ   0x000047    program     static D:\Projeler\tusdeneme\tus.asm
+                    SIFIR   0x00002f    program     static D:\Projeler\tusdeneme\tus.asm
+                       UC   0x000038    program     static D:\Projeler\tusdeneme\tus.asm
+                     YEDI   0x000044    program     static D:\Projeler\tusdeneme\tus.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                    KESME   0x000004    program     static D:\Projeler\tusdeneme\tus.asm
+                    SIFIR   0x00002f    program     static D:\Projeler\tusdeneme\tus.asm
+                      BIR   0x000032    program     static D:\Projeler\tusdeneme\tus.asm
+                      IKI   0x000035    program     static D:\Projeler\tusdeneme\tus.asm
+                       UC   0x000038    program     static D:\Projeler\tusdeneme\tus.asm
+                     DORT   0x00003b    program     static D:\Projeler\tusdeneme\tus.asm
+                      BES   0x00003e    program     static D:\Projeler\tusdeneme\tus.asm
+                     ALTI   0x000041    program     static D:\Projeler\tusdeneme\tus.asm
+                     YEDI   0x000044    program     static D:\Projeler\tusdeneme\tus.asm
+                    SEKIZ   0x000047    program     static D:\Projeler\tusdeneme\tus.asm
+                    DOKUZ   0x00004a    program     static D:\Projeler\tusdeneme\tus.asm
+                   AHARFI   0x00004d    program     static D:\Projeler\tusdeneme\tus.asm
+                   BHARFI   0x000050    program     static D:\Projeler\tusdeneme\tus.asm
+                   CHARFI   0x000053    program     static D:\Projeler\tusdeneme\tus.asm
+                   DHARFI   0x000056    program     static D:\Projeler\tusdeneme\tus.asm
+                   EHARFI   0x000059    program     static D:\Projeler\tusdeneme\tus.asm
+                   FHARFI   0x00005c    program     static D:\Projeler\tusdeneme\tus.asm
+              KESME_BÝTÝR   0x00005e    program     static D:\Projeler\tusdeneme\tus.asm
+              ANA_PROGRAM   0x000061    program     static D:\Projeler\tusdeneme\tus.asm
+                    DONGU   0x00006c    program     static D:\Projeler\tusdeneme\tus.asm
+
+

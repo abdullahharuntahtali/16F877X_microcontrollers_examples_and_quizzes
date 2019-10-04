@@ -1,0 +1,5 @@
+Warning[207] C:\USERS\GOOGLE\DESKTOP\MIKRO\1_LED_SAYICI\LED_SAYICI.ASM 4 : Found label after column 1. (Sayac1)
+Warning[207] C:\USERS\GOOGLE\DESKTOP\MIKRO\1_LED_SAYICI\LED_SAYICI.ASM 5 : Found label after column 1. (Sayac2)
+Warning[207] C:\USERS\GOOGLE\DESKTOP\MIKRO\1_LED_SAYICI\LED_SAYICI.ASM 6 : Found label after column 1. (Sayac3)
+Message[302] C:\USERS\GOOGLE\DESKTOP\MIKRO\1_LED_SAYICI\LED_SAYICI.ASM 20 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[305] C:\USERS\GOOGLE\DESKTOP\MIKRO\1_LED_SAYICI\LED_SAYICI.ASM 26 : Using default destination of 1 (file).

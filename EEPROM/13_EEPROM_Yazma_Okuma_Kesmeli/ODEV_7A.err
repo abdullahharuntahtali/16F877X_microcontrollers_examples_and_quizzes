@@ -1,0 +1,20 @@
+Warning[207] C:\USERS\GOOGLE\DESKTOP\13_EEPROM_YAZMA_OKUMA_KESMELI\ODEV_7A.ASM 3 : Found label after column 1. (Sayac_Adres)
+Warning[207] C:\USERS\GOOGLE\DESKTOP\13_EEPROM_YAZMA_OKUMA_KESMELI\ODEV_7A.ASM 4 : Found label after column 1. (Sayac_Deger)
+Warning[207] C:\USERS\GOOGLE\DESKTOP\13_EEPROM_YAZMA_OKUMA_KESMELI\ODEV_7A.ASM 5 : Found label after column 1. (Durum)
+Message[302] C:\USERS\GOOGLE\DESKTOP\13_EEPROM_YAZMA_OKUMA_KESMELI\ODEV_7A.ASM 19 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[305] C:\USERS\GOOGLE\DESKTOP\13_EEPROM_YAZMA_OKUMA_KESMELI\ODEV_7A.ASM 22 : Using default destination of 1 (file).
+Message[305] C:\USERS\GOOGLE\DESKTOP\13_EEPROM_YAZMA_OKUMA_KESMELI\ODEV_7A.ASM 28 : Using default destination of 1 (file).
+Message[302] C:\USERS\GOOGLE\DESKTOP\13_EEPROM_YAZMA_OKUMA_KESMELI\ODEV_7A.ASM 33 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\GOOGLE\DESKTOP\13_EEPROM_YAZMA_OKUMA_KESMELI\ODEV_7A.ASM 35 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\GOOGLE\DESKTOP\13_EEPROM_YAZMA_OKUMA_KESMELI\ODEV_7A.ASM 36 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\GOOGLE\DESKTOP\13_EEPROM_YAZMA_OKUMA_KESMELI\ODEV_7A.ASM 38 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\GOOGLE\DESKTOP\13_EEPROM_YAZMA_OKUMA_KESMELI\ODEV_7A.ASM 48 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\GOOGLE\DESKTOP\13_EEPROM_YAZMA_OKUMA_KESMELI\ODEV_7A.ASM 59 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\GOOGLE\DESKTOP\13_EEPROM_YAZMA_OKUMA_KESMELI\ODEV_7A.ASM 69 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\GOOGLE\DESKTOP\13_EEPROM_YAZMA_OKUMA_KESMELI\ODEV_7A.ASM 73 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\GOOGLE\DESKTOP\13_EEPROM_YAZMA_OKUMA_KESMELI\ODEV_7A.ASM 76 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\GOOGLE\DESKTOP\13_EEPROM_YAZMA_OKUMA_KESMELI\ODEV_7A.ASM 77 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\GOOGLE\DESKTOP\13_EEPROM_YAZMA_OKUMA_KESMELI\ODEV_7A.ASM 79 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\GOOGLE\DESKTOP\13_EEPROM_YAZMA_OKUMA_KESMELI\ODEV_7A.ASM 81 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\GOOGLE\DESKTOP\13_EEPROM_YAZMA_OKUMA_KESMELI\ODEV_7A.ASM 82 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Warning[205] C:\USERS\GOOGLE\DESKTOP\13_EEPROM_YAZMA_OKUMA_KESMELI\ODEV_7A.ASM 91 : Found directive in column 1. (END)

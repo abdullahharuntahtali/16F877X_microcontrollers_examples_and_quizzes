@@ -1,0 +1,40 @@
+MPLINK 4.40, Linker
+Linker Map File - Created Mon Dec 26 23:55:10 2011
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x000002
+                   .org_2       code   0x000004    program   0x00004a
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000000      
+                            0x000004    0x000028      
+            38 out of 8454 program addresses used, program memory utilization is 0%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+              Ana_Program   0x00000b    program     static C:\Users\Google\Desktop\Mikro Calisma\20_RB0_Ornek\RB0_Ornek.asm
+                    Dongu   0x00001a    program     static C:\Users\Google\Desktop\Mikro Calisma\20_RB0_Ornek\RB0_Ornek.asm
+                    Kesme   0x000004    program     static C:\Users\Google\Desktop\Mikro Calisma\20_RB0_Ornek\RB0_Ornek.asm
+                   Lookup   0x00001b    program     static C:\Users\Google\Desktop\Mikro Calisma\20_RB0_Ornek\RB0_Ornek.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                    Kesme   0x000004    program     static C:\Users\Google\Desktop\Mikro Calisma\20_RB0_Ornek\RB0_Ornek.asm
+              Ana_Program   0x00000b    program     static C:\Users\Google\Desktop\Mikro Calisma\20_RB0_Ornek\RB0_Ornek.asm
+                    Dongu   0x00001a    program     static C:\Users\Google\Desktop\Mikro Calisma\20_RB0_Ornek\RB0_Ornek.asm
+                   Lookup   0x00001b    program     static C:\Users\Google\Desktop\Mikro Calisma\20_RB0_Ornek\RB0_Ornek.asm
+
+

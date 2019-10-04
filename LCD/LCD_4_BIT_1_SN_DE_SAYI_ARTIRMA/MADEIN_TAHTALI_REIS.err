@@ -1,0 +1,6 @@
+Warning[205] C:\USERS\BRAIN\DESKTOP\LCD\LCD_4_BIT_1_SN_DE_SAYI_ARTIRMA\MADEIN_TAHTALI_REIS.ASM 2 : Found directive in column 1. (__CONFIG)
+Message[305] C:\USERS\BRAIN\DESKTOP\LCD\LCD_4_BIT_1_SN_DE_SAYI_ARTIRMA\MADEIN_TAHTALI_REIS.ASM 42 : Using default destination of 1 (file).
+Message[305] C:\USERS\BRAIN\DESKTOP\LCD\LCD_4_BIT_1_SN_DE_SAYI_ARTIRMA\MADEIN_TAHTALI_REIS.ASM 64 : Using default destination of 1 (file).
+Message[305] C:\USERS\BRAIN\DESKTOP\LCD\LCD_4_BIT_1_SN_DE_SAYI_ARTIRMA\MADEIN_TAHTALI_REIS.ASM 71 : Using default destination of 1 (file).
+Message[302] C:\USERS\BRAIN\DESKTOP\LCD\LCD_4_BIT_1_SN_DE_SAYI_ARTIRMA\MADEIN_TAHTALI_REIS.ASM 83 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\BRAIN\DESKTOP\LCD\LCD_4_BIT_1_SN_DE_SAYI_ARTIRMA\MADEIN_TAHTALI_REIS.ASM 90 : Register in operand not in bank 0.  Ensure that bank bits are correct.

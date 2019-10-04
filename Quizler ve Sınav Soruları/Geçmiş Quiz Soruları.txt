@@ -1,0 +1,8 @@
+1)Timer kullanýlarak 1 saniye aralýklarla eepromun ilk 5 hafýzasýndaki veriyi portbde gösteren program.
+2)AF hex sayýsýný swap komutu kullanmada FA olarak yazdýr.
+3)2 tane 7 segmenti b0 deðiþim kesmesi ile 1A'dan 2F'ye kadar saydýran program.
+4)Eeprom'da timer kesmesi ile alýnan bir deðerin ledlerle çýktý verilmesi.
+5)1453 sayýsýný katot uçlu 7 segmentte yazdýran program.
+6)84 hexadecimal sayýsýný 5e bölen bölümü portdye kalaný portbye yazan program.
+7)Portd'ye baðlý iki ledi 14ms ve 10 ms aralýklarla yakýp söndüren program(2 farklý timer kullanýlcak).
+8)Adc kullanarak 3,5 volt altý ise portd de 0F yazsýn.3,5 üstü ise AA yazsýn.

@@ -1,0 +1,42 @@
+MPLINK 4.49, Linker
+Linker Map File - Created Tue Dec 11 09:30:54 2018
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x0000c2
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000060      
+            97 out of 8454 program addresses used, program memory utilization is 1%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                  GECIKME   0x000058    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALE ISIM YAZMA(KESMESIZ)\MADEIN.ABDULLAHTAHTALI.asm
+                 GECIKME1   0x00005a    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALE ISIM YAZMA(KESMESIZ)\MADEIN.ABDULLAHTAHTALI.asm
+                 GECIKTIR   0x00005c    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALE ISIM YAZMA(KESMESIZ)\MADEIN.ABDULLAHTAHTALI.asm
+                  KONTROL   0x000011    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALE ISIM YAZMA(KESMESIZ)\MADEIN.ABDULLAHTAHTALI.asm
+                     MAIN   0x000001    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALE ISIM YAZMA(KESMESIZ)\MADEIN.ABDULLAHTAHTALI.asm
+                      SON   0x000061    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALE ISIM YAZMA(KESMESIZ)\MADEIN.ABDULLAHTAHTALI.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                     MAIN   0x000001    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALE ISIM YAZMA(KESMESIZ)\MADEIN.ABDULLAHTAHTALI.asm
+                  KONTROL   0x000011    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALE ISIM YAZMA(KESMESIZ)\MADEIN.ABDULLAHTAHTALI.asm
+                  GECIKME   0x000058    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALE ISIM YAZMA(KESMESIZ)\MADEIN.ABDULLAHTAHTALI.asm
+                 GECIKME1   0x00005a    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALE ISIM YAZMA(KESMESIZ)\MADEIN.ABDULLAHTAHTALI.asm
+                 GECIKTIR   0x00005c    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALE ISIM YAZMA(KESMESIZ)\MADEIN.ABDULLAHTAHTALI.asm
+                      SON   0x000061    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALE ISIM YAZMA(KESMESIZ)\MADEIN.ABDULLAHTAHTALI.asm
+
+

@@ -1,0 +1,44 @@
+MPLINK 4.49, Linker
+Linker Map File - Created Mon Nov 26 22:42:05 2018
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x000052
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000028      
+            41 out of 8454 program addresses used, program memory utilization is 0%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                    ARTIR   0x00001d    program     static C:\Users\BRAIN\Desktop\PWM_CALISMALARIM\PWM_LED_PARLAKLIK\Untitled.asm
+                    AZALT   0x000020    program     static C:\Users\BRAIN\Desktop\PWM_CALISMALARIM\PWM_LED_PARLAKLIK\Untitled.asm
+              Ana_Program   0x000001    program     static C:\Users\BRAIN\Desktop\PWM_CALISMALARIM\PWM_LED_PARLAKLIK\Untitled.asm
+                       D0   0x000017    program     static C:\Users\BRAIN\Desktop\PWM_CALISMALARIM\PWM_LED_PARLAKLIK\Untitled.asm
+                       D1   0x00001a    program     static C:\Users\BRAIN\Desktop\PWM_CALISMALARIM\PWM_LED_PARLAKLIK\Untitled.asm
+                 GECIKME1   0x000023    program     static C:\Users\BRAIN\Desktop\PWM_CALISMALARIM\PWM_LED_PARLAKLIK\Untitled.asm
+                 GECIKME2   0x000026    program     static C:\Users\BRAIN\Desktop\PWM_CALISMALARIM\PWM_LED_PARLAKLIK\Untitled.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+              Ana_Program   0x000001    program     static C:\Users\BRAIN\Desktop\PWM_CALISMALARIM\PWM_LED_PARLAKLIK\Untitled.asm
+                       D0   0x000017    program     static C:\Users\BRAIN\Desktop\PWM_CALISMALARIM\PWM_LED_PARLAKLIK\Untitled.asm
+                       D1   0x00001a    program     static C:\Users\BRAIN\Desktop\PWM_CALISMALARIM\PWM_LED_PARLAKLIK\Untitled.asm
+                    ARTIR   0x00001d    program     static C:\Users\BRAIN\Desktop\PWM_CALISMALARIM\PWM_LED_PARLAKLIK\Untitled.asm
+                    AZALT   0x000020    program     static C:\Users\BRAIN\Desktop\PWM_CALISMALARIM\PWM_LED_PARLAKLIK\Untitled.asm
+                 GECIKME1   0x000023    program     static C:\Users\BRAIN\Desktop\PWM_CALISMALARIM\PWM_LED_PARLAKLIK\Untitled.asm
+                 GECIKME2   0x000026    program     static C:\Users\BRAIN\Desktop\PWM_CALISMALARIM\PWM_LED_PARLAKLIK\Untitled.asm
+
+

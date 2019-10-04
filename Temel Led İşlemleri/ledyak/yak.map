@@ -1,0 +1,38 @@
+MPLINK 4.40, Linker
+Linker Map File - Created Thu Oct 13 01:17:51 2011
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x000002
+                   .org_2       code   0x000004    program   0x000018
+       .config_2007_YAK.O       code   0x002007    program   0x000002
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000000      
+                            0x000004    0x00000f      
+                            0x002007    0x002007      
+            14 out of 8454 program addresses used, program memory utilization is 0%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+              ANA_PROGRAM   0x000005    program     static D:\Projeler\ledyak\yak.asm
+                    DONGU   0x00000a    program     static D:\Projeler\ledyak\yak.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+              ANA_PROGRAM   0x000005    program     static D:\Projeler\ledyak\yak.asm
+                    DONGU   0x00000a    program     static D:\Projeler\ledyak\yak.asm
+
+

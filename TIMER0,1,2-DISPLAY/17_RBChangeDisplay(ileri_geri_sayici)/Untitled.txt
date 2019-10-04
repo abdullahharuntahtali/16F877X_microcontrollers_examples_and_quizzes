@@ -1,0 +1,114 @@
+list p =16F877A
+include "P16F877A.inc"
+Sayac equ 0x21
+Sayac1 equ 0x22
+Sayac2 equ 0x23
+
+ORG 0
+goto Ana_Program
+ORG 4
+
+
+Kesme
+	BTFSS INTCON,RBIF
+	retfie
+
+Tus_Kontrol
+	BTFSC PORTB,7
+	goto Tus6_Kontrol
+	goto Tus7_islemler
+
+Tus6_Kontrol
+	BTFSC PORTB,6
+	goto Cikis
+	goto Tus6_islemler
+	
+Tus6_islemler
+	CLRF PORTD
+	MOVLW B'00000010'
+	MOVWF PORTA
+	call Sayac_Kontrol_Artirma
+	call LOOKUP	
+	MOVWF PORTD
+	goto Cikis
+
+Tus7_islemler
+	CLRF PORTD
+	MOVLW B'00000001'
+	MOVWF PORTA
+	call Sayac_Kontrol_Azaltma
+	call LOOKUP	
+	MOVWF PORTD
+	goto Cikis
+
+
+Sayac_Kontrol_Artirma
+	movf Sayac,w
+	sublw D'9'
+	btfss STATUS,Z
+	goto Artir
+	clrf Sayac
+	return
+
+Artir
+	incf Sayac
+	return
+
+Sayac_Kontrol_Azaltma	
+	movf Sayac,w
+	sublw D'0'
+	btfss STATUS,Z
+	goto Azalt
+	movlw d'9'
+	movwf Sayac
+	return
+
+Azalt
+	decf Sayac
+	return
+
+Cikis
+	BCF INTCON,RBIF	
+	retfie
+
+
+Ana_Program
+	CLRF PORTA
+	CLRF PORTB
+	CLRF PORTD
+	CLRF Sayac
+		
+	BSF STATUS,RP0
+	BCF OPTION_REG,7
+	MOVLW B'11000000'
+	MOVWF TRISB
+
+	CLRF TRISA
+	CLRF TRISD
+	
+	MOVLW 0X06
+	MOVWF ADCON1
+
+	MOVLW B'11001000'
+	MOVWF INTCON
+	
+	BCF STATUS,RP0	
+
+Dongu
+	goto Dongu	
+
+LOOKUP
+	movf Sayac,0
+	addwf PCL,1
+	retlw b'00111111';0        
+	retlw b'00000110';1
+	retlw b'01011011';2
+	retlw b'01001111';3
+	retlw b'01100110';4
+	retlw b'01101101';5
+	retlw b'01111101';6
+	retlw b'00000111';7
+	retlw b'01111111';8
+	retlw b'01100111';9
+
+	end

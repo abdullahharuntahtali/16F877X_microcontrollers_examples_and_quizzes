@@ -1,0 +1,46 @@
+MPLINK 4.49, Linker
+Linker Map File - Created Tue Nov 20 14:12:34 2018
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x000002
+                   .org_2       code   0x000004    program   0x000068
+  .config_2007_UNTITLED.O       code   0x002007    program   0x000002
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000000      
+                            0x000004    0x000037      
+                            0x002007    0x002007      
+            54 out of 8454 program addresses used, program memory utilization is 0%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                    DONGU   0x00002e    program     static C:\Users\BRAIN\Desktop\CALISMA\ODEV_ADC\Untitled.asm
+                  GECIKME   0x00002f    program     static C:\Users\BRAIN\Desktop\CALISMA\ODEV_ADC\Untitled.asm
+                 GECIKME1   0x000031    program     static C:\Users\BRAIN\Desktop\CALISMA\ODEV_ADC\Untitled.asm
+                 GECIKTIR   0x000033    program     static C:\Users\BRAIN\Desktop\CALISMA\ODEV_ADC\Untitled.asm
+                    KESME   0x000004    program     static C:\Users\BRAIN\Desktop\CALISMA\ODEV_ADC\Untitled.asm
+                     MAIN   0x000010    program     static C:\Users\BRAIN\Desktop\CALISMA\ODEV_ADC\Untitled.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                    KESME   0x000004    program     static C:\Users\BRAIN\Desktop\CALISMA\ODEV_ADC\Untitled.asm
+                     MAIN   0x000010    program     static C:\Users\BRAIN\Desktop\CALISMA\ODEV_ADC\Untitled.asm
+                    DONGU   0x00002e    program     static C:\Users\BRAIN\Desktop\CALISMA\ODEV_ADC\Untitled.asm
+                  GECIKME   0x00002f    program     static C:\Users\BRAIN\Desktop\CALISMA\ODEV_ADC\Untitled.asm
+                 GECIKME1   0x000031    program     static C:\Users\BRAIN\Desktop\CALISMA\ODEV_ADC\Untitled.asm
+                 GECIKTIR   0x000033    program     static C:\Users\BRAIN\Desktop\CALISMA\ODEV_ADC\Untitled.asm
+
+

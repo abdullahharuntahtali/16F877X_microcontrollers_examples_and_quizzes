@@ -1,0 +1,56 @@
+MPLINK 4.49, Linker
+Linker Map File - Created Tue Dec 11 08:42:56 2018
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000002
+                   .cinit    romdata   0x000001    program   0x000004
+                   .org_1       code   0x000004    program   0x0000b0
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000002      
+                            0x000004    0x00005b      
+            91 out of 8454 program addresses used, program memory utilization is 1%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                     DNG2   0x000059    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(4 BIT)\MADEIN_ABDULLAH_HARUN_TAHTALI.asm
+                      DON   0x000008    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(4 BIT)\MADEIN_ABDULLAH_HARUN_TAHTALI.asm
+                  GECIKME   0x000057    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(4 BIT)\MADEIN_ABDULLAH_HARUN_TAHTALI.asm
+                    KESME   0x000009    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(4 BIT)\MADEIN_ABDULLAH_HARUN_TAHTALI.asm
+             KOMUT_GONDER   0x00003f    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(4 BIT)\MADEIN_ABDULLAH_HARUN_TAHTALI.asm
+                KOMUT_YAZ   0x000039    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(4 BIT)\MADEIN_ABDULLAH_HARUN_TAHTALI.asm
+                 LCD_AYAR   0x000030    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(4 BIT)\MADEIN_ABDULLAH_HARUN_TAHTALI.asm
+                     MAIN   0x000005    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(4 BIT)\MADEIN_ABDULLAH_HARUN_TAHTALI.asm
+                PORT_AYAR   0x00000e    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(4 BIT)\MADEIN_ABDULLAH_HARUN_TAHTALI.asm
+               USART_AYAR   0x00001c    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(4 BIT)\MADEIN_ABDULLAH_HARUN_TAHTALI.asm
+              VERI_GONDER   0x00004e    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(4 BIT)\MADEIN_ABDULLAH_HARUN_TAHTALI.asm
+                 VERI_YAZ   0x000048    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(4 BIT)\MADEIN_ABDULLAH_HARUN_TAHTALI.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                     MAIN   0x000005    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(4 BIT)\MADEIN_ABDULLAH_HARUN_TAHTALI.asm
+                      DON   0x000008    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(4 BIT)\MADEIN_ABDULLAH_HARUN_TAHTALI.asm
+                    KESME   0x000009    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(4 BIT)\MADEIN_ABDULLAH_HARUN_TAHTALI.asm
+                PORT_AYAR   0x00000e    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(4 BIT)\MADEIN_ABDULLAH_HARUN_TAHTALI.asm
+               USART_AYAR   0x00001c    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(4 BIT)\MADEIN_ABDULLAH_HARUN_TAHTALI.asm
+                 LCD_AYAR   0x000030    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(4 BIT)\MADEIN_ABDULLAH_HARUN_TAHTALI.asm
+                KOMUT_YAZ   0x000039    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(4 BIT)\MADEIN_ABDULLAH_HARUN_TAHTALI.asm
+             KOMUT_GONDER   0x00003f    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(4 BIT)\MADEIN_ABDULLAH_HARUN_TAHTALI.asm
+                 VERI_YAZ   0x000048    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(4 BIT)\MADEIN_ABDULLAH_HARUN_TAHTALI.asm
+              VERI_GONDER   0x00004e    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(4 BIT)\MADEIN_ABDULLAH_HARUN_TAHTALI.asm
+                  GECIKME   0x000057    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(4 BIT)\MADEIN_ABDULLAH_HARUN_TAHTALI.asm
+                     DNG2   0x000059    program     static C:\Users\BRAIN\Desktop\USART ASENKRON ILETISIM\TERMINALDEKI YAZIYI LCDYE YAZDIRMA(4 BIT)\MADEIN_ABDULLAH_HARUN_TAHTALI.asm
+
+

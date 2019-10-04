@@ -1,0 +1,52 @@
+MPLINK 4.49, Linker
+Linker Map File - Created Sun Dec 09 23:28:00 2018
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x000002
+                   .org_2       code   0x000004    program   0x0000bc
+  .config_2007_UNTITLED.O       code   0x002007    program   0x000002
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000000      
+                            0x000004    0x000061      
+                            0x002007    0x002007      
+            96 out of 8454 program addresses used, program memory utilization is 1%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                  GECIKME   0x00001f    program     static C:\Users\BRAIN\Desktop\LCD\LCD_8_BIT_KULLANARAK_2_SATIRADA_YAZI_YAZMA\Untitled.asm
+                 GECIKME1   0x000021    program     static C:\Users\BRAIN\Desktop\LCD\LCD_8_BIT_KULLANARAK_2_SATIRADA_YAZI_YAZMA\Untitled.asm
+                 GECIKTIR   0x000023    program     static C:\Users\BRAIN\Desktop\LCD\LCD_8_BIT_KULLANARAK_2_SATIRADA_YAZI_YAZMA\Untitled.asm
+              KARAKTERLER   0x000032    program     static C:\Users\BRAIN\Desktop\LCD\LCD_8_BIT_KULLANARAK_2_SATIRADA_YAZI_YAZMA\Untitled.asm
+         LCD_KOMUT_GONDER   0x000017    program     static C:\Users\BRAIN\Desktop\LCD\LCD_8_BIT_KULLANARAK_2_SATIRADA_YAZI_YAZMA\Untitled.asm
+          LCD_VERI_GONDER   0x00000f    program     static C:\Users\BRAIN\Desktop\LCD\LCD_8_BIT_KULLANARAK_2_SATIRADA_YAZI_YAZMA\Untitled.asm
+                     MAIN   0x000005    program     static C:\Users\BRAIN\Desktop\LCD\LCD_8_BIT_KULLANARAK_2_SATIRADA_YAZI_YAZMA\Untitled.asm
+                   SATIR2   0x00002f    program     static C:\Users\BRAIN\Desktop\LCD\LCD_8_BIT_KULLANARAK_2_SATIRADA_YAZI_YAZMA\Untitled.asm
+                  TEMIZLE   0x000028    program     static C:\Users\BRAIN\Desktop\LCD\LCD_8_BIT_KULLANARAK_2_SATIRADA_YAZI_YAZMA\Untitled.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                     MAIN   0x000005    program     static C:\Users\BRAIN\Desktop\LCD\LCD_8_BIT_KULLANARAK_2_SATIRADA_YAZI_YAZMA\Untitled.asm
+          LCD_VERI_GONDER   0x00000f    program     static C:\Users\BRAIN\Desktop\LCD\LCD_8_BIT_KULLANARAK_2_SATIRADA_YAZI_YAZMA\Untitled.asm
+         LCD_KOMUT_GONDER   0x000017    program     static C:\Users\BRAIN\Desktop\LCD\LCD_8_BIT_KULLANARAK_2_SATIRADA_YAZI_YAZMA\Untitled.asm
+                  GECIKME   0x00001f    program     static C:\Users\BRAIN\Desktop\LCD\LCD_8_BIT_KULLANARAK_2_SATIRADA_YAZI_YAZMA\Untitled.asm
+                 GECIKME1   0x000021    program     static C:\Users\BRAIN\Desktop\LCD\LCD_8_BIT_KULLANARAK_2_SATIRADA_YAZI_YAZMA\Untitled.asm
+                 GECIKTIR   0x000023    program     static C:\Users\BRAIN\Desktop\LCD\LCD_8_BIT_KULLANARAK_2_SATIRADA_YAZI_YAZMA\Untitled.asm
+                  TEMIZLE   0x000028    program     static C:\Users\BRAIN\Desktop\LCD\LCD_8_BIT_KULLANARAK_2_SATIRADA_YAZI_YAZMA\Untitled.asm
+                   SATIR2   0x00002f    program     static C:\Users\BRAIN\Desktop\LCD\LCD_8_BIT_KULLANARAK_2_SATIRADA_YAZI_YAZMA\Untitled.asm
+              KARAKTERLER   0x000032    program     static C:\Users\BRAIN\Desktop\LCD\LCD_8_BIT_KULLANARAK_2_SATIRADA_YAZI_YAZMA\Untitled.asm
+
+

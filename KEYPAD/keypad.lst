@@ -1,0 +1,933 @@
+MPASM  5.51                        KEYPAD.ASM   7-21-2018  15:47:41         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001         LIST P=16F877
+                      00002         INCLUDE "P16F877.INC"
+                      00001         LIST
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ;  MPASM PIC16F877 processor include
+                      00005 ; 
+                      00006 ;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
+                      00007 ;==========================================================================
+                      00008 
+Message[301]: MESSAGE: (Processor-header file mismatch.  Verify selected processor.)
+                      00540         LIST
+Warning[207]: Found label after column 1. (SAYAC2)
+  00000031            00003                 SAYAC2  EQU     H'0031'
+Warning[207]: Found label after column 1. (SAYAC3)
+  00000033            00004                 SAYAC3  EQU H'0033'
+Warning[207]: Found label after column 1. (SAYAC1)
+  00000035            00005                 SAYAC1  EQU     H'0035'
+Warning[207]: Found label after column 1. (LCD_TMP0)
+  00000036            00006                 LCD_TMP0 EQU H'0036'
+Warning[207]: Found label after column 1. (LCD_DATA)
+  00000037            00007                 LCD_DATA EQU h'0037'
+                      00008                                 
+0000                  00009                 ORG 0
+0000   284B           00010                 GOTO ANA_PROGRAM
+0004                  00011                 ORG 4
+                      00012 
+Warning[207]: Found label after column 1. (LCD_SEND_CHAR)
+0004                  00013         LCD_SEND_CHAR           
+                      00014                                         
+0004   00B7           00015         MOVWF   LCD_DATA        
+0005   0E37           00016         SWAPF   LCD_DATA, W             
+0006   1283 1303      00017         BANKSEL PORTB
+0008   1606           00018         BSF PORTB,4                     ;RS = 1 ( veri gönderme modu )
+0009   2029           00019         CALL    LCD_NYBBLEOUT
+000A   0837           00020         MOVF    LCD_DATA, W             ;En deðersiz 4 bit’i gönder.
+000B   1283 1303      00021         BANKSEL PORTB   
+000D   1606           00022         BSF PORTB,4             ;RS = 1 ( veri gönderme modu )
+000E   2029           00023         CALL    LCD_NYBBLEOUT
+000F   0008           00024         RETURN
+                      00025 
+Warning[207]: Found label after column 1. (TEMIZLE)
+0010                  00026         TEMIZLE:
+0010   3002           00027                 MOVLW H'02'
+0011   201D           00028                 CALL LCD_SEND_CMD  
+0012   300C           00029                 MOVLW   H'0C'
+0013   201D           00030                 CALL LCD_SEND_CMD  
+0014   3001           00031                 MOVLW   H'01'
+0015   201D           00032                 CALL LCD_SEND_CMD  
+0016   3028           00033                 MOVLW   H'28'
+0017   201D           00034                 CALL LCD_SEND_CMD  
+0018   300F           00035                 MOVLW   H'0F'
+0019   201D           00036                 CALL LCD_SEND_CMD  
+MPASM  5.51                        KEYPAD.ASM   7-21-2018  15:47:41         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+001A   3006           00037                 MOVLW   H'06'
+001B   201D           00038                 CALL LCD_SEND_CMD  
+                      00039                 
+001C   0008           00040         RETURN
+Warning[207]: Found label after column 1. (LCD_SEND_CMD)
+001D                  00041         LCD_SEND_CMD                            
+001D   00B7           00042                 MOVWF   LCD_DATA                
+001E   0E37           00043                 SWAPF   LCD_DATA, W     
+001F   1283 1303      00044                 BANKSEL PORTB
+0021   1206           00045                 BCF PORTB,4             
+0022   2029           00046                 CALL    LCD_NYBBLEOUT
+0023   0837           00047                 MOVF    LCD_DATA, W     
+0024   1283 1303      00048                 BANKSEL PORTB
+0026   1206           00049                 BCF PORTB,4             
+0027   2029           00050                 CALL    LCD_NYBBLEOUT           
+0028   0008           00051                 RETURN
+Warning[207]: Found label after column 1. (LCD_NYBBLEOUT)
+0029                  00052         LCD_NYBBLEOUT                      
+0029   390F           00053                 ANDLW   0x0F                    
+002A   00B6           00054                 MOVWF   LCD_TMP0        
+002B   0806           00055                 MOVF    PORTB,W                         
+002C   39F0           00056                 ANDLW   0xF0                                                    
+002D   0436           00057                 IORWF   LCD_TMP0, W             
+002E   0086           00058                 MOVWF   PORTB   
+002F   1283 1303      00059                 BANKSEL PORTB   
+0031   1686           00060                 BSF     PORTB,5 
+0032   203F           00061                 CALL GECIKME_LCD
+0033   1286           00062                 BCF     PORTB,5         
+0034   203F           00063                 CALL GECIKME_LCD
+0035   0008           00064                 RETURN
+Warning[207]: Found label after column 1. (GECIKME)
+0036                  00065         GECIKME:
+0036   30FF           00066                 MOVLW   H'FF'
+0037   00B5           00067                 MOVWF   SAYAC1
+Warning[207]: Found label after column 1. (DON1)
+0038                  00068         DON1:
+0038   30FF           00069                 MOVLW   H'FF'
+0039   00B1           00070                 MOVWF   SAYAC2
+Warning[207]: Found label after column 1. (DON2)
+003A                  00071         DON2:
+003A   0BB1           00072                 DECFSZ  SAYAC2,F
+003B   283A           00073                 GOTO    DON2
+003C   0BB5           00074                 DECFSZ  SAYAC1,F
+003D   2838           00075                 GOTO    DON1
+003E   0008           00076                 RETURN
+Warning[207]: Found label after column 1. (GECIKME_LCD)
+003F                  00077         GECIKME_LCD:
+003F   309F           00078                 MOVLW   H'9F'
+0040   00B5           00079                 MOVWF   SAYAC1
+Warning[207]: Found label after column 1. (DON1_LCD)
+0041                  00080         DON1_LCD:
+0041   30FF           00081                 MOVLW   H'FF'
+0042   00B1           00082                 MOVWF   SAYAC2
+MPASM  5.51                        KEYPAD.ASM   7-21-2018  15:47:41         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Warning[207]: Found label after column 1. (DON2_LCD)
+0043                  00083         DON2_LCD:
+0043   0BB1           00084                 DECFSZ  SAYAC2,F
+0044   2843           00085                 GOTO    DON2_LCD
+0045   0BB5           00086                 DECFSZ  SAYAC1,F
+0046   2841           00087                 GOTO    DON1_LCD
+0047   0008           00088                 RETURN
+                      00089         
+Warning[207]: Found label after column 1. (SATIR1)
+0048                  00090         SATIR1:
+0048   3080           00091                 MOVLW H'80'
+0049   201D           00092                 CALL LCD_SEND_CMD  
+004A   0008           00093                 RETURN  
+                      00094 
+Warning[207]: Found label after column 1. (ANA_PROGRAM)
+004B                  00095         ANA_PROGRAM:
+004B   1303           00096                 BCF     STATUS,6
+004C   1683           00097                 BSF     STATUS,5
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+004D   0186           00098                 CLRF TRISB
+004E   30F0           00099                 MOVLW H'F0'
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+004F   0087           00100                 MOVWF TRISC
+0050   1283           00101                 BCF     STATUS,5
+0051   300F           00102                 MOVLW B'00001111'
+0052   0087           00103                 MOVWF PORTC
+0053   01B3           00104                 CLRF SAYAC3
+0054   0186           00105                 CLRF PORTB
+0055   2010           00106                 CALL TEMIZLE
+0056   2048           00107                 CALL SATIR1
+                      00108         
+                      00109 
+Warning[207]: Found label after column 1. (SONSUZ)
+0057                  00110         SONSUZ:
+0057   2036           00111                 CALL GECIKME            
+0058   1A07           00112                 BTFSC PORTC,4
+0059   2861           00113                 GOTO SUTUN1
+005A   1A87           00114                 BTFSC PORTC,5
+005B   289A           00115                 GOTO SUTUN2
+005C   1B07           00116                 BTFSC PORTC,6
+005D   28D4           00117                 GOTO SUTUN3
+005E   1B87           00118                 BTFSC PORTC,7
+005F   290E           00119                 GOTO SUTUN4
+0060   2857           00120                 GOTO SONSUZ
+                      00121 
+Warning[207]: Found label after column 1. (SUTUN1)
+0061                  00122         SUTUN1:
+0061   3001           00123                 MOVLW H'01'
+0062   0087           00124                 MOVWF PORTC
+0063   1A07           00125                 BTFSC PORTC,4
+0064   2872           00126                 GOTO BIR
+0065   3002           00127                 MOVLW H'02'
+0066   0087           00128                 MOVWF PORTC
+MPASM  5.51                        KEYPAD.ASM   7-21-2018  15:47:41         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0067   1A07           00129                 BTFSC PORTC,4
+0068   287C           00130                 GOTO DORT
+0069   3004           00131                 MOVLW H'04'
+006A   0087           00132                 MOVWF PORTC
+006B   1A07           00133                 BTFSC PORTC,4
+006C   2886           00134                 GOTO YEDI
+006D   3008           00135                 MOVLW H'08'
+006E   0087           00136                 MOVWF PORTC
+006F   1A07           00137                 BTFSC PORTC,4
+0070   2890           00138                 GOTO YILDIZ
+0071   2857           00139                 GOTO SONSUZ
+Warning[207]: Found label after column 1. (BIR)
+0072                  00140         BIR:
+0072   3031           00141                 MOVLW A'1'
+0073   2004           00142                 CALL LCD_SEND_CHAR
+0074   300F           00143                 MOVLW H'0F'
+0075   0087           00144                 MOVWF PORTC
+0076   1E33           00145         BTFSS SAYAC3,4
+0077   2857           00146                 GOTO SONSUZ
+0078   3002           00147                 MOVLW H'02'
+0079   201D           00148                 CALL LCD_SEND_CMD  
+007A   01B3           00149                 CLRF SAYAC3
+007B   2857           00150                 GOTO SONSUZ
+Warning[207]: Found label after column 1. (DORT)
+007C                  00151         DORT:
+007C   3034           00152                 MOVLW A'4'
+007D   2004           00153                 CALL LCD_SEND_CHAR
+007E   300F           00154                 MOVLW H'0F'
+007F   0087           00155                 MOVWF PORTC
+0080   1E33           00156         BTFSS SAYAC3,4
+0081   2857           00157                 GOTO SONSUZ
+0082   3002           00158                 MOVLW H'02'
+0083   201D           00159                 CALL LCD_SEND_CMD  
+0084   01B3           00160                 CLRF SAYAC3
+0085   2857           00161                 GOTO SONSUZ
+                      00162                 
+Warning[207]: Found label after column 1. (YEDI)
+0086                  00163         YEDI:
+0086   3037           00164                 MOVLW A'7'
+0087   2004           00165                 CALL LCD_SEND_CHAR
+0088   30FF           00166                 MOVLW H'FF'
+0089   0087           00167                 MOVWF PORTC
+008A   1E33           00168         BTFSS SAYAC3,4
+008B   2857           00169                 GOTO SONSUZ
+008C   3002           00170                 MOVLW H'02'
+008D   201D           00171                 CALL LCD_SEND_CMD  
+008E   01B3           00172                 CLRF SAYAC3
+008F   2857           00173                 GOTO SONSUZ
+                      00174 
+Warning[207]: Found label after column 1. (YILDIZ)
+0090                  00175         YILDIZ:
+0090   302A           00176                 MOVLW A'*'
+0091   2004           00177                 CALL LCD_SEND_CHAR
+MPASM  5.51                        KEYPAD.ASM   7-21-2018  15:47:41         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0092   30FF           00178                 MOVLW H'FF'
+0093   0087           00179                 MOVWF PORTC
+0094   1E33           00180         BTFSS SAYAC3,4
+0095   2857           00181                 GOTO SONSUZ
+0096   3002           00182                 MOVLW H'02'
+0097   201D           00183                 CALL LCD_SEND_CMD  
+0098   01B3           00184                 CLRF SAYAC3
+0099   2857           00185                 GOTO SONSUZ
+                      00186 
+                      00187 
+                      00188 
+                      00189 
+Warning[207]: Found label after column 1. (SUTUN2)
+009A                  00190         SUTUN2:
+Message[305]: Using default destination of 1 (file).
+009A   0AB3           00191                 INCF SAYAC3
+009B   3001           00192                 MOVLW H'01'
+009C   0087           00193                 MOVWF PORTC
+009D   1A87           00194                 BTFSC PORTC,5
+009E   28AC           00195                 GOTO IKI
+009F   3002           00196                 MOVLW H'02'
+00A0   0087           00197                 MOVWF PORTC
+00A1   1A87           00198                 BTFSC PORTC,5
+00A2   28B6           00199                 GOTO BES
+00A3   3004           00200                 MOVLW H'04'
+00A4   0087           00201                 MOVWF PORTC
+00A5   1A87           00202                 BTFSC PORTC,5
+00A6   28C0           00203                 GOTO SEKIZ
+00A7   3008           00204                 MOVLW H'08'
+00A8   0087           00205                 MOVWF PORTC
+00A9   1A87           00206                 BTFSC PORTC,5
+00AA   28CA           00207                 GOTO SIFIR
+                      00208                 
+00AB   2857           00209                 GOTO SONSUZ
+                      00210 
+Warning[207]: Found label after column 1. (IKI)
+00AC                  00211         IKI:
+00AC   3032           00212                 MOVLW A'2'
+00AD   2004           00213                 CALL LCD_SEND_CHAR
+00AE   30FF           00214                 MOVLW H'FF'
+00AF   0087           00215                 MOVWF PORTC
+00B0   1E33           00216                 BTFSS SAYAC3,4
+00B1   2857           00217                 GOTO SONSUZ
+00B2   3002           00218                 MOVLW H'02'
+00B3   201D           00219                 CALL LCD_SEND_CMD  
+00B4   01B3           00220                 CLRF SAYAC3
+00B5   2857           00221                 GOTO SONSUZ
+Warning[207]: Found label after column 1. (BES)
+00B6                  00222         BES:
+00B6   3035           00223                 MOVLW A'5'
+00B7   2004           00224                 CALL LCD_SEND_CHAR
+00B8   300F           00225                 MOVLW H'0F'
+00B9   0087           00226                 MOVWF PORTC
+MPASM  5.51                        KEYPAD.ASM   7-21-2018  15:47:41         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00BA   1E33           00227         BTFSS SAYAC3,4
+00BB   2857           00228                 GOTO SONSUZ
+00BC   3002           00229                 MOVLW H'02'
+00BD   201D           00230                 CALL LCD_SEND_CMD  
+00BE   01B3           00231                 CLRF SAYAC3
+00BF   2857           00232                 GOTO SONSUZ
+                      00233                 
+Warning[207]: Found label after column 1. (SEKIZ)
+00C0                  00234         SEKIZ:
+00C0   3038           00235                 MOVLW A'8'
+00C1   2004           00236                 CALL LCD_SEND_CHAR
+00C2   30FF           00237                 MOVLW H'FF'
+00C3   0087           00238                 MOVWF PORTC
+00C4   1E33           00239                 BTFSS SAYAC3,4
+00C5   2857           00240                 GOTO SONSUZ
+00C6   3002           00241                 MOVLW H'02'
+00C7   201D           00242                 CALL LCD_SEND_CMD  
+00C8   01B3           00243                 CLRF SAYAC3
+00C9   2857           00244                 GOTO SONSUZ
+                      00245 
+Warning[207]: Found label after column 1. (SIFIR)
+00CA                  00246         SIFIR:
+00CA   3030           00247                 MOVLW A'0'
+00CB   2004           00248                 CALL LCD_SEND_CHAR
+00CC   30FF           00249                 MOVLW H'FF'
+00CD   0087           00250                 MOVWF PORTC
+00CE   1E33           00251                 BTFSS SAYAC3,4
+00CF   2857           00252                 GOTO SONSUZ
+00D0   3002           00253                 MOVLW H'02'
+00D1   201D           00254                 CALL LCD_SEND_CMD  
+00D2   01B3           00255                 CLRF SAYAC3
+00D3   2857           00256                 GOTO SONSUZ
+                      00257 
+Warning[207]: Found label after column 1. (SUTUN3)
+00D4                  00258         SUTUN3:
+Warning[203]: Found opcode in column 1. (INCF)
+Message[305]: Using default destination of 1 (file).
+00D4   0AB3           00259 INCF SAYAC3
+00D5   3001           00260                 MOVLW H'01'
+00D6   0087           00261                 MOVWF PORTC
+00D7   1B07           00262                 BTFSC PORTC,6
+00D8   28E6           00263                 GOTO UC
+00D9   3002           00264                 MOVLW H'02'
+00DA   0087           00265                 MOVWF PORTC
+00DB   1B07           00266                 BTFSC PORTC,6
+00DC   28F0           00267                 GOTO ALTI
+00DD   3004           00268                 MOVLW H'04'
+00DE   0087           00269                 MOVWF PORTC
+00DF   1B07           00270                 BTFSC PORTC,6
+00E0   28FA           00271                 GOTO DOKUZ
+00E1   3008           00272                 MOVLW H'08'
+00E2   0087           00273                 MOVWF PORTC
+00E3   1B07           00274                 BTFSC PORTC,6
+MPASM  5.51                        KEYPAD.ASM   7-21-2018  15:47:41         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00E4   2904           00275                 GOTO KARE
+                      00276                 
+00E5   2857           00277                 GOTO SONSUZ
+                      00278 
+Warning[207]: Found label after column 1. (UC)
+00E6                  00279         UC:
+00E6   3033           00280                 MOVLW A'3'
+00E7   2004           00281                 CALL LCD_SEND_CHAR
+00E8   30FF           00282                 MOVLW H'FF'
+00E9   0087           00283                 MOVWF PORTC
+00EA   1E33           00284         BTFSS SAYAC3,4
+00EB   2857           00285                 GOTO SONSUZ
+00EC   3002           00286                 MOVLW H'02'
+00ED   201D           00287                 CALL LCD_SEND_CMD  
+00EE   01B3           00288                 CLRF SAYAC3
+00EF   2857           00289                 GOTO SONSUZ
+Warning[207]: Found label after column 1. (ALTI)
+00F0                  00290         ALTI:
+00F0   3036           00291                 MOVLW A'6'
+00F1   2004           00292                 CALL LCD_SEND_CHAR
+00F2   300F           00293                 MOVLW H'0F'
+00F3   0087           00294                 MOVWF PORTC
+00F4   1E33           00295         BTFSS SAYAC3,4
+00F5   2857           00296                 GOTO SONSUZ
+00F6   3002           00297                 MOVLW H'02'
+00F7   201D           00298                 CALL LCD_SEND_CMD  
+00F8   01B3           00299                 CLRF SAYAC3
+00F9   2857           00300                 GOTO SONSUZ
+                      00301                 
+Warning[207]: Found label after column 1. (DOKUZ)
+00FA                  00302         DOKUZ:
+00FA   3039           00303                 MOVLW A'9'
+00FB   2004           00304                 CALL LCD_SEND_CHAR
+00FC   30FF           00305                 MOVLW H'FF'
+00FD   0087           00306                 MOVWF PORTC
+00FE   1E33           00307         BTFSS SAYAC3,4
+00FF   2857           00308                 GOTO SONSUZ
+0100   3002           00309                 MOVLW H'02'
+0101   201D           00310                 CALL LCD_SEND_CMD  
+0102   01B3           00311                 CLRF SAYAC3
+0103   2857           00312                 GOTO SONSUZ
+                      00313 
+Warning[207]: Found label after column 1. (KARE)
+0104                  00314         KARE:
+0104   3023           00315                 MOVLW A'#'
+0105   2004           00316                 CALL LCD_SEND_CHAR
+0106   30FF           00317                 MOVLW H'FF'
+0107   0087           00318                 MOVWF PORTC
+0108   1E33           00319         BTFSS SAYAC3,4
+0109   2857           00320                 GOTO SONSUZ
+010A   3002           00321                 MOVLW H'02'
+010B   201D           00322                 CALL LCD_SEND_CMD  
+010C   01B3           00323                 CLRF SAYAC3
+MPASM  5.51                        KEYPAD.ASM   7-21-2018  15:47:41         PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+010D   2857           00324                 GOTO SONSUZ
+                      00325 
+Warning[207]: Found label after column 1. (SUTUN4)
+010E                  00326         SUTUN4:
+Warning[203]: Found opcode in column 1. (INCF)
+Message[305]: Using default destination of 1 (file).
+010E   0AB3           00327 INCF SAYAC3
+010F   3001           00328                 MOVLW H'01'
+0110   0087           00329                 MOVWF PORTC
+0111   1B87           00330                 BTFSC PORTC,7
+0112   2920           00331                 GOTO AA
+0113   3002           00332                 MOVLW H'02'
+0114   0087           00333                 MOVWF PORTC
+0115   1B87           00334                 BTFSC PORTC,7
+0116   292A           00335                 GOTO BB
+0117   3004           00336                 MOVLW H'04'
+0118   0087           00337                 MOVWF PORTC
+0119   1B87           00338                 BTFSC PORTC,7
+011A   2934           00339                 GOTO CC
+011B   3008           00340                 MOVLW H'08'
+011C   0087           00341                 MOVWF PORTC
+011D   1B87           00342                 BTFSC PORTC,7
+011E   293E           00343                 GOTO DD
+                      00344                 
+011F   2857           00345                 GOTO SONSUZ
+                      00346 
+Warning[207]: Found label after column 1. (AA)
+0120                  00347         AA:
+0120   3041           00348                 MOVLW A'A'
+0121   2004           00349                 CALL LCD_SEND_CHAR
+0122   30FF           00350                 MOVLW H'FF'
+0123   0087           00351                 MOVWF PORTC
+0124   1E33           00352                 BTFSS SAYAC3,4
+0125   2857           00353                 GOTO SONSUZ
+0126   3002           00354                 MOVLW H'02'
+0127   201D           00355                 CALL LCD_SEND_CMD  
+0128   01B3           00356                 CLRF SAYAC3
+0129   2857           00357                 GOTO SONSUZ
+Warning[207]: Found label after column 1. (BB)
+012A                  00358         BB:
+012A   3042           00359                 MOVLW A'B'
+012B   2004           00360                 CALL LCD_SEND_CHAR
+012C   300F           00361                 MOVLW H'0F'
+012D   0087           00362                 MOVWF PORTC
+012E   1E33           00363                 BTFSS SAYAC3,4
+012F   2857           00364                 GOTO SONSUZ
+0130   3002           00365                 MOVLW H'02'
+0131   201D           00366                 CALL LCD_SEND_CMD  
+0132   01B3           00367                 CLRF SAYAC3
+0133   2857           00368                 GOTO SONSUZ
+                      00369                 
+Warning[207]: Found label after column 1. (CC)
+0134                  00370         CC:
+MPASM  5.51                        KEYPAD.ASM   7-21-2018  15:47:41         PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0134   3043           00371                 MOVLW A'C'
+0135   2004           00372                 CALL LCD_SEND_CHAR
+0136   30FF           00373                 MOVLW H'FF'
+0137   0087           00374                 MOVWF PORTC
+0138   1E33           00375                 BTFSS SAYAC3,4
+0139   2857           00376                 GOTO SONSUZ
+013A   3002           00377                 MOVLW H'02'
+013B   201D           00378                 CALL LCD_SEND_CMD  
+013C   01B3           00379                 CLRF SAYAC3
+013D   2857           00380                 GOTO SONSUZ
+Warning[207]: Found label after column 1. (DD)
+013E                  00381         DD:
+013E   3044           00382                 MOVLW A'D'
+013F   2004           00383                 CALL LCD_SEND_CHAR
+0140   30FF           00384                 MOVLW H'FF'
+0141   0087           00385                 MOVWF PORTC
+0142   1E33           00386                 BTFSS SAYAC3,4
+0143   2857           00387                 GOTO SONSUZ
+0144   3002           00388                 MOVLW H'02'
+0145   201D           00389                 CALL LCD_SEND_CMD  
+0146   01B3           00390                 CLRF SAYAC3
+0147   2857           00391                 GOTO SONSUZ
+                      00392         END
+MPASM  5.51                        KEYPAD.ASM   7-21-2018  15:47:41         PAGE 10
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+AA                                00000120
+ACKDT                             00000005
+ACKEN                             00000004
+ACKSTAT                           00000006
+ADCON0                            0000001F
+ADCON1                            0000009F
+ADCS0                             00000006
+ADCS1                             00000007
+ADDEN                             00000003
+ADFM                              00000007
+ADIE                              00000006
+ADIF                              00000006
+ADON                              00000000
+ADRESH                            0000001E
+ADRESL                            0000009E
+ALTI                              000000F0
+ANA_PROGRAM                       0000004B
+BB                                0000012A
+BCLIE                             00000003
+BCLIF                             00000003
+BES                               000000B6
+BF                                00000000
+BIR                               00000072
+BRGH                              00000002
+C                                 00000000
+CC                                00000134
+CCP1CON                           00000017
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP1X                             00000005
+CCP1Y                             00000004
+CCP2CON                           0000001D
+CCP2IE                            00000000
+CCP2IF                            00000000
+CCP2M0                            00000000
+CCP2M1                            00000001
+CCP2M2                            00000002
+CCP2M3                            00000003
+CCP2X                             00000005
+CCP2Y                             00000004
+CCPR1                             00000015
+CCPR1H                            00000016
+CCPR1L                            00000015
+CCPR2                             0000001B
+CCPR2H                            0000001C
+CCPR2L                            0000001B
+CHS0                              00000003
+CHS1                              00000004
+CHS2                              00000005
+MPASM  5.51                        KEYPAD.ASM   7-21-2018  15:47:41         PAGE 11
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+CKE                               00000006
+CKP                               00000004
+CREN                              00000004
+CSRC                              00000007
+D                                 00000005
+DATA_ADDRESS                      00000005
+DC                                00000001
+DD                                0000013E
+DOKUZ                             000000FA
+DON1                              00000038
+DON1_LCD                          00000041
+DON2                              0000003A
+DON2_LCD                          00000043
+DORT                              0000007C
+D_A                               00000005
+D_NOT_A                           00000005
+EEADR                             0000010D
+EEADRH                            0000010F
+EECON1                            0000018C
+EECON2                            0000018D
+EEDATA                            0000010C
+EEDATH                            0000010E
+EEIE                              00000004
+EEIF                              00000004
+EEPGD                             00000007
+F                                 00000001
+FERR                              00000002
+FSR                               00000004
+GCEN                              00000007
+GECIKME                           00000036
+GECIKME_LCD                       0000003F
+GIE                               00000007
+GO                                00000002
+GO_DONE                           00000002
+GO_NOT_DONE                       00000002
+I2C_DATA                          00000005
+I2C_READ                          00000002
+I2C_START                         00000003
+I2C_STOP                          00000004
+IBF                               00000007
+IBOV                              00000005
+IKI                               000000AC
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+KARE                              00000104
+LCD_DATA                          00000037
+LCD_NYBBLEOUT                     00000029
+LCD_SEND_CHAR                     00000004
+LCD_SEND_CMD                      0000001D
+MPASM  5.51                        KEYPAD.ASM   7-21-2018  15:47:41         PAGE 12
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+LCD_TMP0                          00000036
+NOT_A                             00000005
+NOT_ADDRESS                       00000005
+NOT_BO                            00000000
+NOT_BOR                           00000000
+NOT_DONE                          00000002
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_RC8                           00000006
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+NOT_TX8                           00000006
+NOT_W                             00000002
+NOT_WRITE                         00000002
+OBF                               00000006
+OERR                              00000001
+OPTION_REG                        00000081
+P                                 00000004
+PCFG0                             00000000
+PCFG1                             00000001
+PCFG2                             00000002
+PCFG3                             00000003
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PEN                               00000002
+PIE1                              0000008C
+PIE2                              0000008D
+PIR1                              0000000C
+PIR2                              0000000D
+PORTA                             00000005
+PORTB                             00000006
+PORTC                             00000007
+PORTD                             00000008
+PORTE                             00000009
+PR2                               00000092
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+PSPIE                             00000007
+PSPIF                             00000007
+PSPMODE                           00000004
+R                                 00000002
+RA0                               00000000
+RA1                               00000001
+RA2                               00000002
+RA3                               00000003
+RA4                               00000004
+RA5                               00000005
+RB0                               00000000
+MPASM  5.51                        KEYPAD.ASM   7-21-2018  15:47:41         PAGE 13
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+RB1                               00000001
+RB2                               00000002
+RB3                               00000003
+RB4                               00000004
+RB5                               00000005
+RB6                               00000006
+RB7                               00000007
+RBIE                              00000003
+RBIF                              00000000
+RC0                               00000000
+RC1                               00000001
+RC2                               00000002
+RC3                               00000003
+RC4                               00000004
+RC5                               00000005
+RC6                               00000006
+RC7                               00000007
+RC8_9                             00000006
+RC9                               00000006
+RCD8                              00000000
+RCEN                              00000003
+RCIE                              00000005
+RCIF                              00000005
+RCREG                             0000001A
+RCSTA                             00000018
+RD                                00000000
+RD0                               00000000
+RD1                               00000001
+RD2                               00000002
+RD3                               00000003
+RD4                               00000004
+RD5                               00000005
+RD6                               00000006
+RD7                               00000007
+RE0                               00000000
+RE1                               00000001
+RE2                               00000002
+READ_WRITE                        00000002
+RP0                               00000005
+RP1                               00000006
+RSEN                              00000001
+RX9                               00000006
+RX9D                              00000000
+R_NOT_W                           00000002
+R_W                               00000002
+S                                 00000003
+SATIR1                            00000048
+SAYAC1                            00000035
+SAYAC2                            00000031
+SAYAC3                            00000033
+SEKIZ                             000000C0
+SEN                               00000000
+SIFIR                             000000CA
+MPASM  5.51                        KEYPAD.ASM   7-21-2018  15:47:41         PAGE 14
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+SMP                               00000007
+SONSUZ                            00000057
+SPBRG                             00000099
+SPEN                              00000007
+SREN                              00000005
+SSPADD                            00000093
+SSPBUF                            00000013
+SSPCON                            00000014
+SSPCON2                           00000091
+SSPEN                             00000005
+SSPIE                             00000003
+SSPIF                             00000003
+SSPM0                             00000000
+SSPM1                             00000001
+SSPM2                             00000002
+SSPM3                             00000003
+SSPOV                             00000006
+SSPSTAT                           00000094
+STATUS                            00000003
+SUTUN1                            00000061
+SUTUN2                            0000009A
+SUTUN3                            000000D4
+SUTUN4                            0000010E
+SYNC                              00000004
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1INSYNC                          00000002
+T1OSCEN                           00000003
+T1SYNC                            00000002
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000012
+TEMIZLE                           00000010
+TMR0                              00000001
+TMR0IE                            00000005
+TMR0IF                            00000002
+TMR1                              0000000E
+TMR1CS                            00000001
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TMR2                              00000011
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+TOUTPS0                           00000003
+MPASM  5.51                        KEYPAD.ASM   7-21-2018  15:47:41         PAGE 15
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRISA                             00000085
+TRISA0                            00000000
+TRISA1                            00000001
+TRISA2                            00000002
+TRISA3                            00000003
+TRISA4                            00000004
+TRISA5                            00000005
+TRISB                             00000086
+TRISB0                            00000000
+TRISB1                            00000001
+TRISB2                            00000002
+TRISB3                            00000003
+TRISB4                            00000004
+TRISB5                            00000005
+TRISB6                            00000006
+TRISB7                            00000007
+TRISC                             00000087
+TRISC0                            00000000
+TRISC1                            00000001
+TRISC2                            00000002
+TRISC3                            00000003
+TRISC4                            00000004
+TRISC5                            00000005
+TRISC6                            00000006
+TRISC7                            00000007
+TRISD                             00000088
+TRISD0                            00000000
+TRISD1                            00000001
+TRISD2                            00000002
+TRISD3                            00000003
+TRISD4                            00000004
+TRISD5                            00000005
+TRISD6                            00000006
+TRISD7                            00000007
+TRISE                             00000089
+TRISE0                            00000000
+TRISE1                            00000001
+TRISE2                            00000002
+TRMT                              00000001
+TX8_9                             00000006
+TX9                               00000006
+TX9D                              00000000
+TXD8                              00000000
+TXEN                              00000005
+TXIE                              00000004
+TXIF                              00000004
+TXREG                             00000019
+TXSTA                             00000098
+UA                                00000001
+UC                                000000E6
+MPASM  5.51                        KEYPAD.ASM   7-21-2018  15:47:41         PAGE 16
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+W                                 00000000
+WCOL                              00000007
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+YEDI                              00000086
+YILDIZ                            00000090
+Z                                 00000002
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_BOREN_OFF                        00003FBF
+_BOREN_ON                         00003FFF
+_CONFIG                           00002007
+_CPD_OFF                          00003FFF
+_CPD_ON                           00003EFF
+_CP_ALL                           00000FCF
+_CP_HALF                          00001FDF
+_CP_OFF                           00003FFF
+_CP_UPPER_256                     00002FEF
+_DEBUG_OFF                        00003FFF
+_DEBUG_ON                         000037FF
+_DEVID1                           00002006
+_FOSC_EXTRC                       00003FFF
+_FOSC_HS                          00003FFE
+_FOSC_LP                          00003FFC
+_FOSC_XT                          00003FFD
+_HS_OSC                           00003FFE
+_IDLOC0                           00002000
+_IDLOC1                           00002001
+_IDLOC2                           00002002
+_IDLOC3                           00002003
+_LP_OSC                           00003FFC
+_LVP_OFF                          00003F7F
+_LVP_ON                           00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDTE_OFF                         00003FFB
+_WDTE_ON                          00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_WRT_ENABLE_OFF                   00003DFF
+_WRT_ENABLE_ON                    00003FFF
+_WRT_OFF                          00003DFF
+_WRT_ON                           00003FFF
+_XT_OSC                           00003FFD
+__16F877A                         00000001
+__DEBUG                           1
+MPASM  5.51                        KEYPAD.ASM   7-21-2018  15:47:41         PAGE 17
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+
+0000 : X---XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+00C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0100 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0140 : XXXXXXXX-------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:   325
+Program Memory Words Free:  7867
+
+
+Errors   :     0
+Warnings :    40 reported,     0 suppressed
+Messages :     6 reported,     0 suppressed
+
+

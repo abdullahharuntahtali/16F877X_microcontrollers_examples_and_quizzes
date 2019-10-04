@@ -1,0 +1,72 @@
+MPLINK 4.49, Linker
+Linker Map File - Created Mon Dec 03 16:22:51 2018
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x00011c
+                   .cinit    romdata   0x00008e    program   0x000004
+.config_2007_MADEIN_TAHTALI_REIS.O       code   0x002007    program   0x000002
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x00008f      
+                            0x002007    0x002007      
+            145 out of 8454 program addresses used, program memory utilization is 1%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                    ARTIR   0x000038    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+                    AZALT   0x000069    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+                   BUTTON   0x000026    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+                  GECIKME   0x00001d    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+                 GECIKME1   0x00001f    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+                 GECIKTIR   0x000021    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+                    KOMUT   0x00000a    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+             KOMUT_GONDER   0x000017    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+                KOMUT_YAZ   0x000011    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+           KONTROL_BIRLER   0x00004a    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+          KONTROL_BIRLERR   0x00007b    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+            KONTROL_ONLAR   0x000050    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+           KONTROL_ONLARR   0x000082    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+           KONTROL_YUZLER   0x000056    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+          KONTROL_YUZLERR   0x000089    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+                   LOOKUP   0x00005e    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+                     MAIN   0x000000    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+                      SON   0x00008e    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+              VERI_GONDER   0x000031    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+                 VERI_YAZ   0x00002b    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                     MAIN   0x000000    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+                    KOMUT   0x00000a    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+                KOMUT_YAZ   0x000011    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+             KOMUT_GONDER   0x000017    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+                  GECIKME   0x00001d    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+                 GECIKME1   0x00001f    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+                 GECIKTIR   0x000021    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+                   BUTTON   0x000026    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+                 VERI_YAZ   0x00002b    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+              VERI_GONDER   0x000031    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+                    ARTIR   0x000038    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+           KONTROL_BIRLER   0x00004a    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+            KONTROL_ONLAR   0x000050    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+           KONTROL_YUZLER   0x000056    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+                   LOOKUP   0x00005e    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+                    AZALT   0x000069    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+          KONTROL_BIRLERR   0x00007b    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+           KONTROL_ONLARR   0x000082    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+          KONTROL_YUZLERR   0x000089    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+                      SON   0x00008e    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.asm
+
+

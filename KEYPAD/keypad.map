@@ -1,0 +1,98 @@
+MPLINK 4.49, Linker
+Linker Map File - Created Sat Jul 21 15:47:42 2018
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x000002
+                   .org_2       code   0x000004    program   0x000288
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000000      
+                            0x000004    0x000147      
+            325 out of 8454 program addresses used, program memory utilization is 3%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                       AA   0x000120    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                     ALTI   0x0000f0    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+              ANA_PROGRAM   0x00004b    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                       BB   0x00012a    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                      BES   0x0000b6    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                      BIR   0x000072    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                       CC   0x000134    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                       DD   0x00013e    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                    DOKUZ   0x0000fa    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                     DON1   0x000038    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                 DON1_LCD   0x000041    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                     DON2   0x00003a    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                 DON2_LCD   0x000043    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                     DORT   0x00007c    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                  GECIKME   0x000036    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+              GECIKME_LCD   0x00003f    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                      IKI   0x0000ac    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                     KARE   0x000104    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+            LCD_NYBBLEOUT   0x000029    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+            LCD_SEND_CHAR   0x000004    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+             LCD_SEND_CMD   0x00001d    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                   SATIR1   0x000048    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                    SEKIZ   0x0000c0    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                    SIFIR   0x0000ca    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                   SONSUZ   0x000057    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                   SUTUN1   0x000061    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                   SUTUN2   0x00009a    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                   SUTUN3   0x0000d4    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                   SUTUN4   0x00010e    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                  TEMIZLE   0x000010    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                       UC   0x0000e6    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                     YEDI   0x000086    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                   YILDIZ   0x000090    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+            LCD_SEND_CHAR   0x000004    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                  TEMIZLE   0x000010    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+             LCD_SEND_CMD   0x00001d    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+            LCD_NYBBLEOUT   0x000029    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                  GECIKME   0x000036    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                     DON1   0x000038    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                     DON2   0x00003a    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+              GECIKME_LCD   0x00003f    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                 DON1_LCD   0x000041    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                 DON2_LCD   0x000043    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                   SATIR1   0x000048    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+              ANA_PROGRAM   0x00004b    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                   SONSUZ   0x000057    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                   SUTUN1   0x000061    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                      BIR   0x000072    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                     DORT   0x00007c    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                     YEDI   0x000086    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                   YILDIZ   0x000090    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                   SUTUN2   0x00009a    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                      IKI   0x0000ac    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                      BES   0x0000b6    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                    SEKIZ   0x0000c0    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                    SIFIR   0x0000ca    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                   SUTUN3   0x0000d4    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                       UC   0x0000e6    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                     ALTI   0x0000f0    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                    DOKUZ   0x0000fa    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                     KARE   0x000104    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                   SUTUN4   0x00010e    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                       AA   0x000120    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                       BB   0x00012a    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                       CC   0x000134    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+                       DD   0x00013e    program     static C:\Users\yucel\Desktop\tus_takimi_keypad\keypad.asm
+
+

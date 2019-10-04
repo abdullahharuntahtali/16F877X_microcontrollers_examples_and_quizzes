@@ -1,0 +1,4 @@
+Warning[205] C:\USERS\PERFECT\DESKTOP\CALISMA\8X8=16BIT_ODEVI\BIRINCIODEV.ASM 3 : Found directive in column 1. (__CONFIG)
+Message[302] C:\USERS\PERFECT\DESKTOP\CALISMA\8X8=16BIT_ODEVI\BIRINCIODEV.ASM 16 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\PERFECT\DESKTOP\CALISMA\8X8=16BIT_ODEVI\BIRINCIODEV.ASM 19 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\PERFECT\DESKTOP\CALISMA\8X8=16BIT_ODEVI\BIRINCIODEV.ASM 20 : Register in operand not in bank 0.  Ensure that bank bits are correct.

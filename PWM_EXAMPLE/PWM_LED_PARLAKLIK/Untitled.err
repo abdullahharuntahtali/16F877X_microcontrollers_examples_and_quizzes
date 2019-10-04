@@ -1,0 +1,6 @@
+Warning[207] C:\USERS\BRAIN\DESKTOP\PWM_CALISMALARIM\PWM_LED_PARLAKLIK\UNTITLED.ASM 4 : Found label after column 1. (ORAN)
+Warning[207] C:\USERS\BRAIN\DESKTOP\PWM_CALISMALARIM\PWM_LED_PARLAKLIK\UNTITLED.ASM 5 : Found label after column 1. (SAYAC1)
+Warning[207] C:\USERS\BRAIN\DESKTOP\PWM_CALISMALARIM\PWM_LED_PARLAKLIK\UNTITLED.ASM 6 : Found label after column 1. (SAYAC2)
+Message[302] C:\USERS\BRAIN\DESKTOP\PWM_CALISMALARIM\PWM_LED_PARLAKLIK\UNTITLED.ASM 26 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\BRAIN\DESKTOP\PWM_CALISMALARIM\PWM_LED_PARLAKLIK\UNTITLED.ASM 29 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\BRAIN\DESKTOP\PWM_CALISMALARIM\PWM_LED_PARLAKLIK\UNTITLED.ASM 32 : Register in operand not in bank 0.  Ensure that bank bits are correct.

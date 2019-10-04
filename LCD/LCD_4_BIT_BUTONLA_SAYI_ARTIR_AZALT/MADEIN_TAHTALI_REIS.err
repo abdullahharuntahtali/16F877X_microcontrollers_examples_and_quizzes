@@ -1,0 +1,3 @@
+Warning[205] C:\USERS\BRAIN\DESKTOP\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.ASM 2 : Found directive in column 1. (__CONFIG)
+Message[302] C:\USERS\BRAIN\DESKTOP\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.ASM 13 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\BRAIN\DESKTOP\LCD\LCD_4_BIT_BUTONLA_SAYI_ARTIR_AZALT\MADEIN_TAHTALI_REIS.ASM 14 : Register in operand not in bank 0.  Ensure that bank bits are correct.

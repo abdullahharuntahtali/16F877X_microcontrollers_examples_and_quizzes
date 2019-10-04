@@ -1,0 +1,9 @@
+Warning[205] C:\USERS\PERFECT\DESKTOP\CALISMA\TMR1\TMR1.ASM 2 : Found directive in column 1. (__CONFIG)
+Message[305] C:\USERS\PERFECT\DESKTOP\CALISMA\TMR1\TMR1.ASM 22 : Using default destination of 1 (file).
+Message[305] C:\USERS\PERFECT\DESKTOP\CALISMA\TMR1\TMR1.ASM 57 : Using default destination of 1 (file).
+Message[305] C:\USERS\PERFECT\DESKTOP\CALISMA\TMR1\TMR1.ASM 76 : Using default destination of 1 (file).
+Message[302] C:\USERS\PERFECT\DESKTOP\CALISMA\TMR1\TMR1.ASM 82 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\PERFECT\DESKTOP\CALISMA\TMR1\TMR1.ASM 85 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\PERFECT\DESKTOP\CALISMA\TMR1\TMR1.ASM 86 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\PERFECT\DESKTOP\CALISMA\TMR1\TMR1.ASM 87 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\PERFECT\DESKTOP\CALISMA\TMR1\TMR1.ASM 96 : Register in operand not in bank 0.  Ensure that bank bits are correct.

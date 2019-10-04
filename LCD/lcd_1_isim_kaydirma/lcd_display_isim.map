@@ -1,0 +1,70 @@
+MPLINK 4.49, Linker
+Linker Map File - Created Fri Nov 18 23:55:26 2016
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x000104
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000081      
+            130 out of 8454 program addresses used, program memory utilization is 1%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                       D1   0x00001a    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+                       D2   0x000021    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+                       D8   0x00005c    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+                    DONGU   0x00007b    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+                   DONGU2   0x00007d    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+                  GECIKME   0x000079    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+                 GECIKME2   0x000076    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+                     GERI   0x000018    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+                    ILERI   0x000016    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+             KARAKTER_GIR   0x000046    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+          KARAKTER_GONDER   0x00006d    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+             KARAKTER_YAZ   0x000067    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+             KOMUT_GONDER   0x00003d    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+                KOMUT_YAZ   0x000037    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+                     LOOP   0x000011    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+                     MAIN   0x000001    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+                   SATIR2   0x000056    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+              SATIR2_GERI   0x000063    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+             SATIR2_ILERI   0x00005f    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+                  TEMIZLE   0x00002c    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                     MAIN   0x000001    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+                     LOOP   0x000011    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+                    ILERI   0x000016    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+                     GERI   0x000018    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+                       D1   0x00001a    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+                       D2   0x000021    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+                  TEMIZLE   0x00002c    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+                KOMUT_YAZ   0x000037    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+             KOMUT_GONDER   0x00003d    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+             KARAKTER_GIR   0x000046    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+                   SATIR2   0x000056    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+                       D8   0x00005c    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+             SATIR2_ILERI   0x00005f    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+              SATIR2_GERI   0x000063    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+             KARAKTER_YAZ   0x000067    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+          KARAKTER_GONDER   0x00006d    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+                 GECIKME2   0x000076    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+                  GECIKME   0x000079    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+                    DONGU   0x00007b    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+                   DONGU2   0x00007d    program     static C:\Users\yucel\Desktop\picProject\odevler\lcd_display\1\lcd_display_isim.asm
+
+

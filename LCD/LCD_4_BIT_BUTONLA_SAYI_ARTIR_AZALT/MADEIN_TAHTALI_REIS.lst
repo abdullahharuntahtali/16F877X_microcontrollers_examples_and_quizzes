@@ -1,0 +1,636 @@
+MPASM  5.51           MADEIN_TAHTALI_REIS.ASM   12-3-2018  16:22:51         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 #INCLUDE <P16F877A.INC>
+                      00001         LIST
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ;  MPASM PIC16F877A processor include
+                      00005 ; 
+                      00006 ;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
+                      00007 ;==========================================================================
+                      00008 
+                      00566         LIST
+Warning[205]: Found directive in column 1. (__CONFIG)
+2007   3F31           00002 __CONFIG H'3F31'
+  00000020            00003 SAYAC EQU 0X20
+  00000021            00004 SAYAC0 EQU 0X21
+  00000022            00005 SAYAC1 EQU 0X22
+  00000023            00006 LCD_DATA EQU 0X23
+  00000024            00007 BIRLER EQU 0X24
+  00000025            00008 ONLAR EQU 0X25
+  00000026            00009 YUZLER EQU 0X26
+                      00010         ORG 0X00
+0000                  00011 MAIN
+0000   1683 1303      00012         BANKSEL TRISB
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0002   0186           00013         CLRF TRISB
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0003   0187           00014         CLRF TRISC
+0004   1283 1303      00015         BANKSEL PORTB
+0006   0186           00016         CLRF PORTB
+0007   0187           00017         CLRF PORTC
+0008   2???           00018         CALL KOMUT
+0009   2???           00019         CALL BUTTON
+000A                  00020 KOMUT
+000A   3002           00021         MOVLW H'02'
+000B   2???           00022         CALL KOMUT_YAZ
+000C   302C           00023         MOVLW H'2C'
+000D   2???           00024         CALL KOMUT_YAZ
+000E   300C           00025         MOVLW H'0C'
+000F   2???           00026         CALL KOMUT_YAZ
+0010   0008           00027         RETURN
+0011                  00028 KOMUT_YAZ
+0011   00A3           00029         MOVWF LCD_DATA
+0012   0E23           00030         SWAPF LCD_DATA,W
+0013   2???           00031         CALL KOMUT_GONDER
+0014   0823           00032         MOVFW LCD_DATA
+0015   2???           00033         CALL KOMUT_GONDER
+0016   0008           00034         RETURN
+0017                  00035 KOMUT_GONDER
+0017   390F           00036         ANDLW D'15'
+0018   0086           00037         MOVWF PORTB
+0019   1206           00038         BCF PORTB,4
+001A   1686           00039         BSF PORTB,5
+001B   2???           00040         CALL GECIKME    
+001C   1286           00041         BCF PORTB,5
+MPASM  5.51           MADEIN_TAHTALI_REIS.ASM   12-3-2018  16:22:51         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+001D                  00042 GECIKME
+001D   3064           00043         MOVLW D'100'
+001E   00A1           00044         MOVWF SAYAC0
+001F                  00045 GECIKME1
+001F   3050           00046         MOVLW D'80'
+0020   00A2           00047         MOVWF SAYAC1
+0021                  00048 GECIKTIR
+0021   0BA2           00049         DECFSZ SAYAC1,F
+0022   2???           00050         GOTO GECIKTIR
+0023   0BA1           00051         DECFSZ SAYAC0,F
+0024   2???           00052         GOTO GECIKME1
+0025   0008           00053         RETURN
+0026                  00054 BUTTON
+0026   1807           00055         BTFSC PORTC,0
+0027   2???           00056         GOTO ARTIR
+0028   1887           00057         BTFSC PORTC,1
+0029   2???           00058         GOTO AZALT
+002A   2???           00059         GOTO BUTTON
+002B                  00060 VERI_YAZ
+002B   00A3           00061         MOVWF LCD_DATA
+002C   0E23           00062         SWAPF LCD_DATA,W
+002D   2???           00063         CALL VERI_GONDER
+002E   0823           00064         MOVFW LCD_DATA
+002F   2???           00065         CALL VERI_GONDER
+0030   0008           00066         RETURN
+0031                  00067 VERI_GONDER
+0031   390F           00068         ANDLW D'15'
+0032   0086           00069         MOVWF PORTB
+0033   1606           00070         BSF PORTB,4
+0034   1686           00071         BSF PORTB,5
+0035   2???           00072         CALL GECIKME    
+0036   1286           00073         BCF PORTB,5
+0037   0008           00074         RETURN
+0038                  00075 ARTIR
+0038   3087           00076         MOVLW H'87'
+0039   2???           00077         CALL KOMUT_YAZ
+003A   0826           00078         MOVFW YUZLER
+003B   2???           00079         CALL LOOKUP
+003C   2???           00080         CALL VERI_YAZ
+003D   3088           00081         MOVLW H'88'
+003E   2???           00082         CALL KOMUT_YAZ
+003F   0825           00083         MOVFW ONLAR
+0040   2???           00084         CALL LOOKUP
+0041   2???           00085         CALL VERI_YAZ
+0042   3089           00086         MOVLW H'89'
+0043   2???           00087         CALL KOMUT_YAZ
+0044   0824           00088         MOVFW BIRLER
+0045   2???           00089         CALL LOOKUP
+0046   2???           00090         CALL VERI_YAZ
+0047   0AA4           00091         INCF BIRLER,F
+0048   2???           00092         CALL KONTROL_BIRLER
+0049   2???           00093         GOTO BUTTON
+004A                  00094 KONTROL_BIRLER
+MPASM  5.51           MADEIN_TAHTALI_REIS.ASM   12-3-2018  16:22:51         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+004A   0824           00095         MOVFW BIRLER
+004B   3C0A           00096         SUBLW D'10'
+004C   1D03           00097         BTFSS STATUS,Z
+004D   0008           00098         RETURN
+004E   01A4           00099         CLRF BIRLER
+004F   0AA5           00100         INCF ONLAR,F
+0050                  00101 KONTROL_ONLAR
+0050   0825           00102         MOVFW ONLAR
+0051   3C0A           00103         SUBLW D'10'
+0052   1D03           00104         BTFSS STATUS,Z
+0053   0008           00105         RETURN
+0054   01A5           00106         CLRF ONLAR
+0055   0AA6           00107         INCF YUZLER,F
+0056                  00108 KONTROL_YUZLER
+0056   0826           00109         MOVFW YUZLER
+0057   3C0A           00110         SUBLW D'10'
+0058   1D03           00111         BTFSS STATUS,Z
+0059   0008           00112         RETURN
+005A   01A6           00113         CLRF YUZLER
+005B   01A5           00114         CLRF ONLAR
+005C   01A4           00115         CLRF BIRLER
+005D   0008           00116         RETURN
+005E                  00117 LOOKUP
+005E   0782           00118         ADDWF PCL,F
+005F   3430           00119         RETLW '0'
+0060   3431           00120         RETLW '1'
+0061   3432           00121         RETLW '2'
+0062   3433           00122         RETLW '3'
+0063   3434           00123         RETLW '4'
+0064   3435           00124         RETLW '5'
+0065   3436           00125         RETLW '6'
+0066   3437           00126         RETLW '7'
+0067   3438           00127         RETLW '8'
+0068   3439           00128         RETLW '9'
+0069                  00129 AZALT
+0069   3087           00130         MOVLW H'87'
+006A   2???           00131         CALL KOMUT_YAZ
+006B   0826           00132         MOVFW YUZLER
+006C   2???           00133         CALL LOOKUP
+006D   2???           00134         CALL VERI_YAZ
+006E   3088           00135         MOVLW H'88'
+006F   2???           00136         CALL KOMUT_YAZ
+0070   0825           00137         MOVFW ONLAR
+0071   2???           00138         CALL LOOKUP
+0072   2???           00139         CALL VERI_YAZ
+0073   3089           00140         MOVLW H'89'
+0074   2???           00141         CALL KOMUT_YAZ
+0075   0824           00142         MOVFW BIRLER
+0076   2???           00143         CALL LOOKUP
+0077   2???           00144         CALL VERI_YAZ
+0078   03A4           00145         DECF BIRLER,F
+0079   2???           00146         CALL KONTROL_BIRLERR
+007A   2???           00147         GOTO BUTTON
+MPASM  5.51           MADEIN_TAHTALI_REIS.ASM   12-3-2018  16:22:51         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+007B                  00148 KONTROL_BIRLERR
+007B   0824           00149         MOVFW BIRLER
+007C   3C00           00150         SUBLW D'0'
+007D   1D03           00151         BTFSS STATUS,Z
+007E   0008           00152         RETURN
+007F   3009           00153         MOVLW D'9'
+0080   00A4           00154         MOVWF BIRLER
+0081   03A5           00155         DECF ONLAR,F
+0082                  00156 KONTROL_ONLARR
+0082   0825           00157         MOVFW ONLAR
+0083   3C00           00158         SUBLW D'0'
+0084   1D03           00159         BTFSS STATUS,Z
+0085   0008           00160         RETURN
+0086   3009           00161         MOVLW D'9'
+0087   00A5           00162         MOVWF ONLAR
+0088   03A6           00163         DECF YUZLER,F
+0089                  00164 KONTROL_YUZLERR
+0089   0826           00165         MOVFW YUZLER
+008A   3C00           00166         SUBLW D'0'
+008B   1D03           00167         BTFSS STATUS,Z
+008C   0008           00168         RETURN
+008D   2???           00169         GOTO BUTTON
+                      00170         
+008E                  00171 SON
+3F31                  00172         END
+MPASM  5.51           MADEIN_TAHTALI_REIS.ASM   12-3-2018  16:22:51         PAGE  5
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ACKDT                             00000005
+ACKEN                             00000004
+ACKSTAT                           00000006
+ADCON0                            0000001F
+ADCON1                            0000009F
+ADCS0                             00000006
+ADCS1                             00000007
+ADCS2                             00000006
+ADDEN                             00000003
+ADFM                              00000007
+ADIE                              00000006
+ADIF                              00000006
+ADON                              00000000
+ADRESH                            0000001E
+ADRESL                            0000009E
+ARTIR                             00000038
+AZALT                             00000069
+BCLIE                             00000003
+BCLIF                             00000003
+BF                                00000000
+BIRLER                            00000024
+BRGH                              00000002
+BUTTON                            00000026
+C                                 00000000
+C1INV                             00000004
+C1OUT                             00000006
+C2INV                             00000005
+C2OUT                             00000007
+CCP1CON                           00000017
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP1X                             00000005
+CCP1Y                             00000004
+CCP2CON                           0000001D
+CCP2IE                            00000000
+CCP2IF                            00000000
+CCP2M0                            00000000
+CCP2M1                            00000001
+CCP2M2                            00000002
+CCP2M3                            00000003
+CCP2X                             00000005
+CCP2Y                             00000004
+CCPR1                             00000015
+CCPR1H                            00000016
+CCPR1L                            00000015
+CCPR2                             0000001B
+CCPR2H                            0000001C
+CCPR2L                            0000001B
+CHS0                              00000003
+MPASM  5.51           MADEIN_TAHTALI_REIS.ASM   12-3-2018  16:22:51         PAGE  6
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+CHS1                              00000004
+CHS2                              00000005
+CIS                               00000003
+CKE                               00000006
+CKP                               00000004
+CM0                               00000000
+CM1                               00000001
+CM2                               00000002
+CMCON                             0000009C
+CMIE                              00000006
+CMIF                              00000006
+CREN                              00000004
+CSRC                              00000007
+CVR0                              00000000
+CVR1                              00000001
+CVR2                              00000002
+CVR3                              00000003
+CVRCON                            0000009D
+CVREN                             00000007
+CVROE                             00000006
+CVRR                              00000005
+D                                 00000005
+DATA_ADDRESS                      00000005
+DC                                00000001
+D_A                               00000005
+D_NOT_A                           00000005
+EEADR                             0000010D
+EEADRH                            0000010F
+EECON1                            0000018C
+EECON2                            0000018D
+EEDATA                            0000010C
+EEDATH                            0000010E
+EEIE                              00000004
+EEIF                              00000004
+EEPGD                             00000007
+F                                 00000001
+FERR                              00000002
+FSR                               00000004
+GCEN                              00000007
+GECIKME                           0000001D
+GECIKME1                          0000001F
+GECIKTIR                          00000021
+GIE                               00000007
+GO                                00000002
+GO_DONE                           00000002
+GO_NOT_DONE                       00000002
+I2C_DATA                          00000005
+I2C_READ                          00000002
+I2C_START                         00000003
+I2C_STOP                          00000004
+IBF                               00000007
+IBOV                              00000005
+INDF                              00000000
+MPASM  5.51           MADEIN_TAHTALI_REIS.ASM   12-3-2018  16:22:51         PAGE  7
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+KOMUT                             0000000A
+KOMUT_GONDER                      00000017
+KOMUT_YAZ                         00000011
+KONTROL_BIRLER                    0000004A
+KONTROL_BIRLERR                   0000007B
+KONTROL_ONLAR                     00000050
+KONTROL_ONLARR                    00000082
+KONTROL_YUZLER                    00000056
+KONTROL_YUZLERR                   00000089
+LCD_DATA                          00000023
+LOOKUP                            0000005E
+MAIN                              00000000
+NOT_A                             00000005
+NOT_ADDRESS                       00000005
+NOT_BO                            00000000
+NOT_BOR                           00000000
+NOT_DONE                          00000002
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_RC8                           00000006
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+NOT_TX8                           00000006
+NOT_W                             00000002
+NOT_WRITE                         00000002
+OBF                               00000006
+OERR                              00000001
+ONLAR                             00000025
+OPTION_REG                        00000081
+P                                 00000004
+PCFG0                             00000000
+PCFG1                             00000001
+PCFG2                             00000002
+PCFG3                             00000003
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PEN                               00000002
+PIE1                              0000008C
+PIE2                              0000008D
+PIR1                              0000000C
+PIR2                              0000000D
+PORTA                             00000005
+PORTB                             00000006
+PORTC                             00000007
+PORTD                             00000008
+MPASM  5.51           MADEIN_TAHTALI_REIS.ASM   12-3-2018  16:22:51         PAGE  8
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+PORTE                             00000009
+PR2                               00000092
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+PSPIE                             00000007
+PSPIF                             00000007
+PSPMODE                           00000004
+R                                 00000002
+RA0                               00000000
+RA1                               00000001
+RA2                               00000002
+RA3                               00000003
+RA4                               00000004
+RA5                               00000005
+RB0                               00000000
+RB1                               00000001
+RB2                               00000002
+RB3                               00000003
+RB4                               00000004
+RB5                               00000005
+RB6                               00000006
+RB7                               00000007
+RBIE                              00000003
+RBIF                              00000000
+RC0                               00000000
+RC1                               00000001
+RC2                               00000002
+RC3                               00000003
+RC4                               00000004
+RC5                               00000005
+RC6                               00000006
+RC7                               00000007
+RC8_9                             00000006
+RC9                               00000006
+RCD8                              00000000
+RCEN                              00000003
+RCIE                              00000005
+RCIF                              00000005
+RCREG                             0000001A
+RCSTA                             00000018
+RD                                00000000
+RD0                               00000000
+RD1                               00000001
+RD2                               00000002
+RD3                               00000003
+RD4                               00000004
+RD5                               00000005
+RD6                               00000006
+RD7                               00000007
+RE0                               00000000
+RE1                               00000001
+MPASM  5.51           MADEIN_TAHTALI_REIS.ASM   12-3-2018  16:22:51         PAGE  9
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+RE2                               00000002
+READ_WRITE                        00000002
+RP0                               00000005
+RP1                               00000006
+RSEN                              00000001
+RX9                               00000006
+RX9D                              00000000
+R_NOT_W                           00000002
+R_W                               00000002
+S                                 00000003
+SAYAC                             00000020
+SAYAC0                            00000021
+SAYAC1                            00000022
+SEN                               00000000
+SMP                               00000007
+SON                               0000008E
+SPBRG                             00000099
+SPEN                              00000007
+SREN                              00000005
+SSPADD                            00000093
+SSPBUF                            00000013
+SSPCON                            00000014
+SSPCON2                           00000091
+SSPEN                             00000005
+SSPIE                             00000003
+SSPIF                             00000003
+SSPM0                             00000000
+SSPM1                             00000001
+SSPM2                             00000002
+SSPM3                             00000003
+SSPOV                             00000006
+SSPSTAT                           00000094
+STATUS                            00000003
+SYNC                              00000004
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1INSYNC                          00000002
+T1OSCEN                           00000003
+T1SYNC                            00000002
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000012
+TMR0                              00000001
+TMR0IE                            00000005
+TMR0IF                            00000002
+TMR1                              0000000E
+TMR1CS                            00000001
+TMR1H                             0000000F
+MPASM  5.51           MADEIN_TAHTALI_REIS.ASM   12-3-2018  16:22:51         PAGE 10
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TMR2                              00000011
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+TOUTPS0                           00000003
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRISA                             00000085
+TRISA0                            00000000
+TRISA1                            00000001
+TRISA2                            00000002
+TRISA3                            00000003
+TRISA4                            00000004
+TRISA5                            00000005
+TRISB                             00000086
+TRISB0                            00000000
+TRISB1                            00000001
+TRISB2                            00000002
+TRISB3                            00000003
+TRISB4                            00000004
+TRISB5                            00000005
+TRISB6                            00000006
+TRISB7                            00000007
+TRISC                             00000087
+TRISC0                            00000000
+TRISC1                            00000001
+TRISC2                            00000002
+TRISC3                            00000003
+TRISC4                            00000004
+TRISC5                            00000005
+TRISC6                            00000006
+TRISC7                            00000007
+TRISD                             00000088
+TRISD0                            00000000
+TRISD1                            00000001
+TRISD2                            00000002
+TRISD3                            00000003
+TRISD4                            00000004
+TRISD5                            00000005
+TRISD6                            00000006
+TRISD7                            00000007
+TRISE                             00000089
+TRISE0                            00000000
+TRISE1                            00000001
+TRISE2                            00000002
+TRMT                              00000001
+TX8_9                             00000006
+TX9                               00000006
+MPASM  5.51           MADEIN_TAHTALI_REIS.ASM   12-3-2018  16:22:51         PAGE 11
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TX9D                              00000000
+TXD8                              00000000
+TXEN                              00000005
+TXIE                              00000004
+TXIF                              00000004
+TXREG                             00000019
+TXSTA                             00000098
+UA                                00000001
+VERI_GONDER                       00000031
+VERI_YAZ                          0000002B
+W                                 00000000
+WCOL                              00000007
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+YUZLER                            00000026
+Z                                 00000002
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_BOREN_OFF                        00003FBF
+_BOREN_ON                         00003FFF
+_CONFIG                           00002007
+_CPD_OFF                          00003FFF
+_CPD_ON                           00003EFF
+_CP_ALL                           00001FFF
+_CP_OFF                           00003FFF
+_CP_ON                            00001FFF
+_DEBUG_OFF                        00003FFF
+_DEBUG_ON                         000037FF
+_DEVID1                           00002006
+_FOSC_EXTRC                       00003FFF
+_FOSC_HS                          00003FFE
+_FOSC_LP                          00003FFC
+_FOSC_XT                          00003FFD
+_HS_OSC                           00003FFE
+_IDLOC0                           00002000
+_IDLOC1                           00002001
+_IDLOC2                           00002002
+_IDLOC3                           00002003
+_LP_OSC                           00003FFC
+_LVP_OFF                          00003F7F
+_LVP_ON                           00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDTE_OFF                         00003FFB
+_WDTE_ON                          00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_WRT_1FOURTH                      00003BFF
+_WRT_256                          00003DFF
+_WRT_HALF                         000039FF
+_WRT_OFF                          00003FFF
+MPASM  5.51           MADEIN_TAHTALI_REIS.ASM   12-3-2018  16:22:51         PAGE 12
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_XT_OSC                           00003FFD
+__16F877A                         00000001
+__DEBUG                           1
+
+Errors   :     0
+Warnings :     1 reported,     0 suppressed
+Messages :     2 reported,     0 suppressed
+
+

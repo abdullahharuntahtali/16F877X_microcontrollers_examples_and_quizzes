@@ -1,0 +1,56 @@
+MPLINK 4.49, Linker
+Linker Map File - Created Tue Dec 04 11:25:17 2018
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x0000a6
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000052      
+            83 out of 8454 program addresses used, program memory utilization is 0%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                    EKRAN   0x000034    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_YAZI_KAYDIRMA\Untitled.asm
+              EKRAN_ARTIR   0x000034    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_YAZI_KAYDIRMA\Untitled.asm
+              EKRAN_AZALT   0x000040    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_YAZI_KAYDIRMA\Untitled.asm
+                  GECIKME   0x00002b    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_YAZI_KAYDIRMA\Untitled.asm
+                 GECIKME1   0x00002d    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_YAZI_KAYDIRMA\Untitled.asm
+                 GECIKTIR   0x00002f    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_YAZI_KAYDIRMA\Untitled.asm
+                    KOMUT   0x00000c    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_YAZI_KAYDIRMA\Untitled.asm
+             KOMUT_GONDER   0x000017    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_YAZI_KAYDIRMA\Untitled.asm
+                KOMUT_YAZ   0x000011    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_YAZI_KAYDIRMA\Untitled.asm
+                   LOOKUP   0x00004c    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_YAZI_KAYDIRMA\Untitled.asm
+                     MAIN   0x000000    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_YAZI_KAYDIRMA\Untitled.asm
+              VERI_GONDER   0x000024    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_YAZI_KAYDIRMA\Untitled.asm
+                 VERI_YAZ   0x00001e    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_YAZI_KAYDIRMA\Untitled.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                     MAIN   0x000000    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_YAZI_KAYDIRMA\Untitled.asm
+                    KOMUT   0x00000c    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_YAZI_KAYDIRMA\Untitled.asm
+                KOMUT_YAZ   0x000011    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_YAZI_KAYDIRMA\Untitled.asm
+             KOMUT_GONDER   0x000017    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_YAZI_KAYDIRMA\Untitled.asm
+                 VERI_YAZ   0x00001e    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_YAZI_KAYDIRMA\Untitled.asm
+              VERI_GONDER   0x000024    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_YAZI_KAYDIRMA\Untitled.asm
+                  GECIKME   0x00002b    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_YAZI_KAYDIRMA\Untitled.asm
+                 GECIKME1   0x00002d    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_YAZI_KAYDIRMA\Untitled.asm
+                 GECIKTIR   0x00002f    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_YAZI_KAYDIRMA\Untitled.asm
+                    EKRAN   0x000034    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_YAZI_KAYDIRMA\Untitled.asm
+              EKRAN_ARTIR   0x000034    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_YAZI_KAYDIRMA\Untitled.asm
+              EKRAN_AZALT   0x000040    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_YAZI_KAYDIRMA\Untitled.asm
+                   LOOKUP   0x00004c    program     static C:\Users\BRAIN\Desktop\LCD\LCD_4_BIT_KULLANARAK_YAZI_KAYDIRMA\Untitled.asm
+
+

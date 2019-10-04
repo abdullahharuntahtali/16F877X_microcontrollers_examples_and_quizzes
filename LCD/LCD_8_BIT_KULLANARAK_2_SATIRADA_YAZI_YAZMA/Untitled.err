@@ -1,0 +1,3 @@
+Warning[205] C:\USERS\BRAIN\DESKTOP\LCD\LCD_8_BIT_KULLANARAK_2_SATIRADA_YAZI_YAZMA\UNTITLED.ASM 6 : Found directive in column 1. (__CONFIG)
+Message[302] C:\USERS\BRAIN\DESKTOP\LCD\LCD_8_BIT_KULLANARAK_2_SATIRADA_YAZI_YAZMA\UNTITLED.ASM 17 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\BRAIN\DESKTOP\LCD\LCD_8_BIT_KULLANARAK_2_SATIRADA_YAZI_YAZMA\UNTITLED.ASM 18 : Register in operand not in bank 0.  Ensure that bank bits are correct.
