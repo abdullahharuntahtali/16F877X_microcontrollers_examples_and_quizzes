@@ -1,0 +1,588 @@
+<html><head>
+
+
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252"><title>011 - Programmable IR remote control</title></head><body topmargin="0" leftmargin="5" alink="#0000ff" background="011_files/bg1.jpg" link="#0000ff" vlink="#0000ff">
+
+  <table style="border-collapse: collapse;" id="AutoNumber1" border="0" bordercolor="#111111" cellpadding="0" cellspacing="0" height="37" width="100%">
+  <tbody><tr>
+  <td height="37" width="87%">
+  <p align="left">
+  <b><font color="#0099ff" face="Lucida Sans Unicode" size="4">Programmable IR remote control</font></b></p></td>
+  <td bgcolor="#ffffcc" height="37" width="13%">
+  <p align="center"><font face="Lucida Sans Unicode">
+  <a style="text-decoration: none;" href="http://www.techdesign.be/projects.htm"><font color="#0099ff">
+  Projects </font>
+  <font color="#3399ff">Home</font></a></font></p></td>
+  </tr>
+  </tbody></table>
+  <table style="border-collapse: collapse;" id="AutoNumber2" border="0" bordercolor="#111111" cellpadding="0" cellspacing="0" width="100%">
+  <tbody><tr>
+  <td>
+  &nbsp;</td>
+  <td width="285">
+  <p align="center">
+  </p></td>
+  </tr>
+  </tbody></table>
+
+<hr color="#0000ff" size="1">
+
+  <table style="border-collapse: collapse;" id="AutoNumber4" border="0" bordercolor="#111111" cellspacing="1" height="207" width="100%">
+  <tbody><tr>
+  <td height="204" width="30%">
+  <p align="center">
+  <img src="011_files/011.JPG" border="0" height="300" width="93"></p></td>
+  <td height="204" width="70%">
+<p align="justify">NEC-SIRCS-JAPAN-RC5-SAMSUNG compatible, <b>multiprotocol infrared remote control.</b>  </p>
+<p align="justify">Replaces up to 
+6 
+existing remote controls into one.  </p>
+<p align="justify">With <b>manual learning function</b>, LED display and/or LCD. 
+2V6-3V2, low power (sleep function) </p>
+<p align="justify">More protocols will be added later if needed (DENON, DAEWOO, 
+MOTOROLA, RECS80.) </p>
+<p align="justify"><b>Components: </b><font face="Arial" size="2">
+PIC16LF877-04/L</font> (4Mhz PLCC Package), 24LC256 EEPROM (low 
+power), 74HC148 encoder (SMD), optional Nokia 3310 graphic LCD (LPH-7779), IR 
+LED, 5 optional LEDs, TSOP34836 IR receiver (low voltage)</p>
+<p align="justify">All parts are available in our
+<a style="text-decoration: none;" href="http://www.techdesign.be/shop">online shop</a></p>
+<p align="justify">
+<font color="#ff0000">Schematic &amp; pcb (Eagle 4.11e), source code</font><font color="#ff0000" face="Lucida Sans Unicode" size="2"> 
+(CCS)</font><font color="#ff0000"> and hex file available.</font></p>
+<p align="justify">
+<a href="http://www.techdesign.be/projects/011/011_gifs.htm" style="text-decoration: none;">More pictures.</a></p>
+  </td>
+  </tr>
+  </tbody></table>
+
+<hr color="#ff0000" size="1">
+
+  <p align="justify"><font face="Lucida Sans Unicode"><b><span style="background-color: rgb(255, 255, 204);">
+  Circuit explanation:</span></b></font></p>
+  <p align="justify">&nbsp;</p>
+
+  <p align="justify">The main component is of course the
+  <font face="Arial" size="2"><b>PIC16LF877-04/L</b> </font> <b>processor</b>. Its 8K program ROM handles all inputs, outputs, timings and so 
+  on. There are six modes: SLEEP, IDLE, TRANSMIT, RECEIVE, BACKUP &amp; RESTORE.</p>
+
+  <p align="justify">There are two displays available: <b>LED and/or LCD</b>. So 
+  you can choose freely which one suits you best. Naturally, the Nokia LCD gives 
+  us much more details as we will see further on.</p>
+
+  <table style="border-collapse: collapse;" id="AutoNumber21" bgcolor="#ffffcc" border="1" bordercolor="#111111" cellpadding="0" cellspacing="0" height="241" width="100%">
+  <tbody><tr>
+  <td colspan="3" align="center" height="31" width="75%"><b>LED display</b></td>
+  <td align="center" height="31" width="24%">
+  <b>LCD</b></td>
+  </tr>
+  <tr>
+  <td height="19" width="23%"><b>&nbsp;LED symbols</b> used:</td>
+  <td height="19" width="28%">&nbsp;"1"= LED on. "0"= LED off. </td>
+  <td rowspan="9" align="center" height="198" width="24%">
+  <img src="011_files/011_led.JPG" border="0" height="222" width="221"></td>
+  <td rowspan="9" align="center" height="198" width="24%">
+  <img src="011_files/011_lcd.JPG" border="0" height="158" width="210"></td>
+  </tr>
+  <tr>
+  <td height="19" width="23%">&nbsp;</td>
+  <td height="19" width="28%">&nbsp;</td>
+  </tr>
+  <tr>
+  <td rowspan="5" height="99" width="23%"><b>&nbsp;LED order: (from right to 
+  left)</b></td>
+  <td height="19" width="28%">&nbsp;LED1, red (PROGRAM) </td>
+  </tr>
+  <tr>
+  <td height="19" width="28%">&nbsp;LED2, yellow (SPECIAL)</td>
+  </tr>
+  <tr>
+  <td height="19" width="28%">&nbsp;LED3, green (ADDRESS2) binary MSB</td>
+  </tr>
+  <tr>
+  <td height="19" width="28%">&nbsp;LED4, green (ADDRESS1) binary</td>
+  </tr>
+  <tr>
+  <td height="19" width="28%">&nbsp;LED5, green (ADDRESS0) binary LSB</td>
+  </tr>
+  <tr>
+  <td height="19" width="23%">&nbsp;</td>
+  <td height="19" width="28%">&nbsp;</td>
+  </tr>
+  <tr>
+  <td height="38" width="23%"><b>&nbsp;Example: </b>"11001" </td>
+  <td height="38" width="28%"><b>&nbsp;</b>means PROGRAM &amp; SPECIAL active on ADDRESS1.</td>
+  </tr>
+  </tbody></table>
+  <p>&nbsp;</p>
+
+  <table style="border-collapse: collapse;" id="AutoNumber7" border="0" bordercolor="#111111" cellpadding="0" cellspacing="0" height="23" width="100%">
+  <tbody><tr>
+  <td height="71" width="55%"><b>Power consumption</b> is only a couple of 
+  microamps in <b>sleep mode</b> !!<p>The circuit is powered by <b>two AAA 
+  batteries</b> (HR03) These may be rechargeable types. The voltage can drop as low 
+  as 2,5V. The battery life is several months (although NI-Mh batteries lose 1% 
+  of their power each day!)</p>
+  <p><b>Sleep mode</b> is activated automatically after 20 seconds of inactivity 
+  (no button pressed in idle mode.)</p>
+  </td>
+  <td height="71" width="2%">&nbsp;</td>
+  <td height="71" width="54%"><table style="border-collapse: collapse;" id="AutoNumber8" border="1" bordercolor="#111111" cellpadding="0" cellspacing="0" width="95%">
+  <tbody><tr>
+  <td align="center" bgcolor="#ffff00" width="25%">
+  <p align="center"><b>mode</b></p></td>
+  <td align="center" bgcolor="#ffff00" width="37%"><b>consumption at 2V6 with 
+  Low Current-LEDs</b></td>
+  <td align="center" bgcolor="#ffff00" width="100%"><b>consumption at 2V6 with 
+  NOKIA LCD</b></td>
+  </tr>
+  <tr>
+  <td bgcolor="#ffff00" width="25%">&nbsp;</td>
+  <td bgcolor="#ffff00" width="37%">&nbsp;</td>
+  <td bgcolor="#ffff00" width="100%">&nbsp;</td>
+  </tr>
+  <tr>
+  <td align="center" bgcolor="#ffff00" width="25%">sleep</td>
+  <td align="center" bgcolor="#ffff00" width="37%">1,2 to 2 µA (!)</td>
+  <td align="center" bgcolor="#ffff00" width="100%">1,2 to 2 µA (!)</td>
+  </tr>
+  <tr>
+  <td align="center" bgcolor="#ffff00" width="25%">idle</td>
+  <td align="center" bgcolor="#ffff00" width="37%">1,3 to 1,5 mA</td>
+  <td align="center" bgcolor="#ffff00" width="100%">1,3 to 1,5 mA</td>
+  </tr>
+  <tr>
+  <td align="center" bgcolor="#ffff00" width="25%">transmitting IR</td>
+  <td align="center" bgcolor="#ffff00" width="37%">11 to 17 mA</td>
+  <td align="center" bgcolor="#ffff00" width="100%">9 to 13 mA</td>
+  </tr>
+  <tr>
+  <td align="center" bgcolor="#ffff00" width="25%">receiving IR</td>
+  <td align="center" bgcolor="#ffff00" width="37%">2 to 10 mA</td>
+  <td align="center" bgcolor="#ffff00" width="100%">2 to 2,2 mA</td>
+  </tr>
+  <tr>
+  <td align="center" bgcolor="#ffff00" width="25%">backup or restore</td>
+  <td align="center" bgcolor="#ffff00" width="37%">5 mA</td>
+  <td align="center" bgcolor="#ffff00" width="100%">2,7 mA</td>
+  </tr>
+  </tbody></table>
+  </td>
+  <td height="71" width="46%">
+  <p>&nbsp;</p></td>
+  </tr>
+  </tbody></table>
+
+  <p>All <b>user data</b> is stored in the 24LC256 i²c EEPROM. It contains 32768 
+  bytes (8 pages of 4096 bytes.) That's plenty! Pages 0 to 5 (0x0xxx to 0x5xxx) 
+  each contain data from the six devices (Aux, TV, Hifi, CD, DVD, Video) we are 
+  able to use. Page 6 is unused, page 7 stores all configuration data (f.e. 
+  which key is assigned to "PROGRAM" or to the device "DVD"...)</p>
+  <p>A maximum of 32 keys (4 columns by 8 rows) are supported. We have <b>six 
+  fixed DEVICE SELECT</b> keys (Aux, TV, Hifi, CD, DVD, Video), <b>1 fixed 
+  PROGRAM key</b> , <b>1 fixed ENTER key. </b>These eight fixed keys have to be 
+  programmed at the first power up (LCD shows "key init" "Program key?", LEDs 
+  show "01000") See more below. There are a maximum of <b>24 free COMMAND keys</b> 
+  for each one of the six devices. Each free command key is protocol-free, this 
+  way we can mix protocols inside each device page.</p>
+  <p>RB4..7 are <b>outputs</b> to the four key columns. RB1..3 are <b>inputs</b> 
+  coming from the 8-bit HC148 encoder.</p>
+  <p>Whilst in <b>sleep mode</b>, pressing one of the keys on the key-matrix 
+  awakes the processor. The HC148, GS output which goes to to the PIC interrupt 
+  INT/RB0, goes low each time a key is pressed. </p>
+  <p>Also nice: the last device selected is stored in EEPROM. So, even unpowered, 
+  the circuit will keep all settings &amp; data safe. You can even make a complete
+  <b>backup or restore</b> of all data ;-)</p>
+  <p>The <b>IR receiver</b> TSOP34836 (output comes low when a IR burst of 
+  around 36KHz detected) is powered only in program mode. The receiver takes only 0,7 mA 
+  but it's still worth disabling while unneeded. More details about protocols &amp; waveforms 
+  below.</p>
+  <p>For <b>IR transmitting</b>, there is of course an IR LED. It is boosted 
+  by a BC639. When enabled, it sends out&nbsp; a burst of 37,1 kHz generated by 
+  the processor.</p>
+  <p>But, as you have guessed, all the rest is <b>program code</b>. More info under "source 
+  code explanation" below.</p>
+
+<hr color="#ffff00" size="1">
+
+  <table style="border-collapse: collapse;" id="AutoNumber14" border="0" bordercolor="#111111" cellpadding="0" cellspacing="0" height="129" width="100%">
+  <tbody><tr>
+  <td height="46" width="100%">
+  <p align="left"><font face="Lucida Sans Unicode"><b><span style="background-color: rgb(255, 255, 204);">
+Schematic:</span> </b></font><b><font face="Lucida Sans Unicode" size="2"> right-click &amp; "save picture as" for 
+full resolution or (recommended) download the eagle-file below.</font></b></p></td>
+  </tr>
+  <tr>
+  <td height="82" width="100%">
+  <img src="011_files/011_sch.gif" border="0" height="534" width="984"></td>
+  </tr>
+  </tbody></table>
+
+<hr color="#ff0000" size="1">
+
+  <p><font face="Lucida Sans Unicode">
+  <span style="font-weight: 700; background-color: rgb(255, 255, 204);">
+  <a href="http://www.techdesign.be/projects/011/011_connect.htm" style="text-decoration: none;"><font color="#000000">
+  Part List (Bill of material)</font></a>:</span> </font>
+  <font face="Times New Roman" size="4">
+  <a href="http://www.techdesign.be/projects/011/011_bom.htm" style="text-decoration: none;">here.</a></font></p>
+
+<hr color="#ffff00" size="1">
+
+  <p><font face="Lucida Sans Unicode">
+  <span style="font-weight: 700; background-color: rgb(255, 255, 204);">
+  <a href="http://www.techdesign.be/projects/011/011_connect.htm" style="text-decoration: none;"><font color="#000000">
+  Main component list &amp; interconnections</font></a>:</span></font><a href="http://www.techdesign.be/projects/011/011_connect.htm" style="text-decoration: none;"><font size="4">
+  Overview here.</font></a></p>
+
+<hr color="#0000ff" size="1">
+
+  <table style="border-collapse: collapse;" id="AutoNumber12" border="0" bordercolor="#111111" cellpadding="0" cellspacing="0" height="228" width="100%">
+  <tbody><tr>
+  <td height="228" width="52%"><font face="Lucida Sans Unicode">
+  <span style="background-color: rgb(255, 255, 204); font-weight: 700;">
+  <a href="http://www.techdesign.be/projects/011/011_waves.htm" style="text-decoration: none;"><font color="#000000">Supported protocols:</font></a></span></font><p>&nbsp;</p>
+  <p>These <b>five protocols</b>
+are currently supported. Of course, each have their own structure:
+frequency, number of data bits, timing, start &amp; stop bits. Check
+the table on the right and the waveforms details below.</p>
+  <p align="center"><a style="text-decoration: none;" href="http://www.techdesign.be/projects/011/011_waves.htm">
+  <font size="4">Protocol waveforms: full details here.</font></a></p>
+  <p>&nbsp;</p></td>
+  <td height="228" width="3%">&nbsp;</td>
+  <td height="228" width="100%">
+  <table style="border-collapse: collapse;" id="AutoNumber13" border="1" bordercolor="#111111" cellpadding="0" cellspacing="0" width="100%">
+  <tbody><tr>
+  <td align="center" bgcolor="#ffffcc" width="30%"><b># - protocol name</b></td>
+  <td align="center" bgcolor="#ffffcc" width="10%"><b>kHZ</b></td>
+  <td align="center" bgcolor="#ffffcc" width="5%"><b>start bit</b></td>
+  <td align="center" bgcolor="#ffffcc" width="18%"><b>data bits</b></td>
+  <td align="center" bgcolor="#ffffcc" width="25%"><b>stop bit</b></td>
+  </tr>
+  <tr>
+  <td align="center" bgcolor="#ffffcc" width="30%">&nbsp;</td>
+  <td align="center" bgcolor="#ffffcc" width="10%">&nbsp;</td>
+  <td align="center" bgcolor="#ffffcc" width="5%">&nbsp;</td>
+  <td align="center" bgcolor="#ffffcc" width="18%">&nbsp;</td>
+  <td align="center" bgcolor="#ffffcc" width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+  <td align="left" bgcolor="#ffffcc" width="30%"><b>&nbsp;2-NEC</b></td>
+  <td align="center" bgcolor="#ffffcc" width="10%">39,2</td>
+  <td align="center" bgcolor="#ffffcc" width="5%">1</td>
+  <td align="center" bgcolor="#ffffcc" width="18%">32</td>
+  <td align="center" bgcolor="#ffffcc" width="25%">1</td>
+  </tr>
+  <tr>
+  <td align="left" bgcolor="#ffffcc" width="30%"><b>&nbsp;4-SIRCS</b></td>
+  <td align="center" bgcolor="#ffffcc" width="10%">40</td>
+  <td align="center" bgcolor="#ffffcc" width="5%">1</td>
+  <td align="center" bgcolor="#ffffcc" width="18%">12</td>
+  <td align="center" bgcolor="#ffffcc" width="25%">-</td>
+  </tr>
+  <tr>
+  <td align="left" bgcolor="#ffffcc" width="30%"><b>&nbsp;5-RC5</b></td>
+  <td align="center" bgcolor="#ffffcc" width="10%">36</td>
+  <td align="center" bgcolor="#ffffcc" width="5%">1</td>
+  <td align="center" bgcolor="#ffffcc" width="18%">12</td>
+  <td align="center" bgcolor="#ffffcc" width="25%">-</td>
+  </tr>
+  <tr>
+  <td align="left" bgcolor="#ffffcc" width="30%"><b>&nbsp;7-JAPAN</b></td>
+  <td align="center" bgcolor="#ffffcc" width="10%">32</td>
+  <td align="center" bgcolor="#ffffcc" width="5%">1</td>
+  <td align="center" bgcolor="#ffffcc" width="18%">48</td>
+  <td align="center" bgcolor="#ffffcc" width="25%">-</td>
+  </tr>
+  <tr>
+  <td align="left" bgcolor="#ffffcc" width="30%"><b>&nbsp;8-SAMSUNG</b></td>
+  <td align="center" bgcolor="#ffffcc" width="10%">39,2</td>
+  <td align="center" bgcolor="#ffffcc" width="5%">1</td>
+  <td align="center" bgcolor="#ffffcc" width="18%">32</td>
+  <td align="center" bgcolor="#ffffcc" width="25%">1</td>
+  </tr>
+  <tr>
+  <td align="center" bgcolor="#ffffcc" width="33%">&nbsp;</td>
+  <td align="center" bgcolor="#ffffcc" width="19%">&nbsp;</td>
+  <td align="center" bgcolor="#ffffcc" width="17%">&nbsp;</td>
+  <td align="center" bgcolor="#ffffcc" width="13%">&nbsp;</td>
+  <td align="center" bgcolor="#ffffcc" width="100%">&nbsp;</td>
+  </tr>
+  </tbody></table>
+  </td>
+  <td height="228" width="75%">&nbsp;</td>
+  </tr>
+  </tbody></table>
+
+<hr color="#ff0000" size="1">
+
+  <p><font face="Lucida Sans Unicode">
+  <span style="background-color: rgb(255, 255, 204); font-weight: 700;">
+  Notes:</span></font></p>
+
+  <table style="border-collapse: collapse;" id="AutoNumber3" border="1" bordercolor="#111111" cellspacing="1" height="18" width="100%">
+  <tbody><tr>
+  <td align="center" height="19" width="25%">
+  <p align="center"><b>Key-Matrix</b></p></td>
+  <td align="center" height="19" width="25%">
+  <p align="center"><b>EEPROM Resistor Pull-ups</b></p></td>
+  <td align="center" height="19" width="25%">
+  <p align="center"><b>IR Receiver TSOP34836</b></p></td>
+  <td align="center" height="19" width="25%">
+  <p align="center"><b>IR LED</b></p></td>
+  </tr>
+  <tr>
+  <td align="center" height="145" width="25%">
+  Has a <b>maximum of 4 columns and 8 rows</b>. Unused column connections should be 
+  left unconnected. Unused row connections must be grounded.<p>You could rip one from an old remote....</p></td>
+  <td align="center" height="145" width="25%">
+  The pull-ups are <b>10k</b> here. A value around 1k8 is more common, but power 
+  consumption is reduced significantly with 10k...<p>&nbsp;</p></td>
+  <td align="center" height="145" width="25%">
+  This <b>low voltage</b> component is made by Vishay. It works well at 2V6. 
+  Whereas a regular IR receiver (TSOP 1736 or 1836) operates at 5V!
+  <p>The 36 kHZ one handles all supported protocols fine.</p></td>
+  <td align="center" height="145" width="25%">
+  A standard IR LED is ok. We can run a fairly high current through it, because it 
+  is only lit for a very brief time. Hence the 4R7 at T1's emitter.<p>&nbsp;</p>
+  </td>
+  </tr>
+  <tr>
+  <td align="center" height="34" width="25%">
+  <p align="center"><b>PLCC <font face="Arial" size="2">PIC16LF877-04/L</font>&nbsp; 4MhZ</b></p></td>
+  <td align="center" height="34" width="25%">
+  <p align="center"><b>Nokia 3310 LCD (LPH7779)</b></p></td>
+  <td align="center" height="34" width="25%">
+  <p align="center"><b>5 Display-LED resistors</b></p></td>
+  <td align="center" height="34" width="25%">
+  <b>LED or LCD display ?</b></td>
+  </tr>
+  <tr>
+  <td align="center" height="128" width="25%">
+  PLCC has been chosen only for its reduced size.
+  <p>This chip is functionally fully compatible with a 16F877 DIL (40 pins.)</p></td>
+  <td align="center" height="128" width="25%">
+  This is a fine graphical LCD. It is also quite cheap, so i just love using it... 
+  It has an incorporated controller <font face="Lucida Sans Unicode" size="2">
+<font color="#0000ff">
+<a style="text-decoration: none;" href="http://www.semiconductors.philips.com/pip/PCD8544U_2_F1.html#datasheet">PCD8544</a></font> </font>
+  and takes around 0.2mA only. Voltage must be between 2V5 and 3V2.</td>
+  <td align="center" height="128" width="25%">
+  The five 3mm display-LED's current must by delimited by a resistor. 
+  <p>Values are <b>56R for normal</b> (10mA) LEDs and <b>300R for low current</b> 
+  (2mA) LEDs. Calculate others
+  <a href="http://home.cogeco.ca/%7Erpaisley4/LEDcalc.html" style="text-decoration: none;">
+  here</a>.</p></td>
+  <td align="center" height="128" width="25%">
+  You can choose between the LEDs or the LCD for displaying info. 
+  <p>The LCD can display very detailed IR info: <b>protocol number</b> (- to 8),
+  <b>number of data bits</b>, elapsed program cycles, <b>key-number pressed</b> 
+  last &amp; all <b>data bit values</b>.</p></td>
+  </tr>
+  </tbody></table>
+
+<hr color="#ffff00" size="1">
+
+  <p><b><font size="4"><span style="background-color: rgb(255, 255, 204);">
+  <a href="http://www.techdesign.be/projects/011/011_menu.htm" style="text-decoration: none;"><font color="#000000">
+  Menu &amp; display structure: </font></a></span></font></b></p>
+  <table style="border-collapse: collapse;" id="AutoNumber22" border="1" bordercolor="#111111" cellpadding="0" cellspacing="0" width="100%">
+  <tbody><tr>
+  <td rowspan="10" width="47%">
+  <p align="center">Here's some useful info about how to program keys &amp; how to 
+  perform several tasks listed on the right.</p>
+  <p align="center">&nbsp;</p>
+  <p align="center"><a href="http://www.techdesign.be/projects/011/011_menu.htm" style="text-decoration: none;">
+  <font size="4">All</font></a><font size="4"><a style="text-decoration: none;" href="http://www.techdesign.be/projects/011/011_menu.htm"> details here.</a></font></p></td>
+  <td align="center" width="53%">Device select</td>
+  </tr>
+  <tr>
+  <td align="center" width="53%">IR transmit mode</td>
+  </tr>
+  <tr>
+  <td align="center" width="53%">IR receive &amp; program a command key</td>
+  </tr>
+  <tr>
+  <td align="center" width="53%">IR Details ON/OFF: </td>
+  </tr>
+  <tr>
+  <td align="center" width="53%">Soft reset:</td>
+  </tr>
+  <tr>
+  <td align="center" width="53%">Backup mode:</td>
+  </tr>
+  <tr>
+  <td align="center" width="53%">Restore mode:</td>
+  </tr>
+  <tr>
+  <td align="center" width="53%">Sleep mode</td>
+  </tr>
+  <tr>
+  <td align="center" width="53%">Idle mode</td>
+  </tr>
+  <tr>
+  <td align="center" width="53%">Init mode:</td>
+  </tr>
+  </tbody></table>
+
+<hr color="#ffff00" size="1">
+
+  <p><font face="Lucida Sans Unicode">
+  <span style="background-color: rgb(255, 255, 204); font-weight: 700;">
+  Software flow chart:</span></font></p>
+  <p>coming soon...</p>
+
+<hr color="#ffff00" size="1">
+
+  <p align="left">
+  <b><font face="Lucida Sans Unicode"><span style="background-color: rgb(255, 255, 204);">
+  Downloads:</span></font></b></p><p align="left">
+  &nbsp;</p><p align="center"><font color="#ff9900" face="Lucida Sans Unicode" size="2"><b><span style="background-color: rgb(255, 255, 204);">&nbsp;WARNING:
+</span> </b><span style="background-color: rgb(255, 255, 204);">may not be 
+duplicated for any commercial use whatsoever without explicit consent from the 
+  author </span></font>
+  <a style="text-decoration: none;" href="mailto:info@techdesign.be?subject=011%20-%20IR%20Remote">(c)
+<font color="#0000ff">Michel Bavin</font></a></p>
+
+  <p align="center">&nbsp;</p>
+
+  <table style="border-collapse: collapse;" id="AutoNumber20" border="0" bordercolor="#0000ff" cellpadding="0" cellspacing="0" width="100%">
+  <tbody><tr>
+  <td width="100%">
+  <font face="Lucida Sans Unicode" size="2">
+  <u>
+  <b>
+Hex file:</b></u>
+  <a style="text-decoration: none;" href="http://home.scarlet.be/%7Emb069957/projects/011/011_v30_hex.zip"><b>
+  011_v30_hex.zip</b>,&nbsp;</a> july 25, 2004: <b>011_30.hex</b> (to program the PIC) <b>&nbsp;</b></font><p>&nbsp;</p></td>
+  </tr>
+  <tr>
+  <td width="100%">
+
+<p align="left"><font face="Lucida Sans Unicode" size="2">
+<u>
+<b>
+Source code</b>:</u> <b>
+<a style="text-decoration: none;" href="http://home.scarlet.be/%7Emb069957/projects/011/011_v28_c.zip">011_v28_c.zip</a> </b>
+(CCS compiler),&nbsp;february 25, 2004 : <b>011_28.c</b> </font></p>
+
+<p align="left"><font face="Lucida Sans Unicode" size="2">
+(with<b> </b>include 
+files <b>16f877_mb.h / 24256_mb.c / ir_read_mb / nokia_3310_mb.c</b>)</font></p>
+
+<p align="left">&nbsp;</p>
+
+  </td>
+  </tr>
+  <tr>
+  <td width="100%"><font face="Lucida Sans Unicode" size="2">
+  <u>
+<b>
+Schematic:</b></u> </font><b>
+<font face="Lucida Sans Unicode" size="2">
+  <a style="text-decoration: none;" href="http://home.scarlet.be/%7Emb069957/projects/011/011_02_sch.zip">011_02_sch.zip</a></font></b><font face="Lucida Sans Unicode" size="2">
+(Eagle 4.11e), february 26, 2004: <b>011_02.sch</b></font><p>
+  <font face="Lucida Sans Unicode" size="2">and (important) this library file <b>
+  <a style="text-decoration: none;" href="http://home.scarlet.be/%7Emb069957/projects/011/microchip_mb.zip">microchip_mb.lbr</a>
+  </b>(to be copied to the *\eagle*\lbr directory. This is an altered package 
+  for the PIC)</font></p>
+  <p>&nbsp;</p></td>
+  </tr>
+  <tr>
+  <td width="100%"><font face="Lucida Sans Unicode" size="2"><u><b>
+  PCB:</b></u>&nbsp;<a style="text-decoration: none;" href="http://home.scarlet.be/%7Emb069957/projects/011/011_02_brd.zip">
+  </a>  </font><b>
+<font face="Lucida Sans Unicode" size="2">
+  <a style="text-decoration: none;" href="http://home.scarlet.be/%7Emb069957/projects/011/011_02_brd.zip">011_02_brd.zip</a></font></b><font face="Lucida Sans Unicode" size="2">
+(Eagle 4.11e), march 19, 2005: <b>011_02.brd</b></font><p>&nbsp;</p></td>
+  </tr>
+  </tbody></table>
+
+<hr color="#0000ff" size="1">
+
+  <p><b><font face="Lucida Sans Unicode"><span style="background-color: rgb(255, 255, 204);">
+  PCB screenshots:</span></font><span style="background-color: rgb(255, 255, 204);"> </span> </b><span style="background-color: rgb(255, 255, 204);">&nbsp;</span>&nbsp;&nbsp; 
+  real size= 48,6 x 39,7 mm or 1,90 x 1,55 inches. </p>
+  <table style="border-collapse: collapse;" id="AutoNumber23" border="1" bordercolor="#111111" cellpadding="0" cellspacing="0" height="292" width="100%">
+  <tbody><tr>
+  <td align="center" height="30" width="33%"><b>All layers </b>(top view)</td>
+  <td align="center" height="30" width="33%"><b>Top copper layer</b></td>
+  <td align="center" height="30" width="34%"><b>Bottom copper layer</b></td>
+  </tr>
+  <tr>
+  <td height="261" width="33%">
+  <p align="center">
+  <img src="011_files/011_pcb_full.gif" border="0" height="255" width="299"></p></td>
+  <td height="261" width="33%">
+  <p align="center">
+  <img src="011_files/011_pcb_top.gif" border="0" height="255" width="299"></p></td>
+  <td height="261" width="34%">
+  <p align="center">
+  <img src="011_files/011_pcb_bottom.gif" border="0" height="255" width="299"></p></td>
+  </tr>
+  </tbody></table>
+
+<hr color="#ff0000" size="1">
+
+<p><font face="Lucida Sans Unicode"><b><span style="background-color: rgb(255, 255, 204);">Source code explanation:</span> </b>(CCS 
+compiler)</font></p>
+
+<p><font face="Lucida Sans Unicode" size="2">coming soon...</font></p>
+
+<hr color="#0000ff" size="1">
+
+<p><font face="Lucida Sans Unicode"><b><span style="background-color: rgb(255, 255, 204);">Info &amp; datasheet:</span></b></font></p>
+
+<p>
+<a href="http://www.vishay.com/docs/82202/82202.pdf" style="text-decoration: none;">
+TSOP34836</a> IR Receiver, low voltage, low power,Vishay.</p>
+
+<p><font face="Lucida Sans Unicode" size="2">Graphic LCD module type
+<a style="text-decoration: none;" href="http://home.scarlet.be/%7Emb069957/projects/datasheet/nokia_3310_LCD.jpg">
+<font color="#0000ff">LPH7779 (NOKIA 3310 LCD)</font></a> 
+and its integrated controller
+<font color="#0000ff">
+<a style="text-decoration: none;" href="http://www.semiconductors.philips.com/pip/PCD8544U_2_F1.html#datasheet">PCD8544</a></font><a style="text-decoration: none;" href="http://www.semiconductors.philips.com/pip/PCD8544U_2_F1.html#datasheet"><font color="#0000ff">.</font></a></font></p>
+
+<p><font face="Lucida Sans Unicode" size="2">More IR protocols related
+<a href="http://www.howell1964.freeserve.co.uk/remotes/irrc_systems.htm" style="text-decoration: none;">
+info</a>. </font></p>
+
+<hr style="background-color: rgb(255, 255, 0);" color="#ffff00" size="1">
+
+<p><b><font face="Lucida Sans Unicode"><span style="background-color: rgb(255, 255, 204);">
+Tools:</span></font></b></p>
+
+<p><font face="Lucida Sans Unicode" size="2">This project is made with the PCWH
+<a href="http://www.ccsinfo.com/pcwide.shtml" style="text-decoration: none;">CCS 
+compiler</a> ($425,-). You can install Microchip's free
+<a style="text-decoration: none;" href="http://www.microchip.com/1010/pline/tools/picmicro/devenv/mplabi/mplab6/index.htm">
+MPLAB IDE</a> with it to get things going smoothly. </font></p>
+
+<p><font face="Lucida Sans Unicode" size="2">Programming of the PIC was done with
+<a href="http://www.ic-prog.com/" style="text-decoration: none;">IC-Prog </a>on a 
+<a href="http://www.techdesign.be/projects/004/004.htm" style="text-decoration: none;">PIC-
+programmer</a> built from Electronique pratique nr 253 (january 2001).</font></p>
+
+<p><font face="Lucida Sans Unicode" size="2"><font color="#ff9900">Eagle</font> 
+can be used for the schematic &amp; PCB layout. The
+<a href="http://www.cadsoft.de/freeware.htm" style="text-decoration: none;">free version</a> 
+should be ok for this 
+design.  </font></p>
+
+<hr color="#ff0000" size="1">
+
+<p align="center"><font face="Lucida Sans Unicode">
+<a style="text-decoration: none; background-color: rgb(255, 255, 0);" href="http://www.techdesign.be/projects.htm">Projects Home</a></font></p>
+
+
+<p align="center"><font color="#3399ff" face="Lucida Sans Unicode">&nbsp;
+
+
+
+</font> </p>
+
+
+</body></html>

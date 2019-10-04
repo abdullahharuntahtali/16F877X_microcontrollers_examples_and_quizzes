@@ -1,0 +1,1785 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content="HTML Tidy, see www.w3.org" />
+<title>Serial and UART Tutorial</title>
+<meta name="GENERATOR" content="Modular DocBook HTML Stylesheet Version 1.79" />
+<link rel="NEXT" title="Configuring the sio driver" href="sio.html" />
+<link rel="STYLESHEET" type="text/css" href="docbook.css" />
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+</head>
+<body class="ARTICLE" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#840084"
+alink="#0000FF">
+<div class="ARTICLE">
+<div class="TITLEPAGE">
+<h1 class="TITLE"><a id="AEN2" name="AEN2">Serial and UART Tutorial</a></h1>
+
+<div class="AUTHORGROUP"><a id="AEN4" name="AEN4"></a>
+<h3 class="AUTHOR"><a id="AEN5" name="AEN5">Frank Durda</a></h3>
+
+<div class="AFFILIATION">
+<div class="ADDRESS">
+<p class="ADDRESS"><code class="EMAIL">&#60;<a
+href="mailto:uhclem@FreeBSD.org">uhclem@FreeBSD.org</a>&#62;</code></p>
+</div>
+</div>
+</div>
+
+<p class="PUBDATE">$FreeBSD: doc/en_US.ISO8859-1/articles/serial-uart/article.sgml,v 1.13
+2004/11/29 21:43:34 ceri Exp $<br />
+</p>
+
+<a href="TRADEMARKS.html">Legal Notice</a>
+<div>
+<div class="ABSTRACT"><a id="AEN18" name="AEN18"></a>
+<p>This article talks about using serial hardware with FreeBSD.</p>
+</div>
+</div>
+
+<div class="DOCFORAMTNAVI">[ <a href="./index.html">Split HTML</a> / <a
+href="./article.html">Single HTML</a> ]</div>
+
+<hr />
+</div>
+
+<div class="TOC">
+<dl>
+<dt><b>Table of Contents</b></dt>
+
+<dt>1 <a href="index.html#UART">The UART: What it is and how it works</a></dt>
+
+<dt>2 <a href="sio.html">Configuring the <tt class="DEVICENAME">sio</tt> driver</a></dt>
+
+<dt>3 <a href="cy.html">Configuring the <tt class="DEVICENAME">cy</tt> driver</a></dt>
+
+<dt>4 <a href="x1044.html">Configuring the <tt class="DEVICENAME">si</tt> driver</a></dt>
+</dl>
+</div>
+
+<div class="SECT1">
+<h1 class="SECT1"><a id="UART" name="UART">1 The UART: What it is and how it
+works</a></h1>
+
+<p><span class="emphasis"><i class="EMPHASIS">Copyright &copy; 1996 Frank Durda IV <code
+class="EMAIL">&#60;<a
+href="mailto:uhclem@FreeBSD.org">uhclem@FreeBSD.org</a>&#62;</code>, All Rights Reserved.
+13 January 1996.</i></span></p>
+
+<p>The Universal Asynchronous Receiver/Transmitter (UART) controller is the key component
+of the serial communications subsystem of a computer. The UART takes bytes of data and
+transmits the individual bits in a sequential fashion. At the destination, a second UART
+re-assembles the bits into complete bytes.</p>
+
+<p>Serial transmission is commonly used with modems and for non-networked communication
+between computers, terminals and other devices.</p>
+
+<p>There are two primary forms of serial transmission: Synchronous and Asynchronous.
+Depending on the modes that are supported by the hardware, the name of the communication
+sub-system will usually include a <tt class="LITERAL">A</tt> if it supports Asynchronous
+communications, and a <tt class="LITERAL">S</tt> if it supports Synchronous
+communications. Both forms are described below.</p>
+
+<p>Some common acronyms are:</p>
+
+<a id="AEN31" name="AEN31"></a>
+<blockquote class="BLOCKQUOTE">
+<p>UART Universal Asynchronous Receiver/Transmitter</p>
+</blockquote>
+
+<a id="AEN33" name="AEN33"></a>
+<blockquote class="BLOCKQUOTE">
+<p>USART Universal Synchronous-Asynchronous Receiver/Transmitter</p>
+</blockquote>
+
+<div class="SECT2">
+<h2 class="SECT2"><a id="AEN35" name="AEN35">1.1 Synchronous Serial Transmission</a></h2>
+
+<p>Synchronous serial transmission requires that the sender and receiver share a clock
+with one another, or that the sender provide a strobe or other timing signal so that the
+receiver knows when to &#8220;read&#8221; the next bit of the data. In most forms of
+serial Synchronous communication, if there is no data available at a given instant to
+transmit, a fill character must be sent instead so that data is always being transmitted.
+Synchronous communication is usually more efficient because only data bits are
+transmitted between sender and receiver, and synchronous communication can be more costly
+if extra wiring and circuits are required to share a clock signal between the sender and
+receiver.</p>
+
+<p>A form of Synchronous transmission is used with printers and fixed disk devices in
+that the data is sent on one set of wires while a clock or strobe is sent on a different
+wire. Printers and fixed disk devices are not normally serial devices because most fixed
+disk interface standards send an entire word of data for each clock or strobe signal by
+using a separate wire for each bit of the word. In the PC industry, these are known as
+Parallel devices.</p>
+
+<p>The standard serial communications hardware in the PC does not support Synchronous
+operations. This mode is described here for comparison purposes only.</p>
+</div>
+
+<div class="SECT2">
+<h2 class="SECT2"><a id="AEN41" name="AEN41">1.2 Asynchronous Serial
+Transmission</a></h2>
+
+<p>Asynchronous transmission allows data to be transmitted without the sender having to
+send a clock signal to the receiver. Instead, the sender and receiver must agree on
+timing parameters in advance and special bits are added to each word which are used to
+synchronize the sending and receiving units.</p>
+
+<p>When a word is given to the UART for Asynchronous transmissions, a bit called the
+"Start Bit" is added to the beginning of each word that is to be transmitted. The Start
+Bit is used to alert the receiver that a word of data is about to be sent, and to force
+the clock in the receiver into synchronization with the clock in the transmitter. These
+two clocks must be accurate enough to not have the frequency drift by more than 10%
+during the transmission of the remaining bits in the word. (This requirement was set in
+the days of mechanical teleprinters and is easily met by modern electronic
+equipment.)</p>
+
+<p>After the Start Bit, the individual bits of the word of data are sent, with the Least
+Significant Bit (LSB) being sent first. Each bit in the transmission is transmitted for
+exactly the same amount of time as all of the other bits, and the receiver
+&#8220;looks&#8221; at the wire at approximately halfway through the period assigned to
+each bit to determine if the bit is a <tt class="LITERAL">1</tt> or a <tt
+class="LITERAL">0</tt>. For example, if it takes two seconds to send each bit, the
+receiver will examine the signal to determine if it is a <tt class="LITERAL">1</tt> or a
+<tt class="LITERAL">0</tt> after one second has passed, then it will wait two seconds and
+then examine the value of the next bit, and so on.</p>
+
+<p>The sender does not know when the receiver has &#8220;looked&#8221; at the value of
+the bit. The sender only knows when the clock says to begin transmitting the next bit of
+the word.</p>
+
+<p>When the entire data word has been sent, the transmitter may add a Parity Bit that the
+transmitter generates. The Parity Bit may be used by the receiver to perform simple error
+checking. Then at least one Stop Bit is sent by the transmitter.</p>
+
+<p>When the receiver has received all of the bits in the data word, it may check for the
+Parity Bits (both sender and receiver must agree on whether a Parity Bit is to be used),
+and then the receiver looks for a Stop Bit. If the Stop Bit does not appear when it is
+supposed to, the UART considers the entire word to be garbled and will report a Framing
+Error to the host processor when the data word is read. The usual cause of a Framing
+Error is that the sender and receiver clocks were not running at the same speed, or that
+the signal was interrupted.</p>
+
+<p>Regardless of whether the data was received correctly or not, the UART automatically
+discards the Start, Parity and Stop bits. If the sender and receiver are configured
+identically, these bits are not passed to the host.</p>
+
+<p>If another word is ready for transmission, the Start Bit for the new word can be sent
+as soon as the Stop Bit for the previous word has been sent.</p>
+
+<p>Because asynchronous data is &#8220;self synchronizing&#8221;, if there is no data to
+transmit, the transmission line can be idle.</p>
+</div>
+
+<div class="SECT2">
+<h2 class="SECT2"><a id="AEN59" name="AEN59">1.3 Other UART Functions</a></h2>
+
+<p>In addition to the basic job of converting data from parallel to serial for
+transmission and from serial to parallel on reception, a UART will usually provide
+additional circuits for signals that can be used to indicate the state of the
+transmission media, and to regulate the flow of data in the event that the remote device
+is not prepared to accept more data. For example, when the device connected to the UART
+is a modem, the modem may report the presence of a carrier on the phone line while the
+computer may be able to instruct the modem to reset itself or to not take calls by
+raising or lowering one more of these extra signals. The function of each of these
+additional signals is defined in the EIA RS232-C standard.</p>
+</div>
+
+<div class="SECT2">
+<h2 class="SECT2"><a id="AEN62" name="AEN62">1.4 The RS232-C and V.24 Standards</a></h2>
+
+<p>In most computer systems, the UART is connected to circuitry that generates signals
+that comply with the EIA RS232-C specification. There is also a CCITT standard named V.24
+that mirrors the specifications included in RS232-C.</p>
+
+<div class="SECT3">
+<h3 class="SECT3"><a id="AEN65" name="AEN65">1.4.1 RS232-C Bit Assignments (Marks and
+Spaces)</a></h3>
+
+<p>In RS232-C, a value of <tt class="LITERAL">1</tt> is called a <tt
+class="LITERAL">Mark</tt> and a value of <tt class="LITERAL">0</tt> is called a <tt
+class="LITERAL">Space</tt>. When a communication line is idle, the line is said to be
+&#8220;Marking&#8221;, or transmitting continuous <tt class="LITERAL">1</tt> values.</p>
+
+<p>The Start bit always has a value of <tt class="LITERAL">0</tt> (a Space). The Stop Bit
+always has a value of <tt class="LITERAL">1</tt> (a Mark). This means that there will
+always be a Mark (1) to Space (0) transition on the line at the start of every word, even
+when multiple word are transmitted back to back. This guarantees that sender and receiver
+can resynchronize their clocks regardless of the content of the data bits that are being
+transmitted.</p>
+
+<p>The idle time between Stop and Start bits does not have to be an exact multiple
+(including zero) of the bit rate of the communication link, but most UARTs are designed
+this way for simplicity.</p>
+
+<p>In RS232-C, the "Marking" signal (a <tt class="LITERAL">1</tt>) is represented by a
+voltage between -2 VDC and -12 VDC, and a "Spacing" signal (a <tt class="LITERAL">0</tt>)
+is represented by a voltage between 0 and +12 VDC. The transmitter is supposed to send
++12 VDC or -12 VDC, and the receiver is supposed to allow for some voltage loss in long
+cables. Some transmitters in low power devices (like portable computers) sometimes use
+only +5 VDC and -5 VDC, but these values are still acceptable to a RS232-C receiver,
+provided that the cable lengths are short.</p>
+</div>
+
+<div class="SECT3">
+<h3 class="SECT3"><a id="AEN81" name="AEN81">1.4.2 RS232-C Break Signal</a></h3>
+
+<p>RS232-C also specifies a signal called a <tt class="LITERAL">Break</tt>, which is
+caused by sending continuous Spacing values (no Start or Stop bits). When there is no
+electricity present on the data circuit, the line is considered to be sending <tt
+class="LITERAL">Break</tt>.</p>
+
+<p>The <tt class="LITERAL">Break</tt> signal must be of a duration longer than the time
+it takes to send a complete byte plus Start, Stop and Parity bits. Most UARTs can
+distinguish between a Framing Error and a Break, but if the UART cannot do this, the
+Framing Error detection can be used to identify Breaks.</p>
+
+<p>In the days of teleprinters, when numerous printers around the country were wired in
+series (such as news services), any unit could cause a <tt class="LITERAL">Break</tt> by
+temporarily opening the entire circuit so that no current flowed. This was used to allow
+a location with urgent news to interrupt some other location that was currently sending
+information.</p>
+
+<p>In modern systems there are two types of Break signals. If the Break is longer than
+1.6 seconds, it is considered a "Modem Break", and some modems can be programmed to
+terminate the conversation and go on-hook or enter the modems' command mode when the
+modem detects this signal. If the Break is smaller than 1.6 seconds, it signifies a Data
+Break and it is up to the remote computer to respond to this signal. Sometimes this form
+of Break is used as an Attention or Interrupt signal and sometimes is accepted as a
+substitute for the ASCII CONTROL-C character.</p>
+
+<p>Marks and Spaces are also equivalent to &#8220;Holes&#8221; and &#8220;No Holes&#8221;
+in paper tape systems.</p>
+
+<div class="NOTE">
+<blockquote class="NOTE">
+<p><b>Note:</b> Breaks cannot be generated from paper tape or from any other byte value,
+since bytes are always sent with Start and Stop bit. The UART is usually capable of
+generating the continuous Spacing signal in response to a special command from the host
+processor.</p>
+</blockquote>
+</div>
+</div>
+
+<div class="SECT3">
+<h3 class="SECT3"><a id="AEN96" name="AEN96">1.4.3 RS232-C DTE and DCE Devices</a></h3>
+
+<p>The RS232-C specification defines two types of equipment: the Data Terminal Equipment
+(DTE) and the Data Carrier Equipment (DCE). Usually, the DTE device is the terminal (or
+computer), and the DCE is a modem. Across the phone line at the other end of a
+conversation, the receiving modem is also a DCE device and the computer that is connected
+to that modem is a DTE device. The DCE device receives signals on the pins that the DTE
+device transmits on, and vice versa.</p>
+
+<p>When two devices that are both DTE or both DCE must be connected together without a
+modem or a similar media translater between them, a NULL modem must be used. The NULL
+modem electrically re-arranges the cabling so that the transmitter output is connected to
+the receiver input on the other device, and vice versa. Similar translations are
+performed on all of the control signals so that each device will see what it thinks are
+DCE (or DTE) signals from the other device.</p>
+
+<p>The number of signals generated by the DTE and DCE devices are not symmetrical. The
+DTE device generates fewer signals for the DCE device than the DTE device receives from
+the DCE.</p>
+</div>
+
+<div class="SECT3">
+<h3 class="SECT3"><a id="AEN101" name="AEN101">1.4.4 RS232-C Pin Assignments</a></h3>
+
+<p>The EIA RS232-C specification (and the ITU equivalent, V.24) calls for a twenty-five
+pin connector (usually a DB25) and defines the purpose of most of the pins in that
+connector.</p>
+
+<p>In the IBM Personal Computer and similar systems, a subset of RS232-C signals are
+provided via nine pin connectors (DB9). The signals that are not included on the PC
+connector deal mainly with synchronous operation, and this transmission mode is not
+supported by the UART that IBM selected for use in the IBM PC.</p>
+
+<p>Depending on the computer manufacturer, a DB25, a DB9, or both types of connector may
+be used for RS232-C communications. (The IBM PC also uses a DB25 connector for the
+parallel printer interface which causes some confusion.)</p>
+
+<p>Below is a table of the RS232-C signal assignments in the DB25 and DB9 connectors.</p>
+
+<div class="INFORMALTABLE"><a id="AEN107" name="AEN107"></a>
+<table border="0" frame="void" width="100%" class="CALSTABLE">
+<col />
+<col />
+<col />
+<col />
+<col />
+<col />
+<col />
+<thead>
+<tr>
+<th>DB25 RS232-C Pin</th>
+<th>DB9 IBM PC Pin</th>
+<th>EIA Circuit Symbol</th>
+<th>CCITT Circuit Symbol</th>
+<th>Common Name</th>
+<th>Signal Source</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>1</td>
+<td>-</td>
+<td>AA</td>
+<td>101</td>
+<td>PG/FG</td>
+<td>-</td>
+<td>Frame/Protective Ground</td>
+</tr>
+
+<tr>
+<td>2</td>
+<td>3</td>
+<td>BA</td>
+<td>103</td>
+<td>TD</td>
+<td>DTE</td>
+<td>Transmit Data</td>
+</tr>
+
+<tr>
+<td>3</td>
+<td>2</td>
+<td>BB</td>
+<td>104</td>
+<td>RD</td>
+<td>DCE</td>
+<td>Receive Data</td>
+</tr>
+
+<tr>
+<td>4</td>
+<td>7</td>
+<td>CA</td>
+<td>105</td>
+<td>RTS</td>
+<td>DTE</td>
+<td>Request to Send</td>
+</tr>
+
+<tr>
+<td>5</td>
+<td>8</td>
+<td>CB</td>
+<td>106</td>
+<td>CTS</td>
+<td>DCE</td>
+<td>Clear to Send</td>
+</tr>
+
+<tr>
+<td>6</td>
+<td>6</td>
+<td>CC</td>
+<td>107</td>
+<td>DSR</td>
+<td>DCE</td>
+<td>Data Set Ready</td>
+</tr>
+
+<tr>
+<td>7</td>
+<td>5</td>
+<td>AV</td>
+<td>102</td>
+<td>SG/GND</td>
+<td>-</td>
+<td>Signal Ground</td>
+</tr>
+
+<tr>
+<td>8</td>
+<td>1</td>
+<td>CF</td>
+<td>109</td>
+<td>DCD/CD</td>
+<td>DCE</td>
+<td>Data Carrier Detect</td>
+</tr>
+
+<tr>
+<td>9</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>Reserved for Test</td>
+</tr>
+
+<tr>
+<td>10</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>Reserved for Test</td>
+</tr>
+
+<tr>
+<td>11</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>Reserved for Test</td>
+</tr>
+
+<tr>
+<td>12</td>
+<td>-</td>
+<td>CI</td>
+<td>122</td>
+<td>SRLSD</td>
+<td>DCE</td>
+<td>Sec. Recv. Line Signal Detector</td>
+</tr>
+
+<tr>
+<td>13</td>
+<td>-</td>
+<td>SCB</td>
+<td>121</td>
+<td>SCTS</td>
+<td>DCE</td>
+<td>Secondary Clear to Send</td>
+</tr>
+
+<tr>
+<td>14</td>
+<td>-</td>
+<td>SBA</td>
+<td>118</td>
+<td>STD</td>
+<td>DTE</td>
+<td>Secondary Transmit Data</td>
+</tr>
+
+<tr>
+<td>15</td>
+<td>-</td>
+<td>DB</td>
+<td>114</td>
+<td>TSET</td>
+<td>DCE</td>
+<td>Trans. Sig. Element Timing</td>
+</tr>
+
+<tr>
+<td>16</td>
+<td>-</td>
+<td>SBB</td>
+<td>119</td>
+<td>SRD</td>
+<td>DCE</td>
+<td>Secondary Received Data</td>
+</tr>
+
+<tr>
+<td>17</td>
+<td>-</td>
+<td>DD</td>
+<td>115</td>
+<td>RSET</td>
+<td>DCE</td>
+<td>Receiver Signal Element Timing</td>
+</tr>
+
+<tr>
+<td>18</td>
+<td>-</td>
+<td>-</td>
+<td>141</td>
+<td>LOOP</td>
+<td>DTE</td>
+<td>Local Loopback</td>
+</tr>
+
+<tr>
+<td>19</td>
+<td>-</td>
+<td>SCA</td>
+<td>120</td>
+<td>SRS</td>
+<td>DTE</td>
+<td>Secondary Request to Send</td>
+</tr>
+
+<tr>
+<td>20</td>
+<td>4</td>
+<td>CD</td>
+<td>108.2</td>
+<td>DTR</td>
+<td>DTE</td>
+<td>Data Terminal Ready</td>
+</tr>
+
+<tr>
+<td>21</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>RDL</td>
+<td>DTE</td>
+<td>Remote Digital Loopback</td>
+</tr>
+
+<tr>
+<td>22</td>
+<td>9</td>
+<td>CE</td>
+<td>125</td>
+<td>RI</td>
+<td>DCE</td>
+<td>Ring Indicator</td>
+</tr>
+
+<tr>
+<td>23</td>
+<td>-</td>
+<td>CH</td>
+<td>111</td>
+<td>DSRS</td>
+<td>DTE</td>
+<td>Data Signal Rate Selector</td>
+</tr>
+
+<tr>
+<td>24</td>
+<td>-</td>
+<td>DA</td>
+<td>113</td>
+<td>TSET</td>
+<td>DTE</td>
+<td>Trans. Sig. Element Timing</td>
+</tr>
+
+<tr>
+<td>25</td>
+<td>-</td>
+<td>-</td>
+<td>142</td>
+<td>-</td>
+<td>DCE</td>
+<td>Test Mode</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+<div class="SECT2">
+<h2 class="SECT2"><a id="AEN319" name="AEN319">1.5 Bits, Baud and Symbols</a></h2>
+
+<p>Baud is a measurement of transmission speed in asynchronous communication. Because of
+advances in modem communication technology, this term is frequently misused when
+describing the data rates in newer devices.</p>
+
+<p>Traditionally, a Baud Rate represents the number of bits that are actually being sent
+over the media, not the amount of data that is actually moved from one DTE device to the
+other. The Baud count includes the overhead bits Start, Stop and Parity that are
+generated by the sending UART and removed by the receiving UART. This means that
+seven-bit words of data actually take 10 bits to be completely transmitted. Therefore, a
+modem capable of moving 300 bits per second from one place to another can normally only
+move 30 7-bit words if Parity is used and one Start and Stop bit are present.</p>
+
+<p>If 8-bit data words are used and Parity bits are also used, the data rate falls to
+27.27 words per second, because it now takes 11 bits to send the eight-bit words, and the
+modem still only sends 300 bits per second.</p>
+
+<p>The formula for converting bytes per second into a baud rate and vice versa was simple
+until error-correcting modems came along. These modems receive the serial stream of bits
+from the UART in the host computer (even when internal modems are used the data is still
+frequently serialized) and converts the bits back into bytes. These bytes are then
+combined into packets and sent over the phone line using a Synchronous transmission
+method. This means that the Stop, Start, and Parity bits added by the UART in the DTE
+(the computer) were removed by the modem before transmission by the sending modem. When
+these bytes are received by the remote modem, the remote modem adds Start, Stop and
+Parity bits to the words, converts them to a serial format and then sends them to the
+receiving UART in the remote computer, who then strips the Start, Stop and Parity
+bits.</p>
+
+<p>The reason all these extra conversions are done is so that the two modems can perform
+error correction, which means that the receiving modem is able to ask the sending modem
+to resend a block of data that was not received with the correct checksum. This checking
+is handled by the modems, and the DTE devices are usually unaware that the process is
+occurring.</p>
+
+<p>By striping the Start, Stop and Parity bits, the additional bits of data that the two
+modems must share between themselves to perform error-correction are mostly concealed
+from the effective transmission rate seen by the sending and receiving DTE equipment. For
+example, if a modem sends ten 7-bit words to another modem without including the Start,
+Stop and Parity bits, the sending modem will be able to add 30 bits of its own
+information that the receiving modem can use to do error-correction without impacting the
+transmission speed of the real data.</p>
+
+<p>The use of the term Baud is further confused by modems that perform compression. A
+single 8-bit word passed over the telephone line might represent a dozen words that were
+transmitted to the sending modem. The receiving modem will expand the data back to its
+original content and pass that data to the receiving DTE.</p>
+
+<p>Modern modems also include buffers that allow the rate that bits move across the phone
+line (DCE to DCE) to be a different speed than the speed that the bits move between the
+DTE and DCE on both ends of the conversation. Normally the speed between the DTE and DCE
+is higher than the DCE to DCE speed because of the use of compression by the modems.</p>
+
+<p>Because the number of bits needed to describe a byte varied during the trip between
+the two machines plus the differing bits-per-seconds speeds that are used present on the
+DTE-DCE and DCE-DCE links, the usage of the term Baud to describe the overall
+communication speed causes problems and can misrepresent the true transmission speed. So
+Bits Per Second (bps) is the correct term to use to describe the transmission rate seen
+at the DCE to DCE interface and Baud or Bits Per Second are acceptable terms to use when
+a connection is made between two systems with a wired connection, or if a modem is in use
+that is not performing error-correction or compression.</p>
+
+<p>Modern high speed modems (2400, 9600, 14,400, and 19,200bps) in reality still operate
+at or below 2400 baud, or more accurately, 2400 Symbols per second. High speed modem are
+able to encode more bits of data into each Symbol using a technique called Constellation
+Stuffing, which is why the effective bits per second rate of the modem is higher, but the
+modem continues to operate within the limited audio bandwidth that the telephone system
+provides. Modems operating at 28,800 and higher speeds have variable Symbol rates, but
+the technique is the same.</p>
+</div>
+
+<div class="SECT2">
+<h2 class="SECT2"><a id="AEN331" name="AEN331">1.6 The IBM Personal Computer
+UART</a></h2>
+
+<p>Starting with the original IBM Personal Computer, IBM selected the National
+Semiconductor INS8250 UART for use in the IBM PC Parallel/Serial Adapter. Subsequent
+generations of compatible computers from IBM and other vendors continued to use the
+INS8250 or improved versions of the National Semiconductor UART family.</p>
+
+<div class="SECT3">
+<h3 class="SECT3"><a id="AEN334" name="AEN334">1.6.1 National Semiconductor UART Family
+Tree</a></h3>
+
+<p>There have been several versions and subsequent generations of the INS8250 UART. Each
+major version is described below.</p>
+
+<pre class="PROGRAMLISTING">
+INS8250  -&gt; INS8250B
+  \
+   \
+    \-&gt; INS8250A -&gt; INS82C50A
+             \
+              \
+               \-&gt; NS16450 -&gt; NS16C450
+                        \
+                         \
+                          \-&gt; NS16550 -&gt; NS16550A -&gt; PC16550D
+</pre>
+
+<div class="VARIABLELIST">
+<dl>
+<dt>INS8250</dt>
+
+<dd>
+<p>This part was used in the original IBM PC and IBM PC/XT. The original name for this
+part was the INS8250 ACE (Asynchronous Communications Element) and it is made from NMOS
+technology.</p>
+
+<p>The 8250 uses eight I/O ports and has a one-byte send and a one-byte receive buffer.
+This original UART has several race conditions and other flaws. The original IBM BIOS
+includes code to work around these flaws, but this made the BIOS dependent on the flaws
+being present, so subsequent parts like the 8250A, 16450 or 16550 could not be used in
+the original IBM PC or IBM PC/XT.</p>
+</dd>
+
+<dt>INS8250-B</dt>
+
+<dd>
+<p>This is the slower speed of the INS8250 made from NMOS technology. It contains the
+same problems as the original INS8250.</p>
+</dd>
+
+<dt>INS8250A</dt>
+
+<dd>
+<p>An improved version of the INS8250 using XMOS technology with various functional flaws
+corrected. The INS8250A was used initially in PC clone computers by vendors who used
+&#8220;clean&#8221; BIOS designs. Because of the corrections in the chip, this part could
+not be used with a BIOS compatible with the INS8250 or INS8250B.</p>
+</dd>
+
+<dt>INS82C50A</dt>
+
+<dd>
+<p>This is a CMOS version (low power consumption) of the INS8250A and has similar
+functional characteristics.</p>
+</dd>
+
+<dt>NS16450</dt>
+
+<dd>
+<p>Same as NS8250A with improvements so it can be used with faster CPU bus designs. IBM
+used this part in the IBM AT and updated the IBM BIOS to no longer rely on the bugs in
+the INS8250.</p>
+</dd>
+
+<dt>NS16C450</dt>
+
+<dd>
+<p>This is a CMOS version (low power consumption) of the NS16450.</p>
+</dd>
+
+<dt>NS16550</dt>
+
+<dd>
+<p>Same as NS16450 with a 16-byte send and receive buffer but the buffer design was
+flawed and could not be reliably be used.</p>
+</dd>
+
+<dt>NS16550A</dt>
+
+<dd>
+<p>Same as NS16550 with the buffer flaws corrected. The 16550A and its successors have
+become the most popular UART design in the PC industry, mainly due to its ability to
+reliably handle higher data rates on operating systems with sluggish interrupt response
+times.</p>
+</dd>
+
+<dt>NS16C552</dt>
+
+<dd>
+<p>This component consists of two NS16C550A CMOS UARTs in a single package.</p>
+</dd>
+
+<dt>PC16550D</dt>
+
+<dd>
+<p>Same as NS16550A with subtle flaws corrected. This is revision D of the 16550 family
+and is the latest design available from National Semiconductor.</p>
+</dd>
+</dl>
+</div>
+</div>
+
+<div class="SECT3">
+<h3 class="SECT3"><a id="AEN381" name="AEN381">1.6.2 The NS16550AF and the PC16550D are
+the same thing</a></h3>
+
+<p>National reorganized their part numbering system a few years ago, and the NS16550AFN
+no longer exists by that name. (If you have a NS16550AFN, look at the date code on the
+part, which is a four digit number that usually starts with a nine. The first two digits
+of the number are the year, and the last two digits are the week in that year when the
+part was packaged. If you have a NS16550AFN, it is probably a few years old.)</p>
+
+<p>The new numbers are like PC16550DV, with minor differences in the suffix letters
+depending on the package material and its shape. (A description of the numbering system
+can be found below.)</p>
+
+<p>It is important to understand that in some stores, you may pay $15(US) for a
+NS16550AFN made in 1990 and in the next bin are the new PC16550DN parts with minor fixes
+that National has made since the AFN part was in production, the PC16550DN was probably
+made in the past six months and it costs half (as low as $5(US) in volume) as much as the
+NS16550AFN because they are readily available.</p>
+
+<p>As the supply of NS16550AFN chips continues to shrink, the price will probably
+continue to increase until more people discover and accept that the PC16550DN really has
+the same function as the old part number.</p>
+</div>
+
+<div class="SECT3">
+<h3 class="SECT3"><a id="AEN387" name="AEN387">1.6.3 National Semiconductor Part
+Numbering System</a></h3>
+
+<p>The older NS<tt class="REPLACEABLE"><i>nnnnnrqp</i></tt> part numbers are now of the
+format PC<tt class="REPLACEABLE"><i>nnnnnrgp</i></tt>.</p>
+
+<p>The <tt class="REPLACEABLE"><i>r</i></tt> is the revision field. The current revision
+of the 16550 from National Semiconductor is <tt class="LITERAL">D</tt>.</p>
+
+<p>The <tt class="REPLACEABLE"><i>p</i></tt> is the package-type field. The types
+are:</p>
+
+<div class="INFORMALTABLE"><a id="AEN397" name="AEN397"></a>
+<table border="0" frame="void" width="100%" class="CALSTABLE">
+<col />
+<col />
+<col />
+<tbody>
+<tr>
+<td>"F"</td>
+<td>QFP</td>
+<td>(quad flat pack) L lead type</td>
+</tr>
+
+<tr>
+<td>"N"</td>
+<td>DIP</td>
+<td>(dual inline package) through hole straight lead type</td>
+</tr>
+
+<tr>
+<td>"V"</td>
+<td>LPCC</td>
+<td>(lead plastic chip carrier) J lead type</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<p>The <tt class="REPLACEABLE"><i>g</i></tt> is the product grade field. If an <tt
+class="LITERAL">I</tt> precedes the package-type letter, it indicates an
+&#8220;industrial&#8221; grade part, which has higher specs than a standard part but not
+as high as Military Specification (Milspec) component. This is an optional field.</p>
+
+<p>So what we used to call a NS16550AFN (DIP Package) is now called a PC16550DN or
+PC16550DIN.</p>
+</div>
+</div>
+
+<div class="SECT2">
+<h2 class="SECT2"><a id="AEN417" name="AEN417">1.7 Other Vendors and Similar
+UARTs</a></h2>
+
+<p>Over the years, the 8250, 8250A, 16450 and 16550 have been licensed or copied by other
+chip vendors. In the case of the 8250, 8250A and 16450, the exact circuit (the
+&#8220;megacell&#8221;) was licensed to many vendors, including Western Digital and
+Intel. Other vendors reverse-engineered the part or produced emulations that had similar
+behavior.</p>
+
+<p>In internal modems, the modem designer will frequently emulate the 8250A/16450 with
+the modem microprocessor, and the emulated UART will frequently have a hidden buffer
+consisting of several hundred bytes. Because of the size of the buffer, these emulations
+can be as reliable as a 16550A in their ability to handle high speed data. However, most
+operating systems will still report that the UART is only a 8250A or 16450, and may not
+make effective use of the extra buffering present in the emulated UART unless special
+drivers are used.</p>
+
+<p>Some modem makers are driven by market forces to abandon a design that has hundreds of
+bytes of buffer and instead use a 16550A UART so that the product will compare favorably
+in market comparisons even though the effective performance may be lowered by this
+action.</p>
+
+<p>A common misconception is that all parts with &#8220;16550A&#8221; written on them are
+identical in performance. There are differences, and in some cases, outright flaws in
+most of these 16550A clones.</p>
+
+<p>When the NS16550 was developed, the National Semiconductor obtained several patents on
+the design and they also limited licensing, making it harder for other vendors to provide
+a chip with similar features. Because of the patents, reverse-engineered designs and
+emulations had to avoid infringing the claims covered by the patents. Subsequently, these
+copies almost never perform exactly the same as the NS16550A or PC16550D, which are the
+parts most computer and modem makers want to buy but are sometimes unwilling to pay the
+price required to get the genuine part.</p>
+
+<p>Some of the differences in the clone 16550A parts are unimportant, while others can
+prevent the device from being used at all with a given operating system or driver. These
+differences may show up when using other drivers, or when particular combinations of
+events occur that were not well tested or considered in the <span
+class="TRADEMARK">Windows</span>&reg; driver. This is because most modem vendors and
+16550-clone makers use the Microsoft drivers from <span class="TRADEMARK">Windows</span>
+for Workgroups 3.11 and the <span class="TRADEMARK">Microsoft</span>&reg; <span
+class="TRADEMARK">MS-DOS</span>&reg; utility as the primary tests for compatibility with
+the NS16550A. This over-simplistic criteria means that if a different operating system is
+used, problems could appear due to subtle differences between the clones and genuine
+components.</p>
+
+<p>National Semiconductor has made available a program named <b
+class="APPLICATION">COMTEST</b> that performs compatibility tests independent of any OS
+drivers. It should be remembered that the purpose of this type of program is to
+demonstrate the flaws in the products of the competition, so the program will report
+major as well as extremely subtle differences in behavior in the part being tested.</p>
+
+<p>In a series of tests performed by the author of this document in 1994, components made
+by National Semiconductor, TI, StarTech, and CMD as well as megacells and emulations
+embedded in internal modems were tested with COMTEST. A difference count for some of
+these components is listed below. Because these tests were performed in 1994, they may
+not reflect the current performance of the given product from a vendor.</p>
+
+<p>It should be noted that COMTEST normally aborts when an excessive number or certain
+types of problems have been detected. As part of this testing, COMTEST was modified so
+that it would not abort no matter how many differences were encountered.</p>
+
+<div class="INFORMALTABLE"><a id="AEN435" name="AEN435"></a>
+<table border="0" frame="void" width="100%" class="CALSTABLE">
+<col />
+<col />
+<col />
+<thead>
+<tr>
+<th>Vendor</th>
+<th>Part Number</th>
+<th>Errors (aka "differences" reported)</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>National</td>
+<td>(PC16550DV)</td>
+<td>0</td>
+</tr>
+
+<tr>
+<td>National</td>
+<td>(NS16550AFN)</td>
+<td>0</td>
+</tr>
+
+<tr>
+<td>National</td>
+<td>(NS16C552V)</td>
+<td>0</td>
+</tr>
+
+<tr>
+<td>TI</td>
+<td>(TL16550AFN)</td>
+<td>3</td>
+</tr>
+
+<tr>
+<td>CMD</td>
+<td>(16C550PE)</td>
+<td>19</td>
+</tr>
+
+<tr>
+<td>StarTech</td>
+<td>(ST16C550J)</td>
+<td>23</td>
+</tr>
+
+<tr>
+<td>Rockwell</td>
+<td>Reference modem with internal 16550 or an emulation (RC144DPi/C3000-25)</td>
+<td>117</td>
+</tr>
+
+<tr>
+<td>Sierra</td>
+<td>Modem with an internal 16550 (SC11951/SC11351)</td>
+<td>91</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="NOTE">
+<blockquote class="NOTE">
+<p><b>Note:</b> To date, the author of this document has not found any non-National parts
+that report zero differences using the COMTEST program. It should also be noted that
+National has had five versions of the 16550 over the years and the newest parts behave a
+bit differently than the classic NS16550AFN that is considered the benchmark for
+functionality. COMTEST appears to turn a blind eye to the differences within the National
+product line and reports no errors on the National parts (except for the original 16550)
+even when there are official erratas that describe bugs in the A, B and C revisions of
+the parts, so this bias in COMTEST must be taken into account.</p>
+</blockquote>
+</div>
+
+<p>It is important to understand that a simple count of differences from COMTEST does not
+reveal a lot about what differences are important and which are not. For example, about
+half of the differences reported in the two modems listed above that have internal UARTs
+were caused by the clone UARTs not supporting five- and six-bit character modes. The real
+16550, 16450, and 8250 UARTs all support these modes and COMTEST checks the functionality
+of these modes so over fifty differences are reported. However, almost no modern modem
+supports five- or six-bit characters, particularly those with error-correction and
+compression capabilities. This means that the differences related to five- and six-bit
+character modes can be discounted.</p>
+
+<p>Many of the differences COMTEST reports have to do with timing. In many of the clone
+designs, when the host reads from one port, the status bits in some other port may not
+update in the same amount of time (some faster, some slower) as a <span
+class="emphasis"><i class="EMPHASIS">real</i></span> NS16550AFN and COMTEST looks for
+these differences. This means that the number of differences can be misleading in that
+one device may only have one or two differences but they are extremely serious, and some
+other device that updates the status registers faster or slower than the reference part
+(that would probably never affect the operation of a properly written driver) could have
+dozens of differences reported.</p>
+
+<p>COMTEST can be used as a screening tool to alert the administrator to the presence of
+potentially incompatible components that might cause problems or have to be handled as a
+special case.</p>
+
+<p>If you run COMTEST on a 16550 that is in a modem or a modem is attached to the serial
+port, you need to first issue a ATE0&amp;W command to the modem so that the modem will
+not echo any of the test characters. If you forget to do this, COMTEST will report at
+least this one difference:</p>
+
+<pre class="SCREEN">
+Error (6)...Timeout interrupt failed: IIR = c1  LSR = 61
+</pre>
+</div>
+
+<div class="SECT2">
+<h2 class="SECT2"><a id="AEN483" name="AEN483">1.8 8250/16450/16550 Registers</a></h2>
+
+<p>The 8250/16450/16550 UART occupies eight contiguous I/O port addresses. In the IBM PC,
+there are two defined locations for these eight ports and they are known collectively as
+<tt class="DEVICENAME">COM1</tt> and <tt class="DEVICENAME">COM2</tt>. The makers of
+PC-clones and add-on cards have created two additional areas known as <tt
+class="DEVICENAME">COM3</tt> and <tt class="DEVICENAME">COM4</tt>, but these extra COM
+ports conflict with other hardware on some systems. The most common conflict is with
+video adapters that provide IBM 8514 emulation.</p>
+
+<p><tt class="DEVICENAME">COM1</tt> is located from 0x3f8 to 0x3ff and normally uses IRQ
+4. <tt class="DEVICENAME">COM2</tt> is located from 0x2f8 to 0x2ff and normally uses IRQ
+3. <tt class="DEVICENAME">COM3</tt> is located from 0x3e8 to 0x3ef and has no
+standardized IRQ. <tt class="DEVICENAME">COM4</tt> is located from 0x2e8 to 0x2ef and has
+no standardized IRQ.</p>
+
+<p>A description of the I/O ports of the 8250/16450/16550 UART is provided below.</p>
+
+<div class="INFORMALTABLE"><a id="AEN496" name="AEN496"></a>
+<table border="0" frame="void" width="100%" class="CALSTABLE">
+<col />
+<col />
+<col />
+<thead>
+<tr>
+<th>I/O Port</th>
+<th>Access Allowed</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>+0x00</td>
+<td>write (DLAB==0)</td>
+<td>
+<p>Transmit Holding Register (THR).</p>
+
+<p>Information written to this port are treated as data words and will be transmitted by
+the UART.</p>
+</td>
+</tr>
+
+<tr>
+<td>+0x00</td>
+<td>read (DLAB==0)</td>
+<td>
+<p>Receive Buffer Register (RBR).</p>
+
+<p>Any data words received by the UART form the serial link are accessed by the host by
+reading this port.</p>
+</td>
+</tr>
+
+<tr>
+<td>+0x00</td>
+<td>write/read (DLAB==1)</td>
+<td>
+<p>Divisor Latch LSB (DLL)</p>
+
+<p>This value will be divided from the master input clock (in the IBM PC, the master
+clock is 1.8432MHz) and the resulting clock will determine the baud rate of the UART.
+This register holds bits 0 thru 7 of the divisor.</p>
+</td>
+</tr>
+
+<tr>
+<td>+0x01</td>
+<td>write/read (DLAB==1)</td>
+<td>
+<p>Divisor Latch MSB (DLH)</p>
+
+<p>This value will be divided from the master input clock (in the IBM PC, the master
+clock is 1.8432MHz) and the resulting clock will determine the baud rate of the UART.
+This register holds bits 8 thru 15 of the divisor.</p>
+</td>
+</tr>
+
+<tr>
+<td>+0x01</td>
+<td>write/read (DLAB==0)</td>
+<td>
+<table border="0" class="CALSTABLE">
+<col width="1*" title="COL1" />
+<col width="1*" title="COL2" />
+<tbody>
+<tr>
+<td colspan="2">
+<p>Interrupt Enable Register (IER)</p>
+
+<p>The 8250/16450/16550 UART classifies events into one of four categories. Each category
+can be configured to generate an interrupt when any of the events occurs. The
+8250/16450/16550 UART generates a single external interrupt signal regardless of how many
+events in the enabled categories have occurred. It is up to the host processor to respond
+to the interrupt and then poll the enabled interrupt categories (usually all categories
+have interrupts enabled) to determine the true cause(s) of the interrupt.</p>
+</td>
+</tr>
+
+<tr>
+<td>Bit 7</td>
+<td>Reserved, always 0.</td>
+</tr>
+
+<tr>
+<td>Bit 6</td>
+<td>Reserved, always 0.</td>
+</tr>
+
+<tr>
+<td>Bit 5</td>
+<td>Reserved, always 0.</td>
+</tr>
+
+<tr>
+<td>Bit 4</td>
+<td>Reserved, always 0.</td>
+</tr>
+
+<tr>
+<td>Bit 3</td>
+<td>Enable Modem Status Interrupt (EDSSI). Setting this bit to "1" allows the UART to
+generate an interrupt when a change occurs on one or more of the status lines.</td>
+</tr>
+
+<tr>
+<td>Bit 2</td>
+<td>Enable Receiver Line Status Interrupt (ELSI) Setting this bit to "1" causes the UART
+to generate an interrupt when the an error (or a BREAK signal) has been detected in the
+incoming data.</td>
+</tr>
+
+<tr>
+<td>Bit 1</td>
+<td>Enable Transmitter Holding Register Empty Interrupt (ETBEI) Setting this bit to "1"
+causes the UART to generate an interrupt when the UART has room for one or more
+additional characters that are to be transmitted.</td>
+</tr>
+
+<tr>
+<td>Bit 0</td>
+<td>Enable Received Data Available Interrupt (ERBFI) Setting this bit to "1" causes the
+UART to generate an interrupt when the UART has received enough characters to exceed the
+trigger level of the FIFO, or the FIFO timer has expired (stale data), or a single
+character has been received when the FIFO is disabled.</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+
+<tr>
+<td>+0x02</td>
+<td>write</td>
+<td>
+<table border="0" class="CALSTABLE">
+<col width="1*" title="COL1" />
+<col width="1*" title="COL2" />
+<col width="1*" title="COL3" />
+<col width="1*" title="COL4" />
+<tbody>
+<tr>
+<td colspan="4">FIFO Control Register (FCR) (This port does not exist on the 8250 and
+16450 UART.)</td>
+</tr>
+
+<tr>
+<td>Bit 7</td>
+<td colspan="3">Receiver Trigger Bit #1</td>
+</tr>
+
+<tr>
+<td>Bit 6</td>
+<td colspan="3">
+<p>Receiver Trigger Bit #0</p>
+
+<p>These two bits control at what point the receiver is to generate an interrupt when the
+FIFO is active.</p>
+</td>
+</tr>
+
+<tr>
+<td>&nbsp;</td>
+<td>7</td>
+<td>6</td>
+<td>How many words are received before an interrupt is generated</td>
+</tr>
+
+<tr>
+<td>&nbsp;</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+</tr>
+
+<tr>
+<td>&nbsp;</td>
+<td>0</td>
+<td>1</td>
+<td>4</td>
+</tr>
+
+<tr>
+<td>&nbsp;</td>
+<td>1</td>
+<td>0</td>
+<td>8</td>
+</tr>
+
+<tr>
+<td>&nbsp;</td>
+<td>1</td>
+<td>1</td>
+<td>14</td>
+</tr>
+
+<tr>
+<td>Bit 5</td>
+<td colspan="3">Reserved, always 0.</td>
+</tr>
+
+<tr>
+<td>Bit 4</td>
+<td colspan="3">Reserved, always 0.</td>
+</tr>
+
+<tr>
+<td>Bit 3</td>
+<td colspan="3">DMA Mode Select. If Bit 0 is set to "1" (FIFOs enabled), setting this bit
+changes the operation of the -RXRDY and -TXRDY signals from Mode 0 to Mode 1.</td>
+</tr>
+
+<tr>
+<td>Bit 2</td>
+<td colspan="3">Transmit FIFO Reset. When a "1" is written to this bit, the contents of
+the FIFO are discarded. Any word currently being transmitted will be sent intact. This
+function is useful in aborting transfers.</td>
+</tr>
+
+<tr>
+<td>Bit 1</td>
+<td colspan="3">Receiver FIFO Reset. When a "1" is written to this bit, the contents of
+the FIFO are discarded. Any word currently being assembled in the shift register will be
+received intact.</td>
+</tr>
+
+<tr>
+<td>Bit 0</td>
+<td colspan="3">16550 FIFO Enable. When set, both the transmit and receive FIFOs are
+enabled. Any contents in the holding register, shift registers or FIFOs are lost when
+FIFOs are enabled or disabled.</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+
+<tr>
+<td>+0x02</td>
+<td>read</td>
+<td>
+<table border="0" class="CALSTABLE">
+<col width="1*" title="COL1" />
+<col width="1*" title="COL2" />
+<col width="1*" title="COL3" />
+<col width="1*" title="COL4" />
+<col width="1*" title="COL5" />
+<col width="1*" title="COL6" />
+<tbody>
+<tr>
+<td colspan="6">Interrupt Identification Register</td>
+</tr>
+
+<tr>
+<td>Bit 7</td>
+<td colspan="5">FIFOs enabled. On the 8250/16450 UART, this bit is zero.</td>
+</tr>
+
+<tr>
+<td>Bit 6</td>
+<td colspan="5">FIFOs enabled. On the 8250/16450 UART, this bit is zero.</td>
+</tr>
+
+<tr>
+<td>Bit 5</td>
+<td colspan="5">Reserved, always 0.</td>
+</tr>
+
+<tr>
+<td>Bit 4</td>
+<td colspan="5">Reserved, always 0.</td>
+</tr>
+
+<tr>
+<td>Bit 3</td>
+<td colspan="5">Interrupt ID Bit #2. On the 8250/16450 UART, this bit is zero.</td>
+</tr>
+
+<tr>
+<td>Bit 2</td>
+<td colspan="5">Interrupt ID Bit #1</td>
+</tr>
+
+<tr>
+<td>Bit 1</td>
+<td colspan="5">Interrupt ID Bit #0.These three bits combine to report the category of
+event that caused the interrupt that is in progress. These categories have priorities, so
+if multiple categories of events occur at the same time, the UART will report the more
+important events first and the host must resolve the events in the order they are
+reported. All events that caused the current interrupt must be resolved before any new
+interrupts will be generated. (This is a limitation of the PC architecture.)</td>
+</tr>
+
+<tr>
+<td>&nbsp;</td>
+<td>2</td>
+<td>1</td>
+<td>0</td>
+<td>Priority</td>
+<td>Description</td>
+</tr>
+
+<tr>
+<td>&nbsp;</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>First</td>
+<td>Received Error (OE, PE, BI, or FE)</td>
+</tr>
+
+<tr>
+<td>&nbsp;</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Second</td>
+<td>Received Data Available</td>
+</tr>
+
+<tr>
+<td>&nbsp;</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>Second</td>
+<td>Trigger level identification (Stale data in receive buffer)</td>
+</tr>
+
+<tr>
+<td>&nbsp;</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>Third</td>
+<td>Transmitter has room for more words (THRE)</td>
+</tr>
+
+<tr>
+<td>&nbsp;</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>Fourth</td>
+<td>Modem Status Change (-CTS, -DSR, -RI, or -DCD)</td>
+</tr>
+
+<tr>
+<td>Bit 0</td>
+<td colspan="5">Interrupt Pending Bit. If this bit is set to "0", then at least one
+interrupt is pending.</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+
+<tr>
+<td>+0x03</td>
+<td>write/read</td>
+<td>
+<table border="0" class="CALSTABLE">
+<col width="1*" title="COL1" />
+<col width="1*" title="COL2" />
+<col width="1*" title="COL3" />
+<col width="1*" title="COL4" />
+<col width="1*" title="COL5" />
+<tbody>
+<tr>
+<td colspan="5">Line Control Register (LCR)</td>
+</tr>
+
+<tr>
+<td>Bit 7</td>
+<td colspan="4">Divisor Latch Access Bit (DLAB). When set, access to the data
+transmit/receive register (THR/RBR) and the Interrupt Enable Register (IER) is disabled.
+Any access to these ports is now redirected to the Divisor Latch Registers. Setting this
+bit, loading the Divisor Registers, and clearing DLAB should be done with interrupts
+disabled.</td>
+</tr>
+
+<tr>
+<td>Bit 6</td>
+<td colspan="4">Set Break. When set to "1", the transmitter begins to transmit continuous
+Spacing until this bit is set to "0". This overrides any bits of characters that are
+being transmitted.</td>
+</tr>
+
+<tr>
+<td>Bit 5</td>
+<td colspan="4">Stick Parity. When parity is enabled, setting this bit causes parity to
+always be "1" or "0", based on the value of Bit 4.</td>
+</tr>
+
+<tr>
+<td>Bit 4</td>
+<td colspan="4">Even Parity Select (EPS). When parity is enabled and Bit 5 is "0",
+setting this bit causes even parity to be transmitted and expected. Otherwise, odd parity
+is used.</td>
+</tr>
+
+<tr>
+<td>Bit 3</td>
+<td colspan="4">Parity Enable (PEN). When set to "1", a parity bit is inserted between
+the last bit of the data and the Stop Bit. The UART will also expect parity to be present
+in the received data.</td>
+</tr>
+
+<tr>
+<td>Bit 2</td>
+<td colspan="4">Number of Stop Bits (STB). If set to "1" and using 5-bit data words, 1.5
+Stop Bits are transmitted and expected in each data word. For 6, 7 and 8-bit data words,
+2 Stop Bits are transmitted and expected. When this bit is set to "0", one Stop Bit is
+used on each data word.</td>
+</tr>
+
+<tr>
+<td>Bit 1</td>
+<td colspan="4">Word Length Select Bit #1 (WLSB1)</td>
+</tr>
+
+<tr>
+<td>Bit 0</td>
+<td colspan="4">Word Length Select Bit #0 (WLSB0)</td>
+</tr>
+
+<tr>
+<td>&nbsp;</td>
+<td colspan="4">Together these bits specify the number of bits in each data word.</td>
+</tr>
+
+<tr>
+<td>&nbsp;</td>
+<td>1</td>
+<td>0</td>
+<td colspan="2">Word Length</td>
+</tr>
+
+<tr>
+<td>&nbsp;</td>
+<td>0</td>
+<td>0</td>
+<td colspan="2">5 Data Bits</td>
+</tr>
+
+<tr>
+<td>&nbsp;</td>
+<td>0</td>
+<td>1</td>
+<td colspan="2">6 Data Bits</td>
+</tr>
+
+<tr>
+<td>&nbsp;</td>
+<td>1</td>
+<td>0</td>
+<td colspan="2">7 Data Bits</td>
+</tr>
+
+<tr>
+<td>&nbsp;</td>
+<td>1</td>
+<td>1</td>
+<td colspan="2">8 Data Bits</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+
+<tr>
+<td>+0x04</td>
+<td>write/read</td>
+<td>
+<table border="0" class="CALSTABLE">
+<col width="1*" title="COL1" />
+<col width="1*" title="COL2" />
+<tbody>
+<tr>
+<td colspan="2">Modem Control Register (MCR)</td>
+</tr>
+
+<tr>
+<td>Bit 7</td>
+<td>Reserved, always 0.</td>
+</tr>
+
+<tr>
+<td>Bit 6</td>
+<td>Reserved, always 0.</td>
+</tr>
+
+<tr>
+<td>Bit 5</td>
+<td>Reserved, always 0.</td>
+</tr>
+
+<tr>
+<td>Bit 4</td>
+<td>Loop-Back Enable. When set to "1", the UART transmitter and receiver are internally
+connected together to allow diagnostic operations. In addition, the UART modem control
+outputs are connected to the UART modem control inputs. CTS is connected to RTS, DTR is
+connected to DSR, OUT1 is connected to RI, and OUT 2 is connected to DCD.</td>
+</tr>
+
+<tr>
+<td>Bit 3</td>
+<td>OUT 2. An auxiliary output that the host processor may set high or low. In the IBM PC
+serial adapter (and most clones), OUT 2 is used to tri-state (disable) the interrupt
+signal from the 8250/16450/16550 UART.</td>
+</tr>
+
+<tr>
+<td>Bit 2</td>
+<td>OUT 1. An auxiliary output that the host processor may set high or low. This output
+is not used on the IBM PC serial adapter.</td>
+</tr>
+
+<tr>
+<td>Bit 1</td>
+<td>Request to Send (RTS). When set to "1", the output of the UART -RTS line is Low
+(Active).</td>
+</tr>
+
+<tr>
+<td>Bit 0</td>
+<td>Data Terminal Ready (DTR). When set to "1", the output of the UART -DTR line is Low
+(Active).</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+
+<tr>
+<td>+0x05</td>
+<td>write/read</td>
+<td>
+<table border="0" class="CALSTABLE">
+<col width="1*" title="COL1" />
+<col width="1*" title="COL2" />
+<tbody>
+<tr>
+<td colspan="2">Line Status Register (LSR)</td>
+</tr>
+
+<tr>
+<td>Bit 7</td>
+<td>Error in Receiver FIFO. On the 8250/16450 UART, this bit is zero. This bit is set to
+"1" when any of the bytes in the FIFO have one or more of the following error conditions:
+PE, FE, or BI.</td>
+</tr>
+
+<tr>
+<td>Bit 6</td>
+<td>Transmitter Empty (TEMT). When set to "1", there are no words remaining in the
+transmit FIFO or the transmit shift register. The transmitter is completely idle.</td>
+</tr>
+
+<tr>
+<td>Bit 5</td>
+<td>Transmitter Holding Register Empty (THRE). When set to "1", the FIFO (or holding
+register) now has room for at least one additional word to transmit. The transmitter may
+still be transmitting when this bit is set to "1".</td>
+</tr>
+
+<tr>
+<td>Bit 4</td>
+<td>Break Interrupt (BI). The receiver has detected a Break signal.</td>
+</tr>
+
+<tr>
+<td>Bit 3</td>
+<td>Framing Error (FE). A Start Bit was detected but the Stop Bit did not appear at the
+expected time. The received word is probably garbled.</td>
+</tr>
+
+<tr>
+<td>Bit 2</td>
+<td>Parity Error (PE). The parity bit was incorrect for the word received.</td>
+</tr>
+
+<tr>
+<td>Bit 1</td>
+<td>Overrun Error (OE). A new word was received and there was no room in the receive
+buffer. The newly-arrived word in the shift register is discarded. On 8250/16450 UARTs,
+the word in the holding register is discarded and the newly- arrived word is put in the
+holding register.</td>
+</tr>
+
+<tr>
+<td>Bit 0</td>
+<td>Data Ready (DR) One or more words are in the receive FIFO that the host may read. A
+word must be completely received and moved from the shift register into the FIFO (or
+holding register for 8250/16450 designs) before this bit is set.</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+
+<tr>
+<td>+0x06</td>
+<td>write/read</td>
+<td>
+<table border="0" class="CALSTABLE">
+<col width="1*" title="COL1" />
+<col width="1*" title="COL2" />
+<tbody>
+<tr>
+<td colspan="2">Modem Status Register (MSR)</td>
+</tr>
+
+<tr>
+<td>Bit 7</td>
+<td>Data Carrier Detect (DCD). Reflects the state of the DCD line on the UART.</td>
+</tr>
+
+<tr>
+<td>Bit 6</td>
+<td>Ring Indicator (RI). Reflects the state of the RI line on the UART.</td>
+</tr>
+
+<tr>
+<td>Bit 5</td>
+<td>Data Set Ready (DSR). Reflects the state of the DSR line on the UART.</td>
+</tr>
+
+<tr>
+<td>Bit 4</td>
+<td>Clear To Send (CTS). Reflects the state of the CTS line on the UART.</td>
+</tr>
+
+<tr>
+<td>Bit 3</td>
+<td>Delta Data Carrier Detect (DDCD). Set to "1" if the -DCD line has changed state one
+more time since the last time the MSR was read by the host.</td>
+</tr>
+
+<tr>
+<td>Bit 2</td>
+<td>Trailing Edge Ring Indicator (TERI). Set to "1" if the -RI line has had a low to high
+transition since the last time the MSR was read by the host.</td>
+</tr>
+
+<tr>
+<td>Bit 1</td>
+<td>Delta Data Set Ready (DDSR). Set to "1" if the -DSR line has changed state one more
+time since the last time the MSR was read by the host.</td>
+</tr>
+
+<tr>
+<td>Bit 0</td>
+<td>Delta Clear To Send (DCTS). Set to "1" if the -CTS line has changed state one more
+time since the last time the MSR was read by the host.</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+
+<tr>
+<td>+0x07</td>
+<td>write/read</td>
+<td>Scratch Register (SCR). This register performs no function in the UART. Any value can
+be written by the host to this location and read by the host later on.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div class="SECT2">
+<h2 class="SECT2"><a id="AEN865" name="AEN865">1.9 Beyond the 16550A UART</a></h2>
+
+<p>Although National Semiconductor has not offered any components compatible with the
+16550 that provide additional features, various other vendors have. Some of these
+components are described below. It should be understood that to effectively utilize these
+improvements, drivers may have to be provided by the chip vendor since most of the
+popular operating systems do not support features beyond those provided by the 16550.</p>
+
+<div class="VARIABLELIST">
+<dl>
+<dt>ST16650</dt>
+
+<dd>
+<p>By default this part is similar to the NS16550A, but an extended 32-byte send and
+receive buffer can be optionally enabled. Made by StarTech.</p>
+</dd>
+
+<dt>TIL16660</dt>
+
+<dd>
+<p>By default this part behaves similar to the NS16550A, but an extended 64-byte send and
+receive buffer can be optionally enabled. Made by Texas Instruments.</p>
+</dd>
+
+<dt>Hayes ESP</dt>
+
+<dd>
+<p>This proprietary plug-in card contains a 2048-byte send and receive buffer, and
+supports data rates to 230.4Kbit/sec. Made by Hayes.</p>
+</dd>
+</dl>
+</div>
+
+<p>In addition to these &#8220;dumb&#8221; UARTs, many vendors produce intelligent serial
+communication boards. This type of design usually provides a microprocessor that
+interfaces with several UARTs, processes and buffers the data, and then alerts the main
+PC processor when necessary. Because the UARTs are not directly accessed by the PC
+processor in this type of communication system, it is not necessary for the vendor to use
+UARTs that are compatible with the 8250, 16450, or the 16550 UART. This leaves the
+designer free to components that may have better performance characteristics.</p>
+</div>
+</div>
+</div>
+
+<div class="NAVFOOTER">
+<hr align="LEFT" width="100%" />
+<table summary="Footer navigation table" width="100%" border="0" cellpadding="0"
+cellspacing="0">
+<tr>
+<td width="33%" align="left" valign="top">&nbsp;</td>
+<td width="34%" align="center" valign="top">&nbsp;</td>
+<td width="33%" align="right" valign="top"><a href="sio.html" accesskey="N">Next</a></td>
+</tr>
+
+<tr>
+<td width="33%" align="left" valign="top">&nbsp;</td>
+<td width="34%" align="center" valign="top">&nbsp;</td>
+<td width="33%" align="right" valign="top">Configuring the <tt
+class="DEVICENAME">sio</tt> driver</td>
+</tr>
+</table>
+</div>
+
+<p align="center"><small>This, and other documents, can be downloaded from <a
+href="ftp://ftp.FreeBSD.org/pub/FreeBSD/doc/">ftp://ftp.FreeBSD.org/pub/FreeBSD/doc/</a>.</small></p>
+
+<p align="center"><small>For questions about FreeBSD, read the <a
+href="http://www.FreeBSD.org/docs.html">documentation</a> before contacting &#60;<a
+href="mailto:questions@FreeBSD.org">questions@FreeBSD.org</a>&#62;.<br />
+For questions about this documentation, e-mail &#60;<a
+href="mailto:doc@FreeBSD.org">doc@FreeBSD.org</a>&#62;.</small></p>
+</body>
+</html>
+

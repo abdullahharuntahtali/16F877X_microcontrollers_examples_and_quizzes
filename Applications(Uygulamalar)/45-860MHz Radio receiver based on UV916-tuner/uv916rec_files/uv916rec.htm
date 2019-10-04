@@ -1,0 +1,326 @@
+<html><head>
+
+<script language="JavaScript" type="text/javascript" src="uv916rec_files/frameit.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="Generator" content="Microsoft Word 97"><title>45-860MHz Radio receiver based on UV916-tuner</title>
+
+<meta name="keywords" content="spolar, coil, toroid, rf, ham, ham radio, circuit, CW, QRP, RX, 
+TX, RF, IF, PCB, PSU, GDO, QRP, home brew, home-brew, amateur radio, 
+amatöradio, construction, transmitter, receiver, key, keys, fm, fet, 
+hams, transistor, power supply, printed circuit boards, 
+amplifier, homebrew, Q, q, keyer, printed circuit board, FET, rfamp, 
+rf-amp, ift, pcb, transmitter, psu, gdo, gdos, tubes, pcbs, gdo, cw, 
+g4vvj, SA602, SA612, mc13135, mc13136, datasheet, zn414, zn416, zn414z, pdf, 
+zn416e, qrp, notepad, tda7000, calc, parallel, series, frequency, a,
+A,  heatsink, software, download">
+
+<meta name="Template" content="C:\Program\Microsoft Office\Mallar\Webbsidor\Webbsideguiden.wiz"></head><body background="uv916rec_data/background4.GIF" bgcolor="#ffffff" link="#0000ff" vlink="#800080">
+
+<img src="uv916rec_data/rrec.gif" align="right" border="0" height="28" width="183">
+<font color="#0000ff" face="Arial" size="5"><b>45-860MHz Radio receiver based 
+
+on UV916-tuner</b></font><br>
+
+<font color="#0000ff" face="Arial" size="3">This receiver use a TV-tuner, a simple radio-circuit and
+a interface to a computer. <br>
+<img src="uv916rec_data/tu1.jpg" align="right" border="1" height="110" width="147">
+The computer control (set) the receiving frequency from 45-860MHz<br>
+The purpose of this project is to learn about tuners, it's a pre-project for my Spectrum analyzer project.<br>
+The UV916 or UV918 tuner is easy to find in broke TV or VCR:s. <br>It is a common tuner.</font><br>
+
+<font color="#ff0000" face="Arial" size="1">All contribution to this page are most welcome!</font>
+
+<br>
+
+<br>
+<font color="#0080ff" face="Arial" size="3"><b>Background</b><br></font>
+<font color="#000000" face="Arial" size="2">
+To build a Spectrum analyzer I needed a tuner. I also needed to learn how to control the tuner. <br>
+In some old broken TV I found the tuner UV916. It is a common used tuner.<br>
+The tuner is PLL synthesized controlled and the frequency  can be set from 80-900MHz. The tuner is programmed by a
+digital interface I<sup>2</sup>C standard using only 2 wires. The output from the tuner is European standard 38.9 MHz.<br>
+By connecting the tuner to a radio receiver circuit, tuned to 38.9 MHz, I will be able to demodulate the audio sound at the
+tuner frequency. With this unit I can scan and listen to all FM signals from 45-860 MHz. See figure below.<br><br>
+<img src="uv916rec_data/tubl.gif" align="bottom" border="1" height="213" width="581"><br><br>
+
+<b>There is 3 parts in this project.</b> <br>
+<li>RS232 to I<sup>2</sup>C converter from the computer to the tuner<br>
+</li><li>FM receiver for the 38.9MHz<br>
+</li><li>Window software to control the tuner<br>
+<br>
+On this page you will find all these parts and you will also be able to download the softwares for the project.<br>
+So go out and hunt for an old UV916 or UV918 tuner.<img src="uv916rec_data/eek.gif" align="bottom" border="0" height="15" width="15">
+<br>
+<br>
+
+<font color="#000000" face="Arial" size="3"><b>RS232 to I<sup>2</sup>C converter from the computer to the tuner</b><br></font>
+I<sup>2</sup>C  use 2 wires. One is the <b>SCL</b> (clock line) and the other is the <b>SDA</b> (data line).
+A data transfer consist of a 7 bits and a read/write bit. When the master (In my case the PIC16F84) clocks 8 data bit the slave 
+(In my case the tuner) answer with an acknowledge bit. I am not going to explain more how I<sup>2</sup>C works, you can 
+find more info about it on the internet.<br>
+ The figure below shows a transmission of one byte over I<sup>2</sup>C.<br>
+<br>
+<img src="uv916rec_data/i2c.gif" align="bottom" border="1" height="131" width="399"><br><br>
+The schematic below shows the interface between the computer and the tuner.<br>
+Inside the tuner (If you open the cover) you will find a circuit TSA5512 wich is the I<sup>2</sup>C controlled PLL
+synthesizer in the tuner. <br>
+<img src="uv916rec_data/232conv.gif" align="bottom" border="1" height="359" width="571"><br><br>
+The PIC16F84 is common used microcontroller. You can find programer and software for this processor all over internet.<br>
+ On my <a href="http://hem.passagen.se/communication/meny.html">meny</a> page you
+find some software for this processor.<br>
+The output from the COM Port of the computer has <i>RS232</i> standard. The voltage swings between +/- 12V. A circuit MAX232
+converts the signal to 0/+5 Volt wich is the level the PIC can handle. Pin 17 and 18 on the PIC are used for the communication 
+to the computer.
+The pin 12 is the <b>SCL</b> and the pin 11 is the <b>SDA</b> wich both are connected to the tuner.<br><br>
+<b>A simple testing to make sure the converter works:</b><br>
+Connect a oscilloscope or little speaker or piezo -summer at pin 13 on MAX 232. When the computer send the 5 byte on the 
+RS232 port (COM Port) you will see the signal or hear a clicking sound in the speaker. At pin 12 on MAX232 you will have the
+same signal but the voltage level will be 0 to +5V instead.Now, check at pin11 and 12 on the PIC. When all the 5 byte are 
+transmitted you will find a I<sup>2</sup>C data transmission (also clicking sound).<br>
+It is important that the crystal at the PIC is 4.000MHz, because it controls the baud-rate.<br>
+There is a LED in the schematic at pin 13. This LED will start to light
+when the first of the five bytes is received. It will turn of when the
+last byte is received. The HEX-fil for the PIC (software) can be found
+at the bottom of the page!<br>
+<font color="#ff0000" face="Arial" size="1">I some cases I can assist with the programming of this circuit. </font>
+<br>
+<br>
+<b>The five internal registers in the tuner</b><br>
+I will explain in more detail about the data wich is transfered from the computer to the tuner.<br>
+The tuner has 5 register. You can find them in the datasheets (TSA5512) or in the table below.<br>
+The Windows Tuner program  I have made, handles all the setting of the five registers.<br>
+
+
+
+<table align="BOTTOM" bgcolor="#d5f7e0" border="1" cellpadding="1" cellspacing="1" width="550">
+<tbody><tr>
+	<td bgcolor="#feceff" width="90">Event<br></td>
+	<td bgcolor="#feceff" width="30"><center>MSB</center></td>
+	<td bgcolor="#feceff" width="30"><center>D6</center></td>
+	<td bgcolor="#feceff" width="30"><center>D5</center></td>
+	<td bgcolor="#feceff" width="30"><center>D4</center></td>
+	<td bgcolor="#feceff" width="30"><center>D3</center></td>
+	<td bgcolor="#feceff" width="30"><center>D2</center></td>
+	<td bgcolor="#feceff" width="30"><center>LSB </center></td>
+	<td bgcolor="#feceff" width="30"><center>R/W</center></td>
+	<td bgcolor="#feceff" width="30"><center>Ack</center></td>
+	<td bgcolor="#feceff" width="70"><center>Byte</center></td>
+	<td bgcolor="#feceff" width="70"><center>My setting</center></td>
+</tr>
+
+<tr>
+	<td bgcolor="#c0e6fa" width="90"> Address</td>
+	<td width="30"><center>1</center></td>
+	<td width="30"><center>1</center></td>
+	<td width="30"><center>0</center></td>
+	<td width="30"><center>0</center></td>
+	<td width="30"><center>0</center></td>
+	<td width="30"><center>MA1</center></td>
+	<td width="30"><center>MA0</center></td>
+	<td width="30"><center>0</center></td>
+	<td bgcolor="#fbcfce" width="30"><center>Ack</center></td>
+	<td width="70"><center>Byte 1</center></td>
+	<td width="70"><center>$C2</center></td>
+</tr>
+<tr>
+	<td bgcolor="#c0e6fa"> Programmable <br>divider</td>
+	<td><center>0</center></td>
+	<td><center>N14</center></td>
+	<td><center>N13</center></td>
+	<td><center>N12</center></td>
+	<td><center>N11</center></td>
+	<td><center>N10</center></td>
+	<td><center>N9</center></td>
+	<td><center>N8</center></td>
+	<td bgcolor="#fbcfce"><center>Ack</center></td>
+	<td><center>Byte 2</center></td>
+	<td width="70"><center>x</center></td>
+</tr>
+<tr>
+	<td bgcolor="#c0e6fa"> Programmable <br>divider</td>
+	<td><center>N7</center></td>
+	<td><center>N6</center></td>
+	<td><center>N5</center></td>
+	<td><center>N4</center></td>
+	<td><center>N3</center></td>
+	<td><center>N2</center></td>
+	<td><center>N1</center></td>
+	<td><center>N0</center></td>
+	<td bgcolor="#fbcfce"><center>Ack</center></td>
+	<td><center>Byte 3</center></td>
+	<td width="70"><center>x</center></td>
+</tr>
+<tr>
+	<td bgcolor="#c0e6fa">Charge-pump <br>and test bits</td>
+	<td><center>1</center></td>
+	<td><center>CP</center></td>
+	<td><center>T1</center></td>
+	<td><center>T0</center></td>
+	<td><center>1</center></td>
+	<td><center>1</center></td>
+	<td><center>1</center></td>
+	<td><center>OS</center></td>
+	<td bgcolor="#fbcfce"><center>Ack</center></td>
+	<td><center>Byte 4</center></td>
+	<td width="70"><center>$8E</center></td>
+</tr>
+<tr>
+	<td bgcolor="#c0e6fa">Output ports<br>control bits</td>
+	<td><center>P7</center></td>
+	<td><center>P6</center></td>
+	<td><center>P5</center></td>
+	<td><center>P4</center></td>
+	<td><center>P3</center></td>
+	<td><center>P2</center></td>
+	<td><center>P1</center></td>
+	<td><center>P0</center></td>
+	<td bgcolor="#fbcfce"><center>Ack</center></td>
+	<td><center>Byte 5</center></td>
+	<td width="70"><center>$60</center></td>
+</tr>
+</tbody></table><br>
+
+<b>MA1,MAO</b> = 0 ,1  =&gt; Tuner always valid<br>
+<br>
+<b>N14 - N0</b> = Programmable divider<br>
+Example: N14-N0 = 1600 (decimalt) then the tuner oscillator will be 8 *  7812.5 * 1600 = 100MHz<br>
+<br>
+<b>CP = 0</b>  Chargepump = 50uA  fine tuning<br>
+<b>CP = 1</b>  Chargepump = 220uA  fast tuning<br>
+<br>
+<b>T1, T0, OS</b> = 0 0 0 =&gt;Normal operation<br>
+<br>
+<b>P7-P0</b> sets the desired frequency band<br>
+<br>
+The <b>adress</b> activates the tuner. By applying different
+voltage to P3 (Input pin on the tuner) at the tuner different adresses
+can be selected. By
+selecting MA1=0 and MA0 =1 the tuner is always valid indipendent of the
+voltage at P3 (I let it flow)<br>
+<br>
+The <b>divider register</b> set the frequency in the tuner. If you multiply the content of this register with 62500 you will end up with
+the frequency the tuner will be locked at.<br>
+<br>
+The <b>charge pump register and testbits </b>controls the tuning speed and some test performance can be made.<br>
+ See datasheets for more info.<br>
+<br>
+<b>Output ports control bits</b> select the desired band. There are three bands<br>
+<i><b>LOW BAND</b></i> 45-180MHz = $60<br>
+<i><b>MID BAND</b></i> 160-470MHz = $50<br>
+<i><b>HIGH BAND</b></i> 430-860MHz = $30<br>
+<br>
+<font color="#2e9e31" face="Arial" size="2">If you want to set the
+register by yourself and maybe make your own programs you must send the
+5 control bytes to the PIC via RS232.<br>
+The baudrate should be 19200,e,8,1</font><br><br>
+
+<font color="#000000" face="Arial" size="3"><b>FM receiver for the 38.9MHz</b><br></font>
+What the tuner does is to mix the RF from the input antenna with a
+internal osc (the frequency you have programmed in the register).<br>
+The output product IF-signal from the tuner is 38.9MHz. The external FM-receiver will be set to receive at 38.9MHz always.<br>
+<b>Example:</b> Lets say the tuner oscillator is programmed to 144MHz.<br>
+We know the external receiver will always receive at 38.9MHz, therefore the RF frequency I will receive will be: 
+144MHz-38.9MHz =<b>105.1MHz</b>.<br><br>
+You can also think like this : The RF-frequency I want to listen to is = the tuner programmed frequency minus 38.9MHz.<br>
+In my program you will see tree windows. The first window shows the
+tuner oscillator frequency. The next window shows the IF frequency (
+the frequency the external radio receiver is set to). The last windows
+show the receiving frequency.<br> 
+
+<br>
+The schematic below show the complete harware of the tuner and the radio receiver for 38.9MHz.<br>
+<a href="http://hem.passagen.se/communication/pic/uv916tr.gif" target="sc5"><img src="uv916rec_data/uv916trs.jpg" align="bottom" border="1" height="94" width="174"></a><br>
+
+<br>
+<a href="http://hem.passagen.se/communication/pic/frsaw.jpg" target="saw1"><img src="uv916rec_data/frsaws.jpg" align="right" border="1" height="86" width="124"></a>
+The IF signal from the tuner is filtered in a SAW-filter befor it comes to the receiving chip. The SAW- filter is specially made
+for TV and VCR:s. This filter is a ceramic filter and it is a sharp passband filter for 34.47MHz to 38.9MHz. <br>It supress all other frequency well.<br>
+If you follow the IF-output from the tuner at the circuitboard in a TV you will come to the SAW filter.<br>
+<a href="http://hem.passagen.se/communication/pdf/mcf_filters.pdf" target="ab2">Read more about SAW filter here!</a>
+
+<br><br>
+The FM-receiver is based on the circuit MC13136. The LO oscillator is tuned by a inductor and a capacitor at pin 1 to 49.6MHz. <br>
+This circuit has 2 mixers one is the LO and the other is crystall controlled at 10.245 MHz.<br>
+The IF in MC13136 is 10.7 MHz and therefore the receiving frequency will be 49.6 -10.7 = <b>38.9 MHz</b>.<br>
+You can verify the frequency by connection a frequency counter to pin  3 wich is a buffered LO output, and adjust C1 
+until you reach 49.6MHz. Two ceramic filters 10.7 MHz and <a href="http://hem.passagen.se/communication/ceramic.html" target="c5">455kHz filter</a> the IF and a quad-coil
+demodulate the audio. This circuit is not difficult to build and adjust. See datasheets at bottom or more info.<br>
+The audio level output from this circuit is 50-200mV so you need an amplifier to hear the audio.<br>
+At pin 16 you will find the RSSI signal(signal strength indicator).
+<br><br>
+<font color="#000000" face="Arial" size="3"><b>Window software to control the tuner</b><br></font>
+<a href="http://hem.passagen.se/communication/pic/prog.jpg" target="pro2"><img src="uv916rec_data/progs.jpg" align="right" border="1" height="75" width="82"></a>
+I have made a simple Windows program to control the tuner. The program set the 5 register. The program display 3 windows.
+The window at left shows the programmed frequency (VCO). The second window show the IF frequency. In my case it is 38.9MHz.
+You can edit this window and set different value. Remeber you should be between 34.47MHz to 38.9MHz to get the best performance
+from the SAW filter.<br>
+The last window will show you the frequency you are listening to, the <b>true</b> frequency.<br>
+The first thing you should do when you run the program is to set wich comport you are using.<br>
+<br>
+<b>Testing:</b><br>
+A simple way to test that the tuner works is to monitor the tuning voltage by applying a voltmeter to the R1 resistor (U<sub>tuning</sub>), see schematic.<br>
+The voltage here should increase when you are increasing the frequency.
+In the begining of every band the voltage is close to 0 volt and at the
+end of
+each band the voltage should be close to 25-33Volt. <br><br>
+<font color="#000000" face="Arial" size="3"><b>Download</b><br></font>
+<table bgcolor="#c0e6fa" border="1" cellpadding="0" cellspacing="0" width="500">
+<tbody><tr>
+	<td width="150"> <a href="http://hem.passagen.se/communication/pdf/mcf_filters.pdf" target="pr1">SAW filter.pdf</a></td>
+	<td> SAW filter datasheet</td>
+</tr>
+<tr>
+	<td> <a href="http://www.ortodoxism.ro/datasheets/philips/TSA5512_CNV_3.pdf" target="pr2">TSA5512.pdf</a></td>
+	<td>1.3 GHz Bidirectional I<sup>2</sup>C-bus controlled synthesizer
+ </td>
+</tr>
+<tr>
+	<td> <a href="http://e-www.motorola.com/brdata/PDFDB/docs/MC13135.pdf" target="pr3">MC13136.pdf</a></td>
+	<td>FM Receiving circuit</td>
+</tr>
+<tr>
+	<td> <a href="http://hem.passagen.se/communication/pic/uv916hex.zip" target="pr4">UV916hex.zip</a></td>
+	<td>HEX-code for the PIC16F84 (INHX8M format)<br>The file is zipped!</td>
+</tr>
+</tbody></table>
+
+<br><br>
+
+
+<table bgcolor="#e0fce1" border="1" cellpadding="7" cellspacing="0" width="480">
+<tbody><tr>
+    <td colspan="2" bgcolor="#c7f5fe"><strong></strong><div align="center"><strong>Download windows software</strong><br>uv916.zip (2.42Mb)</div></td>
+</tr>
+<tr>
+    <td><font face="Arial" size="2"><a href="http://hem.passagen.se/communication/software.html" target="se3"><div align="center">Click here to go to the software download page!</div> </a></font></td>
+</tr>
+</tbody></table>
+
+</li></font>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<br>
+<hr align="center" size="3" width="85%">
+<font color="#0080ff" size="2"><font face="verdana,arial,helvetica,geneva,sans-serif">
+</font></font><div align="center"><font color="#0080ff" size="2"><font face="verdana,arial,helvetica,geneva,sans-serif"><a href="http://hem.passagen.se/communication/meny.html">Back to main Page</a>&nbsp; | &nbsp;<a href="mailto:maxit91@hotmail.com">Contact Me</a>&nbsp; | &nbsp;<a href="http://rfcandy.com/" target="comp1">Cheap components</a><br></font></font></div>
+
+<font color="#0080ff" size="2"><font face="verdana,arial,helvetica,geneva,sans-serif"><br></font></font><div align="center"><font color="#0080ff" size="2"><font face="verdana,arial,helvetica,geneva,sans-serif">Copyright © Last modified on 9th Aug 2001.</font></font></div><font color="#0080ff" size="2"><font face="verdana,arial,helvetica,geneva,sans-serif"> 
+</font>
+
+
+</font></body></html>

@@ -1,0 +1,44 @@
+[800*600]
+************* UN GENERATEUR DE MIRE DE TEST JEU DE BARRE : avec génerateur OSD par F1UBZ ********
+
+ca montage permet de generer des mires de tests , c'est a dire , un jeu de barre a 100% , mais
+aussi des mires de noir , de blanc , de rouge de vert et de bleu en plein ecran (au standard PAL)
+Dans tout les cas ,il y a au bas de l'ecran un petit générateur de texte inclu , composé de 13
+caracteres,ce qui permet par exemple aux radiomateurs d'y loger son indicatif a 5 ou 6 caracteres
+et egalement son locator de 6 caractères , ou bien sur ce que l'on veut . la gestions des mires
+est extremement simple , c'est géré entierement par un jeu de 5 boutons poussoirs type D6 rond , 
+le bouton central sert a faire defiler les 6 mires possibles , de maniere circulaire,les 4 autres
+poussoirs servent a gerer le texte : les 2 poussoirs situés a droite et a gauche du Bp central
+servent a positionner le curseur (invisible) et les 2 autres poussoirs servent a monter ou 
+descendre les caracteres : il y a un jeu de 64 caracteres en memoire (matrice 8 * 8 pixels ) , et
+de fait agréable a regarder,le texte est automatiquement memorisé bien sur.
+
+La réalisation est sans probleme , le AD725AR est soudé coté cuivre , la patte 1 se retrouve a
+la masse  attention au sens des chimiques, le 16F628 est a programmer avec le 
+fichier mire_osd.HEX bien sur, attention sur ce montage , le quartz est un 20Mhz ,donc un PIc
+16F628 cadencé a 20Mhz est necessaire ! le circuit imprimé mesure 72*1O9 mm car il est prevu de
+le rentrer dans un boitier en fer etamé de 74*111 mm , apres les decoupes des passages des BP et
+de la bnc de sortie(attention a bien choisir le modele de BNC : il existe plusieurs empreintes
+differentes,BNC coudée)le AD725 et son quartz a 17.734 Mhz se trouvent notamment chez SELECTRONIc
+attention au sens des boutons poussoirs , le meplat suivant le shema d'implantantion , ne pas 
+oublier les staps , attention , il y en a un qui passe sous le 16F628 notamment.
+
+
+Les reglages sont simples , ajuster avec les ajustables 22k jusqu'a obtenir le jeu de barre
+standart,on voit ce genre d'oscillogramme dans quasiment toutes les publicités pour oscilloscopes
+dans les magazines !
+
+
+Le circuit imprimé est au format sprint-layout,un visualisateur special sprint-layout en freeware 
+existe : voir du coté de l"editeur ABACOM :une recherche sur internet permettra rapidement d'y 
+mettre la main dessus , voir egalement du coté de Lextonic , distributeur du logiciel , fort
+peu cher au passage (publicité gratuite) et tres facile a prendre en main...
+sinon une version PDF du circuit imprimé (layout.pdf) est disponible :Pour imprimer à l'échelle 1
+il faut decocher toutes les options d'ajustement lorsqu'on est dans le gestionnaire d'impression 
+d'Acrobat.
+
+
+Bonnes soudures...
+
+
+http://perso.wanadoo.fr/loicmarty/index.htm

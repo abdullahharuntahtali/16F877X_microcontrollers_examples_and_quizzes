@@ -1,0 +1,233 @@
+<html><script language="JavaScript" type="text/javascript" src="frameit.js" tppabs="http://hem.passagen.se/TopFrame/frameit.js"></script><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+<META NAME="Generator" CONTENT="Microsoft Word 97">
+<TITLE>Digital Wattmeter for RF based on AD8307</TITLE>
+<META NAME="keywords" CONTENT="wattmeter, swr, ad8307, watt, meter, 
+TX, RF, IF, PCB, PSU, GDO, QRP, home brew, home-brew, amateur radio, 
+amatöradio, construction, transmitter, receiver, key, keys, fm, fet, 
+hams, transistor, power supply, printed circuit boards, 
+amplifier, homebrew, ir detector, detector, keyer, printed circuit board, FET, rfamp, 
+rf-amp, ift, pcb, transmitter, psu, gdo, gdos, tubes, pcbs, gdo, cw, 
+g4vvj, SA602, SA612, mc13135, mc13136, datasheet, zn414, zn416, zn414z, pdf, 
+zn416e, qrp, notepad, tda7000, calc, parallel, series, frequency, a,
+A,  heatsink, software, download"> 
+
+<META NAME="Template" CONTENT="C:\Program\Microsoft Office\Mallar\Webbsidor\Webbsideguiden.wiz">
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#FFFFFF" BACKGROUND="background4.GIF" tppabs="http://hem.passagen.se/communication/pic/background4.GIF">
+
+<a href="pmeter.jpg" tppabs="http://hem.passagen.se/communication/pic/pmeter.jpg"><img src="pmete_s2.jpg" tppabs="http://hem.passagen.se/communication/pic/pmete_s2.jpg" alt="Click on the pic to see larger photo!" width="150" height="111" hspace="0" border="1" align="right"></a>
+<FONT SIZE=5 COLOR="#0000FF" FACE="Arial"><B>Digital Wattmeter for RF based on AD8307</B></FONT><BR>
+
+<FONT SIZE=2 COLOR="#0000FF" FACE="Arial">
+
+This project will explain a digital wattmeter from 1pW to 10mW up to 500MHz.<BR>
+The wattmeter can work alone or together with a computer for collecting data.<BR>
+Information  will be displayed in dBm, Watt, and Voltage into 50 ohm.<BR>
+With proper attenuator, the measure range can go up to 1kW.<br>
+The unit is very accurate, fast and easy to build.</FONT><BR>
+</FONT><FONT SIZE=1 COLOR="#FF0000" FACE="Arial">All contribution to this page are most welcome!</FONT>
+
+
+<BR><BR>
+<FONT SIZE=3 COLOR="#0080FF" FACE="Arial"><B>Background</B><BR></FONT>
+<FONT SIZE=2 COLOR="#000000" FACE="Arial">
+What is the purpose of a wattmeter.
+In all your RF application you will have great advantage if you can measure the signal or the power.
+To measure the signal you will probably use an expensive oscilloscope or some other extremely expensive RF instrument. 
+One major purpose for me to build this project is that I did fool myself for long time. I used a new HP 100MHz oscilloscope and 
+I measured the amplitude over the 50 ohm dummy load. From the amplitude I then calculated the power. 
+For month I was very dissapointed not to be able to generate more than 100mW output power. One day I burned up the dummy load totally. <BR>
+How is this possible with 100mW?<BR>
+I started to measure the temperature in the dummy load and then put DC into the dummy load. 
+I increased the DC current until I reached the same temperature. What I noticed was that I had to put
+3-5W into the dummy load to reach the same temp.
+
+The conclusion was simple to make: The oscilloscope should be run over by a truck or a tank!
+So I need a reliable Wattmeter.<BR>
+What every homebrewer should have is a wattmeter. A wattmeter use a 50 ohm dummy load and will present to you the energy into this load. The most widely used reference in RF systems is decibels above
+1 mW in 50 ohm, written dBm.<BR>
+
+There is a circuit AD8307specially made for this purpose and it has a very wide working range and is very easy to use.
+<BR>
+<BR>
+<FONT SIZE=3 COLOR="#0080FF" FACE="Arial"><B>How you calculate power</B><BR></FONT>
+
+<IMG SRC="cpow.gif" tppabs="http://hem.passagen.se/communication/pic/cpow.gif" WIDTH=538 HEIGHT=275 BORDER=1 ALIGN="BOTTOM"><BR><BR>
+Above you can see a AC generator and a resistor of 50 ohm. A current will flow in the circuit and you can easy calculate the effect which
+will be consumed by the resistor. The effect will be transformed into heat.
+In the blue frame you can see how I calculate the power to 20mW. The red frame show how you can calculate the power into dBm, which
+which stand for decibels above 1 mW in 50 ohm, written dBm. <br>In the green table at rigth I have calculated some power into P<SUB>dBm</SUB>.
+<BR>
+<BR>
+<FONT SIZE=3 COLOR="#0080FF" FACE="Arial"><B>Block diagram</B><BR></FONT>
+<IMG SRC="pbl.gif" tppabs="http://hem.passagen.se/communication/pic/pbl.gif" WIDTH=512 HEIGHT=164 BORDER=1 ALIGN="BOTTOM"><BR>
+<BR>
+The power is measured by the circuit AD8307 over a 50 ohm dummy load. 
+An A/D converter of 12 bit convert the analog output from the AD8307 to a digital number.
+Since the AD is a12 bit A/D you will have 4096  combinations. The output values will be from 0 to 4095.
+To calculate the power into dBm you need some mathematical calculations.
+I have solved this in a more simpel way, since it is a bit difficult to implement mathematic into the PIC.
+I use a look up table. It is memory bank containing all the display text.
+I have pre-calculated all the display text for each A/D value.
+The output values from the AD (0 to 4095) points to a direction in the memory where the actual display text
+value is stored. The text will be fetched and presented on the display.
+<BR><BR>
+The advantage of using a memory map is that it will be easy to build, I can implement prefix in the text,
+It will be fast and it will work!
+In reality I will use 3 EEPROM of 32k. Totally I will use 98k. The EEPROM is cheap but there is one tricky thing to do. 
+The memory table must be programmed into the EEPROM before it can be used.<BR>
+It is very important to hand program each byte manually to get it working. *smiling*...just joking!<BR>
+If you don't have a "manually programming unit" you can simply connect a RS232 cable to a computer and use 
+the program I will support you with. This program will handle everything, just start the program  and  go make yourself a cup of coffee. 
+<BR>
+Every memory cell will take 10ms to burn so it will take 12-15min.
+Once the EEPROM has been programmed you will not have to do this again.<IMG SRC="coff5.gif" tppabs="http://hem.passagen.se/communication/pic/coff5.gif" WIDTH=32 HEIGHT=25 BORDER=0 ALIGN="BOTTOM">
+<BR><BR>
+<strong>Memory table:</strong><br>
+This is the content of the memory table. Below you can see some of the first A/D values and the last A/D values. <BR>
+To the left you will see the A/D value and the rest of the line is the display text.<BR>
+As you can see, for each A/D value you will have a line of display text.<BR>
+First there is the sign then comes the power in dBm and then the power in Watt and last you will have the Voltage over the 50 ohm.<BR>
+As you can see I have also added the prefix as milli, micro and nano which will give a nice displaying. <BR>
+<BR>
+<FONT SIZE=2 COLOR="#0000FF" FACE="Courier">
+AD  Sign	PdB &#160;&#160;&#160;&#160;&#160;W&#160;&#160;&#160;&#160;&#160;&#160;&#160;	V<BR>
+-----------------------------------<BR>
+<font color="#FF00FF">4095</font>	      +	&#160;9,98 dBm	9,954 mW	705,5 mV<BR>
+<font color="#FF00FF">4094</font>	      +	&#160;9,95 dBm	9,886 mW	703,1 mV<BR>
+<font color="#FF00FF">4093</font>	      +	&#160;9,93 dBm	9,840 mW	701,4 mV<BR>
+<font color="#FF00FF">----</font><BR>
+<font color="#FF00FF">----</font><BR>
+<font color="#FF00FF">0003</font>	      -	89,93 dBm	1,016 pW	7,127 uV<BR>
+<font color="#FF00FF">0002</font>	      -	89,95 dBm	1,012 pW	7,113 uV<BR>
+<font color="#FF00FF">0001</font>	      -	89,98 dBm	1,005 pW	7,089 uV<BR>
+<font color="#FF00FF">0000</font>	      -	90,00 dBm	1,000 pW	7,071 uV<BR>
+</FONT>
+
+<BR>
+
+<FONT SIZE=3 COLOR="#0080FF" FACE="Arial"><B>20dBm Attenuator</B><BR></FONT>
+
+<img src="attn.gif" tppabs="http://hem.passagen.se/communication/pic/attn.gif" alt="" width="469" height="131" border="1" align="bottom">
+<BR><BR>
+This is the attenuator you can use if you want to measure higher effects than +10dBm.<br>
+The input impedance is 50ohm and the output impedance is matched for 50 ohm which the wattmeter has as input
+impedance.<br>This attenuator will attenuate 20dBm (100 times). <br>
+If you use the attenuator and read +10dBm you
+will have to add 20 to it and the real effect will therefore be +30dBm.<br>
+If you want you can load the EEPROM with a table adjusted for the attenuator to show the true value.<br>
+You can read more about it below in the software section.<br><br>
+<FONT SIZE=3 COLOR="#0080FF" FACE="Arial"><B>Schematic</B><BR></FONT>
+<A HREF="wttsch.gif" tppabs="http://hem.passagen.se/communication/pic/wttsch.gif" TARGET="dee"><img src="wttschs.jpg" tppabs="http://hem.passagen.se/communication/pic/wttschs.jpg" alt="Click on the pic to see a larger photo!" width="200" height="120" border="1" align="bottom"></A>
+<BR><BR>
+Here is the schematic. The AD8307 circuit measure the power and an A/D convert the analogue signal to the PIC.
+The PIC has 3 EEPROM to read the display text. The display is a standard 2 line 16 char LCD display.<br>
+To the PIC is also a RS232 interface for programming the EEPROM and to send the display text during
+measurement. A swith <strong>SW1</strong> must be pushed to program the EEPROM. When this button is pressed the
+wattmeter communicate with the windows software and program the display table. <br>
+Rmember, you only need to program the wattmeter one time!<br><br>
+
+
+<FONT SIZE=3 COLOR="#0080FF" FACE="Arial"><B>Windows Software</B><BR></FONT>
+<img src="wttwin.jpg" tppabs="http://hem.passagen.se/communication/pic/wttwin.jpg" alt="" width="348" height="228" border="1" align="bottom">
+<BR>
+<BR>
+This is the Window software I use to load the EEPROM. The software is quit simple. Connect the 
+wattmeter to the the computer via RS232-cable. Choose Com1 or Com2. Click Open file button and
+choose which table to load into the EEPROM. There is two table (see below).
+<br>
+One table <strong>wattm_1.zip</strong> is used when there is no attenuator connected to the wattmeter.
+The measure range will be -70dBm to +10dBm.<br>
+If you use the 20 dBm attenuator you have to add 20dBm to the displayed values <strong>OR</strong> 
+you can load the EEPROM with a table made for the attenuator. <br>
+If you load the wattmeter with the table <strong>wattm_2.zip</strong>  and you use the 20dBm attenuator
+you will read the exact value on the display.<br>
+The range will now be from -50dBm to +30dBm.<br>
+If you want you can use two attenuators in serie. You will then attenuate with 40dBm. 
+I do not have any table for this,<br>
+ so you will have to add 40 to the display value.<br>
+When the EEPROM i loaded the wattmeter will go into normal mode and display the actual power. You will
+also see the info in the <br><em>Received Data from Watteter</em> windows at the bottom of the windows.<br>
+The windows software can be mailed to you, since I don't have much space on the net.<br>
+<img src="232tab.gif" tppabs="http://hem.passagen.se/communication/pic/232tab.gif" alt="" width="131" height="250" border="0" align="right">
+<font color="#FF0000">Make sure you don't overload the wattmeter!</font><br>
+<br>
+<FONT SIZE=3 COLOR="#0080FF" FACE="Arial"><B>RS232 communication</B><BR></FONT>
+
+
+The interface works at 19200 baud, 1 startbit, even parity and 1 stopbit (<strong>19200,e,8,1</strong>).<br>
+The table at right show you an example of the  18 byte that the wattmeter send at each measurement.<br>
+<br>
+<li>Char 1 - 6 is the power in dBm.<br></li>
+<li>
+Char 7 - 12 is the power in watt in the 50 ohm.<br>
+</li>
+<li>
+Char 13 - 18 is the voltage over the 50 ohm.<br>
+</li>
+<br>
+<br>
+<FONT SIZE=3 COLOR="#0080FF" FACE="Arial"><B>Download EEPROM display text</B><BR></FONT>
+<TABLE CELLPADDING=0 CELLSPACING=0 WIDTH=450 BORDER=1 BGCOLOR="#ffffcc">
+<TR>
+	<TD> <A HREF="wattm_1.zip" tppabs="http://hem.passagen.se/communication/pic/wattm_1.zip" TARGET="pr4">wattm_1.zip</A></TD>
+	<TD>Display text for -70dB to +10 dBm, the file is zipped!)</TD>
+</TR>
+<TR>
+	<TD> <A HREF="wattm_2.zip" tppabs="http://hem.passagen.se/communication/pic/wattm_2.zip" TARGET="pr6">wattm_2.zip</A></TD>
+	<TD>Display text for -50dB to +30 dBm, the file is zipped!)</TD>
+</TR>
+
+</TABLE>
+<BR>
+
+
+<BR>
+<FONT SIZE=3 COLOR="#0080FF" FACE="Arial"><B>Download PIC16F84 program (INHX8M format)</B><BR></FONT>
+<TABLE CELLPADDING=0 CELLSPACING=0 WIDTH=300 BORDER=1 BGCOLOR="#E0FCE1">
+<TR>
+	<TD> <A HREF="wattm.zip" tppabs="http://hem.passagen.se/communication/pic/wattm.zip" TARGET="pr4">wattm.zip</A></TD>
+	<TD>PIC program wattmeter</TD>
+</TR>
+</TABLE>
+<BR>
+
+<FONT SIZE=3 COLOR="#0080FF" FACE="Arial"><B>Download some datasheets</B><BR></FONT>
+<TABLE CELLPADDING=0 CELLSPACING=0 WIDTH=300 BORDER=1 BGCOLOR="#F7DFFD">
+<TR>
+	<TD> <A HREF="javascript:if(confirm('http://www.analog.com/UploadedFiles/Datasheets/297929515AD8307_a.pdf  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.analog.com/UploadedFiles/Datasheets/297929515AD8307_a.pdf'" tppabs="http://www.analog.com/UploadedFiles/Datasheets/297929515AD8307_a.pdf" TARGET="pre">AD8307.pdf</A></TD>
+	<TD>Datasheets for AD8307.pdf</TD>
+</TR>
+
+</TABLE>
+<BR>
+<FONT SIZE=3 COLOR="#0080FF" FACE="Arial"><B>Final word</B></FONT><BR>
+I hope you will enjoy this powermeter-project.<BR>
+I also hope I have given you some new ideas and knowledge. <BR>
+You can always mail me if there is anything unclear. <BR>
+<BR>
+I wish you good luck with your projects and thanks for visit my page.<BR>
+
+<FONT SIZE=1 COLOR="#FF0080" FACE="Arial">If some cases I can help you with the support of components to this project.</FONT><BR>
+
+
+
+</FONT>
+</FONT>
+</FONT>
+
+<br><br><br>
+<HR ALIGN=center size=3 width=85%>
+<font color="#0080FF" size="2"><font face="verdana,arial,helvetica,geneva,sans-serif">
+<div align="center"><A HREF="meny.html" tppabs="http://hem.passagen.se/communication/meny.html" >Back to main Page</A>&nbsp; | &nbsp;<A HREF="mailto:maxit91@hotmail.com">Contact Me</A>&nbsp; | &nbsp;<A HREF="component.html" tppabs="http://hem.passagen.se/communication/component.html" target="comp1">Cheap components</A><br></div>
+
+<br><div align="center">Copyright © Last modified 1 June 2003.</div> 
+</font>
+
+
+
+
+</BODY>
+</HTML>

@@ -1,0 +1,11 @@
+030096-1
+Project: Digital Alarm Clock
+Elektor April 2004
+
+Processor Microchip PIC17F84A-10/P
+
+Fuse settings:
+WDT:	OFF
+PUT:	ON
+CP:	OFF
+OSC:	XT

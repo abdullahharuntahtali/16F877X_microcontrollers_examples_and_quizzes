@@ -1,0 +1,7 @@
+  
+
+slm sinan...
+
+devrede rf modullerin data ýnput ve data output gosterme gereði duydum besleme ve gnd zaten standart bunlarý gosterme gereði duymadým bunlarýn nereye baðlanacaðý belli ama data ýnput ile data output pinlerinin mikrodenetleyicide nereye baðlanacaðýný gosterdim... anladýðýma gore zaten baðlantý pinlerini biliyosun... bir alýcýda ve vericide besleme pinleri (vcc ve gnd) ve data pinleri vardýr.. beslemelerin nereye baðlanacaðý belli tek data pinleri kalýyo. onlarýnda Entegrede hangi pinlere baðlandýðýný gosterdim.
+
+2. soruna gelince. ses aktarýmý rf modullerin analog kýsýmýndan yapýlýr. ses aktarýmýnda analog rf moduller kullanýlýr bu konuda rf modulleri www.int-el.com.tr intel elektronikten temin edebilirsin. rf modullerin analog serileriyle ses aktarýmý yapabilirsin ii çalýþmalar. 

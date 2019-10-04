@@ -1,0 +1,20 @@
+  C dosyasýndaki ýsý sensör okuma kýsmýnda deðiþiklik yapýlarak derecenin gösterilmesi fotograftaki gibi gösterilmesi saðlandý.Böylece daha güzel bir görünüm elde edildi. (Sixca.com daki gibi deðil.) Ayrýca orjinal dosyada derece flash yapýyordu.Buda normal gösterime çevrildi. C ve Hex dosyalarý bu deðiþikliklere göre.
+
+
+
+
+
+10 saniye saat, 5 saniye derece gösteriyor.Programda deðiþiklik yaparak bu süreleri deðiþtirebilirsiniz.Kolay gelsin. 
+
+
+
+Devreyi normal oda ortamýnda denedim. Eksi sýcaklýkta denemedim.
+ Açýklama : DS1307 nin 5 nolu ucu 16f628 in 1 nolu ucuna,
+                 DS1307 nin 6 nolu ucu 16F628 in 2 nolu ucuna baðlanacak. (Baský devrede düzeltmeyi unutmuþum. Özür dilerim.)
+
+
+
+ Proteus 6.9 sp5 kullanýyorum. .
+  Orjinal sitersindeki þemada display baðlantýlarý ayný olacakmýþ gibi çizmiþler. Fakat Schematic kýsmýnda not olarak saðdaki (dakika kýsmý)  segmentlerin nasýl yer deðiþtieceðini belirtmiþler.(Note : you must converting 7-segment pin for two right digits or digit for minute by change Segment A to D, B to E, C to F and so on.) Bende bu deðiþikliði yaptým. Devre çalýþtý.Bu deðiþikliðin sebebi nokta segmentinden yararlanarak, termometre çalýþýken celcius u göstermek için. (Küçük c ve nokta)baský devre bu þekildedir. Ancak baský devreyi yeniden düzenlemek isteyen varsa; dakika kýsmýný da saat baðlantýlarý gibi yapabilirler. Çünkü deðiþiklik yapýlan C programýnda termometredeki nokta segmenti kullanýlmýyor. Dereceyi fotoðraftaki gibi gösteriyor.
+ sanane,
+ Haklýsýn, baský devre ile saati gösteren fotoðraf farklý. Devrenin fotoðrafýný makinem olmadýðý için çekemedim. Fikir vermek için bu resmi kullandým. Saniye ledlerle çalýyor.Nokta segmentler ile deðil.

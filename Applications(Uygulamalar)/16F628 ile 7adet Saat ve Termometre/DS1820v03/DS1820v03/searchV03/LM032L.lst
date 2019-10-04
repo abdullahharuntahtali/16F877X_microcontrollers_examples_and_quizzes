@@ -1,0 +1,967 @@
+MPASM 03.80 Released                               LM032L.ASM   11-20-2005  18:21:09         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ;
+                      00002 ; This program interfaces to a Hitachi (LM032L) 2 line by 20 character display
+                      00003 ; module. The program assembles for 4-bit data interface. LCD_DATA is the port
+                      00004 ; which supplies the data and LCD_CTRL the control lines ( E, RS, R_W ) to the
+                      00005 ; LM032L. 
+                      00006 ; This program only handles the data though the high nibble.
+                      00007 ;****************************************************************************
+                      00008 ;* This file and the resulting compiled code copyright1993-96 Steve Lawther *
+                      00009 ;*      Use of any of this code requires Steve Lawther to have a credit     *
+                      00010 ;*        within the source code. Commercial use of any of this code        *
+                      00011 ;*           requires the permission of the author, Steve Lawther           *
+                      00012 ;*   For more details read 'README.TXT' or email steve.lawther@gecm.com     *
+                      00013 ;****************************************************************************
+                      00014 
+                      00015     include P16F628A.inc
+                      00001         LIST
+                      00002 ; P16F628A.INC  Standard Header File, Version 1.10    Microchip Technology, Inc.
+                      00265         LIST
+                      00016     include tempdemo.inc
+                      00001 ;****************************************************************************
+                      00002 ;*                                                                          *
+                      00003 ;*                   Dallas 1 Wire Bus Temperature demo                     *
+                      00004 ;*                                                                          *
+                      00005 ;****************************************************************************
+                      00006 
+  003D0900            00007 Clock_Freq      equ     d'4000000'      ;4MHz - for wait macro calculations
+                      00008 
+                      00009     udata_ovr   0x20                    ;0x0C 16F84
+0020                  00010 DScommbuff      res     1
+0021                  00011 DSCRC           res     1
+                      00012 
+0022                  00013 tempone         res     1
+0023                  00014 temptwo         res     1
+0024                  00015 count           res     1
+0025                  00016 count2          res     1               ; 2nd loop counter for nested loops
+0026                  00017 bits_byte       res     1
+                      00018 
+0027                  00019 CHARBUF         res     1
+0028                  00020 temp_hi         res     1
+0029                  00021 temp_lo         res     1
+002A                  00022 acc_lo          res     1
+002B                  00023 acc_hi          res     1
+                      00024 
+002C                  00025 vvshift         res     1
+                      00026 
+                      00027 #define PRESENCE_bit    bits_byte, 0
+                      00028 #define round00_bit     bits_byte, 1
+                      00029 #define DSNext_bit      bits_byte, 2
+                      00030 #define neg_temp_bit    bits_byte, 3
+                      00031 #define DALLAS_BUS      PORTA, 4
+                      00032 
+002D                  00033 ROM_no          res     8
+0035                  00034 id_bit_number   res     1
+MPASM 03.80 Released                               LM032L.ASM   11-20-2005  18:21:09         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0036                  00035 last_zero       res     1
+0037                  00036 LastDiscrepancy res     1
+0038                  00037 LastFamilyDiscr res     1
+0039                  00038 id_bits_byte    res     1
+003A                  00039 rom_mask        res     1
+                      00040 
+                      00041 #define id_bit          id_bits_byte, 0 ; first bit read in a search ID sequence
+                      00042 #define cmp_id_bit      id_bits_byte, 1 ; complement of id_bit
+                      00043 #define test_bit        id_bits_byte, 2 ; test id_bit & cmp_id_bit
+                      00044 
+                      00045 #define last_device     id_bits_byte, 6
+                      00046 #define Direction       id_bits_byte, 7
+                      00017     include lm032l.inc
+                      00048     list
+                      00018     include wait.inc
+                      00001 
+                      00002 #define         Nanosec         * D'1'
+                      00003 #define         Microsec        * D'1000'
+                      00004 #define         Millisec        * D'1000000'
+                      00005 #define         Seconds         * D'1000000000'
+                      00006        
+                      00007 
+                      00008 ;**************************************************************
+                      00009 ;*                       The WAIT macro                       *
+                      00010 ;*                      * VERSION 1.01 *                      *
+                      00011 ;*             called by Wait <time>, lesscycles              *
+                      00012 ;**************************************************************
+                      00013 ;History
+                      00014 ;1.00   - Original
+                      00015 ;1.01   - Fixed bug with small even numbers giving an error message
+                      00016 
+                      00017 
+                      00018 Wait    macro   time_ns, lesscycles         ;time_ns gives the wait time required, in ns
+                      00019  radix dec
+                      00020  variable instruct_time_ns =  (( 1 Seconds ) / (Clock_Freq / 4 ))
+                      00021  local cycles
+                      00022  variable cycles = ((time_ns) / instruct_time_ns)   ;required delay in 
+                      00023                                                          ;100ths of instructions
+                      00024 
+                      00025  if (cycles < (lesscycles) )
+                      00026         messg NOTE - negative delay time with lesscycles cycles (no code)
+                      00027                
+                      00028                 exitm
+                      00029  else
+                      00030  variable cycles = (cycles - (lesscycles))
+                      00031  endif
+                      00032 
+                      00033  if (cycles == 0) 
+                      00034         messg "WARNING - delay time less than 1 instructions"
+                      00035                
+                      00036                 nop
+                      00037                 exitm
+                      00038  endif
+MPASM 03.80 Released                               LM032L.ASM   11-20-2005  18:21:09         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00039 
+                      00040  if (cycles > (255*(256*3 + 6) + 2 + 3))
+                      00041         messg   "ERROR : Too long a wait for the WAIT macro at present!!"
+                      00042         exitm
+                      00043  endif
+                      00044         
+                      00045 ;        messg Info - calculated number of cycles = #v(cycles)
+                      00046 
+                      00047 
+                      00048  if (cycles > ((255*3)+5))
+                      00049                 
+                      00050                 movlw   ((cycles-5)/(256*3+6))
+                      00051                 call    longdelay
+                      00052  
+                      00053  ifndef INCLONGDELAY
+                      00054   #define INCLONGDELAY
+                      00055  endif
+                      00056 
+                      00057  exitm
+                      00058  endif
+                      00059 
+                      00060  if ((cycles > 8 ) && (cycles < (255*3 + 5)))
+                      00061                 
+                      00062                 movlw   ((cycles-5)/3)        
+                      00063                 call    shortdelay
+                      00064  
+                      00065  ifndef INCSHORTDELAY
+                      00066   #define INCSHORTDELAY
+                      00067  endif
+                      00068 
+                      00069  exitm
+                      00070  endif
+                      00071 
+                      00072  if (cycles < 8)
+                      00073  while  ( cycles > 1 )
+                      00074                 
+                      00075                 goto $+1  ;two cycle nop
+                      00076         
+                      00077 cycles -=2
+                      00078  endw
+                      00079  endif
+                      00080  
+                      00081  if (cycles > 0)
+                      00082                nop
+                      00083  
+                      00084  endif
+                      00085  exitm
+                      00086  
+                      00087  messg "ERROR - got to end of WAIT.MAC"
+                      00088 
+                      00089  radix hex
+                      00090  endm
+                      00019 
+MPASM 03.80 Released                               LM032L.ASM   11-20-2005  18:21:09         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00020     errorlevel  -302            ;Eliminate bank warning
+                      00021 
+  00000006            00022 LCD_DATA         EQU     PORTB
+  00000086            00023 LCD_DATA_TRIS    EQU     TRISB
+  00000006            00024 LCD_CTRL         EQU     PORTB
+                      00025 
+                      00026 #define LED     PORTB, 0    ; LED - clear for lit, set for off
+                      00027 
+                      00028 ; LCD Display Commands and Control Signal names.
+                      00029 #define LCD_E    LCD_CTRL,1     ; LCD Enable control line
+                      00030 #define LCD_R_W  LCD_CTRL,2     ; LCD Read/Write control line
+                      00031 #define LCD_RS   LCD_CTRL,3     ; LCD Register Select control line
+                      00032 
+  0000                00033     global DISPLAY_RESET, SEND_CHAR_W, SEND_CHAR, SEND_CMD_W
+  0000                00034     global LOAD_CGRAM, LOAD_CGRAM_LOC
+  0000                00035     extern longdelay, shortdelay    ;DELAY.ASM
+  0000                00036     extern uchars                   ;TEMPDEMO.ASM
+                      00037 ;
+MPASM 03.80 Released                               LM032L.ASM   11-20-2005  18:21:09         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00038  page
+                      00039 ;
+                      00040 ; Initilize the LCD Display Module
+                      00041 ;****************************************************************************
+                      00042 ;*
+                      00043 ;*              DISPLAY RESET
+                      00044 ;*
+                      00045 ;****************************************************************************
+                      00046 
+                      00047 PROG CODE
+                      00048 
+0000                  00049 DISPLAY_RESET
+                      00050 ;needs to have full routine to initialize corrupted display
+                      00051 ;first setup lcd port - all outputs
+                      00052 
+0000   1683           00053     bsf     STATUS, RP0     ; Bank 1
+0001   3000           00054     movlw   b'00000000'
+0002   0086           00055     movwf   LCD_DATA_TRIS   ;set all to output
+0003   1283           00056     bcf     STATUS, RP0     ; Bank 0
+0004   0186           00057     clrf    LCD_DATA        ;set all port low
+0005   1406           00058     bsf LED
+                      00059     ;clrf    LCDflags        ;set to cmd next etc
+                      00060 ;have to wait 15ms here
+0006   0064           00061     clrwdt
+                      00062     Wait    35 Millisec, 0
+                          M  radix dec
+  03E8                    M  variable instruct_time_ns =  (( 1 Seconds ) / (Clock_Freq / 4 ))
+  0000                    M  local cycles
+  88B8                    M  variable cycles = ((35 * D'1000000') / instruct_time_ns) ;required delay in 
+                          M                                                          ;100ths of instructions
+                          M 
+                          M  if (cycles < (0)          )
+                          M         messg NOTE - negative delay time with 0          cycles (no code)
+                          M                
+                          M                 exitm
+                          M  else
+  88B8                    M  variable cycles = (cycles - (0))
+                          M  endif
+                          M 
+                          M  if (cycles == 0) 
+                          M         messg "WARNING - delay time less than 1 instructions"
+                          M                
+                          M                 nop
+                          M                 exitm
+                          M  endif
+                          M 
+                          M  if (cycles > (255*(256*3 + 6) + 2 + 3))
+                          M         messg   "ERROR : Too long a wait for the WAIT macro at present!!"
+                          M         exitm
+                          M  endif
+                          M         
+                          M ;        messg Info - calculated number of cycles = #v(cycles)
+                          M 
+MPASM 03.80 Released                               LM032L.ASM   11-20-2005  18:21:09         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                          M 
+                          M  if (cycles > ((255*3)+5))
+                          M                 
+0007   302D               M                 movlw   ((cycles-5)/(256*3+6))
+0008   2???               M                 call    longdelay
+                          M  
+                          M  ifndef INCLONGDELAY
+                          M   #define INCLONGDELAY
+                          M  endif
+                          M 
+                          M  exitm
+0009   0064           00063     clrwdt
+                      00064 ;clear LCD port to all low here!!!!!!!!!!!!!!!
+000A   3031           00065     movlw   b'00110001'     ; Command for 8-bit interface high nibble vv-B.0=1
+000B   0086           00066     movwf   LCD_DATA        ; ie 0011xxxx
+000C   1486           00067     bsf     LCD_E
+000D   0000           00068     nop                     ;incase the clk is >8MHz
+                      00069     ;nop                     ;incase the clk is >16MHz
+000E   1086           00070     bcf     LCD_E
+                      00071 ;have to wait 4.1ms here            
+                      00072     Wait    4100 Microsec, 0
+                          M  radix dec
+  03E8                    M  variable instruct_time_ns =  (( 1 Seconds ) / (Clock_Freq / 4 ))
+  0000                    M  local cycles
+  1004                    M  variable cycles = ((4100 * D'1000') / instruct_time_ns) ;required delay in 
+                          M                                                          ;100ths of instructions
+                          M 
+                          M  if (cycles < (0)          )
+                          M         messg NOTE - negative delay time with 0          cycles (no code)
+                          M                
+                          M                 exitm
+                          M  else
+  1004                    M  variable cycles = (cycles - (0))
+                          M  endif
+                          M 
+                          M  if (cycles == 0) 
+                          M         messg "WARNING - delay time less than 1 instructions"
+                          M                
+                          M                 nop
+                          M                 exitm
+                          M  endif
+                          M 
+                          M  if (cycles > (255*(256*3 + 6) + 2 + 3))
+                          M         messg   "ERROR : Too long a wait for the WAIT macro at present!!"
+                          M         exitm
+                          M  endif
+                          M         
+                          M ;        messg Info - calculated number of cycles = #v(cycles)
+                          M 
+                          M 
+                          M  if (cycles > ((255*3)+5))
+                          M                 
+000F   3005               M                 movlw   ((cycles-5)/(256*3+6))
+MPASM 03.80 Released                               LM032L.ASM   11-20-2005  18:21:09         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0010   2???               M                 call    longdelay
+                          M  
+                          M  ifndef INCLONGDELAY
+                          M   #define INCLONGDELAY
+                          M  endif
+                          M 
+                          M  exitm
+0011   1486           00073     bsf     LCD_E           ;nibble is already setup
+0012   0000           00074     nop                     ;incase the clk is >8MHz
+                      00075     ;nop                     ;incase the clk is >16MHz
+0013   1086           00076     bcf     LCD_E
+                      00077 ;have to wait 100us here
+                      00078     Wait    100 Microsec, 0
+                          M  radix dec
+  03E8                    M  variable instruct_time_ns =  (( 1 Seconds ) / (Clock_Freq / 4 ))
+  0000                    M  local cycles
+  0064                    M  variable cycles = ((100 * D'1000') / instruct_time_ns) ;required delay in 
+                          M                                                          ;100ths of instructions
+                          M 
+                          M  if (cycles < (0)          )
+                          M         messg NOTE - negative delay time with 0          cycles (no code)
+                          M                
+                          M                 exitm
+                          M  else
+  0064                    M  variable cycles = (cycles - (0))
+                          M  endif
+                          M 
+                          M  if (cycles == 0) 
+                          M         messg "WARNING - delay time less than 1 instructions"
+                          M                
+                          M                 nop
+                          M                 exitm
+                          M  endif
+                          M 
+                          M  if (cycles > (255*(256*3 + 6) + 2 + 3))
+                          M         messg   "ERROR : Too long a wait for the WAIT macro at present!!"
+                          M         exitm
+                          M  endif
+                          M         
+                          M ;        messg Info - calculated number of cycles = #v(cycles)
+                          M 
+                          M 
+                          M  if (cycles > ((255*3)+5))
+                          M                 
+                          M                 movlw   ((cycles-5)/(256*3+6))
+                          M                 call    longdelay
+                          M  
+                          M  ifndef INCLONGDELAY
+                          M   #define INCLONGDELAY
+                          M  endif
+                          M 
+                          M  exitm
+                          M  endif
+MPASM 03.80 Released                               LM032L.ASM   11-20-2005  18:21:09         PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                          M 
+                          M  if ((cycles > 8 ) && (cycles < (255*3 + 5)))
+                          M                 
+0014   301F               M                 movlw   ((cycles-5)/3)        
+0015   2???               M                 call    shortdelay
+                          M  
+                          M  ifndef INCSHORTDELAY
+                          M   #define INCSHORTDELAY
+                          M  endif
+                          M 
+                          M  exitm
+0016   1486           00079     bsf     LCD_E           ;nibble is already setup
+0017   0000           00080     nop                     ;incase the clk is >8MHz
+                      00081     ;nop                     ;incase the clk is >16MHz
+0018   1086           00082     bcf     LCD_E
+                      00083 ;have to wait 100us here
+                      00084     Wait    100 Microsec, 0
+                          M  radix dec
+  03E8                    M  variable instruct_time_ns =  (( 1 Seconds ) / (Clock_Freq / 4 ))
+  0000                    M  local cycles
+  0064                    M  variable cycles = ((100 * D'1000') / instruct_time_ns) ;required delay in 
+                          M                                                          ;100ths of instructions
+                          M 
+                          M  if (cycles < (0)          )
+                          M         messg NOTE - negative delay time with 0          cycles (no code)
+                          M                
+                          M                 exitm
+                          M  else
+  0064                    M  variable cycles = (cycles - (0))
+                          M  endif
+                          M 
+                          M  if (cycles == 0) 
+                          M         messg "WARNING - delay time less than 1 instructions"
+                          M                
+                          M                 nop
+                          M                 exitm
+                          M  endif
+                          M 
+                          M  if (cycles > (255*(256*3 + 6) + 2 + 3))
+                          M         messg   "ERROR : Too long a wait for the WAIT macro at present!!"
+                          M         exitm
+                          M  endif
+                          M         
+                          M ;        messg Info - calculated number of cycles = #v(cycles)
+                          M 
+                          M 
+                          M  if (cycles > ((255*3)+5))
+                          M                 
+                          M                 movlw   ((cycles-5)/(256*3+6))
+                          M                 call    longdelay
+                          M  
+                          M  ifndef INCLONGDELAY
+                          M   #define INCLONGDELAY
+MPASM 03.80 Released                               LM032L.ASM   11-20-2005  18:21:09         PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                          M  endif
+                          M 
+                          M  exitm
+                          M  endif
+                          M 
+                          M  if ((cycles > 8 ) && (cycles < (255*3 + 5)))
+                          M                 
+0019   301F               M                 movlw   ((cycles-5)/3)        
+001A   2???               M                 call    shortdelay
+                          M  
+                          M  ifndef INCSHORTDELAY
+                          M   #define INCSHORTDELAY
+                          M  endif
+                          M 
+                          M  exitm
+001B   3021           00085     movlw   b'00100001'     ; Command for 4-bit interface high nibble vv-B.0=1
+001C   0086           00086     movwf   LCD_DATA        ; ie 0010xxxx
+001D   1486           00087     bsf     LCD_E
+001E   0000           00088     nop                     ;incase the clk is >8MHz
+                      00089     ;nop                     ;incase the clk is >16MHz
+001F   1086           00090     bcf     LCD_E
+0020   0064           00091     clrwdt
+                      00092 ;from here interface is 4 bit and busy can be checked
+                      00093                             ;          001DL NF**
+0021   3028           00094     movlw   FUNC_SET        ;has to be 0010  10XX
+0022   2???           00095     call    SEND_CMD_W
+                      00096                             ;0000 1DCB
+0023   3008           00097     movlw   DISP_OFF        ;0000 1000
+0024   2???           00098     call    SEND_CMD_W
+                      00099 
+                      00100 ;****************************
+                      00101 ;*                          *
+                      00102 ;*    INITIALIZE DISPLAY    *
+                      00103 ;*                          *
+                      00104 ;****************************
+0025                  00105 INIT_DISPLAY
+0025   300C           00106     movlw   DISP_ON         ; Display On, Cursor On
+0026   2???           00107     call    SEND_CMD_W
+                      00108 
+0027   3001           00109     movlw   CLR_DISP        ; Clear the Display
+0028   2???           00110     call    SEND_CMD_W
+                      00111     Wait    2 Millisec, 0
+                          M  radix dec
+  03E8                    M  variable instruct_time_ns =  (( 1 Seconds ) / (Clock_Freq / 4 ))
+  0000                    M  local cycles
+  07D0                    M  variable cycles = ((2 * D'1000000') / instruct_time_ns) ;required delay in 
+                          M                                                          ;100ths of instructions
+                          M 
+                          M  if (cycles < (0)          )
+                          M         messg NOTE - negative delay time with 0          cycles (no code)
+                          M                
+                          M                 exitm
+                          M  else
+MPASM 03.80 Released                               LM032L.ASM   11-20-2005  18:21:09         PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+  07D0                    M  variable cycles = (cycles - (0))
+                          M  endif
+                          M 
+                          M  if (cycles == 0) 
+                          M         messg "WARNING - delay time less than 1 instructions"
+                          M                
+                          M                 nop
+                          M                 exitm
+                          M  endif
+                          M 
+                          M  if (cycles > (255*(256*3 + 6) + 2 + 3))
+                          M         messg   "ERROR : Too long a wait for the WAIT macro at present!!"
+                          M         exitm
+                          M  endif
+                          M         
+                          M ;        messg Info - calculated number of cycles = #v(cycles)
+                          M 
+                          M 
+                          M  if (cycles > ((255*3)+5))
+                          M                 
+0029   3002               M                 movlw   ((cycles-5)/(256*3+6))
+002A   2???               M                 call    longdelay
+                          M  
+                          M  ifndef INCLONGDELAY
+                          M   #define INCLONGDELAY
+                          M  endif
+                          M 
+                          M  exitm
+                      00112                             ;0000 01IS
+002B   3006           00113     movlw   ENTRY_INC       ;0000 0110
+002C   2???           00114     call    SEND_CMD_W
+                      00115 
+002D   0008           00116     return
+MPASM 03.80 Released                               LM032L.ASM   11-20-2005  18:21:09         PAGE 11
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00117     page
+                      00118 ;*******************************************************************
+                      00119 ;* The LCD Module Subroutines                                      *
+                      00120 ;*******************************************************************
+                      00121 ;
+                      00122 ;*******************************************************************
+                      00123 ;*SendChar - Sends character to LCD                                *
+                      00124 ;*This routine splits the character into the upper and lower       *
+                      00125 ;*nibbles and sends them to the LCD, upper nibble first.           *
+                      00126 ;*******************************************************************
+                      00127 ;
+002E                  00128 SEND_CHAR_W
+002E   00??           00129     movwf   CHARBUF         ;Character to be sent is in W so put in
+                      00130                             ;local CHARBUF
+002F                  00131 SEND_CHAR
+002F   2???           00132     call    BUSY_CHECK      ;Wait for LCD to be ready
+0030   08??           00133     movf    CHARBUF, W
+0031   39F0           00134     andlw   0x0F0           ;Get upper nibble into upper half port
+0032   3801           00135     iorlw   0x01            ;vv-LED off
+                      00136 
+0033   0086           00137     movwf   LCD_DATA        ;Send data to LCD
+                      00138     ;bcf     LCD_R_W         ;Set LCD to read
+0034   1586           00139     bsf     LCD_RS          ;Set LCD to data mode
+0035   2???           00140     call    LCDtglclk       ;saving space - sod readability thou
+                      00141     ;bsf     LCD_E           ;toggle E for LCD
+                      00142     ;nop                     ;incase the clk is >8MHz
+                      00143     ;;nop                     ;incase the clk is >16MHz
+                      00144     ;bcf     LCD_E
+0036   0E??           00145     swapf   CHARBUF, w
+0037   39F0           00146     andlw   0x0F0           ;Get lower nibble into upper half port
+0038   3801           00147     iorlw   0x01            ;vv-LED off
+                      00148 
+0039   0086           00149     movwf   LCD_DATA        ;Send data to LCD
+003A   1586           00150     bsf     LCD_RS          ;Set LCD to data mode
+003B   1486           00151 LCDtglclk   bsf     LCD_E   ;toggle E for LCD
+003C   0000           00152             nop             ;incase the clk is >8MHz
+                      00153             ;nop            ;incase the clk is >16MHz
+003D   1086           00154             bcf     LCD_E
+003E   0008           00155             return
+                      00156 
+                      00157 ;*******************************************************************
+                      00158 ;* SEND_CMD - Sends command to LCD                                 *
+                      00159 ;* This routine splits the command into the upper and lower        *
+                      00160 ;* nibbles and sends them to the LCD, upper nibble first.          *
+                      00161 ;*******************************************************************
+                      00162 
+003F                  00163 SEND_CMD_W
+003F   00??           00164     movwf   CHARBUF         ; Character to be sent is in W so put in
+                      00165                             ;local CHARBUF
+0040                  00166 SEND_CMD
+0040   2???           00167     call    BUSY_CHECK      ; Wait for LCD to be ready
+0041   08??           00168     movf    CHARBUF, W
+0042   39F0           00169     andlw   0x0F0           ; Get upper nibble into lower half port
+MPASM 03.80 Released                               LM032L.ASM   11-20-2005  18:21:09         PAGE 12
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0043   3801           00170     iorlw   0x01            ;vv-LED off
+                      00171 
+0044   0086           00172     movwf   LCD_DATA        ; Send data to LCD
+                      00173     ;bcf     LCD_R_W         ; Set LCD to read
+                      00174     ;bcf     LCD_RS          ; Set LCD to command mode
+0045   2???           00175     call    LCDtglclk       ;saving space - sod readability thou
+                      00176     ;bsf     LCD_E           ; toggle E for LCD
+                      00177     ;nop                     ;incase the clk is >8MHz
+                      00178     ;;nop                     ;incase the clk is >16MHz
+                      00179     ;bcf     LCD_E
+0046   0E??           00180     swapf   CHARBUF,w
+0047   39F0           00181     andlw   0x0F0           ; Get lower nibble into lower half port
+0048   3801           00182     iorlw   0x01            ;vv-LED off
+                      00183 
+0049   0086           00184     movwf   LCD_DATA        ; Send data to LCD
+004A   2???           00185     goto    LCDtglclk       ;saving space - sod readability thou
+                      00186     ;bsf     LCD_E           ; toggle E for LCD
+                      00187     ;nop                     ;incase the clk is >8MHz
+                      00188     ;;nop                     ;incase the clk is >16MHz
+                      00189     ;bcf     LCD_E
+                      00190     ;return
+                      00191 
+                      00192 ;*******************************************************************
+                      00193 ;* This routine checks the busy flag, returns when not busy        *
+                      00194 ;*******************************************************************
+                      00195 ;
+004B                  00196 BUSY_CHECK
+004B   1683           00197     bsf     STATUS, RP0     ; Select Register page 1
+004C   30F0           00198     movlw   0xF0            ; st 0xF1 Set high nibble + keep INT for input
+004D   0086           00199     movwf   LCD_DATA_TRIS
+004E   1283           00200     bcf     STATUS, RP0     ; Select Register page 0
+004F   1186           00201     bcf     LCD_RS          ; Set LCD for Command mode
+0050   1506           00202     bsf     LCD_R_W         ; Setup to read busy flag
+0051   1486           00203     bsf     LCD_E           ; Set E high
+0052   0000           00204     nop                     ;incase the clk is >8MHz
+                      00205     ;nop                     ;incase the clk is >16MHz
+0053   0806           00206     movf    LCD_DATA, W     ; Read upper nibble busy flag, DDRam address
+0054   1086           00207     bcf     LCD_E           ; Set E low
+                      00208     ;andlw   0x0F0           ; Mask out lower nibble ***chng 1/10/96
+0055   3980           00209     andlw   0x80            ; Mask out lower nibble ***chng 1/10/96
+                      00210     ;movwf   TEMP
+0056   0000           00211     nop
+0057   1486           00212     bsf     LCD_E           ; Toggle E to get lower nibble
+0058   0000           00213     nop
+0059   0000           00214     nop                     ;incase the clk is >8MHz
+                      00215     ;nop                     ;incase the clk is >16MHz
+                      00216     ;swapF   LCD_DATA, W     ; Read lower nibble DDRam address
+005A   1086           00217     bcf     LCD_E
+                      00218     ;andlw   0x0F            ; Mask out upper nibble
+                      00219     ;iorwf   TEMP, F         ; Combine nibbles
+005B   3A80           00220     xorlw   0x80
+005C   1903           00221     btfsc   STATUS, Z
+                      00222     ;btfsc   TEMP, 7         ; Check busy flag, high = busy
+MPASM 03.80 Released                               LM032L.ASM   11-20-2005  18:21:09         PAGE 13
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+005D   2???           00223     goto    BUSY_CHECK      ; If busy, check again
+005E   1106           00224     bcf     LCD_R_W
+005F   1683           00225     bsf     STATUS, RP0     ; Select Register page 1
+0060   3000           00226     movlw   b'00000000'
+0061   0086           00227     movwf   LCD_DATA_TRIS   ; Set for output
+0062   1283           00228     bcf     STATUS, RP0     ; Select Register page 0
+0063   0008           00229     return
+                      00230 
+0064                  00231 LOAD_CGRAM
+                      00232 ; load user defined characters
+0064   3040           00233     movlw   0x40
+0065   2???           00234     call    SEND_CMD_W
+                      00235 ; start address passed in temp_lo (reuse temp_lo memory)
+                      00236 ; running address in temp_hi (reuse temp_hi memory)
+                      00237 ; loop counter in acc_hi (reuse acc_hi memory)
+0066                  00238 LOAD_CGRAM_LOC
+0066   01??           00239     clrf    temp_hi
+0067   08??           00240     movf    temp_lo, W
+0068   07??           00241     addwf   temp_hi, F
+0069   3008           00242     movlw   0x08
+006A   00??           00243     movwf   acc_hi
+                      00244 
+006B                  00245 load
+006B   08??           00246     movf    temp_hi, W
+006C   2???           00247     call    uchars
+006D   2???           00248     call    SEND_CHAR_W
+006E   0A??           00249     incf    temp_hi, F
+006F   0B??           00250     decfsz  acc_hi, F
+0070   2???           00251      goto    load
+0071   0008           00252     return
+                      00253 
+                      00254     end
+MPASM 03.80 Released                               LM032L.ASM   11-20-2005  18:21:09         PAGE 14
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ADEN                              00000003
+BRGH                              00000002
+BUSY_CHECK                        0000004B
+C                                 00000000
+C1INV                             00000004
+C1OUT                             00000006
+C2INV                             00000005
+C2OUT                             00000007
+CCP1CON                           00000017
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP1X                             00000005
+CCP1Y                             00000004
+CCPR1H                            00000016
+CCPR1L                            00000015
+CHARBUF                           00000027
+CIS                               00000003
+CLR_DISP                          00000001
+CM0                               00000000
+CM1                               00000001
+CM2                               00000002
+CMCON                             0000001F
+CMIE                              00000006
+CMIF                              00000006
+CREN                              00000004
+CSRC                              00000007
+CURS_RGT                          00000093
+Clock_Freq                        003D0900
+DALLAS_BUS                        PORTA, 4
+DC                                00000001
+DD_RAM_ADDR                       00000080
+DD_RAM_UL                         00000080
+DISPLAY_RESET                     00000000
+DISP_OFF                          00000008
+DISP_ON                           0000000C
+DISP_ON_BC                        0000000F
+DISP_ON_C                         0000000E
+DSCRC                             00000021
+DSNext_bit                        bits_byte, 2
+DScommbuff                        00000020
+Direction                         id_bits_byte, 7
+EEADR                             0000009B
+EECON1                            0000009C
+EECON2                            0000009D
+EEDATA                            0000009A
+EEIE                              00000007
+EEIF                              00000007
+ENTRY_DEC                         00000004
+ENTRY_DEC_S                       00000005
+MPASM 03.80 Released                               LM032L.ASM   11-20-2005  18:21:09         PAGE 15
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ENTRY_INC                         00000006
+ENTRY_INC_S                       00000007
+F                                 00000001
+FERR                              00000002
+FSR                               00000004
+FUNC_SET                          00000028
+GIE                               00000007
+INCLONGDELAY                      
+INCSHORTDELAY                     
+INDF                              00000000
+INIT_DISPLAY                      00000025
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+LCD_CTRL                          00000006
+LCD_DATA                          00000006
+LCD_DATA_TRIS                     00000086
+LCD_E                             LCD_CTRL,1
+LCD_RS                            LCD_CTRL,3
+LCD_R_W                           LCD_CTRL,2
+LCDtglclk                         0000003B
+LED                               PORTB, 0
+LOAD_CGRAM                        00000064
+LOAD_CGRAM_LOC                    00000066
+LastDiscrepancy                   00000037
+LastFamilyDiscr                   00000038
+Microsec                          * D'1000'
+Millisec                          * D'1000000'
+NOT_BO                            00000000
+NOT_BOD                           00000000
+NOT_BOR                           00000000
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+Nanosec                           * D'1'
+OERR                              00000001
+OPTION_REG                        00000081
+OSCF                              00000003
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PIE1                              0000008C
+PIR1                              0000000C
+PORTA                             00000005
+PORTB                             00000006
+PR2                               00000092
+PRESENCE_bit                      bits_byte, 0
+PS0                               00000000
+MPASM 03.80 Released                               LM032L.ASM   11-20-2005  18:21:09         PAGE 16
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+RBIE                              00000003
+RBIF                              00000000
+RCIE                              00000005
+RCIF                              00000005
+RCREG                             0000001A
+RCSTA                             00000018
+RD                                00000000
+ROM_no                            0000002D
+RP0                               00000005
+RP1                               00000006
+RTN_HOME                          00000002
+RX9                               00000006
+RX9D                              00000000
+SEND_CHAR                         0000002F
+SEND_CHAR_W                       0000002E
+SEND_CMD                          00000040
+SEND_CMD_W                        0000003F
+SHIFT_C_L                         00000010
+SHIFT_C_R                         00000014
+SHIFT_S_L                         00000018
+SHIFT_S_R                         0000001C
+SPBRG                             00000099
+SPEN                              00000007
+SREN                              00000005
+STATUS                            00000003
+SYNC                              00000004
+Seconds                           * D'1000000000'
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1OSCEN                           00000003
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000012
+TMR0                              00000001
+TMR1CS                            00000001
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TMR2                              00000011
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+TOUTPS0                           00000003
+MPASM 03.80 Released                               LM032L.ASM   11-20-2005  18:21:09         PAGE 17
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRISA                             00000085
+TRISB                             00000086
+TRMT                              00000001
+TX9                               00000006
+TX9D                              00000000
+TXEN                              00000005
+TXIE                              00000004
+TXIF                              00000004
+TXREG                             00000019
+TXSTA                             00000098
+VR0                               00000000
+VR1                               00000001
+VR2                               00000002
+VR3                               00000003
+VRCON                             0000009F
+VREN                              00000007
+VROE                              00000006
+VRR                               00000005
+W                                 00000000
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+Wait                              
+Z                                 00000002
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_BOREN_OFF                        00003FBF
+_BOREN_ON                         00003FFF
+_CP_OFF                           00003FFF
+_CP_ON                            00001FFF
+_DATA_CP_OFF                      00003FFF
+_DATA_CP_ON                       00003EFF
+_ER_OSC_CLKOUT                    00003FFF
+_ER_OSC_NOCLKOUT                  00003FFE
+_EXTCLK_OSC                       00003FEF
+_HS_OSC                           00003FEE
+_INTOSC_OSC_CLKOUT                00003FFD
+_INTOSC_OSC_NOCLKOUT              00003FFC
+_INTRC_OSC_CLKOUT                 00003FFD
+_INTRC_OSC_NOCLKOUT               00003FFC
+_LP_OSC                           00003FEC
+_LVP_OFF                          00003F7F
+_LVP_ON                           00003FFF
+_MCLRE_OFF                        00003FDF
+_MCLRE_ON                         00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC_CLKOUT                    00003FFF
+_RC_OSC_NOCLKOUT                  00003FFE
+_WDT_OFF                          00003FFB
+MPASM 03.80 Released                               LM032L.ASM   11-20-2005  18:21:09         PAGE 18
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FED
+__16F628A                         00000001
+acc_hi                            0000002B
+acc_lo                            0000002A
+bits_byte                         00000026
+cmp_id_bit                        id_bits_byte, 1
+count                             00000024
+count2                            00000025
+id_bit                            id_bits_byte, 0
+id_bit_number                     00000035
+id_bits_byte                      00000039
+instruct_time_ns                  000003E8
+last_device                       id_bits_byte, 6
+last_zero                         00000036
+load                              0000006B
+longdelay                         00000000
+neg_temp_bit                      bits_byte, 3
+rom_mask                          0000003A
+round00_bit                       bits_byte, 1
+shortdelay                        00000000
+temp_hi                           00000028
+temp_lo                           00000029
+tempone                           00000022
+temptwo                           00000023
+test_bit                          id_bits_byte, 2
+uchars                            00000000
+vvshift                           0000002C
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     3 suppressed
+
+

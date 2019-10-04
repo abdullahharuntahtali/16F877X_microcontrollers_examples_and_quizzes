@@ -1,0 +1,167 @@
+<html><script language="JavaScript" type="text/javascript" src="frameit.js" tppabs="http://hem.passagen.se/TopFrame/frameit.js"></script>	<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+<META NAME="Generator" CONTENT="Microsoft Word 97">
+<TITLE>30 W Digital Wattmeter for RF </TITLE>
+<META NAME="keywords" CONTENT="spolar, coil, toroid, rf, ham, ham radio, circuit, CW, QRP, RX, 
+TX, RF, IF, PCB, PSU, GDO, QRP, home brew, home-brew, amateur radio, 
+amatöradio, construction, transmitter, receiver, key, keys, fm, fet, 
+hams, transistor, power supply, printed circuit boards, 
+amplifier, homebrew, Q, q, keyer, printed circuit board, FET, rfamp, 
+rf-amp, ift, pcb, transmitter, psu, gdo, gdos, tubes, pcbs, gdo, cw, 
+g4vvj, SA602, SA612, mc13135, mc13136, datasheet, zn414, zn416, zn414z, pdf, 
+zn416e, qrp, notepad, tda7000, calc, parallel, series, frequency, a,
+A,  heatsink, software, download">
+
+<META NAME="Template" CONTENT="C:\Program\Microsoft Office\Mallar\Webbsidor\Webbsideguiden.wiz">
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#FFFFFF" BACKGROUND="background4.GIF" tppabs="http://hem.passagen.se/communication/pic/background4.GIF">
+<a href="watt1.jpg" tppabs="http://hem.passagen.se/communication/pic/watt1.jpg" target="ss45"><img src="watt1s.jpg" tppabs="http://hem.passagen.se/communication/pic/watt1s.jpg" alt="Click here to view a larger photo" width="198" height="225" border="1" align="right"></a>
+<FONT SIZE=5 COLOR="#0000FF" FACE="Arial"><B>30 W Digital Wattmeter for RF (0-500MHz)</B></FONT><BR>
+
+<FONT SIZE=2 COLOR="#0000FF" FACE="Arial">
+This project will explain how I build my new wattmeter.<br>
+This watt meter will be able to measure power from 300nW to 30W @ (0-500MHz).<br>
+This wattmeter is based up on a dummy load of 50 ohm which can handle 50W.<br>
+The measurement will be displayed in Watt on a 2x16 Char display.<br>
+The unit is very accurate, fast and easy to build.<br>
+
+
+</FONT><FONT SIZE=1 COLOR="#FF0000" FACE="Arial">All contribution to this page are most welcome!</FONT>
+<br>
+<br>
+<FONT SIZE=3 COLOR="#0080FF" FACE="Arial"><B>Background</B><BR></FONT>
+<FONT SIZE=2 COLOR="#000000" FACE="Arial">
+This watt meter project is very similar to my last wattmeter project.
+The main reason I made a new project is becasue I needed a unit which could handle higher power than 1W.
+I found a 50 ohm dummy load which could take 50W of power.
+Of course I could use attenuates for my 1W meter, but I prefered to build a new unit.
+The new thing with this project is that it will only display the power in Watt on the LCD display.
+This means that I will not need so many EEPROM to store display data (more about this later).<br>
+
+First we need to update our knowledge how to measure RF power:
+Some figures and text comes from my last wattmeter project, but it can be good to read it to remember.
+
+<br>
+
+<FONT SIZE=3 COLOR="#0080FF" FACE="Arial"><B>How you calculate power</B><BR></FONT>
+
+<IMG SRC="cpow.gif" tppabs="http://hem.passagen.se/communication/pic/cpow.gif" WIDTH=538 HEIGHT=275 BORDER=1 ALIGN="BOTTOM"><BR><BR>
+Above you can see a AC generator and a resistor of 50 ohm. A current will flow in the circuit and you can easy calculate the effect which
+will be consumed by the resistor. The effect will be transformed into heat.
+In the blue frame you can see how I calculate the power to 20mW. The red frame show how you can calculate the power into dBm, which
+which stand for decibels above 1 mW in 50 ohm, written dBm. <br>In the green table at rigth I have calculated some power into P<SUB>dBm</SUB>.
+<BR>
+<BR>
+<FONT SIZE=3 COLOR="#0080FF" FACE="Arial"><B>Block diagram</B><BR></FONT>
+<IMG SRC="pbl.gif" tppabs="http://hem.passagen.se/communication/pic/pbl.gif" WIDTH=512 HEIGHT=164 BORDER=1 ALIGN="BOTTOM"><BR>
+<BR>
+The input power is measured by the circuit AD8307. A resistor ladder will divide down the power to proper range for the AD8307 circuit. 
+An A/D converter of 12 bit convert the analogue output from the AD8307 to a digital number.
+Since the AD is a12 bit A/D you will have 4096  combinations. The output values will be from 0 to 4095.
+Since the AD8307 gives a analogue voltage which represent the (dBm) of the input power, we need to recalculate the value to get the power in watt.
+The dBm is a logarithmic scale and that would include lot of math (floating point in the PIC processor) so I have chosen the 
+easy way and used a lookup table instead. It is memory bank containing all the display text.
+I have pre-calculated all the display text for each A/D value.
+The output values from the AD (0 to 4095) points to a direction in the memory where the actual display text
+value is stored. The text will be fetched and presented on the display.
+<BR><BR>
+The advantage of using a memory map is that it will be easy to build, I can implement prefix in the text,
+it will be fast and it will work!<br>
+In reality I will use 1 EEPROM of 32k. The EEPROM is cheap but there is one tricky thing to do. 
+The memory table must be programmed into the EEPROM before it can be used. You simply connect a RS232 cable to a computer and use a  program I will support you with. This program will handle everything, just start the program  and  go make yourself a cup of coffee. 
+
+Every memory cell will take 10-20ms to burn so it will take 10-15min.<br>
+Once the EEPROM has been programmed you will not have to do this again.<IMG SRC="coff5.gif" tppabs="http://hem.passagen.se/communication/pic/coff5.gif" WIDTH=32 HEIGHT=25 BORDER=0 ALIGN="BOTTOM">
+<br>
+<br>
+
+<FONT SIZE=3 COLOR="#0080FF" FACE="Arial"><B>Hardware and schematic</B></FONT>
+<br>
+<a href="30wnd.gif" tppabs="http://hem.passagen.se/communication/pic/30wnd.gif" target="afas"><img src="30wnds.jpg" tppabs="http://hem.passagen.se/communication/pic/30wnds.jpg" alt="Click here to view a larger schematic" width="200" height="135" border="1" align="right"></a>
+
+Let's look at the schematic at the RF-Input.<br>
+Directly connected over the input is a 50 ohm (dummy) resistor which can handle 50w.<br>
+Then you will see 5 resistors forming a voltage divider to the AD8307.<br>
+The resistors are 1.5k +1.5k +1.8k +100 + 100.<br>
+<strong>How does all this work?</strong><br>
+Well, the AD8307 is actually a voltage RF measuring circuit.<br>
+In the datasheet of AD8307, you will see that 10mW RF input into 50 ohm is equal to 10dBm and will give 2.5V DC out of the circuit.<br>
+Now, which voltage will give 10mW into 50 ohm?<br>
+P=U<sup>2</sup>/R => 0.01 = U<sup>2</sup>/50 => U = 0.707V. Now, we know that 0.707V RF input will give 2.5V DC out of the circuit.<br>
+I my schematic I have used a 100 ohm resistor over  (+In and -In). We must not forget that the circuit iself has an input resistance of 1.1k ohm.<br>
+<strong>So let's start calculating backwards and have some brain exercise...*lol*</strong><br>
+1.1k//100 = 91.66 ohm. Let us now calculate the input resistance which the RF signal will see.<br>
+Rin =50//(1.5k+1.5k+1.8k+100+91.66) = 49.50 ohm...pretty good match.<br>
+If I put 30W into this system the voltage over the input would be: P=U<sup>2</sup>/R => 30 = U<sup>2</sup>/49.50 => 38.54 V<br>
+<br>
+
+To get a 2.5V DC out of the AD7307 (which was equal to 0.707V RF-in), We have to scale down the 38.54V to the 0.707V.<br>
+38.54/0.707 = <strong>54.5 times</strong>.<br>
+<img src="pwr30.jpg" tppabs="http://hem.passagen.se/communication/pic/pwr30.jpg" alt="Photo of display of the the 30W meter." width="384" height="263" border="1" align="right">
+Since the Rin was 91.66 ohm we can calculate the scaling resistor of the ladder.<br>
+Scale = (Rladder + 91.66)/91.66 = > Rladder should be 4904 ohm.<br>
+In my case I use 1.5k + 1.5k + 1.8k + 100 = 4900 ohm....pretty good match.<br>
+<br>
+Puhhhh, that was some bori...basic math, lets move on to more fun stuff :-)<br>
+<br>
+The output signal from the AD8307 goes to an A/D circuit which are controlled by the PIC16F870.<br>
+To the PIC is an EEPROM connected. This EEPROM will contain the look-up table for the display.<br>
+The display in this project is a basic 2 line and 16 char LCD display based on a HD44780 controller circuit (most common).<br>
+As I told you earlier, the EEPROM must be programmed from a computer to make this unit work properly.
+The connection to a computer is done by a RS232 wire. The programming procedure is very  simple: Start the main program in the computer and connect the RS232 wire to the wattmeter.<br>
+Before you turn on the power of the wattmeter you should make sure that the switch SW1 is closed.<br>
+This will indicate the PIC that it should program the EEPROM.<br>
+Now turn on the power and hit the button of the software called "Program EEPROM".<br>
+Everything will now be automatically. When program is finished you should turn off the power and remove SW1. The unit is now ready to be used.<br>
+<br>
+
+<br>
+
+<FONT SIZE=3 COLOR="#0080FF" FACE="Arial"><B>Windows Software</B><BR></FONT>
+<img src="30wsoft.jpg" tppabs="http://hem.passagen.se/communication/pic/30wsoft.jpg" alt="This is the software to load the EEPROM." width="349" height="173" border="1" align="right">
+
+This is the Window software I use to load the EEPROM. The software is quit simple. Connect the 
+wattmeter to the the computer via RS232-cable. Choose Com1 or Com2. Click Open file button and
+choose the file called "data.txt" which contains the pre calculated table.<strong></strong>
+<br>
+When the EEPROM i loaded the wattmeter will go into normal mode and display the actual power.<br>
+<br>
+The PIC and windows software is zipped (software + data.txt) and can be download by links below:<br>
+<br>
+<TABLE CELLPADDING=0 CELLSPACING=0 WIDTH=550 BORDER=1 BGCOLOR="#E0FCE1">
+<TR>
+	<TD> <A HREF="30w_meter.zip" tppabs="http://hem.passagen.se/communication/pic/30w_meter.zip" TARGET="pr5">30w_meter.zip</A></TD>
+	<TD>PIC software (the hex files are zipped!)</TD>
+</TR>
+<TR>
+	<TD> <A HREF="javascript:if(confirm('http://hem.bredband.net/b395058/30w_win.zip  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://hem.bredband.net/b395058/30w_win.zip'" tppabs="http://hem.bredband.net/b395058/30w_win.zip" TARGET="pr5">30w_win.zip</A></TD>
+	<TD>Windows software + data.txt (table)</TD>
+</TR>
+
+</TABLE>
+<br>
+<br>
+<FONT SIZE=3 COLOR="#0080FF" FACE="Arial"><B>Final word</B></FONT>
+
+<BR>
+This project explain how you can build a very powerful wattmeter toll by using a simple circuit called AD8307.<br>
+I choose to make this wattmeter digital and the display showed the power in watts.<br> 
+A good wattmeter is very important to have and I really advice you to build a wattmeter or some kind of measuring tool 
+when you are working with RF and transmitters.<br>
+ It will really make your work easier.<br>
+I wish you good luck with your projects and thanks for visit my page.
+<br>
+<br>
+</FONT>
+</FONT>
+</FONT>
+
+<HR ALIGN=center size=3 width=85%>
+<font color="#0080FF" size="2"><font face="verdana,arial,helvetica,geneva,sans-serif">
+<div align="center"><A HREF="meny.html" tppabs="http://hem.passagen.se/communication/meny.html" >Back to main Page</A>&nbsp; | &nbsp;<A HREF="mailto:maxit91@hotmail.com">Contact Me</A>&nbsp; | &nbsp;<A HREF="component.html" tppabs="http://hem.passagen.se/communication/component.html" target="comp1">Cheap components</A><br></div>
+
+<br><div align="center">Copyright © Last modified on 16 november 2005.</div> 
+</font>
+</BODY>
+</HTML>

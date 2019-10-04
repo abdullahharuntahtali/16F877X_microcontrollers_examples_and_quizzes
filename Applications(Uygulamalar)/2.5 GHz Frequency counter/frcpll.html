@@ -1,0 +1,352 @@
+<html><head>
+
+<script language="JavaScript" type="text/javascript" src="frcpll_files/frameit.js"></script><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"><meta name="Generator" content="Microsoft Word 97"><title>2.5 GHz Frequency counter</title><meta name="keywords" content="spolar, coil, toroid, rf, ham, ham radio, circuit, CW, QRP, RX, 
+TX, RF, IF, PCB, PSU, GDO, QRP, home brew, home-brew, amateur radio, 
+amatöradio, construction, transmitter, receiver, key, keys, fm, fet, 
+hams, transistor, power supply, printed circuit boards, 
+amplifier, homebrew, Q, q, keyer, printed circuit board, FET, rfamp, 
+rf-amp, ift, pcb, transmitter, psu, gdo, gdos, tubes, pcbs, gdo, cw, 
+g4vvj, SA602, SA612, mc13135, mc13136, datasheet, zn414, zn416, zn414z, pdf, 
+zn416e, qrp, notepad, tda7000, calc, parallel, series, frequency, a,
+A,  heatsink, software, download"><meta name="Template" content="C:\Program\Microsoft Office\Mallar\Webbsidor\Webbsideguiden.wiz"></head><frameset rows="89,*" frameborder="0" border="0" framespacing="0"><frame src="frcpll_files/a.htm" name="PasTop" noresize="noresize" scrolling="no"><frame src="frcpll_files/frcpll.htm" name="PasMain" noresize="noresize" scrolling="auto"></frameset>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+ 
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+	 
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    
+    
+
+
+    
+    
+    
+    
+
+
+    
+    
+    
+    
+
+
+    
+    
+    
+    
+
+
+    
+    
+    
+    	
+
+
+    
+    
+    
+    	
+
+
+    
+    
+    
+    	
+
+
+    
+    
+    
+    	
+
+
+    
+    
+    
+    	
+
+
+    
+    
+    
+    	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	 
+	 
+
+
+	 
+	 
+
+
+
+<!--
+<br>
+<FONT SIZE=3 COLOR="#0080FF" FACE="Arial"><B>Kit </B><BR></FONT>
+Many people write to me and ask for PCB and components.<br>
+Mail me for more info!<br>
+
+To help all of you I have put everything you need on this page. <br>
+I have also made a kit for all of you who doesn't want to chase components and make PCB yourself. <br>
+
+<table cellspacing="0" cellpadding="0" border="1" WIDTH=500 BGCOLOR="#E0FCE1">
+
+<tr>
+    <td colspan="2" BGCOLOR="#c7f5fe"><strong><div align="center">The kit cost 45 Euro and include these components:</div></strong></td>
+</tr>
+<tr>
+    <td WIDTH="70"><div align="center">1 pcs</div></td>
+    <td WIDTH="430"><FONT SIZE=2 FACE="Arial"><li><strong>PCB</strong> (etched and drilled vias)</li></FONT></td>
+</tr>
+<tr>
+    <td><div align="center">1 pcs</div></td>
+    <td><FONT SIZE=2 FACE="Arial"><li><strong>PIC16F870</strong> PIC16F870 pre-programmed with software (DIP)</li></FONT></td>
+</tr>
+<tr>
+    <td><div align="center">1 pcs</div></td>
+    <td><FONT SIZE=2 FACE="Arial"><li><strong>PLL circuit</strong> LMX2322 smd</li></FONT></td>
+</tr>
+<tr>
+    <td><div align="center">6 pcs</div></td>
+    <td><FONT SIZE=2 FACE="Arial"><li><strong>LED HDSP-3600</strong> Displays</li></FONT></td>
+</tr>
+<tr>
+    <td><div align="center">6 pcs</div></td>
+    <td><FONT SIZE=2 FACE="Arial"><li><strong>BC817-25</strong> NPN smd</li></FONT></td>
+</tr>
+<tr>
+    <td><div align="center">1 pcs</div></td>
+    <td><FONT SIZE=2 FACE="Arial"><li><strong>BC807</strong> PNP smd</li></FONT></td>
+</tr>
+<tr>
+    <td><div align="center">2 pcs</div></td>
+    <td><FONT SIZE=2 FACE="Arial"><li><strong>Crystal 13.000MHz</strong> smd high performance</li></FONT></td>
+</tr>
+<tr>
+    <td><div align="center">1 pcs</div></td>
+    <td><FONT SIZE=2 FACE="Arial"><li><strong>Variable capacitor</strong> smd C11</li></FONT></td>
+</tr>
+<tr>
+    <td><div align="center">11 pcs</div></td>
+    <td><FONT SIZE=2 FACE="Arial"><li><strong>Resistors</strong> 3.3k smd</li></FONT></td>
+</tr>
+<tr>
+    <td><div align="center">5 pcs</div></td>
+    <td><FONT SIZE=2 FACE="Arial"><li><strong>100nF</strong> smd </li></FONT></td>
+</tr>
+<tr>
+    <td><div align="center">10 pcs</div></td>
+    <td><FONT SIZE=2 FACE="Arial"><li><strong>Resistors</strong> 100 ohm smd</li></FONT></td>
+</tr>
+<tr>
+    <td><div align="center">1 pcs</div></td>
+    <td><FONT SIZE=2 FACE="Arial"><li><strong>Diode</strong> 1N4148 smd</li></FONT></td>
+</tr>
+<tr>
+    <td><div align="center">2 pcs</div></td>
+    <td><FONT SIZE=2 FACE="Arial"><li><strong>jumpers stift</strong></li></FONT></td>
+</tr>
+
+<tr>
+
+    <td colspan="2" BGCOLOR="#ffd9ff">
+			<strong><div align="center">Order/question</div></strong>
+			<FONT SIZE=2 COLOR="#000000" FACE="Arial">Please enter your email, so I can reply.</font><br>
+			<INPUT TYPE="text" NAME="e-mail freq sida" SIZE="55" VALUE=""> <br>
+			<FONT SIZE=2 COLOR="#000000" FACE="Arial">
+			Please type your Order/Question  </font><br>
+
+			<TEXTAREA NAME="kommentar freq sida" ROWS=5 COLS=55></TEXTAREA><br>
+	
+			<br>
+			<div align="center"><INPUT TYPE="submit" VALUE="Send Order/Question"></div><br>
+			<div align="center"><A HREF="mailto:maxit91@hotmail.com">You can also mail me.</A></div>	
+			<input type="hidden" name="redirect" value="http://hem.passagen.se/communication/componenta.html">
+
+	</td>
+</tr>
+</table>
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+ 
+
+
+
+
+
+
+
+
+
+  
+
+ 
+
+
+</html>

@@ -1,0 +1,135 @@
+'****************************************************************
+'*  Name    : YILDI ÜÇGEN RÖLE.BAS                              *
+'*  Author  : X0914667@yahoo.com                                *
+'*  Notice  : Copyright (c) 2006 [select VIEW...EDITOR OPTIONS] *
+'*          : All Rights Reserved                               *
+'*  Date    : 08.07.2006                                        *
+'*  Version : 1.0                                               *
+'*  Notes   :                                                   *
+'*          :                                                   *
+'****************************************************************
+Define LCD_DREG PORTB      'LCD DATA TANIM AYARLARI
+Define LCD_DBIT 4          'LCD TANIM AYARLARI
+Define LCD_RSREG PORTB     'LCD RS TANIM AYARLARI
+Define LCD_RSBIT 2         'LCD TANIM AYARLARI
+Define LCD_EREG PORTB      'LCD RE TANIM AYARLARI
+Define LCD_EBIT 3          'LCD TANIM AYARLARI
+DEFINE LCD_LINES 2         'LCD SATIR SAYISI
+'*********************DEÐÝÞKEN TANIMLARI*************************
+SAYAC VAR BYTE             'ZAMAN SAYACI 1 SN.'LÝK
+SANIYE VAR BYTE            'SANÝYE SAYACI
+KUMANDA VAR BIT
+UCGENEGEC1 VAR BIT
+B1 VAR BYTE 
+B0 VAR BYTE 
+B2 VAR BYTE 
+B3 VAR BYTE 
+B4 VAR BYTE 
+B5 VAR BYTE 
+'*******************ZAMAN SAYACI ÝNTERRUPT AYARLARI**************
+ON INTERRUPT GoTo KESME   'kesme oluþursa KESME adlý etikete git.
+OPTION_REG=%10000101      'Pull up dirençleri ÝPTAL- Bölme oraný 1/64.
+INTCON=%10100000          'Kesmeler aktif ve TMR0 kesmesi aktif
+TMR0=0
+CMCON=7 
+clear                   'BÜTÜN DEÐÝÞKENLERÝ SIFIRLA
+LCDOUT $FE,1            'LCD'YÝ TEMÝZLE
+PAUSE 500               'LCD ÝÇÝN BEKLEME ZAMANI
+'TRISA=%
+'TRISB=0                  'PORTB ÇIKIÞ
+'*****************AÇILIÞ ÝÇÝN KAYAN YAZI**************************
+LOOP:
+LCDOut $fe,2 
+For B2= 0 TO 15 
+LookUp B0, ["               OTUGEN OTOMASYON                #"], B1 
+IF B1 = "#" Then GoTo reset 
+LCDOut B1 
+B0 = B0 + 1 
+Next B2 
+pause 125        'KARAKTER BEKLEME ZAMANI
+B0 = B0 - 15 
+GoTo loop
+RESET:
+LCDOUT $FE,1
+
+'*****************************************************************
+onprogram:
+  LCDOUT $FE,$80
+  LCDOUT "  YILDIZ UCGEN    "
+  LCDOUT $FE,$C0
+  LCDOUT " KUMANDA ROLESI   "
+  PAUSE 500
+  LCDOUT $FE,1
+ANAPROGRAM:  
+  IF PORTA.7=1 THEN 
+   GOTO ARIZA
+    ELSE
+     GOTO NORMAL
+      ENDIF
+ARIZA:
+ LCDOUT $FE,$80,"MOTORUN TERMIK"
+ LCDOUT $FE,$C0,"ROLESI  ATTI  "
+LOW PORTB.0:LOW PORTA.3:LOW PORTB.1 
+KUMANDA=0:SAYAC=0:SANIYE=0
+ GOTO ANAPROGRAM  
+NORMAL:  
+  LCDOUT $FE,$80,"MOTOR:"
+  IF PORTA.3=0 THEN 
+   GOTO mesajstop
+    else
+     goto start
+      endif
+mesajstop:
+ lcdout $fe,$86,"STOP           "
+ LCDOUT $FE,$C0,"               "   
+ GOTO KONTROL
+ START:
+ lcdout $fe,$86,"START          "  
+ GOTO KONTROL
+KONTROL:     
+   IF (PORTA.1=1) OR (PORTA.7=1) THEN GOTO MOTORDUR
+   IF (PORTA.1=0)AND(PORTA.7=0)AND(PORTA.0=1)OR(KUMANDA=1) THEN 
+    GOTO MOTORYILDIZ
+     ELSE
+      GOTO MOTORDUR
+       ENDIF
+MOTORYILDIZ:
+KUMANDA=1
+IF SANIYE=15 THEN
+  UCGENEGEC1=1      
+    ENDIF
+IF UCGENEGEC1=1 THEN GOTO UCGEN
+LOW PORTB.0:HIGH PORTA.3:HIGH PORTB.1 
+LCDOUT $FE,$C0,"CALISMA YILDIZ"   
+GOTO PROGRAMDEVAM
+UCGEN:
+HIGH PORTB.0:HIGH PORTA.3:LOW PORTB.1
+LCDOUT $FE,$C0,"CALISMA UCGEN "
+GOTO ANAPROGRAM
+MOTORDUR:
+LOW PORTB.0:LOW PORTA.3:LOW PORTB.1 
+KUMANDA=0:SAYAC=0:SANIYE=0
+PROGRAMDEVAM: 
+GOTO ANAPROGRAM     
+
+
+'********************ZAMAN RÖLESÝ PARAMETRELERÝ**************************
+DISABLE
+KESME:
+    IF KUMANDA=1 THEN 
+        GOTO SAY    
+         ELSE
+          GOTO DEVAM 
+            ENDIF
+SAY:            
+        SAYAC=SAYAC+1      'kesme sayacý  1 sn= 61(sayac) x 256 (Tmr0) x 64 (bölme)
+         IF SAYAC=61 then   '61 adet kesme olunca 1 sn. süre geçiyor.(999424 us)
+            SAYAC=0           'sayaç sýfýrlanýyor
+              SANIYE=SANIYE+1
+'             GOSUB ZAMAN_OKU
+'         if Y<5 then HIGH porta.3
+       ENDIF
+DEVAM:    
+        INTCON.2=0  'TMR0 Kesme bayraðý sýfýrlanýyor
+         RESUME
+         ENABLE 

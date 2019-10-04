@@ -1,0 +1,261 @@
+
+	LIST	 p=16f84
+	#include <p16f84.inc>
+
+tmr0		equ	01h	;AJASTIMEN LASKIJA
+status		equ	03h	;STATUS REKISTERI
+porta		equ	05h	;PORTTI A OSOITE
+portb		equ	06h	;PORTTI B OSOITE
+trisa		equ	85h	;KOLMITILAREKISTERI PORTTI A
+trisb		equ	86h	;KOLMITILAREKISTERI PORTTI B
+optreg		equ	81h	;OPTION REKISTERI
+
+#define	swvv	porta,0		;KYTKIN PORTISSA A BIT 0 (VASEN)
+#define	swvo	porta,1		;KYTKIN PORTISSA A BIT 1 (OIKEA)
+#define	swjv	porta,2		;KYTKIN PORTISSA A BIT 2 (JARRUVALO)
+#define swmd	porta,3		;KYTKIN PORTISSA A BIT 3 (MOODI)
+
+#define leda	porta,4		;LED PORTISSA A BIT 4 (VALO A)
+#define	ledb	portb,0		;LED PORTISSA B BIT 0 (VALO B)
+#define	ledc	portb,1		;LED PORTISSA B BIT 1 (VALO C)
+#define	ledd	portb,2		;LED PORTISSA B BIT 2 (VALO D)
+#define	lede	portb,3		;LED PORTISSA B BIT 3 (VALO E)
+#define	ledf	portb,4		;LED PORTISSA B BIT 4 (VALO F)
+#define	ledg	portb,5		;LED PORTISSA B BIT 5 (VALO G)
+#define	ledh	portb,6		;LED PORTISSA B BIT 6 (VALO H)
+#define	ledi	portb,7		;LED PORTISSA B BIT 7 (VALO I)
+
+#define	pa0	status,5	;SIVUN VALINTA BITTI
+
+count1		equ	0ch	;AJAN LASKENTA REKISTERI 1 
+count2		equ	0dh	;AJAN LASKENTA REKISTERI 2
+
+	org	0		;NOLLAA OSOITINREKISTERI
+	goto	init
+
+;****** OHJELMA ALKAA TÄSTÄ ***********************************************
+
+init
+	clrf		portb		;NOLLAA PORTTI B KÄYNNISTYKSESSÄ
+	clrf		porta		;NOLLAA PORTTI A KÄYNNISTYKSESSÄ
+	bsf		pa0		;SIIRRY SIVULLE 1 (MEMORY BANK)
+	movlw		0fh		;SISÄÄNMENOPORTIIN MÄÄRITTELY (0-3 IN 4 OUT)
+	movwf		trisa		;MÄÄRITTELE SISÄÄNMENO PORTN NASTAT
+	clrf		trisb		;MÄÄRITTELE LÄHTÖ PORTIN NASTAT (0-7 OUT)
+	movlw		b'00000111'	;OPTION REKISTERIIN SISÄLTÖ
+	movwf		optreg		;ASETA RTCC JAKAJAKSI 256
+	bcf		pa0		;PALAA SIVULLE 0 (MEMORY BANK)
+main
+	btfsc		swjv		;TESTAA JARRUVALOKYTKINTÄ 
+	call		brake		;ALIOHJELMA brake
+	btfsc		swvv		;TESTAA KYTKINTÄ VASEMMALLE
+	call		vasvil		;ALIOHJELMA vasvil
+	btfsc		swvo		;TESTAA KYTKINTÄ OIKEALLE
+	call		oivil		;ALIOHJELMA oivil
+	goto		main		;ALOITA ALUSTA
+
+;****** OHELMA PÄÄTTYY TÄHÄN **********************************************
+
+;****** ALIOHJELMAT *******************************************************
+;
+;...... JAKSON AJAT .......................................................
+;
+;------ LYHYT JAKSOTUS ----------------------------------------------------
+
+viive2
+	movlw		.001		;001 x 49,152mS = 49,152mS
+	movwf		count2
+skip6
+	movlw		.003		;003 x 16,384ms = 49,152mS 
+	movwf		count1
+skip5
+	clrf		tmr0		;AJASTIMEN NOLLAUS
+skip4
+	btfss		tmr0,6		;TESTAA BITTIÄ 6=1 => 16,384mS 
+	goto		skip4		;
+
+	decfsz		count1,f	;VÄHENNÄ AJASTINTA
+	goto		skip5		;
+
+	decfsz		count2,f	;VÄHENNÄ AJASTINTA
+	goto		skip6		;
+
+	return	
+	
+;------ PITKÄ JAKSOTUS --------------------------------------------------
+viive1
+	movlw		.002		;002 x 98,304mS = 196,608mS
+	movwf		count2
+time1
+	movlw		.003		;003 x 32,768ms = 98,304mS
+	movwf		count1
+skip2
+	clrf		tmr0		;AJASTIMEN NOLLAUS
+skip1
+	btfss		tmr0,7		;TESTAA BITTIÄ 7=1 => 32,768mS
+	goto		skip1		;
+
+	decfsz		count1,f	;VÄHENNÄ AJASTINTA
+	goto		skip2		;
+
+	decfsz		count2,f	;VÄHENNÄ AJASTINTA
+	goto		time1		;
+	return
+
+;...... VASEN VILKKU ......................................................
+vasvil
+	btfsc		swmd		;TESTAA KYTKINTÄ MOODI
+	goto		vasvis		;HYPPY vasvis
+vasvi
+	bsf		ledi		;SYTYTÄ VASEMMAT VALOT
+	call		viive1		;KUTSU VIIVE
+	bcf		ledi		;SAMMUTA VASEMMAT VALOT
+	call		viive1		;KUTSU VIIVE
+	return				;PALAA PÄÄOHJELMAAN
+
+;------ VASEMMALLE JUOKSEVA VALO ------------------------------------------
+vasvis
+	bsf		leda		;SYTYTÄ A VALO
+	call		viive2		;KUTSU VIIVE
+	bsf		ledb		;SYTYTÄ B VALO
+	call		viive2		;KUTSU VIIVE
+	bcf		leda		;SAMMUTA A VALO
+	bsf		ledc		;SYTYTÄ C VALO
+	call		viive2		;KUTSU VIIVE
+	bcf		ledb		;SAMMUTA B VALO
+	bsf		ledd		;SYTYTÄ D VALO
+	call		viive2		;KUTSU VIIVE
+	bcf		ledc		;SAMMUTA C VALO
+	bsf		lede		;SYTYTÄ E VALO
+	call		viive2		;KUTSU VIIVE
+	bcf		ledd		;SAMMUTA D VALO
+	bsf		ledf		;SYTYTÄ F VALO
+	call		viive2		;KUTSU VIIVE
+	bcf		lede		;SAMMUTA E VALO
+	bsf		ledg		;SYTYTÄ G VALO
+	call		viive2		;KUTSU VIIVE
+	bcf		ledf		;SAMMUTA F VALO
+	bsf		ledh		;SYTYTÄ H VALO
+	call		viive2		;KUTSU VIIVE
+	bcf		ledg		;SAMMUTA G VALO
+	bsf		ledi		;SYTYTÄ I VALO
+	call		viive2		;KUTSU VIIVE
+	bcf		ledh		;SAMMUTA H VALO
+	call		viive1		;KUTSU VIIVE
+	bcf		ledi		;SAMMUTA I VALO
+	call		viive1		;KUTSU VIIVE
+	return				;PALAA PÄÄOHJELMAAN
+
+;...... OIKEA VILKKU ......................................................
+oivil
+	btfsc		swmd		;TESTAA KYTKINTÄ MOODI
+	goto		oivis		;HYPPY oivis
+oivi
+	bsf		leda		;SYTYTÄ OIKEAT VALOT
+	call		viive1		;KUTSU VIIVE
+	bcf		leda		;SAMMUTA OIKEAT VALOT
+	call		viive1		;KUTSU VIIVE
+	return				;PALAA PÄÄOHJELMAAN
+
+;------- OIKEALLE JUOKSEVA VALO -------------------------------------------
+oivis
+	bsf		ledi		;SYTYTÄ I VALO
+	call		viive2		;KUTSU VIIVE
+	bsf		ledh		;SYTYTÄ H VALO
+	call		viive2		;KUTSU VIIVE
+	bcf		ledi		;SAMMUTA I VALO
+	bsf		ledg		;SYTYTÄ G VALO
+	call		viive2		;KUTSU VIIVE
+	bcf		ledh		;SAMMUTA H VALO
+	bsf		ledf		;SYTYTÄ F VALO
+	call		viive2		;KUTSU VIIVE
+	bcf		ledg		;SAMMUTA G VALO
+	bsf		lede		;SYTYTÄ E VALO
+	call		viive2		;KUTSU VIIVE
+	bcf		ledf		;SAMMUTA F VALO
+	bsf		ledd		;SYTYTÄ D VALO
+	call		viive2		;KUTSU VIIVE
+	bcf		lede		;SAMMUTA E VALO
+	bsf		ledc		;SYTYTÄ C VALO
+	call		viive2		;KUTSU VIIVE
+	bcf		ledd		;SAMMUTA D VALO
+	bsf		ledb		;SYTYTÄ B VALO
+	call		viive2		;KUTSU VIIVE
+	bcf		ledc		;SAMMUTA C VALO
+	bsf		leda		;SYTYTÄ A VALO
+	call		viive2		;KUTSU VIIVE
+	bcf		ledb		;SAMMUTA B VALO
+	call		viive1		;KUTSU VIIVE
+	bcf		leda		;SAMMUTA A VALO
+	call		viive1		;KUTSU VIIVE
+	return				;PALAA PÄÄOHJELMAAN
+
+;...... JARRUVALO .........................................................
+brake
+	btfsc		swmd		;TESTAA KYTKINTÄ MOODI
+	goto		brakejv		;ALIOHJELMA brakejv
+skp10	
+	btfsc		swjv		;TESTAA JARRUVALOKYTKINTÄ 
+	goto		jarru
+	clrf		portb		;sammuta portin b kaikki valot
+	bcf		leda		;sammuta led a
+	return				;PALUU PÄÄOHJELMAAN
+jarru
+	movlw		b'11111111'	
+	movwf		portb		;sytytä portin b kaikki valot
+	bsf		leda		;sytytä led a
+	goto		skp10
+	
+;------ JUOKSEVA JARRUVALO -----------------------------------------------
+brakejv
+	bsf		leda		;SYTYTÄ a VALO
+	bsf		ledi		;SYTYTÄ i VALO
+	call		viive2		;KUTSU VIIVE
+	bsf		ledb		;SYTYTÄ b VALO
+	bsf		ledh		;SYTYTÄ h VALO
+	call		viive2		;KUTSU VIIVE
+	bcf		leda		;SAMMUTA a VALO
+	bcf		ledi		;SAMMUTA i VALO
+	bsf		ledc		;SYTYTÄ c VALO
+	bsf		ledg		;SYTYTÄ g VALO
+	call		viive2		;KUTSU VIIVE
+	bcf		ledb		;SAMMUTA b VALO
+	bcf		ledh		;SAMMUTA h VALO
+	bsf		ledd		;SYTYTÄ d VALO
+	bsf		ledf		;SYTYTÄ f VALO
+	call		viive2		;KUTSU VIIVE
+	bsf		lede		;SYTYTÄ e VALO
+	bcf		ledc		;SAMMUTA c VALO
+	bcf		ledg		;SAMMUTA g VALO
+	call		viive2		;KUTSU VIIVE
+	bcf		ledf		;SAMMUTA f VALO
+	bcf		ledd		;SAMMUTA d VALO
+	call		viive2		;KUTSU VIIVE
+	call		viive2		;KUTSU VIIVE
+	bsf		ledf		;SYTYTÄ f VALO
+	bsf		ledd		;SYTYTÄ d VALO
+	call		viive2		;KUTSU VIIVE
+	bcf		lede		;SAMMUTA e VALO
+	bsf		ledg		;SYTYTÄ g VALO
+	bsf		ledc		;SYTYTÄ c VALO
+	call		viive2		;KUTSU VIIVE
+	bsf		ledh		;SYTYTÄ h VALO
+	bsf		ledb		;SYTYTÄ b VALO
+	bcf		ledf		;SAMMUTA f VALO
+	bcf		ledd		;SAMMUTA d VALO
+	call		viive2		;KUTSU VIIVE
+	bsf		ledi		;SYTYTÄ i VALO
+	bsf		leda		;SYTYTÄ a VALO
+	bcf		ledc		;SAMMUTA c VALO
+	bcf		ledg		;SAMMUTA g VALO
+	call		viive2		;KUTSU VIIVE
+	bcf		ledh		;SAMMUTA h VALO
+	bcf		ledb		;SAMMUTA b VALO
+	call		viive2		;KUTSU VIIVE
+	bcf		ledi		;SAMMUTA i VALO
+	bcf		leda		;SAMMUTA a VALO
+	return				;PALUU PÄÄOHJELMAAN
+
+;****** ALIOHJELMIEN JA OHJELMAN LOPETUS **********************************
+
+	end				;OHJELMARIVIEN LOPETUS

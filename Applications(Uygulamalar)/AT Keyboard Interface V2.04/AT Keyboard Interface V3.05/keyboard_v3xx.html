@@ -1,0 +1,418 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head>
+
+
+  <meta name="GENERATOR" content="Adobe PageMill 3.0 Win">
+  <!-- base -->
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="author" content="Peter Luethi, Switzerland">
+  <meta name="description" content="AT Keyboard Interface with LCD Display for Microchip PIC 16F84 Microcontroller">
+  <meta name="keywords" content="keyboard, interface, microchip, lcd display, pic micro controller, micro controller, assembler source, 16f84, electronic, circuits, 8 bit risc"><title>AT Keyboard Interface V3.05 for Microchip PIC 16C74A Microcontroller</title>
+  
+  <link rel="stylesheet" href="keyboard_v3xx_files/projects.css" type="text/css"></head><body alink="#000080" background="keyboard_v3xx_files/background.jpg" link="#000080" vlink="#000080">
+
+<h1><a name="top"></a>AT Keyboard Interface V3.05</h1>
+
+<p><span class="subtitle">with LCD Display for Microchip PIC16F77
+/ PIC16C74A</span><br>
+&nbsp;</p>
+
+<h4><a name="toc"></a>Table of Contents [Toc]</h4>
+
+<p><a href="#concept">Concept</a><br>
+&nbsp;&nbsp; <a href="#how_it_works">How it works</a><br>
+&nbsp;&nbsp; <a href="#specifications">Specifications</a><br>
+&nbsp;&nbsp; <a href="#features">Features</a><br>
+&nbsp;&nbsp; <a href="#limitations">Limitations</a><br>
+<a href="#project_resources">Project Resources</a><br>
+&nbsp;&nbsp; <a href="#assembler_code">Available PIC Assembler
+Code</a><br>
+&nbsp;&nbsp; <a href="#schematic">Schematic, Data Sheets, Pinout</a><br>
+&nbsp;&nbsp; <a href="#customization">User-specific Customization</a><br>
+&nbsp;</p>
+
+<h2><a name="concept"></a>Concept <span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></h2>
+
+<p>This implementation contains the complete fetch and decoding
+of AT keyboard scan patterns as well as RS232 transmission and
+reception of ASCII characters to and from the remote RS232 client.
+This microcontroller application also features an interface to
+a dot matrix LCD display to visualize the the data received from
+the RS232 client on the first line, and the characters typed on
+the locally attached keyboard on the second line.<br>
+&nbsp;</p>
+
+<p></p><table border="0" cellpadding="0" cellspacing="0" width="590">
+  <tbody><tr>
+    <td colspan="3">
+    <img src="keyboard_v3xx_files/lcd_kbd3xx.jpg" naturalsizeflag="0" align="bottom" border="0" height="90" width="413">
+</td>
+  </tr>
+  <tr>
+    <td height="40" width="288">
+    &nbsp;</td> 
+    <td height="40" width="24">
+    &nbsp;</td> 
+    <td height="40" width="278">
+    &nbsp;</td> 
+  </tr>
+  <tr>
+    <td width="288">
+    <img src="keyboard_v3xx_files/pic16c74a.jpg" naturalsizeflag="0" align="bottom" border="0" height="138" width="237">
+</td>
+    <td colspan="2" width="302">
+    <img src="keyboard_v3xx_files/board.jpg" naturalsizeflag="0" align="bottom" border="0" height="217" width="302">
+</td>
+  </tr>
+  <tr>
+    <td height="40" width="288">
+    &nbsp;</td> 
+    <td height="40" width="24">
+    &nbsp;</td> 
+    <td height="40" width="278">
+    &nbsp;</td> 
+  </tr>
+  <tr>
+    <td colspan="2" width="302">
+    <img src="keyboard_v3xx_files/keyboard_application.jpg" naturalsizeflag="0" align="bottom" border="0" height="231" width="302">
+</td>
+    <td align="center" width="278">
+    <img src="keyboard_v3xx_files/max232.JPG" naturalsizeflag="0" align="bottom" border="0" height="185" width="174">
+</td>
+  </tr>
+</tbody></table>
+
+<p>&nbsp;</p>
+
+<h3><a name="how_it_works"></a>How it works <span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></h3>
+
+<p>Any key stroke on the local keyboard will send the corresponding
+scan patterns from the keyboard to the PIC microcontroller. Afterwards,
+the microcontroller converts the keyboard scan patterns to ASCII
+characters, shows them on the LCD display and transmits them to
+the RS232 target device.<br>
+The keyboard scan code capture is done by an interrupt service
+routine. The event, which triggers the interrupt is a falling
+edge on the keyboard clock line (PORTB,0). Keyboard scan pattern
+acquisition takes place at the keyboard data line (PORTA,4). After
+11 clocks (i.e. 11 external interrupts on RB0/INT), the interrupt
+service routine has completely captured an 8 bit element of the
+entire scan pattern and sets a ready flag. The decoding of this
+8 bit element is then carried out during normal operation mode,
+activated by a valid ready flag whilst keeping the keyboard stalled
+(keyboard clock line low).</p>
+
+<p><font color="#000000">The fact, that the scan pattern acquisition
+is carried out using an interrupt service routine and the decoding
+thereof is done during normal operation mode allows for performing
+other tasks concurrently: That's why I call the acquisition routine
+<i>preemptive</i>. It does not block the processor while acquiring
+data.</font></p>
+
+<p>This program features also the capability of bi-directional
+communication between controller and keyboard for configuration
+purposes and to control the keyboard LEDs. RS232 data exchange
+is carried out by using the internal USART of the PIC 16C74A.
+RS232 data reception is done on an interrupt-based acquisition
+scheme, provided by the USART.<br>
+</p>
+
+<p>For dedicated code adaptations, please refer to the section
+<a href="#customization" target="_self">'User-specific Customization'</a>
+below.</p>
+
+<p>If you don't know the theory of AT keyboards, have a look at
+my <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/keyboard_v1xx.html#keyboard_theory">short
+introduction</a> or at Craig Peacocks tutorial about <a href="http://www.beyondlogic.org/keyboard/keybrd.htm" target="_top">Interfacing the PC's Keyboard</a>.</p>
+
+<p>&nbsp;</p>
+
+<h3><a name="specifications"></a>Specifications <span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></h3>
+
+<p></p><table border="0" cellpadding="0" cellspacing="2">
+  <tbody><tr>
+    <td valign="top" width="214">
+    Processor:</td> 
+    <td valign="top" width="385">
+    PIC16C74 A</td> 
+  </tr>
+  <tr>
+    <td valign="top" width="214">
+    Clock Frequency:</td> 
+    <td valign="top" width="385">
+    4.00 / 8.00 MHz crystal</td> 
+  </tr>
+  <tr>
+    <td valign="top" width="214">
+    Throughput:</td> 
+    <td valign="top" width="385">
+    1 / 2 MIPS</td> 
+  </tr>
+  <tr>
+    <td valign="top" width="214">
+    RS232 Baud Rate:</td> 
+    <td valign="top" width="385">
+    9600 / 19200 baud with BRGH = 1</td> 
+  </tr>
+  <tr>
+    <td valign="top" width="214">
+    Keyboard Routine Features:</td> 
+    <td valign="top" width="385">
+    Capability of bi-directional communication between controller
+    and keyboard</td> 
+  </tr>
+  <tr>
+    <td valign="top" width="214">
+    Acquisition Methodology:</td> 
+    <td valign="top" width="385">
+    Preemptive, interrupt-based keyboard scan pattern acquisition,
+    decoding to ASCII characters during normal operation mode activated
+    by ready flag</td> 
+  </tr>
+  <tr>
+    <td valign="top" width="214">
+    Code Size of entire Program:</td> 
+    <td valign="top" width="385">
+    964 instruction words</td> 
+  </tr>
+  <tr>
+    <td valign="top" width="214">
+    Required Hardware:</td> 
+    <td valign="top" width="385">
+    AT keyboard, PS/2 connector, MAX232, HD44780 compatible dot matrix
+    LCD (2x16, 2x20 or 2x40 characters)</td> 
+  </tr>
+  <tr>
+    <td valign="top" width="214">
+    Required Software:</td> 
+    <td valign="top" width="385">
+    RS232 terminal software (or Excel 97 RS232 Debug Interface)</td> 
+  </tr>
+</tbody></table><br>
+&nbsp;
+
+<h3><a name="features"></a>Features <span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></h3>
+
+<ul>
+  <li>Bi-directional communication between microcontroller application
+  and remote RS232 client.
+  </li><li>Bi-directional communication between microcontroller and
+  keyboard.
+  </li><li>Bi-directional communication between microcontroller and
+  LCD display.
+  </li><li>Visualization of received and transmitted characters on local
+  LCD.
+  </li><li>Parametrizable LCD display width: constant 'LCDwidth'
+  </li><li>Support for all keyboard characters typed with shift button
+  active and inactive.
+  </li><li>English and modified Swiss-German 'codepages' available (QWERTY
+  and QWERTZ)
+  </li><li>Caps Lock implemented
+  </li><li>Num Lock always active
+  </li><li>Support of ASCII conversion from direct ALT-DEC entries,
+  e.g. ALT + 6 + 4 = @ (ALT + [1..3] numbers)
+  </li><li>Support of ASCII conversion from direct CTRL-HEX entries,
+  e.g. CTRL + 3 + F = ? (CTRL + [1..2] letters/numbers)
+  </li><li>ALT-DEC and CTRL-HEX features work for both, keypad and keyboard
+  numbers, as well as with upper and lower case letters [a..f]
+  </li><li>Possibility to implement short-cuts or user defined characters
+  for 'Esc', 'Num Lock', 'Scroll Lock' and 'F1' - 'F12' keys.
+</li></ul>
+
+<p>&nbsp;</p>
+
+<h3><a name="limitations"></a>Limitations <span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></h3>
+
+<p></p><table bgcolor="#fefde7" border="1" bordercolor="#400000" cellpadding="6" cellspacing="0" width="100%">
+  <tbody><tr>
+    <td width="100%">
+    <p><b><u>Important note from Jason Plumb:</u></b></p>
+
+    <p>«Hey,</p>
+
+    <p>First, lemme say that I like your site and thank you for providing
+    excellent reference material for us home-hobbyist microcontroller
+    geeks. I am currently working on a music/noise project that uses
+    a PS/2 keyboard interfaced to a PIC16F84, and I used your page
+    at http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/keyboard_v1xx.html
+    heavily as a reference when designing hardware and writing code.
+    Anyway, I just thought that I would mention that I ran into a
+    problem that I have since solved. The problem involved sending
+    bytes *TO* the keyboard from the PIC (in order to light NumLock
+    and ScrollLock). Your "Host To Keyboard Protocol" section
+    indicates that the keyboard will take the data line low for a
+    clock after the byte is sent to create an ACK bit. Apparently,
+    the PS/2 keyboard that I have (generic $10 comp-USA brand) doesn't
+    send an ACK bit, but rather sends a whole byte. If my code attempted
+    to wait for the ACK bit, it hung indefinitely. I changed the
+    wait to look for a byte (by calling my existing function) and
+    everything worked perfectly. I stumbled on this idea by looking
+    at other online references (most notably, some Linux kernel code
+    at <a href="http://www.mscs.mu.edu/%7Egeorgec/Classes/207.1998/14Minix_book/S/src%20kernel%20keyboard.c.html#307" target="_self">http://www.mscs.mu.edu/~georgec/Classes/207.1998/14Minix_book/S/src%20kernel%20keyboard.c.html#307</a>).
+    I have seen this ACK *byte* mentioned elsewhere too. I *think*
+    the keyboard sends back 0xFA as an ACK byte, but I have not personally
+    confirmed this. Perhaps your excellent documentation could just
+    use a <i>quick note of clarification</i> so that other don't
+    run into the same problem. Maybe something as simple as: <i><font color="#990000">"NOTE: Some keyboards send an ACK byte
+    (value 0xFA) instead of an ACK bit."</font></i>.</p>
+
+    <p>Thanks again,<br>
+    Jason»</p></td> 
+  </tr>
+</tbody></table>
+
+<p><b><u>Note from the author:</u></b></p>
+
+<p>The comment above refers to bi-directional communication between
+PIC microcontroller and AT keyboard, i.e. to the source code of
+the <i><a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v2xx/keyboard_v2xx.html">AT Keyboard Interface
+V2.xx</a></i> and higher versions. The bi-directional communication
+between host and keyboard is designed to support both <i>Ack bits</i>
+and <i>Ack bytes</i>.</p>
+
+<ul>
+  <li>Every command sent from the host to the keyboard needs to
+  have an <i>Odd Parity bit</i> and an <i>Ack bit</i> at the end.
+  </li><li>Every command received by the keyboard from the host needs
+  to be acknowledged by the keyboard by sending an <i>Ack byte
+  (0xFA)</i> to the host. See also section <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/keyboard_v1xx.html#host2kbd_protocol">'Host
+  to Keyboard Protocol'</a> at the <i>AT Keyboard Interface V1.xx</i>
+  page.
+</li></ul>
+
+<p>A corresponding PIC assembler code example is shown below:</p>
+
+<pre>    ;*** switch keyboard LEDs on (default status) ***
+    KBDcmd 0xED       ; keyboard LEDs' control command
+    KBDexp 0xFA       ; expect keyboard acknowledge (FA)
+    movfw  KBDleds    ; load keyboard LEDs' status
+    KBDcmdw           ; send keyboard LEDs' control data
+    KBDexp 0xFA       ; expect keyboard acknowledge (FA)</pre>
+
+<p>However, some AT keyboards may behave different and may need
+code adaptations to get bi-directional communication working properly.</p>
+
+<p>&nbsp;</p>
+
+<h2><a name="project_resources"></a>Project Resources <span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></h2>
+
+<h3><a name="assembler_code"></a>Available Microchip PIC Assembler
+Code <span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></h3>
+
+<p></p><table border="1" cellpadding="4" cellspacing="2" width="750">
+  <tbody><tr>
+    <td valign="top" width="170">
+    <b>Main File</b></td> 
+    <td valign="top" width="260">
+    <b>Main Keyboard Decode Lookup Table</b></td> 
+    <td valign="top" width="260">
+    <b>SHIFT Keyboard Decode Lookup Table</b></td> 
+    <td valign="top" width="170">
+    <b>HEX Files</b></td> 
+  </tr>
+  <tr>
+    <td rowspan="2" valign="top" width="170">
+    <p>Latest version:<br>
+    <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v3xx/kbd_3xx.asm" target="_self">kbd_3xx.asm</a></p>
+
+    <p>Slim version without ALT-DEC &amp; CTRL-HEX feature:<br>
+    <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v3xx/kbd_301.asm" target="_self">kbd_301.asm</a></p></td> 
+    <td valign="top" width="260">
+    English 'codepage' (QWERTY)<br>
+    View: <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/eng_main.html" target="_self">eng_main.html</a><br>
+    Download: <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/eng_main.asm" target="_self">eng_main.asm</a></td> 
+    <td valign="top" width="260">
+    English 'codepage' (QWERTY)<br>
+    View: <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/eng_shif.html" target="_self">eng_shif.html</a><br>
+    Download: <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/eng_shif.asm" target="_self">eng_shif.asm</a></td> 
+    <td rowspan="2" valign="top" width="170">
+    <p>QWERTY 'codepage': <br>
+    <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v3xx/kbd_3xx_eng.hex" target="_self">kbd_3xx_eng.hex</a></p>
+
+    <p>QWERTZ 'codepage': <br>
+    <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v3xx/kbd_3xx_sg.hex" target="_self">kbd_3xx_sg.hex</a></p></td> 
+  </tr>
+  <tr>
+     
+    <td valign="top" width="260">
+    Modified Swiss German 'codepage' (QWERTZ)<br>
+    View: <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/ger_main.html" target="_self">ger_main.html</a><br>
+    Download: <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/ger_main.asm" target="_self">ger_main.asm</a></td> 
+    <td valign="top" width="260">
+    Modified Swiss German 'codepage' (QWERTZ)<br>
+    View: <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/ger_shif.html" target="_self">ger_shif.html</a><br>
+    Download: <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/ger_shif.asm" target="_self">ger_shif.asm</a></td>
+  </tr>
+  <tr>
+    <td colspan="4" valign="top">
+    The above programs need additional include files (<a href="http://www.electronic-engineering.ch/microchip/modules/modules.html" target="_self">modules</a>) to get successfully assembled: m_bank.asm,
+    m_wait.asm, m_lcd_bf.asm<br>
+    <b>Important:</b> <font color="#800000">Due to <i>bi-directional
+    communication</i> between controller and keyboard as well as
+    between controller and LCD display, the above programs only work
+    if both components are connected and are working properly!</font></td>
+     
+  </tr>
+  <tr>
+    <td colspan="4" valign="top">
+    For those, who are not familiar with interfacing a PIC to the
+    RS232 using a MAX232: &nbsp;&nbsp;<a href="http://www.electronic-engineering.ch/microchip/projects/rs_test/RS232-Interface.pdf">RS232-Interface.pdf</a>&nbsp;&nbsp;
+    (9.7 kB)</td>
+     
+  </tr>
+</tbody></table><br>
+&nbsp;
+
+<h3><a name="schematic"></a>Schematic, Data Sheets and Pinout
+<span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></h3>
+
+<p><a href="http://www.electronic-engineering.ch/microchip/datasheets/kbd_spec.pdf">AT Keyboard Specification</a>
+(PDF, 189 kB)</p>
+
+<p>The schematic of the AT keyboard interface using the PIC 16C74A:
+<a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v3xx/Keyboard_V3xx.pdf">Keyboard_V3xx.pdf</a>.</p>
+
+<p>You don't know how a dot matrix LCD is working? Have a look
+at my <a href="http://www.electronic-engineering.ch/microchip/datasheets/datasheets.html" target="_self">data
+sheets page</a>.</p>
+
+<p>Download ASCII Character Map: <a href="http://www.electronic-engineering.ch/microchip/datasheets/ASCII-Map.pdf">ASCII-Map.pdf</a></p>
+
+<p>You can get the description of the various keyboard connectors
+<a href="http://www.electronic-engineering.ch/microchip/datasheets/pinout/pinout.html#keyboard_5" target="_self">&lt;here&gt;</a>.<br>
+&nbsp;</p>
+
+<h3><a name="customization"></a>User-specific Customization <span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></h3>
+
+<p>For a high level view, please refer to the section <a href="#how_it_works" target="_self">'How it works'</a> above.<br>
+Basically the same customization as for <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/keyboard_v1xx.html#customization">AT
+Keyboard Interface V1.xx</a> applies to this implementation.</p>
+
+<p>If you apply changes to the existing code, you may need to
+change the ORG directives in order to realign the assembler code
+properly.</p>
+
+<p>&nbsp;</p>
+
+<p>Last updated: 30.12.2004</p>
+
+<p></p><center><span class="toc">[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></center>
+
+<p></p><center><hr width="290"><table border="0" cellpadding="0" cellspacing="2" height="20" width="300">
+  <tbody><tr>
+    <td align="center" valign="top">
+    <span class="footer">If you see only this page in your browser
+    window,</span></td> 
+  </tr>
+  <tr>
+    <td align="center" valign="top">
+    <a href="http://www.electronic-engineering.ch/microchip/index.html" target="_top"><span class="footer">click here</span></a></td> 
+  </tr>
+  <tr>
+    <td align="center" valign="top">
+    <span class="footer">to get the entire site.</span></td> 
+  </tr>
+</tbody></table></center>
+
+
+</body></html>

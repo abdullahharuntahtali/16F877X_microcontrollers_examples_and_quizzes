@@ -1,0 +1,225 @@
+Saatlerin bir kýsmýnda isis model dosyasýný kullanmadým ve sabit bir deðer vererek (sanki sensörden okunan deðermiþ gibi) hesap bölümünde hesaplatarak ekrana verdim. Bu nedenle ssatlarin bazýlarýnda sabir sýcaklýk deðerleri görülecektir. Programda sensör okuma bölümünde bu satýrlarý belirterek "bu satýr gerçekdevrede silinecektir" ibaresini koydum.
+Genelde SENSOR OKUMA: etiketinden sonra gelen ilk satýr dýr bu silinecek olan satýrlar.
+
+Ete
+
+
+
+Bu saat devrelerinde kristal veya rezonatör kullanmanýz gerekmiyor. 16F628 in içinde dahili 4 MHzlik kendi osilatörü vardýr ve sigortalardan seçilir. Programlarýn en baþýnda yer alan ;
+
+@ DEVICE pic16F628, INTRC_OSC_NOCLKOUT  'Dahili osilatör kullanýlacak
+
+komutu bu iþi yapmakta ve pic'in kendi ösilatörünü kullanmasýný saðlamaktadýr.
+
+Ete
+
+
+ete usta bu birinci uygulamada saniye reel time da çalýþmýyor yani 1 saniye 5 saniye gibi geçiyor bunu düzeltmemiz mümkün mü ?
+
+
+Söylediðin olay simulasyondamý yoksa gerçek devredemi oluyor bilmiyorum. Ama iþin çözümünü anlatayým.
+Programýn sonlarýna doðru KESME isimli bir alt program var. Burada;
+
+KESME:
+      SAYAC=SAYAC+1  'kesme sayacý  1 sn= 61(sayac) x 256 (Tmr0) x 64 (bölme)
+      IF SAYAC=61 then
+
+þeklinde satýrlar var. Sizi ilgilendiren kýsým IF SAYAC=61 ibaresidir. Þayet saat  yavaþ kalýyor ise bu 61 rakamýný azaltýn. Böylece saat hýzlanacaktýr. Þayet saat ileri gidiyor ise bu sefer 61 rakamýný artýrýn. Böylece saat daha yavaþ çalýþacaktýr.
+Aslýnda 4MHz net frekansta verilen 61 deðeri uygun düþmesi gerekir. ANcak gerek dahili osilatör frekanslarý ve gerekse kristal frekanslarýnda bazen sapmalar olabiliyor.
+
+KOlay Gelsin
+Ete
+
+
+
+
+Bu programlar Pic Basic Pro ile yazýlmýþlardýr. Dolayýsýyla ASM dosyalarý yoktur. Bazýlarýnda derleyicinin koyduðu ASM dosyalarý olabilir. Ancak gerçek kodlar için sonu BAS ile bitan dosyalarý açmalýsýn.
+
+Ete
+
+
+
+
+DS1820 sensörü farklý bir sensör ve kesinlikle bu devreye uymuyor. Bu yüzden ya kodlarý deðiþtirmek lazým yada DS18B20 takmak lazým. Elimde DS1820 olmadýðý için denemeden kod deðiþikliði yapmak istemiyorum. Ancak yinede data sheetini bir inceleyip devreyi DS1820'ye göre vermeye çalýþacaðým.
+
+Ete
+
+
+
+
+
+
+
+
+
+ds1820 sensörünü benim programlar ile kullanmak için aþaðýdaki deðiþikliklerin yapýlmasý gerekiyor.
+
+1. deðiþken tanýmlamalarýna aþaðýdaki iki deðiþken adýný ilave ediniz.
+    kalan    var    byte            
+    sayac   var    byte
+
+2. programýn sensoroku isimli bir bölümü var. bu bölümü aþaðýdaki bölüm ile deðiþtiriniz.
+Kod:
+
+
+sensoroku:
+                 
+           owout   comm_pin, 1, [$cc, $44]' ýsý deðerini oku
+bekle:
+           owýn    comm_pin, 4, [busy]    ' busy deðerini oku
+           ýf      busy = 0 then bekle  ' hala meþgulmü? , evet ise goto bekle..!
+           owout   comm_pin, 1, [$cc, $be]' scratchpad memory oku
+           owýn    comm_pin, 0, [ham.lowbyte, ham.hýghbyte, skip 4, kalan, sayac]
+           gosub   hesapla
+           return
+   
+hesapla:                 ' ham deðerden santigrat derece hesabý
+    sign  = "+"
+    ýf sýgn_býtý = negat_ýsý then
+       sign   = "-" 
+       ýsý=(((($ffff-ham+1)>>1)*100)-25)+ (((sayac - kalan) * 100) / sayac)
+       goto gec   
+    endif
+    ýsý = (((ham >> 1) * 100) - 25) + (((sayac - kalan) * 100) / sayac)
+
+gec:
+    ýsý2 = (ýsý //100)/10
+    ýsý1=ýsý/100
+    return
+
+
+3. bu deðiþiklikleri yaptýktan sonra programý yeniden derleyin ve oluþturduðunuz hex dosyasýný kullanýn.
+
+hepsi bu kadar. deneme yapma imkaným yok. çünki elimde ds1820 yok. deneyen birisi sonucu bildiririse memnun olurum.
+
+ete
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+sonunda yazdýðým ds1820 kodlarýný simule edecek bir þey buldum. sonuca bakýlýrsa hesaplama yönteminde ufak bir deðiþiklik yapmak gerekiyor. buna göre düzelttiðim kodlarý aþaðýda yeniden veriyorum.
+
+söz konusu programlar pic basic pro ile yazýlmýþ olup en azýndan pbp 2.43 ve üzeri derleyiciler ile derlenmesi gerekir. genelde micro code studio ile birlikte kullanýlan bu derleyicileri nette arayýnca bulabilirsiniz. en son sürüm olarak 2.46 sý var sanýrým.
+bu arada bilgi olarak vereyim. ds1820 ile ds18s20 sensörleri ayný okuma programý ile çalýþabilmektedir. yani biri diðerinin yerine olabilmektedir.
+
+ete
+
+ 
+Kod:
+
+
+'deðiþkenlerin tanýmlandýðý bölüme
+
+sayac  var  byte
+kalan  var  byte
+
+'ifadelerini ilave ediniz.
+
+
+sensoroku:
+
+           owout   comm_pin, 1, [$cc, $44]                 ' ýsý deðerini oku
+bekle:
+           owýn    comm_pin, 4, [busy]                         ' busy deðerini oku
+           ýf      busy = 0 then bekle                             ' hala meþgulmü? , evet ise goto bekle..!
+           owout   comm_pin, 1, [$cc, $be]                 ' scratchpad memory oku
+           owýn    comm_pin, 0, [ham.lowbyte, ham.hýghbyte, skip 4, kalan, sayac]
+           gosub   hesapla
+           return
+   
+hesapla:                 
+    sign  = "+"
+    ýf sýgn_býtý = negat_ýsý then
+       sign   = "-" 
+       ýsý=((($ffff-ham+1)*50)-25)+ (((sayac - kalan) * 100) / sayac)
+       goto gec   
+    endif
+    ýsý = (((ham) * 50) - 25) + (((sayac - kalan) * 100) / sayac)
+'    ýsý=ýsý-25  'bana göre bu düzeltme yapýlmalý ama verilen formül öyle demiyor
+gec:
+    ýsý2 = (ýsý //100)/10
+    ýsý1=ýsý/100
+    return
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+devreler için çok teþekkürler.
+ben bazý devreleri proteusta çalýþtýramadým. bunun nedeni nedir acaba. hex i pic e dogru yukluyorum ama çalýþtýrmaya gelince hata veriyor.
+hata kodu þunlar:
+
+SIMULATION LOG
+==============
+Design:   C:\Documents and Settings\Ya¦ar\Desktop\SAAT-ISI_8_\Prog-4\SAAT-ISI-LED(4).dsn
+Doc. no.: <NONE>
+Revision: <NONE>
+Author:   <NONE>
+Created:  23/04/05
+Modified: 20/04/06
+
+Compiling source files...
+Build completed OK.
+Compiling netlist...
+Linking netlist...
+Partition analysis...
+
+Simulating partition 1 [C41B273E]...
+PROSPICE Release 6.7 SP0 (C) Labcenter Electronics 1993-2005.
+SPICE Kernel Version 3f5. (C) Berkeley University ERL.
+
+Reading netlist...
+FATAL: [DS1] External model DLL "vvDS1820.DLL" not found. GLE=0x00000002.
+
+Simulation FAILED due to fatal simulator errors.
+
+
+sadece program 3 çalýþýyo, diðerlerinde ustteki hata veriyo.
+yardým ederseniz çok sevinirim
+
+
+
+
+
+
+
+
+
+
+Proteus 6.9 SP4 kullanýrsanýz bu hatalar ortaya çýkmayacaktýr.
+Devrelerde yer alan sensörlerin model dosyalarý kullandýðýný proteus versiyonunda olmadýðý için hata mesajý verilmektedir.
+Ancak bu model dosyalarýnýn tamamý Proteus 6.9 SP4 de mevcut olduðundan hata çýkmamaktadýr.
+
+Lütfen diðer forumlarda proteus 6.9SP4 olarak araþtýrýn ve onu yükleyin sorun kalmayacaktýr.
+
+Ete

@@ -1,0 +1,350 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
+<!-- saved from url=(0057)http://www.piclist.com/techref/piclist/weedfreq8x2LCD.htm -->
+<HTML><HEAD><TITLE>WEEDER FREQUENCY COUNTER</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=windows-1252">
+<META http-equiv=Bulletin-Text content=JMN-EFP-786>
+<SCRIPT src="WEEDER FREQUENCY COUNTER_dosyalar/massmind.js" 
+type=text/javascript></SCRIPT>
+
+<SCRIPT src="WEEDER FREQUENCY COUNTER_dosyalar/AmiJS.js" 
+type=text/javascript></SCRIPT>
+
+<SCRIPT src="WEEDER FREQUENCY COUNTER_dosyalar/googiespell.js" 
+type=text/javascript></SCRIPT>
+<LINK media=all href="WEEDER FREQUENCY COUNTER_dosyalar/googiespell.css" 
+type=text/css rel=stylesheet>
+<META content="MSHTML 6.00.2900.2912" name=GENERATOR></HEAD>
+<BODY onload="javascript:et=new Date();eol();">
+<SCRIPT type=text/javascript><!--
+var st=new Date();					
+var et=new Date();					
+var avgBndWdth=0;						
+function eol() {						
+var s=1861;					
+var i=document.images;				
+ for (var j=0;j<i.length;j++) 		
+  { s += parseInt(i[j].fileSize); };	
+ avgBndWdth = s/((et-st)||1);				
+ s= ' '+parseInt(s/1024)+'KB'; 		
+ i=' ('+(document.images.length-1)+' imgs) in '+((et-st)||1)/1000+'s is ';	
+ if (document.getElementById) 		
+  {document.getElementById('lt').innerText=s+i+parseInt(avgBndWdth)+'KBps';}
+ else {document.info.lt.value=i;}		
+ };						
+//--></SCRIPT>
+<A onclick="return false;" 
+href="http://www.piclist.com/techref/indexok.asp?38930.0112615741"><IMG height=1 
+alt="please dont rip this site" src="WEEDER FREQUENCY COUNTER_dosyalar/null.gif" 
+width=1 align=left border=0></A> 
+<H2><A href="http://www.piclist.com/techref/piclist/weedfreq.htm">WEEDER 
+FREQUENCY COUNTER</A></H2>Fix for 2 line (8x2) displays that were sold as 16x1 
+displays <BR>Chris [cklymko at hotmail.com] <PRE>
+;*********************************************************************
+;* WEEDER FREQUENCY COUNTER
+;* Fix for 2 line (8x2) displays that were sold as 16x1 displays
+;*
+;* Because most of these displays lack a controller chip
+:* it is required that the code manually sets the address for the 
+:* 9th char. That is what this code does.
+;*
+;* Questions?
+;* Drop me an e-mail cklymko@hotmail.com
+;* 
+;* Scroll through your code and locate "Shift".
+;* Paste the following code starting with "Shift" and ending
+;* just before the first "sub" command.
+;*
+;*********************************************************************
+shift	btfsc	addcnt,6	;added for 8x2 displays
+	goto	shift2		;
+;	btfsc	addcnt,3	;
+;	goto	line2		;end the 8x2 code
+	btfss	addcnt,0	;shift to opposite side of display?
+	retlw	0x00
+	btfss	addcnt,1
+	retlw	0x00
+	btfss	addcnt,2
+	retlw	0x00
+	goto	line2
+;	btfss	addcnt,3
+	retlw	0x00
+	
+line2	movlw	0xB8 		;Force the second line.
+	addwf	addcnt,f
+	bsf	addcnt,7
+	movf	addcnt,w
+	goto	inst
+;*********************************************************************
+; added to move back to home position.
+;*********************************************************************
+
+shift2	btfsc	addcnt,3	;
+	goto	line1	
+	btfss	addcnt,0	;shift to opposite side of display?
+	retlw	0x00
+	btfss	addcnt,1
+	retlw	0x00
+	btfss	addcnt,2
+	retlw	0x00
+;	btfss	addcnt,3
+	retlw	0x00
+line1	movlw	0x39		
+	addwf	addcnt,f
+	bsf	addcnt,7
+	movf	addcnt,w
+	goto	inst
+
+</PRE><!-- 37579.8856828704 EOR --><A title="Click to login and reply" 
+style="COLOR: #af4040" 
+href="http://www.piclist.com/techref/login/default.asp?req=/techref/update.asp%3Fact=reply%26url=/techref/piclist/weedfreq8x2LCD.htm%26id=37579.8856828704">+</A> 
+
+<HR>
+
+<TABLE>
+  <TBODY>
+  <TR>
+    <TD>
+      <FORM name=info action=/techref/postsearch.asp method=post><SMALL>file: 
+      /techref/piclist/weedfreq8x2LCD.htm, <SPAN id=lt>1KB, <INPUT size=30 
+      name=lt></SPAN>, updated: 2002/11/19 22:18, local time: 2006/8/1 00:16,
+      <SCRIPT type=text/javascript><!--
+ eol();
+ for (var j=0;j<document.images.length;j++) 		
+  { document.images[j].onload = new Function('eol();'); };	
+//-->
+</SCRIPT>
+       owner: <A 
+      href="http://www.piclist.com/member/JMN-EFP-786/index.htm">JMN-EFP-786</A>, 
+      </SMALL>
+      <DIV id=upperright 
+      onmouseover="this.style.backgroundColor='#FFFF00';this.style.borderStyle='outset';" 
+      style="BORDER-TOP-WIDTH: 2px; BORDER-LEFT-WIDTH: 2px; RIGHT: 0px; BORDER-BOTTOM-WIDTH: 2px; WIDTH: 200px; COLOR: gray; POSITION: absolute; TOP: 0px; BACKGROUND-COLOR: #ffffff; TEXT-ALIGN: right; BORDER-RIGHT-WIDTH: 2px" 
+      onmouseout="this.style.backgroundColor='#FFFFFF';this.style.borderStyle='ridge';"><SMALL><SUP><A 
+      title="Go to the top page" style="COLOR: #af4040; TEXT-DECORATION: none" 
+      href="http://www.piclist.com/techref/index.htm">TOP</A> <A 
+      title="Monthly Change Log for this folder" 
+      style="COLOR: #af4040; TEXT-DECORATION: none" 
+      href="http://www.piclist.com/techref/piclist/new200608.txt">NEW</A>
+      <SCRIPT type=text/javascript>
+<!--- Hide script from old browsers.
+document.write('<A style="color:#AF4040;text-decoration:none;" TITLE="More pages like this." HREF="/techref/postsearch.asp\077from=%2Ftechref%2Fpiclist%2Fweedfreq8x2LCD%2Ehtm">MORE<\/A> ')
+// End the hiding here. -->
+</SCRIPT>
+       <A 
+      title="I'm willing to pay for help, please refer me to a qualified consultant" 
+      style="COLOR: #af4040; TEXT-DECORATION: none" 
+      href="mailto:webmaster@piclist.com?subject=I need someone to help me with:">HELP</A> 
+      <A title="Advanced search" style="COLOR: #af4040; TEXT-DECORATION: none" 
+      href="http://www.piclist.com/techref/postsearch.asp">FIND:</A>&nbsp;<BR><INPUT 
+      id=search title="Free text search" 
+      style="BORDER-RIGHT: #af0000 1px solid; PADDING-RIGHT: 0px; BORDER-TOP: #af0000 1px solid; PADDING-LEFT: 0px; FONT-SIZE: small; PADDING-BOTTOM: 0px; BORDER-LEFT: #af0000 1px solid; PADDING-TOP: 0px; BORDER-BOTTOM: #af0000 1px solid; BACKGROUND-COLOR: transparent" 
+      onclick="this.value='';" maxLength=100 value=Search name=SearchString> 
+      <INPUT type=hidden value=ON name=FreeText> <INPUT type=hidden 
+      value=/techref/piclist/weedfreq8x2LCD.htm name=from> </SUP></SMALL></DIV>
+      <DIV id=upperleft 
+      onmouseover="this.style.backgroundColor='#FFFF00';this.style.borderStyle='outset';" 
+      style="FILTER: progid:DXImageTransform.Microsoft.Alpha(opacity=75); LEFT: 0px; COLOR: gray; POSITION: absolute; TOP: 0px" 
+      onmouseout="this.style.backgroundColor='transparent';this.style.borderStyle='none';"><SMALL><A 
+      href="http://www.piclist.com/techref/indexok.asp?top"></A><SUP>85.99.153.99:<A 
+      style="COLOR: #af4040" 
+      href="http://www.piclist.com/techref/login/default.asp?req=403%3Bhttp%3A%2F%2Fwww%2Epiclist%2Ecom%2Ftechref%2Fpiclist%2Fweedfreq8x2LCD%2Ehtm">LOG 
+      IN</A></SUP></SMALL></DIV>
+      <DIV style="LEFT: 25%; WIDTH: 25%; POSITION: absolute; TOP: 0px" 
+      align=center><SMALL><SUP><FONT color=#ff0000><B><A 
+      title="Why does RIP/GRAB/SPIDERing lead to ads and sponsors? Click here." 
+      style="COLOR: red" 
+      href="http://www.piclist.com/dontripthissite.htm">PLEASE DON'T 
+      RIP!</A></B></FONT><FONT color=#008000><B> <A 
+      title="Click to copy link HTML to your clipboard" 
+      onclick="window.clipboardData.setData('Text','<A HREF=&quot;http://www.piclist.com/techref/piclist/weedfreq8x2LCD.htm&quot;>WEEDER FREQUENCY COUNTER</A>');">DO&nbsp;LINK</A></B></FONT></SUP></SMALL> 
+      </DIV>
+      <SCRIPT language=JavaScript type=text/javascript>
+<!--- Hide script from old browsers.
+if (AJS) AJS.getElement("upperright").style.filter = "progid:DXImageTransform.Microsoft.Alpha(opacity=75);";
+
+var old = 1;
+var to;
+
+function scrollHold() {
+var pos=1;
+	if (to) clearTimeout(to);
+	if (window.innerHeight) {
+		pos = window.pageYOffset;
+		}
+	else if (document.documentElement && document.documentElement.scrollTop) {
+		pos = document.documentElement.scrollTop;
+		}
+	else if (document.body) {
+		pos = document.body.scrollTop;
+		}
+	if (pos < 0) pos = 1;
+	else pos += 1;
+	if (pos != old) {
+		AJS.getElement("upperright").style.top = pos;
+		AJS.getElement("upperleft").style.top = pos;
+		}
+	old = pos;
+	if (window.onscroll==null) {to=setInterval('scrollHold()',100);}
+}
+
+window.onscroll = scrollHold;
+scrollHold();
+
+// End the hiding here. -->
+</SCRIPT>
+      </FORM></TD></TR></TBODY></TABLE>
+<HR>
+
+<DIV>
+<TABLE width="30%" align=right bgColor=#f0f0f0>
+  <TBODY>
+  <TR>
+    <TD>&nbsp;</TD>
+    <TD><SMALL>These pages are served without commercial sponsorship. (No 
+      popup ads, etc...).Bandwidth abuse increases hosting cost forcing 
+      sponsorship or shutdown. This server aggressively defends against 
+      automated copying for any reason including offline viewing, duplication, 
+      etc... Please respect this requirement and <FONT face="Comic Sans MS" 
+      color=#ff0000>DO NOT RIP THIS SITE</FONT>.<A 
+      href="http://www.piclist.com/dontripthissite.htm">Questions?</A><BR>Please 
+      <I>DO</I> link to this page!<BR><TT>&lt;A 
+      HREF="http://www.piclist.com<BR>/techref/piclist/weedfreq8x2LCD.htm"&gt;WEEDER 
+      FREQUENCY COUNTER&lt;/A&gt;</TT></SMALL><BR><A 
+      href="http://digg.com/submit?phase=2&amp;url=http://www.piclist.com/techref%2Fpiclist%2Fweedfreq8x2LCD%2Ehtm&amp;title=WEEDER+FREQUENCY+COUNTER">Digg 
+      it!</A></TD></TR></TBODY></TABLE>Did you find what you needed? From: "<I><A 
+href="http://www.piclist.com/techref/piclist/weedfreq.htm">/piclist/weedfreq.htm</A></I>" 
+
+<UL>
+  <LI>
+  <SCRIPT type=text/javascript>
+<!--- Hide script from old browsers.
+document.write('<I>&quot;Not quite. <A HREF="/techref/postsearch.asp\077from=%2Ftechref%2Fpiclist%2Fweedfreq8x2LCD%2Ehtm"> Look for more pages like this one.&quot;<\/A><\/I> ')
+// End the hiding here. -->
+</SCRIPT>
+
+  <LI>
+  <FORM action=/techref/postsearch.asp#result method=post><I>"No. I'm looking 
+  for: <INPUT maxLength=100 size=40 name=SearchString> <INPUT type=hidden 
+  value=on name=FreeText> <INPUT type=hidden 
+  value=/techref/piclist/weedfreq8x2LCD.htm name=from> <INPUT type=submit value=Fetch name=Action>"</I></FORM>
+  <LI><A href="http://www.piclist.com/techref/postsearch.asp"><I>"No. Take me to 
+  the search page."</I></A> 
+  <LI><A href="http://www.piclist.com/techref/index.htm"><I>"No. Take me to the 
+  top so I can drill down by catagory"</I></A> 
+  <LI><A 
+  href="mailto:webmaster@piclist.com?subject=I need someone to help me with:"><I>"No. 
+  I'm willing to pay for help, please refer me to a qualified 
+  consultant"</I></A> 
+  <LI>
+  <FORM action=/techref/update.asp method=post><INPUT type=hidden 
+  value=Interested: name=act> <INPUT type=hidden value=on name=private> <INPUT 
+  type=hidden value=85.99.153.99 name=id> <INPUT type=hidden 
+  value=/techref/piclist/weedfreq8x2LCD.htm name=url> <I>"No. But I'm 
+  interested. <INPUT type=submit value=Email> me at <INPUT name=email> when this 
+  page is expanded."</I></FORM></LI></UL></DIV>
+<HR>
+<A name=form></A>
+<FORM action=/techref/update.asp method=post><INPUT type=hidden value=on 
+name=private> <INPUT type=hidden value=85.99.153.99 name=id> <INPUT type=hidden 
+value=/techref/piclist/weedfreq8x2LCD.htm name=url> After you find an 
+appropriate page, you are invited to <INPUT type=submit value=Post> your <SELECT 
+size=4 name=act> <OPTION value=Questions: selected>question</OPTION> <OPTION 
+  value=Comments:>comment</OPTION> <OPTION value="See also:">link</OPTION> 
+  <OPTION value=Code:>program listing</OPTION></SELECT> to this <A 
+href="http://www.piclist.com/idea/websites.htm"><I>massmind</I></A> site! 
+<SMALL>(posts will be reviewed)</SMALL> Just type in the box and press the Post 
+button. (<A 
+href="http://www.piclist.com/techref/language/html/index.htm">HTML</A> 
+welcomed!): <A 
+href="http://www.piclist.com/techref/idea/website/codetutorial.htm">A tutorial 
+is available</A> <A 
+href="http://www.piclist.com/techref/private.asp?req=membership">Members</A> can 
+<A 
+href="http://www.piclist.com/techref/login/default.asp?req=403%3Bhttp%3A%2F%2Fwww%2Epiclist%2Ecom%2Ftechref%2Fpiclist%2Fweedfreq8x2LCD%2Ehtm%23form">login</A> 
+to post directly, become page editors, and be credited for their posts. <BR>
+<SCRIPT type=text/javascript>
+<!--- Hide script from old browsers.
+doButton("Bold Ctrl+B","doTag(\'txt\',\'b\')","<b>&nbsp;B <\/b>");
+doButton("Italic Ctrl+I","doTag(\'txt\',\'i\')","<i>&nbsp;I <\/i>");
+doButton("Underline Ctrl+U","doTag(\'txt\',\'u\')","<u>&nbsp;u <\/u>");
+doButton("Blockquote","doTag(\'txt\',\'blockquote\')",'<img src="/images/bq.gif" alt="Blockquote"> ');
+doButton("Link Ctrl+L","doLink(\'txt\')","&nbsp;&infin; <\/A>");
+document.write('<span id="spell_container" style="background-color:silver;border-style:outset;border-width:thin"><\/span>');
+// End the hiding here. -->
+</SCRIPT>
+<BR><TEXTAREA id=txt onblur="javascript:if (this.value.indexOf('?')>0) {this.form.act.selectedIndex=0};" onkeyup=storeCaret(this); onclick=storeCaret(this); name=txt rows=4 cols=65 onchange=storeCaret(this); onselect=storeCaret(this);></TEXTAREA> 
+<SMALL><BR>Link?&nbsp;Put&nbsp;it&nbsp;here:&nbsp;<INPUT 
+onblur="javascript:if (this.value.indexOf('http')>-1) {this.form.act.selectedIndex=2};" 
+size=60 name=file> <BR>if&nbsp;you&nbsp;want&nbsp;a&nbsp;response, 
+please&nbsp;enter&nbsp;your&nbsp;email&nbsp;address:&nbsp;<INPUT size=40 
+name=email> </SMALL></FORM>
+<SCRIPT type=text/javascript>
+<!--- 
+AJS.getElement("txt").onkeydown=doKey;
+var googie1 = new GoogieSpell("/images/", "http://www.piclist.com/techref/spell.asp?lang=");
+googie1.decorateTextarea("txt","spell_container");
+// -->
+</SCRIPT>
+
+<HR>
+
+<TABLE width="30%" align=left bgColor=#f0f0f0>
+  <TBODY>
+  <TR>
+    <TD>&nbsp;</TD>
+    <TD><!-- piclist.com --><!-- WEEDER FREQUENCY COUNTER --><!-- WEEDER FREQUENCY COUNTER -->
+      <CENTER><FONT color=#ff0000><B><I><BIG>FREE PCBs!</BIG></I></B></FONT> 
+      <BR>Enter the <A 
+      href="http://www.piclist.com/techref/piclist/pcbcontest.htm">PICList 
+      design contest</A> to win a free PCB from <A 
+      href="http://www.olimex.com/pcb">olimex.com</A>! 
+</CENTER></TD></TR></TBODY></TABLE>
+<TABLE width="30%" align=right bgColor=#f0f0f0>
+  <TBODY>
+  <TR>
+    <TD>&nbsp;</TD>
+    <TD>
+      <SCRIPT type=text/javascript><!--
+google_ad_client = "pub-3554665142518411";
+google_ad_width = 300;
+google_ad_height = 250;
+google_ad_format = "300x250_as";
+google_ad_type = "text_image";
+google_ad_channel ="";
+google_color_border = "000000";
+google_color_bg = "F0F0F0";
+google_color_link = "0000FF";
+google_color_url = "008000";
+google_color_text = "000000";
+//--></SCRIPT>
+
+      <SCRIPT src="WEEDER FREQUENCY COUNTER_dosyalar/show_ads.js" 
+      type=text/javascript>
+</SCRIPT>
+    </TD></TR></TBODY></TABLE>
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P>&nbsp; . </P></BODY></HTML>

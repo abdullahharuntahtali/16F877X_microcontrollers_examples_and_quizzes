@@ -1,0 +1,339 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html><head>
+
+
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="sprut">
+   <meta name="GENERATOR" content="Mozilla/4.7 [de]C-CCK-MCD QXW03234  (WinNT; U) [Netscape]">
+   <meta name="KeyWords" content="PIC, AD7008, DDS"><title>pic</title></head><body background="ad7008_files/bak.jpg">
+
+<center>
+<h1>
+<a name="0"></a><font face="Arial,Helvetica">10 Hz bis 20 MHz-Generator
+mit AD7008</font></h1></center>
+
+<center><font face="Arial,Helvetica">mit Direct Digital Synthesizer Chip</font></center>
+
+<hr size="4" width="100%">
+<center><a href="http://www.sprut.de/electronic/pic/projekte/index.htm">zurück zu Projekte</a> , <a href="http://www.sprut.de/electronic/pic/index.htm">PIC-Prozessoren</a>
+, <a href="http://www.sprut.de/electronic/index.htm">Elektronik</a> , <a href="http://www.sprut.de/index.htm">Homepage</a></center>
+
+<hr size="4" width="100%">
+<br><b>Ein Frequenzgenerator für Frequenzen von 10 Hz bis 20 MHz</b>
+<table width="100%">
+<tbody><tr>
+<td>
+<table>
+<tbody><tr>
+<td>-</td>
+
+<td>theoretischer Frequenzbereich</td>
+
+<td>0,0116 Hz bis 25 MHz</td>
+</tr>
+
+<tr>
+<td>-</td>
+
+<td>praktischer Frequenzbereich</td>
+
+<td>10 Hz bis 20 MHz</td>
+</tr>
+
+<tr>
+<td>-</td>
+
+<td>Auflösung der Ausgangsspannung</td>
+
+<td>10 Bit</td>
+</tr>
+
+<tr>
+<td valign="top">-</td>
+
+<td valign="top">Genauigkeit (begrenzt durch Quarz)</td>
+
+<td>norm. 0,01%
+<br>max. 0,002%&nbsp;</td>
+</tr>
+
+<tr>
+<td></td>
+
+<td>Auflösung der Frequenz</td>
+
+<td>0,01164 Hz</td>
+</tr>
+</tbody></table>
+Abstimmschrittweite:&nbsp;
+<ul>
+<li>
+bei 1 Hz&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1,1%</li>
+
+<li>
+bei 1 kHz&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,001%</li>
+
+<li>
+bei 1 MHz&nbsp;&nbsp;&nbsp; 0,000001%</li>
+</ul>
+</td>
+
+<td><img src="ad7008_files/vornoben.jpg" alt="Ansicht des fertig aufgebauten Generators" nosave="" height="206" width="367"></td>
+</tr>
+</tbody></table>
+
+<hr size="4" width="100%">
+<br><b>Vorgeschichte</b>
+<br>Im Jahr 1997 las ich in der Zeitschrift Elektronik (vom 08.Juli 1997,
+Seiten 106 ff) die Beschreibung eines Funktionsgenerators, der um den DDS-Schaltkreis
+AD7008 aufgebaut war. Dieser Chip faszinierte mich, da er die gesamte Erzeugung
+einer Frequenz sowie ihre Modulation in Frequenz, Phase und Amplitude digital
+realisiert, und das Ergebnis erst nach dem Prozessing in ein analoges Signal
+wandelt. Mit diesem Chip wollte ich unbedingt etwas aufbauen. Als ich aber
+über Monate keine Bezugsquelle fand, die einen einzelnen Chip an eine
+Privatperson veräußert hätte, gab ich schließlich
+auf.
+<br>Im Jahr 2001 schließlich, nahm über meine Homepage jemand
+Kontakt zu mir auf, der zufällig früher schon mit dem AD7008
+gebaut hatte. Da das für ihn inzwischen 'ein alter Hut' war, überließ
+er mir einen AD7008JP50. So kam ich dann doch noch zu meinem Spielzeug.
+<p>
+</p><hr size="4" width="100%">
+<br><b>Schaltung</b>
+<br>Der AD7008 wird über ein paralleles oder ein serielles Interface
+mit Kommandos und Daten gefüttert, mit denen man die zu erzeugende
+Frequenz sowie momentane Phasenverschiebung und die Signalamplitude (separat
+für I und Q Kanal) einstellen kann. Damit läßt sich eine
+theoretisch eine Frequenz zwischen 0 und 25 MHz mit Frequenz-, Amplituden-
+, I/Q- und Phasenmodulation erzeugen.
+<p>Für eine Modulation müssen allerdings die Werte für Phasenverschiebung
+und Amplitude ständig geändert werden (entsprechend dem Verlauf
+des Modulationssignals). Damit setzt die Geschwindigkeit des Interfaces
+zwischen steuernder Einheit (z.B. PC oder PIC) und AD7008 der erreichbaren
+Modulationsfrequenz eine Grenze. Das schnelle (bis zu 32-Bit breite) Parallelinterface
+kam für mich nicht in Frage, da ich einen PIC zur Ansteuerung benutzen
+wollte, und es dem an ausreichenden I/O-Pins mangelt. Das serielle Interface
+ist leider deutlich langsamer. Deshalb kann ich meine Lösung auch
+nicht als Funktionsgenerator bezeichnen. Es ist ein Sinusgenerator mit
+programmierbarer Frequenz und Amplitude.
+</p><p>Trotzdem ist eine Modulation bis zu etwa 14 kHz-Samplefrequenz theoretisch
+möglich . Überlegenswert wäre für die Zukunft der Anschluß
+des seriellen AD7008-Interfaces an MSSP des 16F876 oder den syncronen USART
+des 16F628. Letzterer erfordert zwar zusätzliche Inverter in den seriellen
+Leitungen, aber beide seriellen PIC-Interfaces schiebt mit bis zu 5000
+kBaud die 32-Datenbits in weniger als 10 µs in den AD7008. Das ergäbe
+eine Modulation mit einer Samplerate von 100 kHz. Das reicht um z.B. die
+10,7 MHz-ZF eines FM-Radios mit kompletter Stereo-Modulation zu erzeugen
+</p><p><b>Nachbau?</b>
+<br>Der Chiphersteller Analog Devices gibt den Preis des AD7008 mit ca.
+23 $ an. Das sind garantiert nicht die Endabnehmerpreise. Als ich 1997
+das erste Mal mit dem Chip in Kontakt kam, war 90 DM (also 45 &#8364;) im
+Gespräch. Außerdem kenne ich immer noch keinen Lieferanten.
+<br>Wer auf die Möglichkeit der Amplitudenregelung/Amplitudenmodulation
+und der I/Q-Modulation verzichten kann&nbsp; ist warscheinlich mit dem
+<b>AD9835
+</b>für
+7 $ besser bedient. Dieser Chip basiert auf dem gleichen Prinzip wie der
+AD7008, hat aber kein paralleles Interface (was sich mit einem PIC sowieso
+nicht nutzen läßt) sowie keine I/Q-Multiplikatoren zur Amplitudenregelung
+in Sin und Cos. Die Frequenzerzeugung (und sogar die Phasenmodulation)
+entsprechen aber dem AD7008.
+</p><p>
+</p><hr width="100%">
+<br><b>Theorie der digitalen Frequenzsynthese</b>
+<br>Herzstück des AD7008 sind 2 digitale Sägezahngeneratoren
+, von denen ich aber nur einen benutze.
+<br>Ein Sägezahngenerator besteht aus einem 32-Bit-Register, dessen
+Wert 50 Millionen mal pro Sekunde um einen programmierbaren Wert <b>FREQ0</b>
+erhöht wird. Damit wächst die Zahl im 32-Bit-Akkumulator um so
+schneller an, um so größer diese programmierte Zahl <b>FREQ0</b>
+ist. Irgentwann läuft das 32-Bit Register über, und alles beginnt
+von vorn.
+<p>Ist <b>FREQ0</b> auf den Wert 1 eingestellt, sind für einen Zyklus
+2<sup>32</sup> = 4.294.967.296 (also rund 4,3 Milliarden) Additionen nötig.
+Bei einem Takt von 50 MHz dauert das 85,9 Sekunden. Die erzeugte Frequenz
+ist 0,01164 Hz.
+<br>Die höchste nutzbare Frequenz ist die Hälfte des 50 MHz Taktes
+(also 25 MHz) und ergibt sich bei einem <b>FREQ0</b>-Wert von 2.147.483.648.
+<br>Zwischen diesen beiden Extremen lassen sich über 2 Milliarden
+fein abgestufte Frequenzen einstellen. Der Abstand zwischen zwei Nachbarfrequenzen
+beträgt bei 1 kHz etwa 0,01 Hz - also 0,001% . Die Abstufung wird
+mit steigender Frequenz immer feiner.
+</p><p>Die oberen 12 Bit des 32-bit Sägezahns werden einer sin/cos look-up-Table
+zugeführt. Die aus der Tabelle kommenden 10-Bit sin- und cos-Werte
+werden durch Multiplikatoren geleitet, durch die ihre Amplitude eingestellt
+wird. Die in der Amplitude modifizierten sin- und cos-Werte werden addiert,
+und die Summe von einem 10 Bit DAC in eine analoge Spannung gewandelt.
+</p><p>
+</p><hr width="100%">
+<br><b>Beschreibung der gewählten Lösung</b>
+<br>&nbsp;
+<table width="100%">
+<tbody><tr>
+<td><a href="http://www.sprut.de/electronic/pic/projekte/ad7008/ad7008g.gif"><img src="ad7008_files/ad7008.gif" alt="Stromlaufplan - anklicken zum vergrößern" border="0" height="200" width="347"></a></td>
+
+<td>Der AD7008 wurde zusammen mit dem nötigen 50 MHz Quarzgenerator
+und den Ausgangswiderständen auf eine kleine Platine gesetzt. Diese
+Platine hat den bei mir üblichen 10poligen Steckverbinder, mit dem
+sie an PIC-Testplatinen angeschlossen werden kann. Der PIC kann den AD7008
+über das serielle Interface programmieren.&nbsp;
+<br>Um den AD7008 mit nur einem einzigen PIC-Port ansteuern zu können,
+waren Kompromisse nötig. Mit der vorliegenden Platine kann nur noch
+einer der beiden im Chip enthaltenen Generatoren programmiert werden, außerdem
+ist eine Programmierung der Phasenverscheibung nicht möglich. Der
+AD7008 läuft hier also als einfacher einstellbarer Frequenzgenerator
+mit programmierbarer Amplitude. Prinzipiell ist noch eine Amplituden- oder
+Quadraturmodulation möglich, durch das langsame Serialinterface scheint
+das aber nicht sinnvoll nutzbar zu sein.&nbsp;
+<br>Auf das eigentlich nötige Ausgangsfilter hinter dem AD7008 wurde
+in diesem Testaufbau noch verzichtet, um über den gesamten einstellbaren
+Frequenzbereich experimentieren zu können.</td>
+</tr>
+</tbody></table>
+
+<table width="100%">
+<tbody><tr>
+<td>Um den AD7008 anzusteuern, wird ein 2-zeiliges-LCD-Display und eine
+kleine Tastatur verwendet. Beides wird an Port B eines 16F628 angeschlossen.
+Am Port A hängt die AD7008-Platine. Die Schaltung zum Anschluß
+von Display und Tastatur ist mit dem Lehrbeispiel '<a href="http://www.sprut.de/electronic/pic/programm/tastlcd/tastlcd.html">Tastatur&amp;LCD-Display</a>'
+identisch, es werden aber nur 5 Tasten benötigt.</td>
+
+<td><a href="http://www.sprut.de/electronic/pic/projekte/ad7008/tastlcdg.gif"><img src="ad7008_files/tastlcdk.gif" alt="Tastatur und Display für AD7008 - anklicken zum Vergrößern" border="0" height="228" width="533"></a></td>
+</tr>
+</tbody></table>
+
+<table border="0" cellpadding="2" cellspacing="2" width="100%">
+<tbody><tr>
+<td valign="top"><a href="http://www.sprut.de/electronic/pic/projekte/bus628/bus628.htm"><img src="ad7008_files/innenk.jpg" alt="Ansicht des aufgebauten Geräts - anklicken für Infos zum Aufbau" border="0" height="300" width="400"></a></td>
+
+<td>Der PIC16F628 sowie die Stromversorgung befinden sich auf&nbsp; einer
+Platine (<a href="http://www.sprut.de/electronic/pic/projekte/bus628/bus628.htm">Bus628</a>), an die die Generatorplatine
+sowie LCT/Tastatur angesteckt wurden.
+<p>Eingebaut wurde alles in ein Plastik-Gehäuse.
+<br>&nbsp;</p></td>
+</tr>
+</tbody></table>
+
+<hr width="100%">
+<br><b>Frequenzgenauigkeit</b>
+<br>Die Genauigkeit der erzeugten Frequenz wird durch den 50-MHz-Quarzoszillator
+bestimmt. Unabhängig vom eingestellten und angezeigten Wert bestimmt
+seine Genauigkeit die Genauigkeit des Ausgangssignals. Typische maximale
+Frequenzfehler von Quarzoszillatoren sind etwa 0,01% (100 ppm), und sie
+lassen sich nicht korrigieren. Bei einer Ausgangsfrequenz von 20 MHz beträgt
+der Frequenzfehler also bis zu 2000 Hz. Ich glaube, daß dieser Fehler
+noch akzeptabel ist. Der Fehler ist proportional zur Ausgangsfrequenz,&nbsp;
+bis 100 kHz ist der Frequenzfehler also kleiner als 10 Hz.
+<p>Eine höhere Genauigkeit läßt sich erreichen, wenn man
+anstelle des Quarzoszillators einen diskret aufgebauten 50-MHz-Oszillator
+mit Quarz und Trimmkondensator aufbaut, diesen in ein Termostat-Gehäuse
+einsetzt und kalibriert. Im Hobbybereich ist das aber nicht wirklich nötig.
+<br>&nbsp;
+</p><p>Der Nutzer wird bei der Bedienung vielleicht dadurch irritiert, daß
+z.B. eine Erhöhung der Frequenz um 10 kHz, vom Generator nicht genau
+befolgt wird. Die Frequenz wird vielmehr um etwas weniger als 10kHz erhöht.
+Ähnlich verhält es sich mit allen Einstellschrittweiten von 0,01Hz
+bis 10 MHz. Das resultiert daraus, daß der AD7008 die Frequenzen
+nicht in 0,01Hz-Schritten verändern kann, sondern in 0,01164 Hz-Schritten.
+Ein Sprung um exakt 10 kHz ist deshalb nicht möglich. Das Display
+zeigt keine Wunschfrequenzen an, sondern die Frequenz, die auch wirklich
+erzeugt wird. Auf jeden Fall, kann man sich der gewünschten Frequenz
+aber immer bis auf einen prinzipiellen Fehler von 0,00582 Hz annähern.
+(mal abgesehen vom zusätzlichen Frequenzfehler, der durch den Quarzoszillator
+bedingt wird)
+</p><p>
+</p><hr width="100%">
+<br><b>Mögliche Verbesserungen</b>
+<br>Ein Ausgangsfilter hinter dem AD7008 soll die 50 MHz-Anteile und ihre
+harmonischen aus dem Ausgangssignal entfernen, geeignet wäre wohl
+ein Tiefpaß.
+<br>Ein niederohmiger Ausgangstreiber kann dann eine BNC-Buchse direkt
+und über einen Abschwächer versorgen.
+<br>Zusammen mit einem LCD-Display und einigen Tasten, einer <a href="http://www.sprut.de/electronic/pic/projekte/bus628/bus628.htm">628-Bus-Platine</a>
+mit PIC16F628 oder PIC16F84 und einem Gehäuse ergibt sich ein schöner
+Frequenzgenerator für Bastelzwecke.
+<br>Anstelle des 50-MHz-Quarzoszillators läßt sich ein Oszillator
+mit einem Einzelquarz aufbauen, dessen Frequenz dann mit einem Ziehkondensator
+<a href="http://www.sprut.de/electronic/mess/frequenz.htm">auf&nbsp;
+wenige ppm genau abgeglichen</a> wird.
+<p>
+</p><hr size="2" width="100%">
+<br><b>Entwicklungsstand</b>
+<table width="100%">
+<tbody><tr>
+<td valign="top">Die Hardware ist aufgebaut und funktioniert. Nebenstehendes
+Foto der Generatorplatine zeigt eine Urversion mit abweichender Steckerbelegung.
+<a href="http://www.sprut.de/electronic/pic/projekte/bus628/bus628.htm">Das
+Grundgerüst für das komplette Gerät ist ein Bus628</a>.&nbsp;
+<p>Die Qualität des Ausgangssinus ist deutlich besser als bei meinem
+mit MAX038 aufgebautem Funktionsgenerator. Im MHz-Bereich wird aber der
+50 MHz Grundtakt störend sichtbar (ist ja noch nicht gefiltert).&nbsp;
+</p><p>Eine Steuerung über RS-232 ist vorbereitet.</p></td>
+
+<td valign="top"><a href="http://www.sprut.de/electronic/pic/projekte/ad7008/ad7008a.jpg"><img src="ad7008_files/ad7008ak.jpg" alt="Foto des Frequenzgenerators - Bestückungsseite" border="0" height="182" width="242"></a></td>
+
+<td></td>
+</tr>
+
+<tr>
+<td>Nachdem die Schaltung zuerst für die Ansteuerung mit 7 PIC-I/O-Pins
+ausgelegt war, benötige ich z.Z. nur noch 5 I/O-Pins. Deshalb könnte
+die Platine nun auch am PortA eines 16F84 betrieben werden.&nbsp;
+<br>Die Software wird aber weiter für den 16F628 ausgelegt, und wird
+auf 16F84-Grenzen keine Rücksicht nehmen. Insbesondere die teilweise
+nötige 64-Bit Routinen benötigen recht viele Register, mit denen
+der 16F84 nicht gerade üppig bestückt ist.</td>
+
+<td valign="top"><img src="ad7008_files/ad7008bk.jpg" alt="Rückseite des Frequenzgenerators (Urversion)" border="0" height="182" width="242"></td>
+
+<td></td>
+</tr>
+</tbody></table>
+
+<table border="0" cellpadding="2" cellspacing="2" width="100%">
+<tbody><tr>
+<td valign="top"><img src="ad7008_files/menufrq.jpg" alt="Frequenzeinstellung" height="96" width="216"></td>
+
+<td valign="top">Die Software (auf 16F628) ermöglicht die Frequenzeinstellung
+von 0 Hz bis 25 MHz auf 0,02 Hz genau! (10 stellig)&nbsp;
+<br>Die Frequenzanzeige erfolgt auf einem LCD-Display. Die Bedienung&nbsp;
+über 5 Tasten ist intuitiv.&nbsp;</td>
+</tr>
+
+<tr>
+<td valign="top"><img src="ad7008_files/menuamp.jpg" alt="Amplitudeneinstellung" height="94" width="217"></td>
+
+<td valign="top">Die Ausgangsamplitude ist in 64 Schritten zwischen 0V und
+1,1 V p-p einstellbar. Unterhalb von 2 Hz und über 7 MHz bricht sie
+etwas zusammen.&nbsp;</td>
+</tr>
+
+<tr>
+<td valign="top"><img src="ad7008_files/menuspei.jpg" alt="Speicherung" height="100" width="220"></td>
+
+<td valign="top">Drei Frequenz-Amplituden-Einstellungen können abgespeichert
+und jederzeit wieder abgerufen werden. Beim Einschalten wird automatisch
+die zuletzt gespeicherte Frequenz und Amplitude eingestellt.</td>
+</tr>
+</tbody></table>
+
+<p>
+</p><hr size="4" width="100%">
+<br><b>Programmlisting</b>
+<ul>
+<li>
+<a href="http://www.sprut.de/electronic/pic/projekte/ad7008/ad7008.zip">Assemblerlisting und HEX-File</a></li>
+</ul>
+
+<center>
+<p><br>
+</p><hr size="4" width="100%"><a href="http://www.sprut.de/electronic/pic/projekte/index.htm">zurück zu Projekte</a>
+, <a href="http://www.sprut.de/electronic/pic/index.htm">PIC-Prozessoren</a> , <a href="http://www.sprut.de/electronic/index.htm">Elektronik</a>
+, <a href="http://www.sprut.de/index.htm">Homepage</a></center>
+Autor: sprut
+<br>erstellt: 24.09.2002
+<br>letzte Änderung: 13.03.2004
+<br>&nbsp;
+<br>&nbsp;
+</body></html>

@@ -1,0 +1,311 @@
+<html><head><script language="javascript">
+
+myreg=new RegExp("lycos\.de","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.de/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=noref" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script><title>VFD Ansteuerung</title></head><body background="VFD_data/hgrund1.gif" link="#0000ff" vlink="#800080">
+
+<p>&nbsp;</p>
+<p align="center"><b><font color="#0000ff" face="Arial" size="6">Ansteuerschaltung 
+  für Vakuum Fluoreszenz Displays</font></b></p>
+<p align="center"><font face="Arial, Helvetica, sans-serif" size="4">Im Gegensatz 
+  zu LCDs sind VFD Anzeigen selbstleuchtend, und haben daher einen höheren 
+  Kontrast.<br>
+  Außerdem sehe sie durch ihre meist türkisfarbene Anzeige besser aus. 
+  Hier zeige ich eine einfache Schaltung um VFDs sinnvoll ohne großen Aufwand 
+  verwenden zu können.</font> <br>
+</p>
+<p align="left">&nbsp;</p>
+<p align="left"><a href="http://mitglied.lycos.de/bk4/bilder/vfd1.gif"><img src="VFD_data/vfd1.gif" align="left" border="0" height="255" width="268"></a><font face="Arial, Helvetica, sans-serif">Hier 
+  die das Prinzip der Ansteuerung als Blockschaltbild am Beispiel der FV648 Anzeige. 
+  Über den Gittertreiber wird jeweils ein Gitter angesteuert und somit werden 
+  die dahinterliegenden Segmente azugewählt. Da immer nur eines der Segmente 
+  gleichzeitig aktiv sein muss, verwende ich meistens einfache Dezimaldekoder 
+  wie den 4017. So benötigt man nur einen Impuls um zur nächsten Stellen 
+  weiterzuschalten. Alternativ eignen sich auch Schieberegister die mit einem 
+  High Impuls geladen werden, der dann der Reihe nach durch das Register wandert.<br>
+  Die Ansteuerung der Aoden/Segmente ist schon komplizierter, denn alle Segmente 
+  müssen unabhängig steuerbar sein. Um die Anzahl der benötigten 
+  Leitungen gering zu halten verwende ich dafür gerne Schieberegister mit 
+  eingebautem Latch wie den 4094. So benötigt man nur 3 Leitungem um (theoretisch) 
+  unendlich viele Segmente ansteuern zu können.<br>
+  Die Heizung wird per Z-Diode auf einen positiven Wert gelegt, der etwa dem Spitzenwert 
+  der Heizspannung, hier 2,3V*1,4=3,2V, denn die Segmente leuchten sobald sie 
+  positiver sind als die Heizspannung.<br>
+  </font></p>
+<p align="left">&nbsp;</p>
+<p align="left"><font face="Arial, Helvetica, sans-serif">Weitere Informationen 
+  zum Thema VFD Anzeige findet man <a href="http://mitglied.lycos.de/bk4/VFDs.htm">hier.</a></font></p>
+<p align="left">&nbsp;</p>
+<p align="left"><a href="http://mitglied.lycos.de/bk4/bilder/vfd2.gif"><img src="VFD_data/vfd2.gif" align="left" border="0" height="155" width="255"></a><font face="Arial, Helvetica, sans-serif">So 
+  sieht das ganze dann in der Praxis aus:<br>
+  Wenn die Helligkeit nicht besonders groß sein muss, dann kann man normale 
+  CMOS ICs als Treiber verwenden. Diese sind für 18V ausgelegt (einige auch 
+  für 20V), was bei bis zu 1/16 Muliplexraten eine außreichende Helligkeit 
+  liefert. Die Schieberegister mit Latch stellen auch gleichzeitig die Treiber 
+  dar. Wenn man es wirklich gut machen will, dann schaltet man bei den Gittern 
+  noch je eine Transistorstufe dazwischen, denn je nach Gittergröße 
+  kann schon ein (relativ) großer Strom fließen. In der Praxis (aus 
+  Faulheit und aus Platzgründen) kann man aber eigentlich darauf verzichten, 
+  denn bei 18V hält sich der Strom in Grenzen. Außerdem begrenzen die 
+  CMOS ICs mit ihrem Innenwiderstand den Strom.<br>
+  Um die mit 18V betriebenen ICs mit den normalen 5V Pegeln ansteuern zu können, 
+  verwende ich einen Levelshifter wie den 40109. Dieser hebt die 5V Pegel auf 
+  18V an und gibt die Signale an die Schieberegister und den 4017 Zähler 
+  weiter. Um Leitungen zu sparen und da der Levelshifter nur 4 Ein/Ausgänge 
+  hat, verwende ich das Latch Signal (hier als Strobe bezeichnet) auch gleichzeitig 
+  als Taktsignal für den Stellenzähler, so wie es auch bei LCDs gemacht 
+  hier: Hier ist auch das Latchsignal LP(=Latch Pulse) mit dem Zeilentreiber YSCL(=Y 
+  Shift Clock) verbunden. <br>
+  <a href="http://mitglied.lycos.de/bk4/bilder/vfd3.gif"><img src="VFD_data/vfd3.gif" align="left" border="0" height="186" width="279"></a> 
+  Der Reset Anschluss wird bei LCDs als Frame Start Signal oder First Line Marker 
+  bezeichnet. Ob man dafür jetzt einen 4017 einsetzt, oder zwei Schieberegister 
+  ohne Latch (bzw. das Latchsignal dauerhaft an High legen) ist egal, die Ansteuerung 
+  bleibt gleicht. Bei Verwendung eines Schieberegisters als Gittertreiber ist 
+  der Clock Anschluss das mit dem Latch Puls verbundene Taktsignal und der Dateneingang 
+  dient als Reset. Wird ein High Puls angelegt, wird beim nächsten Taktsignal 
+  wieder bei Stelle 0 begonnen.<br>
+  Verwendet man einen 4017, dann kann man bei diesem VFD zwei Stellen nicht ansteuern, 
+  was bei vielen Displays nicht weiter schlimm ist, da einige oft mit nicht brauchbaren 
+  Sonderzeichen belegt sind. Hier reichen die 10 Ausgänge für die 5 
+  Alphanumerischen Stellen und die 5x 11-Segment Bargraph Anzeigen. Das VFD gibt 
+  es für 75Cent bei <a href="http://www.pollin.de/">Pollin</a><br>
+  </font></p>
+<p align="left">&nbsp;</p>
+<p align="left">&nbsp;</p>
+<p align="left"><a href="http://mitglied.lycos.de/bk4/bilder/vfd4.gif"><img src="VFD_data/vfd4.gif" align="left" border="0" height="158" width="272"></a><font face="Arial, Helvetica, sans-serif">Ein 
+  weiteres Problem ist auch die Heizung. Trafos mit 2x 2-5V sind selten und schwer 
+  erhältlich.Außerdem dürfen keine Gitter oder Segmente die ausgeschaltet 
+  sind positiver sein als die Heizung, denn dann leuchten sie auf. Daher muss 
+  die Heizung meist positiv vorgespannt werden, was nochmalerweise etwas von der 
+  kostbaren Anodenspannung wegnimmt. Weiterhin muss die Multiplexfrequenz mindestens 
+  um 30Hz höher liegen als die Heizfrequenz, sonst erkennt man ein Flackern 
+  im Display. Heizt man dagegen mit Gleichspannung ist ein Ende der Heizdrähte 
+  positiver und leuchtet daher dunkler.<br>
+  All diese Probleme lassen sich mit dieser Schaltung beheben. Das 10 stellige 
+  Displays läuft im 1/11 Multiplex. In der 11. Taktperiode werden alle Segmente 
+  abgeschaltet und 16,5V an die Heizung gelegt. Dies reicht aus, damit die Heizung 
+  im Mittel den normalen Wert von 4,7V sieht, oder was wichtiger ist: die Heizleistung 
+  von 4,7V*175mA=0,823W. Hier beträgt die Leistung 16,5V* 50mA=0,825W.<br>
+  Man muss bei dieser Methode aber sicher stellen, dass die Heizung nicht länger 
+  eingeschaltet ist, sonst brennt sie sofort durch ! Daher schließt auch 
+  ein Transistor das Steuersignal für die Heizung kurz, bis der Mikrocontroller 
+  bereit ist und die Heizungssteuerung übernimmt. <br>
+  Alle 16ms wir die Heizung für 1,6ms eingeschaltet. In dieser Zeit fließt 
+  ein Strom von rund 0,6A, der viel zu stark für den LM317L ist, der nur 
+  100mA liefern kann (und so die eventuell zu lange eingeschaltete Heizung schützt). 
+  Daher muss C4 die gesamte Leistung liefern. R5 entkoppelt diesen von der Rest 
+  der Schaltung, sonst hat man 2Vss auf dem 18V Signal, gefährliche Spannungsspitzen 
+  die die 18V CMOS ICs zerstören können. Daher auch das C-R-C Filter 
+  C5-R5-C4. Immerhin beträgt die kurzzeitige Leistung fast 10W. Die gesamte 
+  Stromaufnahme liegt somit bei rund 150mA, einschließlich Mikrocontroller. 
+  So spart man sich ganz leicht den Heiztrafo und kommt mit einer stabilisierten 
+  Spannung aus. Aber man muss absolut sicherstellen können, dass die Heizung 
+  nie länger eingeschaltet ist, dann das führt zu deren sofortiger Zerstörung 
+  ! <br>
+  Durch die kurzen Rechteckimpulse mit der die Heizung betrieben wird, werden 
+  die Heizfäden zum Schwingen angeregt. Dies führt zu einem nervigen 
+  Pfeifen. Dies kann man dadurch umgehen, indem man vor den Schalttransistor der 
+  Heizung mit einem RC Glied den Rechteckimpuls etwas abflacht.</font></p>
+<p align="left"><font face="Arial, Helvetica, sans-serif"><a href="http://mitglied.lycos.de/bk4/bilder/vfd5.gif"><img src="VFD_data/vfd5.gif" align="left" border="0" height="190" width="264"></a>Die 
+  Spannungsversorgung von +5V und +12-18V mag auf den ersten Blich einfach erscheinen, 
+  aber spätestens bei der Suche nach einem passenden Steckernetzteil wird 
+  man auf ein Problem stoßen:<br>
+  Steckernetzteile sind meist nur bis 12V erhältlich. Für stabilisierte 
+  18V sind aber mindestens 20V erforderlich, was einen 15V Trafo voraussetzt.<br>
+  Weiterhin wird im Spannungsregler für die 12-18V einiges an Leistung verbraten, 
+  wenn man diesen z.B. an 24V betriebt.<br>
+  Um diese Probleme zu umgehen verwende ich für mein Display einen Step-Up 
+  Wandler, der auf 7-15V Eingangsspannung eine stabilisierte Spannung von 16,6V 
+  erzeugt. Für diesen Eingangsspannungsbereich bekommt man problemlos billige 
+  Steckernetzteile (z.B. 9V 300mA.)<br>
+  Je nach Eingangsspannung liegt die Stromaufnahme bei 100-200mA und der Wirkungsgrad 
+  zwischen 70 und 80%.<br>
+  Bei der Eingangsspannung muss man aber darauf achten, dass diese im Leerlauf 
+  19V nie überschreitet, sonst gehen die 4094 Schieberegister/Treiber kaputt.</font></p>
+<p align="left">&nbsp;</p>
+<p align="left"><a href="http://mitglied.lycos.de/bk4/bilder/vfd2b.jpg"><img src="VFD_data/vfd2b.jpg" align="left" border="0" height="122" width="314"></a><font face="Arial, Helvetica, sans-serif"><img src="VFD_data/Snap.gif" align="left" height="120" width="320"></font></p>
+<p align="left"><br>
+</p>
+<p align="left">&nbsp;</p>
+<p align="left">&nbsp;</p>
+<p align="left">&nbsp;</p>
+<p align="left"><font face="Arial, Helvetica, sans-serif">Das ganze ist übrigends 
+  ein Display für ein Winamp Plugin, das per RS232 gesteuert wird.<br>
+  Leider lässt sich das Display schlecht fotografieren oder filmen aufgrund 
+  der hohen Helligkeit der einzelnen Segmente und der Mutliplexfrequenz.<br>
+  <a href="http://mitglied.lycos.de/bk4/dl/FV648.hex">Hier</a> gibt es die passende Software dazu. Das Winamp 
+  Plugin findet man auf<br>
+  <a href="http://www.markuszehnder.ch/projects/lcdplugin/index.php">http://www.markuszehnder.ch</a><br>
+  </font><font face="Arial, Helvetica, sans-serif">Einstellungen: Crystalfontz 
+  serial LCD, 2 Zeilen, 10 Spalten, Textbereich: ersten 5 Zeichen in der 1. Zeile, 
+  die nächsten 5 Zeichen beider Zeilen sind die Spektrumanzeige. Baudrate: 
+  9600</font></p>
+<p align="left"><font face="Arial, Helvetica, sans-serif">Zu dem 10 stelligen 
+  VFD FG651 (das ebenfalls bei Pollin erhältlich ist), gibt es auch die passende 
+  <a href="http://mitglied.lycos.de/bk4/dl/FV651.hex">Software</a>. Anschluss wie beim FV648, nur das P17 und 
+  G1 frei bleiben, die Reihenfolge von G2-11 ist umgekehrt, d.h. G11 ist links 
+  die erste Stelle. Das ganze emuliert ein serielles Crystalfontz LCD.</font></p>
+<p align="left">&nbsp;</p>
+<p align="left"><font face="Arial, Helvetica, sans-serif"><a href="http://mitglied.lycos.de/bk4/bilder/vfd6.gif"><img src="VFD_data/vfd6.gif" align="left" border="0" height="235" width="335"></a>Dies 
+  ist eine weitere Version einer Ansteuerung für das FV651 Display. Diesmal 
+  wird ein AVR verwendet, da dieser schneller ist. Im Prinzip ist die Schaltung 
+  genauso aufgebaut wie die anderen:<br>
+  Oben befindet sich der Spannungswandler der die notwendigen Spannungen von 5V 
+  und 16,5V liefert. Möchte man mehr Helligkeit kann man auch die Werte in 
+  Klammern einsetzen, dann erhält man 18V. Die ICs laufen dann aber an der 
+  Belastungsgrenze.<br>
+  Links befindet sich der uC der die Daten einer RS232 Schnittstelle empfängt 
+  und auf dem VFD anzeigt.<br>
+  Rechts befindet sich die Anzeige samt Treiberschaltung.</font></p>
+<p align="left"><font face="Arial, Helvetica, sans-serif">Da der Mikrocontroller 
+  nun mehr Rechenleistung hat, kann man das Display mit einer höheren Frequenz 
+  angetsteuern (1000fps). Dadurch ist die Anzeige absolut flimmerfrei und kann 
+  zusätzlich noch digital gedimmt werden, indem einzelne Bilder dunkelgeschaltet 
+  werden.</font></p>
+<p align="left">x</p>
+<p align="left">&nbsp;</p>
+<p align="left"><font face="Arial, Helvetica, sans-serif"><a href="http://mitglied.lycos.de/bk4/bilder/vfd7.gif"><img src="VFD_data/vfd7.gif" align="left" border="0" height="102" width="254"></a>Wenn 
+  man die Bauteile einigermaßen durchdacht anordnet, ist die Verdrahtung 
+  auch auf einer Locgrasterplatine kein Problem.<br>
+  Diese Anordnung ermöglicht kürzeste Verbindungen zwischen den Treiber 
+  ICs und dem Display.</font></p>
+<p align="left">&nbsp;</p>
+<p align="left">&nbsp;</p>
+<p align="left">&nbsp;</p>
+<div align="center"><a href="http://mitglied.lycos.de/bk4/sonst.htm"><font face="Arial, Helvetica, sans-serif" size="+1">Z</font></a><a href="http://mitglied.lycos.de/bk4/sonst.htm"><font face="Arial, Helvetica, sans-serif" size="+1">urück</font></a> 
+</div>
+<div align="center"> <br>
+</div>
+<p>&nbsp;</p>
+
+<!-- SZM VERSION="1.3" -->
+<script language="JavaScript" type="text/javascript"> 
+<!-- 
+var IVW="http://lycos.ivwbox.de/cgi-bin/ivw/CP/2B04APBA0000;"; 
+document.write("<img src=\""+IVW+"?r="+escape(document.referrer)+"\" width=\"1\" height=\"1\" />"); 
+// -->
+</script><img src="VFD_data/2B04APBA0000.gif" height="1" width="1"> 
+<noscript> 
+<img src="http://lycos.ivwbox.de/cgi-bin/ivw/CP/2B04APBA0000;" width="1" height="1" /> </noscript> 
+<!-- /SZM --> 
+<!-- SZMFRABO VERSION="1.1" --> 
+<script language="JavaScript" type="text/javascript"> 
+var szmvars="lycos//CP//2B04APBA0000"; 
+</script> 
+<script src="VFD_files/survey.js" language="JavaScript" type="text/javascript"> </script><script src="VFD_data/a.js"></script> 
+<!-- /SZMFRABO -->
+
+<script language="javascript" src="VFD_files/test_frame_size.js"></script>
+
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+
+
+
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.de/ad/google/frame.php?_url="+escape(self.location)+"&gg_bg=&gg_template=&mkw=&cat=noref";
+        var ref=window.document.referrer;
+
+		if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "/")) ) {
+                        parent.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                parent.document.body.cols = "*,140";
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                top.document.body.cols = "*,140";
+        }
+        else {
+                if (!window.opener) {
+                        setCookie("adFrameForcePHP",1,0," ");
+                }
+                else {
+                        setCookie("adFrameForcePHP",0,0," ");
+                }
+        }
+		
+	if (window.top.location.href.indexOf("http://mitglied.lycos.de")!=-1) {
+		ad_frame = 1 ;
+		window.top.document.body.cols="*,140" ;
+	}
+
+function resizeGoogleAdFrame() {
+	window.top.document.body.cols = "*,140";
+}
+
+
+	if (ad_frame == 1 && AD_clientWindowSize()) {
+		setInterval("resizeGoogleAdFrame()", 30);
+	}
+
+</script>
+
+<script language="javascript" src="VFD_files/popunder_lycos_update.htm"></script>
+
+<script type="text/javascript" src="VFD_data/ad.txt"></script>
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-de';
+  var _rsCG='noref';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script><script language="JavaScript" type="text/javascript" src="VFD_data/v5.js"></script><img src="VFD_data/m.gif" border="0" height="1" width="1">
+<noscript>
+<img src="//secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-de&amp;cg=noref" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->
+</body></html>

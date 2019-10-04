@@ -1,0 +1,235 @@
+MPASM 02.30 Released              POT.ASM   6-21-2006  13:38:06         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                    00001         List P = 16F84
+                    00002         #include <p16F84.inc>
+                    00001         LIST
+                    00002 ; P16F84.INC  Standard Header File, Version 2.00    Microchip Technology, Inc.
+                    00136         LIST
+2007 001B           00003         __CONFIG 1Bh    ;_CP_OFF & _PWRTE_ON & _WDT_OFF & _RC_OSC
+                    00004 
+                    00005 
+0000                00006         ORG 0 
+0000 1683           00007 SetUp   BSF 03,5
+0001 0186           00008         CLRF 06
+0002 3010           00009         MOVLW 10h
+0003 0085           00010         MOVWF 05
+0004 1283           00011         BCF 03,5
+0005 0185           00012         CLRF 05
+0006 284E           00013         GOTO Main1
+                    00014 
+0007                00015 Table 
+0007 0782           00016         ADDWF 02h,1
+0008 343F           00017         RETLW 3Fh
+0009 3406           00018         RETLW 06h
+000A 345B           00019         RETLW 5Bh
+000B 344F           00020         RETLW 4Fh
+000C 3466           00021         RETLW 66h
+000D 346D           00022         RETLW 6Dh
+000E 347D           00023         RETLW 7Dh
+000F 3407           00024         RETLW 07h
+0010 347F           00025         RETLW 7Fh
+0011 346F           00026         RETLW 6Fh 
+                    00027  
+0012 3080           00028 Clear   MOVLW 80h
+0013 009B           00029         MOVWF 1B
+0014 0186           00030         CLRF 06
+0015 2017           00031         CALL Delay
+0016 0008           00032         RETURN
+                    00033 
+0017 0000           00034 Delay   NOP
+0018 0000           00035         NOP
+0019 0B9A           00036         DECFSZ 1A,1
+001A 2817           00037         GOTO Delay
+001B 0B9B           00038         DECFSZ 1B,1
+001C 2817           00039         GOTO Delay
+001D 0008           00040         RETURN
+                    00041 
+001E 0A91           00042 Inc     INCF 11h,1
+001F 300A           00043         MOVLW 0A
+0020 0611           00044         XORWF 11h,0
+0021 1D03           00045         BTFSS 03,2
+0022 0008           00046         RETURN
+0023 0191           00047         CLRF 11h
+0024 0A92           00048         INCF 12h,1
+0025 300A           00049         MOVLW 0A
+0026 0612           00050         XORWF 12h,0
+MPASM 02.30 Released              POT.ASM   6-21-2006  13:38:06         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0027 1D03           00051         BTFSS 03,2
+0028 0008           00052         RETURN
+0029 0192           00053         CLRF 12h
+002A 0A93           00054         INCF 13h,1
+002B 300A           00055         MOVLW 0A
+002C 0613           00056         XORWF 13h,0
+002D 1D03           00057         BTFSS 03,2
+002E 0008           00058         RETURN
+002F 0193           00059         CLRF 13h
+0030 0008           00060         RETURN
+                    00061 
+                    00062 
+0031 018C           00063 Look    CLRF 0C
+0032 1786           00064         BSF 06,7
+0033 0000           00065 Look2   NOP
+0034 0A8C           00066         INCF 0C,1
+0035 1A05           00067         BTFSC 05,4
+0036 2833           00068         GOTO Look2
+0037 1386           00069         BCF 06,7
+0038 0008           00070         RETURN
+                    00071 
+0039 0813           00072 Main    MOVF 13h,0
+003A 2007           00073         CALL Table
+003B 0086           00074         MOVWF 06
+003C 2017           00075         CALL Delay
+003D 2012           00076         CALL Clear
+003E 0812           00077         MOVF 12h,0
+003F 2007           00078         CALL Table
+0040 0086           00079         MOVWF 06
+0041 2017           00080         CALL Delay
+0042 2012           00081         CALL Clear
+0043 0811           00082         MOVF 11h,0
+0044 2007           00083         CALL Table
+0045 0086           00084         MOVWF 06
+0046 2017           00085         CALL Delay
+0047 2012           00086         CALL Clear
+0048 303F           00087         MOVLW 3Fh
+0049 0086           00088         MOVWF 06
+004A 2017           00089         CALL Delay
+004B 2012           00090         CALL Clear
+004C 2017           00091         CALL Delay
+004D 2017           00092         CALL Delay
+                    00093 
+004E 0191           00094 Main1   CLRF 11h
+004F 0192           00095         CLRF 12h
+0050 0193           00096         CLRF 13h
+0051 2031           00097         CALL Look
+0052 3004           00098         MOVLW 04
+0053 008F           00099         MOVWF 0F
+                    00100 
+0054 080C           00101 Main2   MOVF 0C,0
+0055 008E           00102         MOVWF 0E
+                    00103 
+MPASM 02.30 Released              POT.ASM   6-21-2006  13:38:06         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0056 0B8E           00104 Main3   DECFSZ 0E,1
+0057 285B           00105         GOTO Main4
+0058 0B8F           00106         DECFSZ 0F,1
+0059 2854           00107         GOTO Main2
+005A 2839           00108         GOTO Main
+005B 201E           00109 Main4   CALL Inc
+005C 2856           00110         GOTO Main3
+                    00111 
+Warning[205]: Found directive in column 1. (END)
+                    00112 END 
+MPASM 02.30 Released              POT.ASM   6-21-2006  13:38:06         PAGE  4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+C                                 00000000
+Clear                             00000012
+DC                                00000001
+Delay                             00000017
+EEADR                             00000009
+EECON1                            00000088
+EECON2                            00000089
+EEDATA                            00000008
+EEIE                              00000006
+EEIF                              00000004
+F                                 00000001
+FSR                               00000004
+GIE                               00000007
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+Inc                               0000001E
+Look                              00000031
+Look2                             00000033
+Main                              00000039
+Main1                             0000004E
+Main2                             00000054
+Main3                             00000056
+Main4                             0000005B
+NOT_PD                            00000003
+NOT_RBPU                          00000007
+NOT_TO                            00000004
+OPTION_REG                        00000081
+PCL                               00000002
+PCLATH                            0000000A
+PORTA                             00000005
+PORTB                             00000006
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+RBIE                              00000003
+RBIF                              00000000
+RD                                00000000
+RP0                               00000005
+RP1                               00000006
+STATUS                            00000003
+SetUp                             00000000
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+TMR0                              00000001
+TRISA                             00000085
+TRISB                             00000086
+MPASM 02.30 Released              POT.ASM   6-21-2006  13:38:06         PAGE  5
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+Table                             00000007
+W                                 00000000
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+Z                                 00000002
+_CP_OFF                           00003FFF
+_CP_ON                            0000000F
+_HS_OSC                           00003FFE
+_LP_OSC                           00003FFC
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FFD
+__16F84                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXX--- ---------------- ----------------
+2000 : -------X-------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    93
+Program Memory Words Free:   931
+
+
+Errors   :     0
+Warnings :     1 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

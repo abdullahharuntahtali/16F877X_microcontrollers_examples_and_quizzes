@@ -1,0 +1,7 @@
+Okul saati olarak dizayn edilen bu devre aþaðýdaki fonksiyonlarý yerine getirir:
+
+1. Haftanýn her gün için ayrý ayrý 100 farklý alarm zamaný
+2. Bir günün alarmlarýný diðer günlere kopyalama
+3. Alarm süresi seçimi (1sn...45sn)
+4. Tatil günü belirleme ve belirlenen bu günde alarmýn devre dýþý býrakýlmasý
+5. Üzerindeki pili ile elektrik kesintilerinden etkilenmez 

@@ -1,0 +1,201 @@
+-- --------------------------------------------------------------------------
+--
+-- file      : fader.jal
+-- purpose   : provide slowly 'fading' 0-5V (PWM) output
+-- author    : W.v.Ooijen
+-- date      : 25-jan-2004
+-- language  : jal
+-- target    : Microchip PIC16F628 (no other PIC, not even 16F628A)
+-- copyright : (c) W.v.Ooijen, for legal aspects see webpage
+-- web       : http://www.voti.nl/obpr/fader
+--
+-- This application generates a 0-5V PWM output that slowly fades up or 
+-- down depending on the go_down input. The fade time in clock cycles is
+-- fixed, but the real fade time can be varied by varying the external 
+-- resistor that determines the PIC clock frequency. 
+--
+-- Optional indicator ouputs are provided that can drive LEDs. 
+-- Optional preset inputs are provided for 0 and 5V. 
+-- An optional speedup input can accelerate the fading 1:60.
+-- An optional freeze input freezes the current output.
+-- RB4 is not used and LVP is enabled so LVP (re)programming is possible.
+--
+-- --------------------------------------------------------------------------
+
+include 16f628_10
+include jlib
+
+
+-- --------------------------------------------------------------------------
+-- some special function registers
+-- --------------------------------------------------------------------------
+var volatile byte T2CON    at 0x12
+var volatile byte CCPR1L   at 0x15
+var volatile byte CCP1CON  at 0x17
+var volatile byte CMCON    at 0x1F
+var volatile byte PR2      at 0x92
+-- --------------------------------------------------------------------------
+
+
+-- --------------------------------------------------------------------------
+-- configuration fuses
+-- --------------------------------------------------------------------------
+-- no code protection             11_11
+-- don't care bit                      x
+-- no data protection                   1
+-- LVP enabled                            1
+-- brownout reset enabled                  1
+-- external MCLR                            1
+-- power-up delay enabled                      0
+-- watchdog disabled                            0
+-- external resistor + CLKOUT                1   11 
+-- --------------------------------------------------------------------------
+pragma target fuses            0b_11_1111_1111_0011
+-- --------------------------------------------------------------------------
+
+
+-- --------------------------------------------------------------------------
+-- IO pin use
+-- --------------------------------------------------------------------------
+-- - indicator (LED) outputs and (switch) inputs are active low
+-- - inputs can be just a switch to ground (internal pull-ups)
+-- - unused IO pins are outputs and must be left unconnected
+-- --------------------------------------------------------------------------
+var bit LED_nul    is pin_a0 -- indicator: 0 == output
+var bit LED_low    is pin_a1 -- indicator: 0 < output < 128
+var bit LED_high   is pin_a2 -- indicator: 127 < output 255
+var bit LED_full   is pin_a3 -- indicator: output == 255
+var bit LED_blink  is pin_a4 -- indicator: blinks once for each step
+--                    pin_a5 -- not available (MCLR, 33k to Vcc)
+--                    pin_a6 -- not available (CLKOUT, unconnected)
+--                    pin_a7 -- not available (ER to Gnd)
+-- --------------------------------------------------------------------------
+var bit go_down    is pin_b0 -- 0V == down, 5V == up 
+var bit set_min    is pin_b1 -- preset min: force output to minimum (0V)
+var bit set_max    is pin_b2 -- preset max: force output to maximum (5V)
+--                    pin_b3 -- PWM output, probably needs filtering
+--                    pin_b4 -- LVP: pull low except during LVP
+var bit speedup    is pin_b5 -- high == default range, low == speedup 1:60
+var bit freeze     is pin_b6 -- high == run, low == freeze
+--                    pin_b7 -- unused, output
+-- --------------------------------------------------------------------------
+CMCON              = 0x07           -- disable port a analog functions
+port_a_direction   = 0b_0000_0000   -- all outputs
+port_b_direction   = 0b_0110_0111   -- 012 inputs, 3 PWM, 4 LVP, 5,6 in 7 out
+-- --------------------------------------------------------------------------
+
+
+-- --------------------------------------------------------------------------
+-- OPTION register setting
+-- --------------------------------------------------------------------------
+-- port b pull-ups enabled        0
+-- don't care                      xxx
+-- don't care                          xxxx
+-- --------------------------------------------------------------------------
+asm bsf status_rp0   -- bank 1
+OPTION =                       0b_0000_0000
+asm bcf status_rp0   -- bank 0
+-- --------------------------------------------------------------------------
+
+
+-- --------------------------------------------------------------------------
+-- init PWM module
+-- --------------------------------------------------------------------------
+procedure set_duty_cycle( byte in x ) is
+   CCPR1L  = x >> 2              -- duty-cycle 6 high bits
+   CCP1CON = 
+      0b_0000_1100               -- PWM mode
+      + ( ( x & 0b_11 ) << 4 )   -- duty-cyle 2 low bits
+end procedure
+
+asm bsf status_rp0      -- bank 1
+PR2 = 0b_0011_1111      -- maximum frequency for 8-bit PWM resolution
+asm bcf status_rp0      -- bank 0
+T2CON = 0b_0000_0100    -- timer on, prescaler 1:1 for maximum PWM frequency
+set_duty_cycle( 0 )     -- start with duty-cycle 0
+-- --------------------------------------------------------------------------
+
+
+-- --------------------------------------------------------------------------
+-- loop timing
+-- --------------------------------------------------------------------------
+-- R ext                  10k                  2M2
+-- PIC clock              8.44 MHz             0.086 MHz
+-- PWM frequency          33 kHz               336 Hz
+-- total fade time        49 s (0.82 min)      80 min      
+-- step time              0.19 s               19 s        
+-- interval               1.33 ms              1.33 s
+-- interval at 10 MHz     1.12 ms
+-- --------------------------------------------------------------------------
+
+
+-- --------------------------------------------------------------------------
+-- start with level=0 and clear the loop counter
+-- --------------------------------------------------------------------------
+var byte level = 0
+var bit  blink = off
+var byte loop_count = 0
+var byte loop_max        
+var bit  blinker = off
+-- --------------------------------------------------------------------------
+
+
+forever loop
+   delay_10us( 112 )
+
+   -- half-blink when loop_count wraps around
+   if loop_count == 0 then
+      blink = ! blink
+      LED_blink = ! blink
+      
+      -- do not light the LED when the level is stable
+      if go_down then
+         if level == 0 then LED_blink = ! off end if
+      else 
+         if level == 255 then LEd_blink = ! off end if
+      end if
+
+      -- on 'falling edge' of blink: adjust level by one step
+      if ! blink then
+         if freeze == high then -- high == run
+            if go_down then
+               if level > 0 then
+                  level = level - 1
+               end if
+            else
+               if level < 255 then
+                 level = level + 1
+               end if
+            end if
+         end if
+      end if
+   end if
+
+   -- handle presets
+   if ! set_min then
+      level = 0
+   elsif ! set_max then
+      level = 255
+   end if
+
+   -- set PWM duty-cycle
+   set_duty_cycle( level )   
+
+   -- set indicator LEDs
+   LED_nul  = ! ( level == 0 )
+   LED_low  = ! ( ( level != 0 ) & ( level < 128 ) )
+   LED_high = ! ( ( level != 255 ) & ( level > 127 ) )
+   LED_full = ! ( level == 255 )
+
+   -- update the loop counter
+   loop_count = loop_count + 1
+   if ! speedup then
+      loop_max = 2
+   else 
+      loop_max = 120
+   end if
+   if loop_count == loop_max then
+      loop_count = 0
+   end if
+
+end loop

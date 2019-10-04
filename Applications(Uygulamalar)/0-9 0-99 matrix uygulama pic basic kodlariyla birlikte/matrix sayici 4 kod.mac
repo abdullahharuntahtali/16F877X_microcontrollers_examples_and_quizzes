@@ -1,0 +1,76 @@
+
+	NOLIST
+; PicBasic Pro Compiler 2.45a, (c) 1998, 2004 microEngineering Labs, Inc. All Rights Reserved.  
+
+LABEL?L macro Label
+        RST?RP
+    ifdef PM_USED
+        LALL
+Label
+        XALL
+    else
+Label
+    endif
+    endm
+
+CMPNE?BCL macro Bin, Cin, Label
+    if (Cin < 100h)
+        CLRWDT?
+        MOVE?BA Bin
+        sublw   Cin
+        BIT?GOTO 0, STATUS, Z, Label
+    else
+        L?GOTO  Label
+    endif
+    endm
+
+SHIFTL?BCB macro Bin, Cin, Bout
+    if (Cin == 1)
+        bcf     STATUS, C
+      if (Bout == Bin)
+        CHK?RP  Bout
+        rlf     Bout, F
+      else
+        CHK?RP  Bin
+        rlf     Bin, W
+        MOVE?AB Bout
+      endif
+    else
+        MOVE?BW Bin, R0
+        MOVE?CA Cin
+        L?CALL  SHIFTL
+        MOVE?AB Bout
+    endif
+    endm
+SHIFTL_USED = 1
+
+END? macro
+    local loop
+loop    sleep
+        L?GOTO  loop
+    endm
+
+GOTO?L macro Label
+        L?GOTO  Label
+    endm
+
+PAUSE?B macro Bin
+        MOVE?BA Bin
+        L?CALL  PAUSE
+    endm
+PAUSE_USED = 1
+
+PAUSE?C macro Cin
+    if (high (Cin) == 0)
+        MOVE?CA Cin
+        L?CALL  PAUSE
+    else
+        MOVE?CB high (Cin), R1 + 1
+        MOVE?CA low (Cin)
+        L?CALL  PAUSEL
+    endif
+    endm
+PAUSE_USED = 1
+
+
+	LIST

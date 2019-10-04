@@ -1,0 +1,437 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0049)http://www.geocities.com/dariuskrail20/lcdpad.asm -->
+<HTML><HEAD>
+<META http-equiv=Content-Type content="text/html; charset=windows-1254">
+<META content="MSHTML 6.00.2600.0" name=GENERATOR></HEAD>
+<BODY><PRE>;------------------------------------------------------------------------------------------------------------------------
+; Source code for the PIC16F873 based interfacing of LCD with a 4x4 matrix keypad featuring the MM74C922 Keypad Encoder.
+;------------------------------------------------------------------------------------------------------------------------
+;
+;	**Keypad Inputs from the MM74C922
+;		Data A			-	RA0	(LSB)
+;		Data B			-	RA1
+;		Data C			-	RA2
+;		Data D			-	RA3	(MSB)
+;		Data Available	-	RA5	(Goes High when a key is hit.)
+;	
+;	**Encoded Keypad Codes Input to PORTA.
+;		0000 - 1	0100 - 4	1000 - 7	1100 - *
+;		0001 - 2	0101 - 5	1001 - 8	1101 - 0
+;		0010 - 3	0110 - 6	1010 - 9	1110 - #
+;		0011 - A	0111 - B	1011 - C	1111 - D
+;	
+;	**LCD Pinouts
+;	1	Vss -	Ground, 3rd pin of the potentiometer
+;  	2	Vcc	-	5V DC, 1st pin of the potentiometer
+;  	3 	Vee	-	Middle pin of the potentiometer
+;  	4 	RS	-	RB0		(Data - 1, Instruction - 0)
+;  	5 	R/W	-	RB1		(R - 1, W - 0)
+;	6 	E	-	RB2		(Enable Pulse)
+;	7 	DB0	-	RC0		(LSB)
+;	8 	DB1	-	RC1
+;	9 	DB2	-	RC2
+; 	10	DB3	-	RC3		(Lower 4 bits)
+; 	11	DB4 -	RC4		(Upper 4 bits)
+; 	12	DB5	-	RC5
+; 	13	DB6	-	RC6
+; 	14	DB7	-	RC7		(MSB)
+;
+;	Instruction Cycle Time = 1 / (4MHz / 4) = 1us per instruction
+;------------------------------------------------------------------------------------------------------------------------
+
+		LIST P=16F873           
+		INCLUDE "p16f873.inc"   
+		ERRORLEVEL -302        
+		__CONFIG _PWRTE_OFF &amp; _HS_OSC &amp; _WDT_OFF &amp; _LVP_OFF &amp; _BODEN_OFF;  configuration switches
+
+charhold		EQU 0x2B		; General Purpose Registers.
+linepointer		EQU 0x2C		
+spacecounter	EQU 0x2D
+N 				EQU 0x2E			
+FIXDELAY		EQU 0x2F
+
+			org 0x00
+			nop					; Reserved for ICD II.
+			goto start
+
+start		call initports		; Initialize the PORTs.
+			call INITLCD		; Initialize the LCD.
+			
+			movlw d'16'			; Define spacecounter as 16.
+			movwf spacecounter
+
+			clrf charhold		; Clear registers.
+			clrf linepointer
+
+main		btfss PORTA, 5		; Wait for Keypad Inputs.
+			goto main			
+			call decodedata		; When key is hit, decode the input data.
+			call displaykey		; Display the key that is hit.
+			goto main
+		
+;------------------------------------------------------------------------------------------------------------------------
+; Subroutine to initialize the PORTs as Inputs or Outputs.
+;------------------------------------------------------------------------------------------------------------------------		
+
+initports
+			clrf PORTA			; Clear the PORTs.
+			clrf PORTB
+			clrf PORTC
+		
+			banksel TRISA		; Select TRISA, B, and C banks.
+			movlw b'00111111'	; Define PORTA as Inputs.
+			movwf TRISA
+
+			banksel ADCON1		; Select Bank for ADCON1.
+			movlw b'00000110'	; Define all PORTA pins as Digital.
+			movwf ADCON1
+
+			movlw 0x00			; Define PORTB and PORT C as Outputs.
+			movwf TRISB
+			movwf TRISC
+
+			return		
+
+;------------------------------------------------------------------------------------------------------------------------
+; Initialize the LCD.
+;------------------------------------------------------------------------------------------------------------------------
+
+INITLCD		
+			BANKSEL PORTB		; Select Bank for PORTB.
+
+			MOVLW	0xE6		; Call for 46ms delay
+			CALL 	NDELAY		; Wait for VCC of the LCD to reach 5V
+			
+			BCF		PORTB, 0	; Clear RS to select Instruction Reg.
+			BCF		PORTB, 1	; Clear R/W to write
+		
+			MOVLW	B'00111011'	; Function Set to 8 bits, 2 lines and 5x7 dot matrix
+			MOVWF 	PORTC
+			CALL	ENABLEPULSE
+			CALL	DELAY50
+			CALL	ENABLEPULSE
+			CALL	DELAY50
+			CALL	ENABLEPULSE
+			CALL	DELAY50		; Call 50us delay and wait for instruction completion
+
+			MOVLW	B'00001000'	; Display OFF
+			MOVWF	PORTC
+			CALL	ENABLEPULSE
+			CALL	DELAY50		; Call 50us delay and wait for instruction completion
+
+			MOVLW	B'00000001'	; Clear Display
+			MOVWF	PORTC
+			CALL	ENABLEPULSE
+			MOVLW	0x09		; Call 1.8ms delay and wait for instruction completion				
+			CALL	NDELAY		
+
+			MOVLW	B'00000010'	; Cursor Home
+			MOVWF	PORTC
+			CALL	ENABLEPULSE
+			MOVLW	0x09		; Call 1.8ms delay and wait for instruction completion				
+			CALL	NDELAY
+		
+			MOVLW	B'00001111'	; Display ON, Cursor ON, Blinking ON
+			MOVWF	PORTC
+			CALL	ENABLEPULSE
+			CALL	DELAY50		; Call 50us delay and wait for instruction completion
+
+			MOVLW 	B'00000110'	; Entry Mode Set, Increment &amp; No display shift
+			MOVWF	PORTC
+			CALL	ENABLEPULSE
+			CALL	DELAY50		; Call 50us delay and wait for instruction completion
+
+			BSF		PORTB, 0	; Set RS to select Data Reg.
+			BCF		PORTB, 1	; Clear R/W to write
+
+			RETURN
+
+;------------------------------------------------------------------------------------------------------------------------
+; Enable Pulse for writing or reading instructions or data
+;------------------------------------------------------------------------------------------------------------------------
+
+ENABLEPULSE	BCF	PORTB, 2		; 2us LOW followed by 3us HIGH Enable Pulse and 2us LOW.
+			NOP
+			NOP
+			BSF	PORTB, 2
+			NOP
+			NOP
+			NOP
+			BCF PORTB, 2
+			NOP
+			NOP
+			RETURN
+
+;------------------------------------------------------------------------------------------------------------------------
+; N DELAY SUBROUTINE, delay in multiples of 200us up to 200us*255 = 51ms (or more)
+;------------------------------------------------------------------------------------------------------------------------
+
+NDELAY
+			MOVWF N				; N is delay multiplier
+NOTOVER		CALL DELAY200		; Call for 200us
+			DECFSZ N, 1			; Decrease N by 1
+			GOTO NOTOVER		; The delay isn't done
+			RETURN
+	
+;------------------------------------------------------------------------------------------------------------------------
+; FIXED 200us DELAY (Possibly more due to execution time of the DECFSZ instruction.)
+;------------------------------------------------------------------------------------------------------------------------
+
+DELAY200	
+			MOVLW 0x42			; 66 LOOPS
+			MOVWF FIXDELAY		; 200us fixed delay
+NOTDONE200	DECFSZ FIXDELAY, 1 	; Decrement of FIXDELAY
+			GOTO NOTDONE200		; If 200us isn't up go back to NOTDONE200
+			RETURN				; If 200us is up then return to instruction.
+
+;------------------------------------------------------------------------------------------------------------------------
+; FIXED 50us DELAY (Possibly more due to execution time of the DECFSZ instruction.)
+;------------------------------------------------------------------------------------------------------------------------
+
+DELAY50	
+			MOVLW 0x10			; 16 LOOPS
+			MOVWF FIXDELAY		; 50us fixed delay
+NOTDONE50	DECFSZ FIXDELAY, 1 	; Decrement of FIXDELAY
+			GOTO NOTDONE50		; If 50us isn't up go back to NOTDONE50
+			RETURN				; If 50us is up then return to instruction.
+
+;------------------------------------------------------------------------------------------------------------------------
+; FIXED 20us DELAY (Possibly more due to execution time of the DECFSZ instruction.)
+;------------------------------------------------------------------------------------------------------------------------
+
+DELAY20	
+			MOVLW 0x7			; 7 LOOPS
+			MOVWF FIXDELAY		; 50us fixed delay
+NOTDONE20	DECFSZ FIXDELAY, 1 	; Decrement of FIXDELAY
+			GOTO NOTDONE20		; If 50us isn't up go back to NOTDONE50
+			RETURN				; If 50us is up then return to instruction.
+
+;------------------------------------------------------------------------------------------------------------------------
+; Fast Directive to write characters to LCD.
+;------------------------------------------------------------------------------------------------------------------------
+
+PUTCHAR
+			MOVWF PORTC			; A quicker way of writing characters to LCD.
+			CALL ENABLEPULSE
+			CALL CHKBUSY
+			RETURN
+
+;------------------------------------------------------------------------------------------------------------------------
+; Subroutine to check for the BUSY flag. Mostly used for instructions that follows up a character write.
+;------------------------------------------------------------------------------------------------------------------------
+
+CHKBUSY
+			bcf	PORTB, 0		; Clear RS to select Instruction Reg.
+			bsf	PORTB, 1		; Set R/W to read.
+
+			banksel TRISC		; Select Bank for TRISC.
+			movlw 0xFF			; Define all PORTC Pins as Inputs.
+			movwf TRISC
+
+			banksel PORTC		; Select Bank for PORTC.
+			bsf PORTB, 2		; I tried to write my own code for this part initially but I wasn't successful.
+			movf PORTC, w		; Therefore, I implemented a portion of Peter Ouwehand's LCD Code.
+			bcf PORTB, 2		; Will look more into the BUSY flag of the LCD.
+			andlw 0x80			; Credits to Peter Ouwehand for his code here. :)
+			btfss STATUS, Z
+			goto CHKBUSY
+
+			banksel TRISC		; Select Bank for TRISC.
+			movlw 0x00			; Define all PORTC Pins as Outputs.
+			movwf TRISC
+		
+			banksel PORTB		; Select Bank for PORTA, B, and C.
+			bsf PORTB, 0		; Set RS to select Data Register.
+			bcf PORTB, 1		; Clear R/W to write.
+			
+			return
+
+;------------------------------------------------------------------------------------------------------------------------
+; Subroutine to decode the Keypad data input in PORTA.
+;------------------------------------------------------------------------------------------------------------------------
+
+decodedata
+			call DELAY20		; Wait for some key debouncing to settle down.
+			movf PORTA, w		; Move input data from PORTA to WREG.
+			andlw 0x0F			; Strip the upper 4 bits.
+
+key1		sublw d'0'			; The codes below simply compares the encoded data from the 74C922 to each of the possible
+			btfss STATUS, Z		; key output. Whenever a match is found, it will output the corresponding character in 
+			goto key2			; ASCII to be displayed at the LCD.
+			movlw A'1'
+			goto decodedone
+
+key2		movf PORTA, w
+			sublw d'1'
+			btfss STATUS, Z
+			goto key3
+			movlw A'2'
+			goto decodedone
+
+key3		movf PORTA, w
+			sublw d'2'
+			btfss STATUS, Z
+			goto key4
+			movlw A'3'
+			goto decodedone
+
+key4		movf PORTA, w
+			sublw d'3'
+			btfss STATUS, Z
+			goto key5
+			movlw A'A'
+			goto decodedone
+
+key5		movf PORTA, w
+			sublw d'4'
+			btfss STATUS, Z
+			goto key6
+			movlw A'4'
+			goto decodedone
+
+key6		movf PORTA, w
+			sublw d'5'
+			btfss STATUS, Z
+			goto key7
+			movlw A'5'
+			goto decodedone
+
+key7		movf PORTA, w
+			sublw d'6'
+			btfss STATUS, Z
+			goto key8
+			movlw A'6'
+			goto decodedone
+
+key8		movf PORTA, w
+			sublw d'7'
+			btfss STATUS, Z
+			goto key9
+			movlw A'B'
+			goto decodedone
+
+key9		movf PORTA, w
+			sublw d'8'
+			btfss STATUS, Z
+			goto key10
+			movlw A'7'
+			goto decodedone
+
+key10		movf PORTA, w
+			sublw d'9'
+			btfss STATUS, Z
+			goto key11
+			movlw A'8'
+			goto decodedone
+
+key11		movf PORTA, w
+			sublw d'10'
+			btfss STATUS, Z
+			goto key12
+			movlw A'9'
+			goto decodedone
+
+key12		movf PORTA, w
+			sublw d'11'
+			btfss STATUS, Z
+			goto key13
+			movlw A'C'
+			goto decodedone
+
+key13		movf PORTA, w
+			sublw d'12'
+			btfss STATUS, Z
+			goto key14
+			movlw A'*'
+			goto decodedone
+
+key14		movf PORTA, w
+			sublw d'13'
+			btfss STATUS, Z
+			goto key15
+			movlw A'0'
+			goto decodedone
+
+key15		movf PORTA, w
+			sublw d'14'
+			btfss STATUS, Z
+			goto key16
+			movlw A'#'
+			goto decodedone
+
+key16		movf PORTA, w
+			sublw d'15'
+			btfss STATUS, Z
+			goto key1
+			movlw A'D'
+			goto decodedone
+
+decodedone	movwf charhold	; Pass ASCII character to charhold.
+			return
+
+;------------------------------------------------------------------------------------------------------------------------
+; Displays the character on the LCD and corrects the display accordingly.
+;------------------------------------------------------------------------------------------------------------------------
+
+displaykey	
+			decfsz spacecounter, f		; Decrease the spacecounter by 1.
+			goto notendline				; If it ain't 0, goto notendline to display the character.
+			btfsc linepointer, 0		; Check if End of Line 1 or 2.
+			goto endofline2				; If bit 0 is Set, therefore end of line 2.
+			goto endofline1				; If bit 0 is Clr, therefore end of line 1.
+
+endofline1	call nextline				; Position Cursor to the Next Line.
+			goto notendline			
+
+endofline2	call clrscreen				; Clear screen and return cursor to home.
+			goto notendline
+
+notendline	movf charhold, w			; Pass the ASCII from charhold back to PORTC in PUTCHAR.
+			call PUTCHAR				; Display on LCD.
+			call DELAY20				; Wait for debouncing to settle.
+
+waitrelease	btfsc PORTA, 5				; Wait for the key to be released.
+			goto waitrelease
+			call DELAY20				; Wait for debouncing to settle again.
+			
+			return
+
+;------------------------------------------------------------------------------------------------------------------------
+; Position Cursor to the next line.
+;------------------------------------------------------------------------------------------------------------------------
+
+nextline
+			banksel PORTB
+			bcf PORTB, 0	; Select Instructions Register.
+			bcf PORTB, 1	; Select Write.
+
+			movlw b'11000000'	; Shift cursor to second line at 0x40 RAM address on LCD.
+			call PUTCHAR
+			
+			movlw d'16'			; Restore spacecounter.
+			movwf spacecounter
+			bsf linepointer, 0	; Set bit 0 of linepointer to indicate Line 2 of LCD.
+
+			return
+
+;------------------------------------------------------------------------------------------------------------------------
+; Clear screen and Cursor home.
+;------------------------------------------------------------------------------------------------------------------------
+
+clrscreen
+			banksel PORTB
+			bcf PORTB, 0		; Clear RS to select Instructions Register.
+			bcf PORTB, 1		; Clear R/W to select Write.
+
+			banksel PORTC
+			MOVLW B'00000001'	; Clear Display
+			call PUTCHAR
+
+			movlw d'16'			; Restore spacecounter.
+			movwf spacecounter
+			bcf linepointer, 0	; Clear bit 0 of linepointer to indicate Line 1 of LCD.
+
+			return
+			
+			end
+</PRE></BODY></HTML>

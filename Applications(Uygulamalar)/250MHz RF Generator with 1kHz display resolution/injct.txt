@@ -1,0 +1,26 @@
+Component list for the "PLL controlled VCO units"
+
+
+RESISTORS
+=========
+ 100 = R3, R5, R6
+ 330 = R1
+ 10k = R2
+100k = R4
+
+CAPACITORS
+==========
+3.3pF = C2
+  1nF = C3, C6, C7
+100nF = C1, C4, C8
+2.2uF = C5
+
+INDUCTOR
+========
+
+ 10uH = L1, L2 or BK1608LM182-T (FERRITE BEAD)
+
+IC
+==
+LMX2322
+VCO QVC12 (4002MTDK)

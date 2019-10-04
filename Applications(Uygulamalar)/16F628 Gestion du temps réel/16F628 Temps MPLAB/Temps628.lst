@@ -1,0 +1,383 @@
+MPASM 03.50.03 Released                          TEMPS628.ASM   2-27-2006  16:36:13         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ; ==========================================================================================
+                      00002 ; Gestion du temps - Quartz 4,096 MHz
+                      00003 ; POLICE / Courier New modifiée avec 0 barré
+                      00004 ; Doumai.Terret@Wanadoo.fr
+                      00005 ; ==========================================================================================
+                      00006             LIST      P=16F628, F=INHX8M, r=dec
+                      00007             include "P16F628.inc"
+                      00001         LIST
+                      00002 ; P16F628.INC  Standard Header File, Version 1.01    Microchip Technology, Inc.
+                      00261         LIST
+                      00008             
+2007   3F29           00009         __CONFIG        _BODEN_OFF  & _PWRTE_OFF & _WDT_OFF & _LVP_OFF & _MCLRE_ON & _XT_OSC
+                      00010         
+                      00011         ; Do not show warnings                                                                          
+                      00012         ERRORLEVEL      -224                                                                            
+                                            
+                      00013                         
+                      00014 #DEFINE L500ms  PORTB,0         ; LED change d'état toutes les 500 ms
+                      00015 #DEFINE L1mn    PORTB,1         ; LED change d'état toutes les minutes
+                      00016 
+                      00017                 cblock 0x20
+  00000020            00018 w_temp : 1                                      ; Sauvegarde pour interruption
+  00000021            00019 status_temp : 1                         ; Sauvegarde pour interruption
+  00000022            00020 T100ms : 1                                      ; Variable 100 ms - évolue de 0 à 49
+  00000023            00021 T1s : 1                                         ; Variable 1s - évolue de 0 à 9
+  00000024            00022 T1mn : 1                                        ; Variable 1mn - évolue de 0 à 59 s
+  00000025            00023 SwapLed : 1                                     ; Variable temporaire d'état des Leds
+                      00024                 endc
+                      00025 ;
+                      00026 ;============================================================================================
+0000                  00027         ORG     0x0000  
+0000   2805           00028                 goto    main
+                      00029         
+0004                  00030         ORG     0x0004
+0004   2818           00031                 goto    inter
+                      00032 
+0005   1283           00033 main:   bcf             STATUS,RP0              ; Bank 0
+0006   3007           00034                 movlw   0x07                    ; Désactivation du mode comparateur et
+0007   009F           00035                 movwf   CMCON                   ; passe en mode Entrées / Sorties
+                      00036 ;
+0008   1683           00037                 bsf     STATUS,RP0              ; Bank 1
+0009   3010           00038                 movlw   B'00010000'             ; 
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000A   0086           00039                 movwf   TRISB                   ; PortB en sortie sauf RB4 en entrée BP
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000B   0185           00040                 clrf    TRISA                   ; PortA en sortie (non utilsé)
+000C   3012           00041                 movlw   B'00010010'             ; Interruption toutes les 2 ms
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000D   0081           00042                 movwf   OPTION_REG
+000E   30A0           00043                 movlw   B'10100000'             ; Autorisation générale des interruptions et
+000F   008B           00044                 movwf   INTCON                  ; autorise l'interruption Timer
+0010   1283           00045                 bcf             STATUS,RP0              ; Bank 0
+                      00046 ;
+MPASM 03.50.03 Released                          TEMPS628.ASM   2-27-2006  16:36:13         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0011   0186           00047                 clrf    PORTB
+0012   01A2           00048                 clrf    T100ms                  ; Initialisation des variables
+0013   01A3           00049                 clrf    T1s
+0014   01A4           00050                 clrf    T1mn
+0015   01A5           00051                 clrf    SwapLed
+                      00052 ;
+0016                  00053 init:
+0016   0000           00054                 nop                                             ; Programme principal !!!
+0017   2816           00055                 goto    init
+                      00056 ;
+                      00057 ; ====================================================================================
+                      00058 ; Gestion de l'interruption toutes de 2 ms avec un quartz de 4.096 MHz
+                      00059 ; ====================================================================================
+0018                  00060 inter:
+                      00061 ; sauvegarde des registres W et STATUS
+0018   00A0           00062                 movwf   w_temp                  
+0019   0E03           00063                 swapf   STATUS,W
+001A   00A1           00064                 movwf   status_temp
+                      00065 ;
+001B   1283           00066                 bcf             STATUS,RP0              ; Bank 0
+                      00067 ; -------------------------------------------------------------------------------------
+                      00068 ; Gestion de la LED des secondes. T1s évolue de 0 à 9.
+                      00069 ; Si T1s = 0, la LED sera éteinte. Si T1s = 5 la LED sera allumée.
+                      00070 ; -------------------------------------------------------------------------------------
+001C   0823           00071                 movf    T1s,W                   ; Sauvegarde T1s dans W
+001D   3C00           00072                 sublw   0                               ; Compare cette valeur à 0
+001E   1903           00073                 btfsc   STATUS,Z                ; Skip si T1s <> 0
+001F   1025           00074                 bcf             SwapLed,0               ; T1s est à 0, la LED sera éteinte
+                      00075 ;
+0020   0823           00076                 movf    T1s,W                   ; Sauvegarde T1s dans W
+0021   3C05           00077                 sublw   5                               ; Compare cette valeur à 5
+0022   1903           00078                 btfsc   STATUS,Z                ; Skip si T1s <> 5
+0023   1425           00079                 bsf             SwapLed,0               ; T1s est à 5, la LED sera allumée
+                      00080 ; -------------------------------------------------------------------------------------
+                      00081 ; Gestion de la LED des minutes. T1mn évolue de 0 à 59.
+                      00082 ; Si T1mn = 0, la LED sera éteinte. Si T1mn = 30 la LED sera allumée.
+                      00083 ; -------------------------------------------------------------------------------------
+0024   0824           00084                 movf    T1mn,W                  ; Segment identique à celui de traitement de T1s
+0025   3C00           00085                 sublw   0
+0026   1903           00086                 btfsc   STATUS,Z
+0027   10A5           00087                 bcf             SwapLed,1
+0028   0824           00088                 movf    T1mn,W
+0029   3C1E           00089                 sublw   30
+002A   1903           00090                 btfsc   STATUS,Z
+002B   14A5           00091                 bsf             SwapLed,1
+                      00092 ; -------------------------------------------------------------------------------------
+                      00093 ; Gestion de l'horloge 250 Hz. Le bit change d'état toutes les 2 ms.
+                      00094 ; -------------------------------------------------------------------------------------
+002C   3020           00095                 movlw   0x20                    ; Charge le masque pour le bit 5
+002D   06A5           00096                 xorwf   SwapLed,F               ; Complémente le bit 5 de la variable SwapLed
+                      00097 ; -------------------------------------------------------------------------------------
+                      00098 ; Écriture sur le PORTB. Seuls les bits 0,1,5 sont modifiés.
+                      00099 ; -------------------------------------------------------------------------------------
+MPASM 03.50.03 Released                          TEMPS628.ASM   2-27-2006  16:36:13         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+002E   0806           00100                 movf    PORTB,W                 ; Sauvegarde l'état du PORTB dans W
+002F   39DC           00101                 andlw   B'11011100'             ; RAZ des bits 0,1 (Leds) et 5 (Horloge)
+0030   0425           00102                 iorwf   SwapLed,W               ; Copie les bits 0,1 (Leds) et 5 (Horloge) dans SwapLed
+0031   0086           00103                 movwf   PORTB                   ; Écriture sur le PORTB
+                      00104 ; -------------------------------------------------------------------------------------
+                      00105 ; Incrémente la variable T100ms de 0 à 50, RAZ de cette variable toutes les 100 ms
+                      00106 ; -------------------------------------------------------------------------------------
+0032   0AA2           00107                 incf    T100ms,F                ; Incrémente la variable 100 ms
+0033   0822           00108                 movf    T100ms,W                ; W = T100ms
+0034   3C32           00109                 sublw   50                              ; 50 x 2 ms = 100 ms
+0035   1D03           00110                 btfss   STATUS,Z                ; 50 passages ?
+0036   2844           00111                 goto    FinT                    ; Fin de la gestion du temps
+0037   01A2           00112                 clrf    T100ms                  ; Oui, RAZ T100ms
+                      00113 ; -------------------------------------------------------------------------------------
+                      00114 ; Incrémente la variable T1s de 0 à 9, RAZ de cette variable toutes les secondes
+                      00115 ; -------------------------------------------------------------------------------------
+0038   0AA3           00116                 incf    T1s,F                   ; Incrémente la variable 1s
+0039   0823           00117                 movf    T1s,W                   ; W = T1s
+003A   3C0A           00118                 sublw   10                              ; 10 x 100 ms = 1 s
+003B   1D03           00119                 btfss   STATUS,Z                ; 10 passages ?
+003C   2844           00120                 goto    FinT                    ; Fin de la gestion du temps
+003D   01A3           00121                 clrf    T1s                             ; Oui, RAZ T1s
+                      00122 ; -------------------------------------------------------------------------------------
+                      00123 ; Incrémente la variable T1mn de 0 à 59, RAZ de cette variable toutes les minutes
+                      00124 ; -------------------------------------------------------------------------------------
+003E   0AA4           00125                 incf    T1mn,F                  ; Incrémente la variable 1mn
+003F   0824           00126                 movf    T1mn,W                  ; W = T1mn
+0040   3C3C           00127                 sublw   60                              ; 60 x 1 s = 1 mn
+0041   1D03           00128                 btfss   STATUS,Z                ; 60 passages ?
+0042   2844           00129                 goto    FinT                    ; Fin de la gestion du temps
+0043   01A4           00130                 clrf    T1mn                    ; Oui, RAZ T1mn
+                      00131 ;
+0044   0000           00132 FinT    nop                                             ; 
+                      00133 ; -------------------------------------------------------------------------------------
+0045   110B           00134                 bcf             INTCON,T0IF                     ; Prochaine interruption Timer prise en 
+                            compte
+                      00135 ; -------------------------------------------------------------------------------------
+                      00136 ;
+0046   0E21           00137                 swapf   status_temp,W           ; Restauration des registres W et STATUS
+0047   0083           00138                 movwf   STATUS
+0048   0EA0           00139                 swapf   w_temp,F
+0049   0E20           00140                 swapf   w_temp,W
+                      00141 ;
+004A   0009           00142                 retfie
+                      00143 
+                      00144                 end
+MPASM 03.50.03 Released                          TEMPS628.ASM   2-27-2006  16:36:13         PAGE  4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ADEN                              00000003
+BRGH                              00000002
+C                                 00000000
+C1INV                             00000004
+C1OUT                             00000006
+C2INV                             00000005
+C2OUT                             00000007
+CCP1CON                           00000017
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP1X                             00000005
+CCP1Y                             00000004
+CCPR1H                            00000016
+CCPR1L                            00000015
+CIS                               00000003
+CM0                               00000000
+CM1                               00000001
+CM2                               00000002
+CMCON                             0000001F
+CMIE                              00000006
+CMIF                              00000006
+CREN                              00000004
+CSRC                              00000007
+DC                                00000001
+EEADR                             0000009B
+EECON1                            0000009C
+EECON2                            0000009D
+EEDATA                            0000009A
+EEIE                              00000007
+EEIF                              00000007
+F                                 00000001
+FERR                              00000002
+FSR                               00000004
+FinT                              00000044
+GIE                               00000007
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+L1mn                              PORTB,1
+L500ms                            PORTB,0
+NOT_BO                            00000000
+NOT_BOD                           00000000
+NOT_BOR                           00000000
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+MPASM 03.50.03 Released                          TEMPS628.ASM   2-27-2006  16:36:13         PAGE  5
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+OERR                              00000001
+OPTION_REG                        00000081
+OSCF                              00000003
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PIE1                              0000008C
+PIR1                              0000000C
+PORTA                             00000005
+PORTB                             00000006
+PR2                               00000092
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+RBIE                              00000003
+RBIF                              00000000
+RCIE                              00000005
+RCIF                              00000005
+RCREG                             0000001A
+RCSTA                             00000018
+RD                                00000000
+RP0                               00000005
+RP1                               00000006
+RX9                               00000006
+RX9D                              00000000
+SPBRG                             00000099
+SPEN                              00000007
+SREN                              00000005
+STATUS                            00000003
+SYNC                              00000004
+SwapLed                           00000025
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T100ms                            00000022
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1OSCEN                           00000003
+T1mn                              00000024
+T1s                               00000023
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000012
+TMR0                              00000001
+TMR1CS                            00000001
+TMR1H                             0000000F
+TMR1IE                            00000000
+MPASM 03.50.03 Released                          TEMPS628.ASM   2-27-2006  16:36:13         PAGE  6
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TMR2                              00000011
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+TOUTPS0                           00000003
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRISA                             00000085
+TRISB                             00000086
+TRMT                              00000001
+TX9                               00000006
+TX9D                              00000000
+TXEN                              00000005
+TXIE                              00000004
+TXIF                              00000004
+TXREG                             00000019
+TXSTA                             00000098
+VR0                               00000000
+VR1                               00000001
+VR2                               00000002
+VR3                               00000003
+VRCON                             0000009F
+VREN                              00000007
+VROE                              00000006
+VRR                               00000005
+W                                 00000000
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+Z                                 00000002
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_CP_50                            00002BFF
+_CP_75                            000017FF
+_CP_ALL                           000003FF
+_CP_OFF                           00003FFF
+_DATA_CP_OFF                      00003FFF
+_DATA_CP_ON                       00003EFF
+_ER_OSC_CLKOUT                    00003FFF
+_ER_OSC_NOCLKOUT                  00003FFE
+_EXTCLK_OSC                       00003FEF
+_HS_OSC                           00003FEE
+_INTRC_OSC_CLKOUT                 00003FFD
+_INTRC_OSC_NOCLKOUT               00003FFC
+_LP_OSC                           00003FEC
+_LVP_OFF                          00003F7F
+_LVP_ON                           00003FFF
+_MCLRE_OFF                        00003FDF
+_MCLRE_ON                         00003FFF
+MPASM 03.50.03 Released                          TEMPS628.ASM   2-27-2006  16:36:13         PAGE  7
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FED
+__16F628                          00000001
+init                              00000016
+inter                             00000018
+main                              00000005
+status_temp                       00000021
+w_temp                            00000020
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : X---XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXX----- ---------------- ---------------- ----------------
+2000 : -------X-------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    72
+Program Memory Words Free:  1976
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     3 reported,     0 suppressed
+
+

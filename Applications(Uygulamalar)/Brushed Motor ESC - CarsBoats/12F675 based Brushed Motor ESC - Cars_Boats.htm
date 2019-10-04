@@ -1,0 +1,306 @@
+<html><head><title>12F675 based Brushed Motor ESC - Cars/Boats</title></head><body>
+
+<h1><center>Brushed Motor ESC - Cars/Boats</center></h1>
+
+<p></p><center>27 November 2005</center><p></p>
+
+<blockquote>
+  <p>This project documents how to build and construct your own
+  Brushed Motor ESC for Cars and Boats using a <a href="http://www.microchip.com/1010/pline/picmicro/category/embctrl/8kbytes/devices/12f675/index.htm">Microchip
+  12F675 PIC</a> and a small number of standard components.
+</p><p>This ESC is an extension of an earlier
+<a href="http://www.designsoft.com.au/ahome/rc/PIC-ESC">aircraft ESC</a> and the
+reader is referred to the earlier ESC for full
+details of the design.
+</p></blockquote>
+
+<h2>Background</h2>
+
+<blockquote>
+  <p>This ESC grew out of an earlier aircraft ESC. A number of
+people asked for an ESC with brake and reverse operations that
+were suited to Car and Boat operations. While the earlier design
+provided basic reverse facilities I decided not to extend the
+aircraft design, but rather to revise the design and
+produce a project targeted specifically at cars and boats.
+</p><p>This ESC operates in a very similar manner to the Team Tekin
+"Rebel 2" ESC and offers all of the key features of the earlier
+aircraft ESC as well as push-button programming.
+</p><p>A futher requirement was the desire to be able to use either
+a relay or an H-bridge to provide motor reverse. This project
+incorporates both options.
+</p></blockquote>
+
+<h2>What this ESC offers</h2>
+
+<blockquote>
+  <p>This ESC design offers the following features that are fully
+  explained in the aircraft ESC documentation:</p>
+  <ul>
+    <li>Safety startup, requires throttle be off to arm ESC.
+    </li><li>Signal loss stop, stops motor on loss of valid signal.
+    </li><li>Low voltage cutoff, stops motor on low battery voltage (optional,
+    not available on H-bridge version).
+    </li><li>Variable rate PWM output to reduce noise a low speeds and
+    increase efficiency at high speeds.
+    </li><li>Programmable throttle response curves with two sample curves.
+    </li><li>Slow start to protect gearboxes.
+    </li><li>Brake, either hard or soft (optional).
+    </li><li>Accurate throttle pulse width measurement.
+    </li><li>Accurate software PWM with rates between 7.6kHz and 2kHz.
+    </li><li>64 motor speeds for smooth speed control.
+   </li></ul>
+   <p>In addition the following features are specific to this
+   ESC:
+   </p><ul>
+    <li>Push-button configuration of throttle range, brake, etc.
+    </li><li>Configurable brake time prior to switching to reverse,
+    between 0 and 5 seconds.
+   </li></ul>
+  <h3>Push-button configuration</h3>
+  <blockquote>
+    <p>This ESC has a push button and LED that permit the ESC to
+    be configured. The configuration is stored in the EEPROM on
+    the PIC and will stay set until reconfigured.
+    </p><p>The configuration system permits the configuration of the
+    throttle range, the brake to reverse delay, and also the disabling
+    of the reverse function.
+  </p></blockquote>
+  
+</blockquote>
+
+<h2>User's Manual</h2>
+<blockquote>
+  <h3>Important Note</h3>
+  <blockquote>
+  On power up the ESC will not arm until the throttle is in the neutral position.
+  It is possible to perform throttle configuration during this time using the
+  configuration system (see below). The ESC also requires the throttle to be
+  in the neutral position to rearm the ESC after:
+  <ul>
+  <li>Loss of receiver signal;
+  </li><li>After using any of the configuration modes.
+  <ul>
+  It is almost certain that you will need to perform throttle configuration the
+  first time that you use the ESC. This is because it is very unlikely that the
+  factory default options in the ESC will match your radio control unit.
+  </ul></li></ul></blockquote>
+
+  <h3>Status LED (Relay version)</h3>
+  <blockquote>
+  The status LED is ON whenever the brake is active, and off at other times.
+  The status LED is also used during configuration (see below).
+  </blockquote>
+
+  <h3>Status LED (H-bridge version)</h3>
+  <blockquote>
+  The status LED is ON whenever the ESC is in reverse, and off at other times.
+  The status LED is also used during configuration (see below).
+  </blockquote>
+
+  <h3>Configuration of the ESC</h3>
+  <blockquote>
+  <p><b>Brake to Reverse Delay</b>
+  </p><p>To set the brake to reverse delay period press the 'program' switch
+  and keep it pressed for the delay period required and the release the button.
+  When the button is first pressed the LED will start to flash on and off rapidly.
+  The maximum delay time that can be configured is approximately 5 seconds, after 5 seconds
+  the LED will show a short on flash and a long off flash. If the button is released
+  during this time the maximum 5 second delay is configured.
+
+  </p><p><b>Disable Reverse</b>
+  </p><p>To disable reverse in the ESC press the 'program' button and keep it pressed.
+  At first the LED will flash on and off rapidly. Then, after about 5 seconds the LED
+  will change to a short on flash and a long off flash, keep pressing the burron.
+  After another 5 seconds the LED will alter to a long on flash and long off flash,
+  now release the button.
+
+  </p><p><b>Configure throttle</b>
+  </p><p>To configure the throttle first ensure that the throttle is in the neutral position.
+  </p><p>Press the 'program' button and hold it down. At first the LED will flash on
+  and off rapidly. Then, after about 5 seconds the LED will change to a short on flash
+  and a long off flash, keep holding the burron down. After another 5 seconds the LED
+  will alter to a long on flash and long off flash, keep holding the button down.
+  </p><p>After a further 5 seconds the LED will return to flashing on and off rapidly,
+  release the 'program' button.
+  </p><p>The LED will continue to flash on and off rapidly. Pull the throttle to the
+  full forward direction and hold it there for a few seconds and then return the throttle to the neutral position.
+  </p><p>The LED will change to flashing with a long on and long off, this indicates that
+  the forward throttle settings have been configured. Push the throttle to the full
+  brake/reverse position and hold it there for a few seconds and then return the throttle
+  to the neutral position.
+  </p><p>The LED will stop flashing and the ESC's throttle settings are now configured.
+</p></blockquote>
+
+<h2>Software Development Environment</h2>
+<blockquote>
+  <p>This software was developed with the <a href="http://www.microchip.com/1010/pline/tools/picmicro/devenv/mplabi/mplab6/index.htm">MPLAB
+  IDE</a> from MicroChip.</p>
+  <p>If you plan to use this ESC design and build one yourself
+  you will need to download the MPLAB IDE. There are too many ESC
+  options for all the versions to be available on this Web page.
+  With the earlier aircraft design I provided a few 'common'
+  versions of the software, however, with this ESC I have assumed
+  that anyone building the ESC will select the options and
+  assemble the code for themselves.
+  </p><p>After you have installed the MPLAB IDE proceed as follows:</p>
+  <ul>
+    <li>Create a directory somewhere on your Windows system. the
+    MPLAB IDE does not like path names that are too long (greater
+    than 30 characters or so) - so stick to a simple short name.
+    For example: <i>C:\PIC\CarESC</i>
+    </li><li>Copy the caresc.asm, linear.inc and power.inc files from the
+    links below into your diectory.
+    </li><li>Start the MPLAB IDE.
+    </li><li>Select Project-&gt;Project Wizard.
+    </li><li>Click Next.
+    </li><li>Select 'PIC12F675' as the device, click 'Next'.
+    </li><li>Select 'Microchip MPASM Toolsuite' as the Active Toolsuite,
+    click 'Next'.
+    </li><li>Enter a name for your project and then use the 'Browse' facility
+    to set the Project Directory to the directory you created at
+    the first step, click 'Next'.
+    </li><li>Add the 3 files that you copied to the project directory
+    to the project by double clicking each file name in the left
+    hand pane, the files will appear in the right hand pane. <b>Do
+    NOT check the boxes next to the files.</b> Click 'Next'.
+    </li><li>Click 'Finish'.
+    </li><li>The workspace will open and you will see a project window
+    that shows one Source File and two Header Files.
+    </li><li>You should now be able to assemble the PIC code by pressing
+    F10 - this will produce a file called 'caresc.hex'.
+    </li><li>To alter the paramaters double click on 'caresc.asm' in the
+    project window and the assembler source will now appear in a
+    new window, make the changes you require in this window.
+    </li><li>After you have made you changes press F10 to assemble the
+    code.
+  </li></ul>
+  <p>The MPLAB IDE has full support for simulation that permits
+  you to fully check the operation of the ESC. However, the use
+  of these facilities is beyond the scope of this document. Users
+  who just want to build a 'custom' version by modifying standard
+  parameters of the ESC should have no problem just using the IDE
+  to assemble the code.</p>
+</blockquote>
+
+<h2>The ESC Software</h2>
+<blockquote>
+  <h3>The PWM Engine Generator</h3>
+  <blockquote>
+    <p>This ESC uses a software PWM engine that is machine generated
+    by a <a href="http://www.perl.org/">Perl</a> program. The source
+    code for this program is available as part of the earlier
+    aircraft ESC. Please consult the other document for details.
+  </p></blockquote>
+  <h3>Main ESC module</h3>
+  <blockquote>
+    <p>The main ESC module contains all of the ESC application, with
+    the exception of the PWM engine file. This source file contains
+    a number of constants at the top that you can modify so suit
+    your application.</p>
+  </blockquote>
+  <h3>Linear PWM engine</h3>
+  <blockquote>
+    <p>A linear (ie. throttle position proportional to percentage
+    duty cycle) PWM include file is available that implements the
+    'basic' ESC.</p>
+  </blockquote>
+  <h3>Power PWM engine</h3>
+  <blockquote>
+    <p>A power (ie. throttle position proportional to engine power)
+    PWM include file is available.</p>
+  </blockquote>
+</blockquote>
+
+<h2>ESC Software Options</h2>
+<blockquote>
+   <p>This ESC has a number of options that you can configure prior to
+   programming the PIC. These options include:
+   </p><ul>
+   <li>Enable or disable the push button configuration option (default
+   is enabled);
+   </li><li>Select either relay or H-bridge for reverse (default is relay);
+   </li><li>Enable or disable slow motor start for forward and reverse (default
+   is fast motor start);
+   </li><li>Select the brake mode as either no brake, brake on/off at 100%, brake
+   on/off with a slow brake application (the default), or proportional brake;
+   </li><li>Low voltage curoff point (default is disabled);
+   </li><li>Relay changover delay (default os 0.5sec).
+   </li></ul>
+   <p>Prior to constucting this ESC you should review the documentation
+   at the top of the caresc.asm source module and alter the configuration
+   setting to produce the combination of options that you require.
+</p></blockquote>
+
+<h2>Circuits</h2>
+<blockquote>
+    <p>There are 2 circuits available that show the ESC
+    in its intended configuration. One circuit uses a relay to
+    provide the reverse functions and the other shows a 
+    sample H-bridge design.
+    </p><p><b>Note</b>: These circuits all show a single FET in each
+    position in the curcuit. For large motor currents it will probably
+    be the case that more FETs in parallel are required and appropriate
+    heatsinks considered. The details of this are left to the reader.
+    </p><h3>A note about the H-bridge</h3>
+    <blockquote>
+      <p>The H-bridge citcuit is provided as a starting point only.
+	It is a simple design using two P-channel FETs and two N-channel FETs.
+	The P-channel FETS have a relativly high On resistance and in
+	most circumstances the use of all N-channel FETs would be more
+	appropriate. Replacing the P-channel FETs with N-channel FETs
+	requires a more complex drive arrangement and this is not documented
+	here.
+    </p></blockquote>
+</blockquote>
+
+<h2>Where is everything?</h2>
+<blockquote>
+  <p>The files available for download are:</p>
+  <p></p><center><table border="1" cellpadding="0" cellspacing="2">
+    <tbody><tr>
+      <th>File Name</th> 
+      <th>Description</th> 
+    </tr>
+    <tr>
+      <td>
+      <a href="http://www.designsoft.com.au/ahome/rc/PIC-CarESC/caresc.asm">caresc.asm</a></td> 
+      <td>
+      PIC 12F675 Assembler Source</td> 
+    </tr>
+    <tr>
+      <td>
+      <a href="http://www.designsoft.com.au/ahome/rc/PIC-CarESC/linear.inc">linear.inc</a></td> 
+      <td>
+      PIC 12F675 Assembler Include File</td> 
+    </tr>
+    <tr>
+      <td>
+      <a href="http://www.designsoft.com.au/ahome/rc/PIC-CarESC/power.inc">power.inc</a></td> 
+      <td>
+      PIC 12F675 Assembler Include File</td> 
+    </tr>
+    <tr>
+      <td>
+      <a href="http://www.designsoft.com.au/ahome/rc/PIC-CarESC/rcaresc.gif">rcaresc.gif</a></td> 
+      <td>
+      Circuit diagram for relay reverse</td> 
+    </tr>
+    <tr>
+      <td>
+      <a href="http://www.designsoft.com.au/ahome/rc/PIC-CarESC/hcaresc.gif">hcaresc.gif</a></td> 
+      <td>
+      Circuit diagram for H-bridge reverse</td> 
+    </tr>
+  </tbody></table></center><p></p>
+</blockquote>
+
+<h2>Construction Details</h2>
+<blockquote>
+<p>There are no constuction details provided for this ESC. The example shown
+in the aircraft ESC can easily be adjusted for use with the relay reverse
+ESC. The H-bridge ESC would require a desgin that was primarily determined
+by the details of the H-bridge system.
+</p></blockquote>
+
+</blockquote></body></html>

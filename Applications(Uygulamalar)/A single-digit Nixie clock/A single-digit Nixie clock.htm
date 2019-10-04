@@ -1,0 +1,209 @@
+<html><head><title>A single-digit Nixie clock</title>
+<link rel="SHORTCUT ICON" href="http://positron.jfet.org/images/jfeticon.png"></head><body bgcolor="#ffffff">
+<img src="A%20single-digit%20Nixie%20clock_files/imgp1544.jpg" height="150" width="200">
+<br clear="all">
+<h2>A single-digit Nixie clock</h2>
+
+<p>A while ago I found a Burroughs <a href="http://positron.jfet.org/nixie-1/B-57xx_B-58xx.pdf">B-5853</a> <a href="http://en.wikipedia.org/wiki/Nixie_tube">Nixie</a> tube kicking
+around in the lab and decided that I should put it to good use.  Since
+I only had one of this size, I wanted to make a single-digit display
+out of it.  After I saw <a href="http://home.earthlink.net/%7Ejasonrandharper/Nixie.html">Jason Harper's Nixie clock gallery</a>, I decided that one digit really could make a cool clock.</p>
+
+<p>To add to the excitement, I wanted to be able to <a href="http://www.phatnav.com/wiki/wiki.phtml?title=Modulation">PWM</a>
+the display, allowing smooth fading and ultra sexiness (you know, for
+the ladies :-P) and allow for further expansion, perhaps via a computer
+interface. For these reasons, I chose the Microchip <a href="http://www.microchip.com/download/lit/pline/picmicro/families/16c62x/40300c.pdf">PIC16F628</a> microcontroller, which has an on-board <a href="http://www.freebsd.org/doc/en_US.ISO8859-1/articles/serial-uart/">USART</a> and does hardware PWM on one pin.  Moreover, I'm already quite experienced making crap with the 16F628, including <a href="http://images.jfet.org/20031125/imgp1344.jpg">another clock</a>
+(I'll make a page dedicated to the Weston Voltmeter clock some time in
+the near future), and I've got a metric assload of them lying around.</p>
+
+<h4>Driving the Nixie</h4>
+
+<p>To drive the Nixie, I'm lucky enough to have a stash of <a href="http://positron.jfet.org/nixie-1/74141.html">74141</a> <a href="http://en.wikipedia.org/wiki/Binary_coded_decimal">BCD</a>-to-decimal
+decoder / gas discharge tube driver ICs. These are somewhat hard to
+find, although you should still be able to get your hands on some from <a href="http://www.mouser.com/">Mouser</a> or <a href="http://www.ebay.com/">EBay</a>.
+The outputs are open-collector, so you just hook the Nixie anode to
+rectified mains via a 20ish&nbsp;kOhm resistor, connect the appropriate
+outputs on the 74141, and you're all set.</p>
+
+<img src="A%20single-digit%20Nixie%20clock_files/uln2003withzener.gif" align="right" height="254" width="378">
+
+<p>Unfortunately, the 74141 is damn expensive (I just checked---it's $7
+from Mouser); fortunately, it's not the only game in town.  It turns
+out that you can drop some voltage across the Nixie without lighting
+it up.  That means you can drive the Nixie from an IC that can't
+tolerate the full 170&nbsp;Volt rail by protecting the output with a
+Zener diode.  The <a href="http://positron.jfet.org/nixie-1/2001.pdf">ULN2003</a> is an open-collector
+transistor array that can withstand 50&nbsp;Volts at the collector
+terminals.  Along with a 47&nbsp;Volt Zener this makes a perfectly
+reasonable driver (except that you'll need two of them to cover all
+the outputs).  Depending on your Nixie, 47&nbsp;Volts might not be
+enough to turn off the filaments completely.  In this case, you could
+use the <a href="http://positron.jfet.org/nixie-1/2001.pdf">ULN2023</a> (and an appropriately-chosen
+Zener) instead, as it's capable of withstanding 100&nbsp;Volts.  An
+example of how you'd use the ULN20x3 is shown to the right.</p>
+
+<p>Another option is to use high voltage discrete transistors to drive
+the Nixies.  This can take up a lot of board area (and assembly
+time, especially if you're not going to have the board fabbed, for example by---shameless plug coming up---<a href="http://www.4pcb.com/">Advanced Circuits</a>).  On the upside, it's virtually guaranteed to work and more or less foolproof.
+Jason Harper has written an excellent paper, 
+<a href="http://positron.jfet.org/nixie-1/NixieTransistors.pdf">Driving Nixies with Discrete
+Transistors</a>, on just this subject.  I recommend you give it a
+read.  Another good resource is <a href="http://www.positronic.demon.nl/neon/HowToDriveNixies.html">How to Drive Nixies</a> over at Onno's Electronics Page.</p>
+
+<h4>Supplying the power</h4>
+
+<p>In a perfect world, everyone would run everything on the other side
+of an isolation transformer, no one would worry about ground loops,
+and everything would be hunky-dory.</p>
+
+<p>This ain't no perfect world.</p>
+
+<p>As you can see from the picture, my clock only has one transformer,
+and I'll tell you a secret: it's just a 6.3&nbsp;Volt&nbsp;RMS
+secondary running into a rectifier to provide the low voltage rail for
+the 74141 and the 16F628.  The Nixie supply is rectified mains, and as
+a result it's potentially (heh, so punny) very dangerous.  If you go
+building one, don't zap yourself.  In fact, to be safe, put a 1:1
+isolation transformer between the wall and the circuit.</p>
+
+<p>The power supply doesn't have to be all that beefy.  In my case, I
+use a bridge rectifier on the mains and another on the transformer
+output.  Throw caps on the rectifiers (check the voltage ratings!) and
+put an LM7805 and a cap on the low voltage one.  "Bam," as the man
+says.</p>
+
+<h4>The PIC circuit</h4>
+
+<p>Since the whole thing runs pretty slowly and oscillator timing
+isn't critical, I didn't worry about using a nice accurate 20&nbsp;MHz
+crystal.  Instead, I rely on the internal 4&nbsp;MHz oscillator in the
+16F628.  This frees up pins A6 and A7, which we will use to drive the
+decimal points.</p>
+
+<p>For a time reference, I use 60&nbsp;Hertz off the mains, since it's
+guaranteed to be <u>very</u> precise (at least over several
+days/weeks).  To get it into the PIC, I just put it through a large
+(470&nbsp;kOhm) limiting resistor with clipping diodes to the
+5&nbsp;Volt rail and ground.  This is better than dividing down the
+sine, since you don't have to worry about offset when you clip the
+sine wave.  I put the resultant 60&nbsp;Hertz square wave into A4, the
+external timer input pin, so that I can use the PIC's tmr0 interrupt
+to keep track of the time.</p>
+
+<p>The 74141 has a simple BCD interface which I tie to A3-A0, allowing
+me to write a number to port A to display it on the Nixie.  The 74141
+has another feature I find useful: an invalid (&gt;10) input causes the
+74141 to blank the display.  This is cool because it lets me do PWM
+easily using the 16F628's hardware PWM output.  Even though there's only
+one output pin, as long as I can use that pin to force an invalid
+input, I'm golden.  To do this, I employ a simple wired-OR with the
+two most significant bits of the 74141 (since 8 + 4 &gt; 10, I only need
+the two high bits to guarantee an invalid input).</p>
+
+<img src="A%20single-digit%20Nixie%20clock_files/wiredor.gif" align="right" height="129" width="287">
+
+<p>It's a little more easily said than done, however, since I need a
+low impedance between the data drivers (A3-A2) and the MSBs of the
+74141 in order to sink the maximum output current in the low state (a
+whopping 3.2&nbsp;mA at .6&nbsp;Volts!), yet I need to be able to
+drive both of the inputs high with the PWM output.  To the left is the
+circuit I ended up using.  Yup, those are the right resistor
+values---B3 needs to supply about 22&nbsp;mA (remember, .6&nbsp;Volt
+diode drop) in the worst case!  (Don't worry, the PIC is rated for
+25&nbsp;mA per output up to a total of 200&nbsp;mA into or out of A
+and B combined; we're not even close to that.)  Perhaps better than my
+rambling is the image to the left, which illustrates the wired-OR
+circuit.  Note the diodes, which isolate A3 from A2 when B3 is pulled
+low (i.e. when not blanking).</p>
+
+<p>As I promised earlier, A6 and A7 drive transistors for the decimal
+points (since the 74141 doesn't do decimals, only the 10 digits).  I
+had <a href="http://positron.jfet.org/nixie-1/BF859_3.pdf">BF859</a>s lying around from my plasma
+tweeter project (description forthcoming, I promise), so I used them
+(even though they're a bit overkill with their 300&nbsp;Volt collector
+voltage rating).  1&nbsp;kOhm resistors on the bases and we're all
+set.</p>
+
+<p>I mentioned earlier that I wanted to allow room for a possible
+computer interface.  Though I haven't implemented it, B2 and B1 are
+unused, so I could pop in a little code and use the 16F628's USART to
+talk RS232.  Or maybe you could, if you're motivated.  A friend of
+mine suggested using it as a load average indicator on my office
+computer.  Sounds like a plan to me.</p>
+
+<h4>The code</h4>
+
+<p>The PIC is configured to use its internal 4&nbsp;MHz oscillator;
+the tmr0 interrupt, PWM hardware, and weak port B pullups are
+enabled.</p>
+
+<p>The code that drives the clock is more or less just an interrupt
+handler.  Every clock transition on the 60&nbsp;Hertz input causes a
+tmr0 interrupt during which, as they say, shit happens.</p>
+
+<p>First, I check B7 and B4, the buttons for advancing the hours and
+minutes.  Since the switches <a href="http://japan.maxim-ic.com/appnotes.cfm/appnote_number/287/ln/en">bounce</a>
+like bastards, I debounce them in software by requiring the switch to be depressed for four successive 60&nbsp;Hertz periods.</p>
+
+<p>The next step is to increment the counter.  I actually use four
+separate registers to hold the time data as sixtieths, seconds,
+minutes, and hours.  A little bit of overflow checking at this point
+saves a lot of time in displaying the data later.</p>
+
+<p>To do the display, I use a lookup table to convert the counts to
+BCD (so 10 becomes 0x10, 24 becomes 0x24, &amp;c).  The lookup table
+is placed in the data EEPROM (we have 128 bytes total), since it's
+slightly faster (three cycles versus four) to load it from the data
+EEPROM than to use a jump table.</p>
+
+<p>Finally, the PWM value is placed in the appropriate register.
+Again, I use a lookup table to translate the sixtieth of the second
+we're currently in into a PWM value, and once again this table resides
+in the data EEPROM.</p>
+
+<p>If you download the code (see below), let the Makefile be your guide; I've written a couple <a href="http://www.perl.com/">Perl</a> scripts to generate the appropriate EEPROM entries.  These may or may not work with programs other than <a href="http://www.iki.fi/hyvatti/pic/picprog.html">picprog</a>.</p>
+
+<h4>The whole picture</h4>
+
+<p>After making the circuit, I mounted the whole thing on a piece of 
+<a href="http://en.wikipedia.org/wiki/Polyethylene">HDPE</a>.  It's
+ghetto, but it works.</p>
+
+<p>Of course, I would be remiss if I didn't provide a schematic (<a href="http://positron.jfet.org/nixie-1/nixie-1.pdf">pdf</a> or <a href="http://positron.jfet.org/nixie-1/nixie-1.ps">postscript</a>) of the whole thing (updated 02/20/2005 to fix a couple errors in the schematic), and the <a href="http://positron.jfet.org/nixie-1/nixie-1.tar.gz">code</a> (nominally in <a href="http://come.to/jal">JAL</a>, though almost all of it is just assembler).</p>
+
+<p>A few pictures are <a href="http://images.jfet.org/20040408/">available</a>.  I know the focus is softer than Mama Cass in her prime.  Sue me.</p>
+
+<h4>Fabbed version</h4>
+
+<p>(added 3/2/05)<img src="A%20single-digit%20Nixie%20clock_files/clock-board.gif" align="right" height="445" width="562">
+
+</p><p>After giving the original Nixie-1 to my younger sister, I
+decided I wanted another one for my desk at work, so I invested the
+time to make a board in <a href="http://www.cadsoftusa.com/">Eagle</a> and sent it off to <a href="http://www.4pcb.com/">Advanced Circuits</a>.  This clock uses a <a href="http://www.sphere.bc.ca/test/nixie.html">B-5440</a>,
+since that's what I had lying around, and I added a DB9 with
+appropriate connections for when I finally get around to coding up
+something useful for the serial interface.
+</p><p>If you're interested in making one of these, you can download a zipfile of the <a href="http://positron.jfet.org/nixie-1/clock000.zip">layout</a> ready to be uploaded to 4pcb.com.  The parts (other than the 74141 and the Nixie) are available from <a href="http://www.digikey.com/">Digi-Key</a>.  The only ones that aren't completely standard are
+</p><ul><li>the switches: ITT Industries D6-R-90, Digi-Key part number 401-1008-ND
+    </li><li>the transformer: Triad Magnetics FS12-090, Digi-Key part number 237-1024-ND
+    </li><li>the right-angle DB9 connector: AMP/Tyco HD-20 9-pin D-Sub, Digi-Key part number A23303-ND <b>NOTE:
+don't bother stuffing the DB9; I forgot to include polarity inversion
+(e.g., a MAX232), so the serial port won't work on this rev.</b>
+</li></ul>
+<p>The diodes not marked as 1N4148s are 1N4004s or the like.
+
+</p><p><b>Note</b>: although it's not in the schematic, you're going to
+want a .1uF ceramic capacitor across D12 to prevent spurious clock
+transitions. In addition, R2 is probably too large by a factor of 10 or
+so; a 47kOhm is probably perfect.
+</p><p>In the process of making this board, I discovered some <a href="http://blog.jfet.org/2005/02/23#2005022302">extremely useful things</a> which you might find interesting.
+
+</p><p>Here's what it looks like stuffed:
+<img src="A%20single-digit%20Nixie%20clock_files/nixie-1-new.jpg" align="left" height="646" width="486">
+
+<br clear="all">
+
+</p><center><font size="1">Questions?  Comments?  &lt;<a href="mailto:rsw@jfet.org">rsw@jfet.org</a>&gt;</font></center>
+
+
+</body></html>

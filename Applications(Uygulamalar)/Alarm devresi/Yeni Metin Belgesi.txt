@@ -1,0 +1,2 @@
+
+Bir çok alarm sistemi var ve genelinin tasarýmý ayný. Bu tasarýmýn en büyük farký sistemin bütün kontrollerinin tek tuþla kontrol edilmesi; sisteme giriþ, sistemden çýkýþ, þifre giriþ ve alarmý kapatma gibi. Tabi bu durumun avantaj ve dezavantajlarý var.  Bir yandan keypad’ýn kullandýðý bacaklardan tasarruf edilirken diðer yandan zamandan kaynaklanan bir sorun oluþabiliyor. Sistem 3 bölge kontrol edebiliyor(2 bölge daha eklenebilir), 8 bit þifreleme ile sistem güvenliði saðlanýyor. Þimdi size sistemi anlatayým.

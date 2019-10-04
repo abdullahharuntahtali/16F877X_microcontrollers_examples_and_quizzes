@@ -1,0 +1,798 @@
+MPASM 02.30 Released           BINART.ASM   3-23-2005  22:15:06         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                    00001 ; **************************************************************************
+                    00002 ; ** binclock.asm v 1.0                                
+                    00003 ; **             
+                    00004 ; **   Firmware for the PIC 16F84A that runs the Binary Desk Clock.          
+                    00005 ; **             
+                    00006 ; **   Note: The speed of the crystal used in the circuit determines how           
+                    00007 ; **         many machine cycles are in a second.  My circuit uses a 10 MHz clock,   
+                    00008 ; **         meaning there are 10 million cycles/second, meaning there are 
+                    00009 ; **         2.5 million instructions/second (4 cycles/instruction), and the PAUSE 
+                    00010 ; **         subroutines count time accordingly.  
+                    00011 ; **             
+                    00012 ; **   Pin Setup:        
+                    00013 ; **           
+                    00014 ; **         A0         Set/Run Switch (on == set)  
+                    00015 ; **         A1         Hours Button  
+                    00016 ; **         A2         Minutes Button  
+                    00017 ; **         A3         Seconds Button  
+                    00018 ; **         B0         Hours Output Pin  
+                    00019 ; **         B1         Minutes Output Pin  
+                    00020 ; **         B2         Seconds Output Pin  
+                    00021 ; **         B7         Clocking pulse to all three serial/parallel chips  
+                    00022 ; **           
+                    00023 ; **           
+                    00024 ; ** Homer J Painter  06/18/03            
+                    00025 ; ** homer@yo.homelinux.com            
+                    00026 ; **************************************************************************             
+                    00027 
+                    00028 
+                    00029 
+                    00030 ; **************************************************************************
+                    00031 ; ** Header File and Preprocessing Tidbits 
+                    00032 ; **
+                    00033         processor PIC16F84A
+                    00034         include   <p16f84a.inc>
+                    00001         LIST
+                    00002 ; P16F84A.INC  Standard Header File, Version 2.00    Microchip Technology, Inc.
+                    00134         LIST
+                    00035 
+2007 3FF2           00036         __config  _HS_OSC & _WDT_OFF & _PWRTE_ON ;crystal osc, no watchdog 
+                    00037                                                  ;timer, pwr up timer on
+                    00038  
+                    00039         radix dec                                ;default num fmt is decimal
+                    00040 
+                    00041 
+                    00042 ; **************************************************************************
+                    00043 ; ** Variable Declarations
+                    00044 ; **
+  00000014          00045 HRS     equ     20      ;Hours variable location
+  00000015          00046 MINS    equ     21      ;Minutes variable location
+  00000016          00047 SECS    equ     22      ;Seconds variable location
+                    00048 
+                    00049 ;TIMEBIT        equ     23      ;Used by DISPLAY to determine which bit of
+                    00050                         ;the time variables to send out next
+MPASM 02.30 Released           BINART.ASM   3-23-2005  22:15:06         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                    00051 
+  00000018          00052 TPACKET equ     24      ;This byte holds the current "data packet" to be placed
+                    00053                         ;on port B during the DISPLAY subroutine
+                    00054 
+  00000019          00055 RUNCYCLE equ    25      ;We enter the run subroutine four times per second
+                    00056                         ;to improve the response time to changes in the 
+                    00057                         ;Set/Run switch.  Only when this is at 0 do we
+                    00058                         ;perform a "tick."
+                    00059 
+  0000001A          00060 FLAGS   equ     26      ;Various bit flags used by this program
+                    00061                         ;Bit 0 - exit flag for SETCLK subroutine
+                    00062                         ;Bit 1 - tick flag for RUN subroutine
+                    00063                         ;Bit 2 - Wrap flag for TICK subroutine
+                    00064                         ;Bit 3 - Increment flag for TICK subroutine
+                    00065 
+  0000001B          00066 COUNT1  equ     27      ;Counter var for pauses
+  0000001C          00067 COUNT2  equ     28      ;Counter var for pauses
+  0000001D          00068 COUNT3  equ     29      ;Counter var for pauses
+                    00069 
+  0000001E          00070 MYW     equ     30      ;Temporary holder for W
+                    00071 
+                    00072 ; **************************************************************************
+                    00073 ; ** Vector Table - Tells the chip where to begin executing on startup and
+                    00074 ; **                when an interrupt is recieved (no interrupts used here).
+                    00075 
+0000                00076         org     0     ; Reset vector
+0000 2910           00077         goto    START   
+                    00078 
+                    00079 
+                    00080 ; **************************************************************************
+                    00081 ; ** Setup  - Initialize the pins for input/output, and set variables to 
+                    00082 ; **          their defaults
+                    00083 
+0001 1683           00084 SETUP   bsf     STATUS,5        ;Switch to bank 1
+                    00085 
+                    00086         ;movlw  B'111111'       ;Set Port A pins for input      
+                    00087         ;movwf  TRISA
+                    00088 
+0002 3000           00089         movlw   B'00000000'     ;Set Port B pins for output
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0003 0086           00090         movwf   TRISB
+                    00091 
+0004 1283           00092         bcf     STATUS,5        ;Switch back to bank 0
+                    00093 
+0005 3000           00094         movlw   0               ;Put 0 in W register
+0006 0094           00095         movwf   HRS             ;Set Hours to 0
+0007 0095           00096         movwf   MINS            ;Set Minutes to 0
+0008 0096           00097         movwf   SECS            ;Set Seconds to 0
+0009 0098           00098         movwf   TPACKET         ;Set TPACKET to 0
+000A 009A           00099         movwf   FLAGS           ;Set all flags to 0     
+000B 009E           00100         movwf   MYW             ;Set temp w holder to 0
+000C 0086           00101         movwf   PORTB           ;Clear PortB pins       
+                    00102 
+MPASM 02.30 Released           BINART.ASM   3-23-2005  22:15:06         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000D 3004           00103         movlw   4
+000E 0099           00104         movwf   RUNCYCLE        ;Set RUNCYCLE to 4
+                    00105         
+000F 2911           00106         goto    MAIN    
+                    00107         
+                    00108 
+                    00109 ; **************************************************************************
+                    00110 ; ** Run Mode  - Uses 10 instruction cycles
+                    00111 ; **
+0010                00112 RUN
+                    00113         ;For our purposes, seconds consist arbitrarily of 4 25 millisecond 
+                    00114         ;blocks, and so we only tick the clock up every fourth time through
+                    00115         ;here.
+                    00116 
+                    00117         ;We check the runcycles var, and if it is at 0 we tick the clock and
+                    00118         ;delay for the remainder of a 25 millisecond block (SMLPAUSE).  
+                    00119         ;If it is not 0, we delay for a full 25 milliseconds, less current 
+                    00120         ;overhead (BIGPAUSE), and then return to MAIN.          
+                    00121         
+0010 149A           00122         bsf     FLAGS,1         ;Provisionally set the tick flag
+0011 0B99           00123         decfsz  RUNCYCLE,1      ;Notch down the run cycle counter
+0012 109A           00124         bcf     FLAGS,1         ;Clear the flag unless the counter reads 0
+                    00125 
+0013 1C9A           00126         btfss   FLAGS,1         ;Check tick flag again
+0014 2057           00127         call    BIGPAUSE        ;Pause for 25 milliseconds
+                    00128 
+0015 189A           00129         btfsc   FLAGS,1         ;Check tick flag
+0016 201A           00130         call    TICK            ;Tick the clock
+                    00131         
+0017 189A           00132         btfsc   FLAGS,1         ;Check tick flag again
+0018 2044           00133         call    SMLPAUSE        ;Wait for the remainder of this 25 ms block
+                    00134         
+0019 0008           00135         RETURN
+                    00136 
+                    00137         
+                    00138 
+                    00139 ; **************************************************************************
+                    00140 ; ** Tick the clock one second  -  Uses 166 instruction cycles, including 
+                    00141 ; **                               call to DISPLAY
+001A                00142 TICK
+                    00143         ;Increment the stored time values:
+                    00144         
+                    00145         ;Increase seconds
+001A 0A96           00146         incf    SECS,1          ;Add 1 to seconds, result into SECS
+001B 303D           00147         movlw   61              ;Put 61 in the W register
+001C 0616           00148         xorwf   SECS,0          ;XOR W with the current number of seconds.
+                    00149                                 ;If there are 60 seconds, the result in W will
+                    00150                                 ;be 1
+                    00151 
+001D 009E           00152         movwf   MYW             ;Drop w to a register
+                    00153 
+001E 151A           00154         bsf     FLAGS,2         ;Provisionally set the wrap flag
+001F 0B1E           00155         decfsz  MYW,0           ;Check if we are at 60 seconds, result to W
+MPASM 02.30 Released           BINART.ASM   3-23-2005  22:15:06         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0020 111A           00156         bcf     FLAGS,2         ;Clear the wrap flag if we aren't yet at 60 seconds
+                    00157 
+0021 3000           00158         movlw   0               ;Provisionally move 0 to W
+0022 191A           00159         btfsc   FLAGS,2         ;Check wrap flag                
+0023 0096           00160         movwf   SECS            ;Set secs to 0 if wrap flag on
+                    00161 
+                    00162         ;Increase minutes       
+0024 159A           00163         bsf     FLAGS,3         ;Provisionally set increment flag
+0025 1D1A           00164         btfss   FLAGS,2         ;Check for wrap flag, indicating that mins should
+                    00165                                 ;be incremented
+0026 119A           00166         bcf     FLAGS,3         ;Wrap flag is off, so turn off increment flag
+                    00167 
+0027 199A           00168         btfsc   FLAGS,3         ;Check increment flag, skip next if flag is clear
+0028 0A95           00169         incf    MINS,1          ;Add 1 to minutes, result into MINS
+                    00170 
+0029 303D           00171         movlw   61              ;Put 61 in W register
+002A 0615           00172         xorwf   MINS,0          ;XOR W with the current number of minutes.
+                    00173 
+002B 009E           00174         movwf   MYW             ;Drop w to a register
+                    00175 
+002C 151A           00176         bsf     FLAGS,2         ;Provisionally set the wrap flag
+002D 0B1E           00177         decfsz  MYW,0           ;Check if we've come to minute 60
+002E 111A           00178         bcf     FLAGS,2         ;Clear the wrap flag if not
+                    00179 
+002F 3000           00180         movlw   0               ;Move 0 to W
+0030 191A           00181         btfsc   FLAGS,2         ;Check wrap flag
+0031 0095           00182         movwf   MINS            ;Set mins to 0
+                    00183                 
+                    00184         ;Increase hours
+0032 159A           00185         bsf     FLAGS,3         ;Provisionally set increment flag
+0033 1D1A           00186         btfss   FLAGS,2         ;Check for wrap flag, indicating that mins should
+                    00187                                 ;be incremented
+0034 119A           00188         bcf     FLAGS,3         ;Wrap flag is off, so turn off increment flag
+                    00189 
+0035 199A           00190         btfsc   FLAGS,3         ;Check increment flag, skip next if flag is clear
+0036 0A94           00191         incf    HRS,1           ;Add 1 to hours, result into HRS
+                    00192 
+0037 3019           00193         movlw   25              ;Put 25 in W register
+0038 0614           00194         xorwf   HRS,0           ;XOR W with the current number of hourss.
+                    00195 
+0039 009E           00196         movwf   MYW             ;Drop w to a register
+                    00197 
+003A 151A           00198         bsf     FLAGS,2         ;Provisionally set the wrap flag
+003B 0B1E           00199         decfsz  MYW,0           ;Check if we've come to hour 24
+003C 111A           00200         bcf     FLAGS,2         ;Clear the wrap flag if not
+                    00201 
+003D 3000           00202         movlw   0               ;Move 0 to W
+003E 191A           00203         btfsc   FLAGS,2         ;Check wrap flag
+003F 0094           00204         movwf   HRS             ;Set hours to 0
+                    00205                 
+                    00206 
+0040 2095           00207         call    DISPLAY         ;Output the time to the LEDs...count this line as 
+                    00208                                 ;124 instruction cycles
+MPASM 02.30 Released           BINART.ASM   3-23-2005  22:15:06         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                    00209 
+0041 3004           00210         movlw   4               ;Reset the RUNCYCLE variable
+0042 0099           00211         movwf   RUNCYCLE        
+                    00212 
+                    00213         
+0043 0008           00214         RETURN
+                    00215 
+                    00216 
+                    00217 ; **************************************************************************
+                    00218 ; ** Delay routine used on cycles where we have incremented the clock time 
+                    00219 ; **
+0044                00220 SMLPAUSE
+                    00221         ;Once here, we have 182 cycles overhead already 
+                    00222         ;(MAIN + RUN + TICK)
+                    00223 
+                    00224         ;25 milliseconds is 625,000 instruction cycles with a 10MHz clock, 
+                    00225         ;so we need to do nothing for 625,000-182 = 624,818 cycles, minus 
+                    00226         ;whatever we use here (10: 2 for RETURN, 8 to initialize COUNT vars).
+                    00227         
+                    00228         ;10MHz waste cycles = 624,806
+                    00229         ;6 MHZ waste cycles = 374,806
+                    00230 
+0044 3000           00231         movlw   0
+0045 009B           00232         movwf   COUNT1
+                    00233 
+0046 3000           00234         movlw   0
+0047 009C           00235         movwf   COUNT2  
+                    00236 
+0048 30E6           00237         movlw   230
+0049 009D           00238         movwf   COUNT3
+                    00239 
+004A 0B9B           00240 DLOOP1  decfsz  COUNT1,1
+004B 284A           00241         goto    DLOOP1          ;765 cycles
+004C 0B9C           00242         decfsz  COUNT2,1
+004D 284A           00243         goto    DLOOP1          ;197119 cycles
+                    00244 
+                    00245 ;       decfsz  COUNT3,1
+                    00246 ;       goto    DLOOP1          ;591365 cycles
+                    00247 
+                    00248         ;These #s are according to the MPLAB stopwatch...I'll go with them for now.
+                    00249         ;We need 33443 more cycles
+                    00250 
+                    00251 
+                    00252 ;       movlw   43
+                    00253 ;       movwf   COUNT2
+                    00254 
+004E 0B9C           00255 DLOOP2  decfsz  COUNT2,1
+004F 284E           00256         goto    DLOOP2          
+0050 0B9D           00257         decfsz  COUNT3,1
+0051 284E           00258         goto    DLOOP2          ;178639 - 232
+                    00259                                 ;177099 - 230
+                    00260 
+                    00261         ;That's another 33109 gone.  624474 wasted in total.
+MPASM 02.30 Released           BINART.ASM   3-23-2005  22:15:06         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                    00262 
+                    00263         ;Only 332 more cycles to go
+                    00264         ;That means COUNT3 should be set to 332/3, 110
+0052 30C2           00265         movlw   194
+0053 009D           00266         movwf   COUNT3
+                    00267 
+0054 0B9D           00268 DLOOP3  decfsz  COUNT3,1
+0055 2854           00269         goto    DLOOP3          ;329 cycles, according to MPLAB
+                    00270 
+0056 0008           00271         RETURN
+                    00272 
+                    00273 
+                    00274 ; **************************************************************************
+                    00275 ; ** Delay routine used on cycles where we do _not_ increment the clock time  
+                    00276 ; **
+0057                00277 BIGPAUSE
+                    00278         ;Once here, we have 16 cycles of overhead already (MAIN + RUN)
+                    00279         ;Add 12 more for internal overhead, and we need to waste
+                    00280         ;624,972 cycles here
+                    00281 
+                    00282         ;10 MHz waste cycles - 624972
+                    00283         ;6 MHz waste cycles - 374972
+                    00284   
+0057 3000           00285         movlw   0
+0058 009B           00286         movwf   COUNT1
+                    00287 
+0059 3000           00288         movlw   0
+005A 009C           00289         movwf   COUNT2
+                    00290 
+005B 30E6           00291         movlw   230
+005C 009D           00292         movwf   COUNT3
+                    00293 
+005D 0B9B           00294 DLOOP4  decfsz  COUNT1,1
+005E 285D           00295         goto    DLOOP4
+005F 0B9C           00296         decfsz  COUNT2,1
+0060 285D           00297         goto    DLOOP4          ;197119
+                    00298 
+                    00299 
+0061 0B9C           00300 DLOOP5  decfsz  COUNT2,1
+0062 2861           00301         goto    DLOOP5
+0063 0B9D           00302         decfsz  COUNT3,1
+0064 2861           00303         goto    DLOOP5          ;177099
+                    00304 
+0065 30FA           00305         movlw   250             
+0066 009D           00306         movwf   COUNT3
+                    00307 
+0067 0B9D           00308 DLOOP6  decfsz  COUNT3,1
+0068 2867           00309         goto    DLOOP6
+                    00310 
+0069 0008           00311         RETURN
+                    00312 
+                    00313 
+                    00314 ; **************************************************************************
+MPASM 02.30 Released           BINART.ASM   3-23-2005  22:15:06         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                    00315 ; ** Set Mode  
+                    00316 ; **
+006A                00317 SETCLK
+                    00318         ;Check the button pins and increment in memory 
+                    00319         ;hrs, mins, and secs appropriately
+                    00320         
+006A 1D85           00321         btfss   PORTA,3 ;Check seconds pin
+006B 2871           00322         goto    UPSEC   ;A single tick will suffice for this one
+                    00323 
+006C 1D05           00324         btfss   PORTA,2 ;Check minutes pin
+006D 287C           00325         goto    UPMIN   ;Jump to our UPMIN loop
+                    00326 
+006E 1C85           00327         btfss   PORTA,1 ;Check hours pin
+006F 2887           00328         goto    UPHR    ;Jump to our UPHR loop
+                    00329 
+0070 2911           00330         goto    MAIN
+                    00331         ;RETURN         ;If we get here, then no pins were pressed
+                    00332 
+0071                00333 UPSEC   
+                    00334         ;Increase seconds
+0071 0A96           00335         incf    SECS,1          ;Add 1 to seconds, result into SECS
+0072 303D           00336         movlw   61              ;Put 61 in the W register
+0073 0616           00337         xorwf   SECS,0          ;XOR W with the current number of seconds.
+                    00338                                 ;If there are 60 seconds, the result in W will
+                    00339                                 ;be 1
+                    00340 
+0074 009E           00341         movwf   MYW             ;Drop w to a register
+                    00342 
+0075 151A           00343         bsf     FLAGS,2         ;Provisionally set the wrap flag
+0076 0B1E           00344         decfsz  MYW,0           ;Check if we are at 60 seconds, result to W
+0077 111A           00345         bcf     FLAGS,2         ;Clear the wrap flag if we aren't yet at 60 seconds
+                    00346 
+0078 3000           00347         movlw   0               ;Provisionally move 0 to W
+0079 191A           00348         btfsc   FLAGS,2         ;Check wrap flag                
+007A 0096           00349         movwf   SECS            ;Set secs to 0 if wrap flag on
+                    00350         
+007B 2892           00351         goto    EOSET           ;Get out of here                
+                    00352 
+007C                00353 UPMIN   
+                    00354         ;Increase minutes
+007C 0A95           00355         incf    MINS,1          ;Add 1 to minutes, result into MINS
+007D 303D           00356         movlw   61              ;Put 61 in the W register
+007E 0615           00357         xorwf   MINS,0          ;XOR W with the current number of minutes.
+                    00358                                 ;If there are 60 minutes, the result in W will
+                    00359                                 ;be 1
+                    00360 
+007F 009E           00361         movwf   MYW             ;Drop w to a register
+                    00362 
+0080 151A           00363         bsf     FLAGS,2         ;Provisionally set the wrap flag
+0081 0B1E           00364         decfsz  MYW,0           ;Check if we are at 60 seconds, result to W
+0082 111A           00365         bcf     FLAGS,2         ;Clear the wrap flag if we aren't yet at 60 seconds
+                    00366 
+0083 3000           00367         movlw   0               ;Provisionally move 0 to W
+MPASM 02.30 Released           BINART.ASM   3-23-2005  22:15:06         PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0084 191A           00368         btfsc   FLAGS,2         ;Check wrap flag                
+0085 0095           00369         movwf   MINS            ;Set mins to 0 if wrap flag on
+                    00370 
+0086 2892           00371         goto    EOSET           ;Finish up
+                    00372 
+                    00373 
+0087                00374 UPHR    
+                    00375         ;Increase hours
+0087 0A94           00376         incf    HRS,1           ;Add 1 to hours, result into HRS
+0088 3019           00377         movlw   25              ;Put 25 in the W register
+0089 0614           00378         xorwf   HRS,0           ;XOR W with the current number of hours.
+                    00379                                 ;If there are 24 hours, the result in W will
+                    00380                                 ;be 1
+                    00381 
+008A 009E           00382         movwf   MYW             ;Drop w to a register
+                    00383 
+008B 151A           00384         bsf     FLAGS,2         ;Provisionally set the wrap flag
+008C 0B1E           00385         decfsz  MYW,0           ;Check if we are at 24 hours, result to W
+008D 111A           00386         bcf     FLAGS,2         ;Clear the wrap flag if we aren't yet at 24
+                    00387 
+008E 3000           00388         movlw   0               ;Provisionally move 0 to W
+008F 191A           00389         btfsc   FLAGS,2         ;Check wrap flag                
+0090 0094           00390         movwf   HRS             ;Set hrs to 0 if wrap flag on
+                    00391 
+0091 2892           00392         goto    EOSET
+                    00393 
+0092                00394 EOSET   
+0092 2095           00395         call    DISPLAY         ;Display the new time
+0093 2057           00396         call    BIGPAUSE        ;Wait a while to let humans catch up
+0094 2911           00397         goto    MAIN
+                    00398 
+                    00399 
+                    00400 ; **************************************************************************
+                    00401 ; ** Display Time  - Uses 124 instruction cycles 
+                    00402 ; **
+0095                00403 DISPLAY
+                    00404 
+                    00405 
+                    00406         ;Build and send the data packet.   
+                    00407 
+0095 1018           00408         bcf     TPACKET,0               ;Clear hour bit in TDATA
+0096 1B94           00409         btfsc   HRS,7                   ;Check the appropriate hour bit         
+0097 1418           00410         bsf     TPACKET,0               ;Set hour bit on in TDATA if needed
+                    00411 
+0098 1098           00412         bcf     TPACKET,1               ;Clear minute bit in TDATA
+0099 1B95           00413         btfsc   MINS,7                  ;Check appropriate minute bit
+009A 1498           00414         bsf     TPACKET,1               ;Set minute bit on in TDATA if needed
+                    00415 
+009B 1118           00416         bcf     TPACKET,2               ;Clear seconds bit in TDATA
+009C 1B96           00417         btfsc   SECS,7                  ;Check appropriate second bit
+009D 1518           00418         bsf     TPACKET,2               ;Set seconds bit on in TDATA if needed
+                    00419 
+009E 1398           00420         bcf     TPACKET,7               ;Swing clocking pin once to 
+MPASM 02.30 Released           BINART.ASM   3-23-2005  22:15:06         PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+009F 0818           00421         movf    TPACKET,0               ;transmit this packet
+00A0 0086           00422         movwf   PORTB
+                    00423 
+00A1 1798           00424         bsf     TPACKET,7       
+00A2 0818           00425         movf    TPACKET,0
+00A3 0086           00426         movwf   PORTB
+                    00427 
+                    00428 
+00A4 1018           00429         bcf     TPACKET,0               ;Clear hour bit in TDATA
+00A5 1B14           00430         btfsc   HRS,6                   ;Check the appropriate hour bit         
+00A6 1418           00431         bsf     TPACKET,0               ;Set hour bit on in TDATA if needed
+                    00432 
+00A7 1098           00433         bcf     TPACKET,1               ;Clear minute bit in TDATA
+00A8 1B15           00434         btfsc   MINS,6                  ;Check appropriate minute bit
+00A9 1498           00435         bsf     TPACKET,1               ;Set minute bit on in TDATA if needed
+                    00436 
+00AA 1118           00437         bcf     TPACKET,2               ;Clear seconds bit in TDATA
+00AB 1B16           00438         btfsc   SECS,6                  ;Check appropriate second bit
+00AC 1518           00439         bsf     TPACKET,2               ;Set seconds bit on in TDATA if needed
+                    00440 
+00AD 1398           00441         bcf     TPACKET,7               ;Swing clocking pin once to 
+00AE 0818           00442         movf    TPACKET,0               ;transmit this packet
+00AF 0086           00443         movwf   PORTB
+                    00444 
+00B0 1798           00445         bsf     TPACKET,7       
+00B1 0818           00446         movf    TPACKET,0
+00B2 0086           00447         movwf   PORTB
+                    00448                 
+                    00449 
+00B3 1018           00450         bcf     TPACKET,0               ;Clear hour bit in TDATA
+00B4 1A94           00451         btfsc   HRS,5                   ;Check the appropriate hour bit         
+00B5 1418           00452         bsf     TPACKET,0               ;Set hour bit on in TDATA if needed
+                    00453 
+00B6 1098           00454         bcf     TPACKET,1               ;Clear minute bit in TDATA
+00B7 1A95           00455         btfsc   MINS,5                  ;Check appropriate minute bit
+00B8 1498           00456         bsf     TPACKET,1               ;Set minute bit on in TDATA if needed
+                    00457 
+00B9 1118           00458         bcf     TPACKET,2               ;Clear seconds bit in TDATA
+00BA 1A96           00459         btfsc   SECS,5                  ;Check appropriate second bit
+00BB 1518           00460         bsf     TPACKET,2               ;Set seconds bit on in TDATA if needed
+                    00461 
+00BC 1398           00462         bcf     TPACKET,7               ;Swing clocking pin once to 
+00BD 0818           00463         movf    TPACKET,0               ;transmit this packet
+00BE 0086           00464         movwf   PORTB
+                    00465 
+00BF 1798           00466         bsf     TPACKET,7       
+00C0 0818           00467         movf    TPACKET,0
+00C1 0086           00468         movwf   PORTB
+                    00469 
+                    00470 
+00C2 1018           00471         bcf     TPACKET,0               ;Clear hour bit in TDATA
+00C3 1A14           00472         btfsc   HRS,4                   ;Check the appropriate hour bit         
+00C4 1418           00473         bsf     TPACKET,0               ;Set hour bit on in TDATA if needed
+MPASM 02.30 Released           BINART.ASM   3-23-2005  22:15:06         PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                    00474 
+00C5 1098           00475         bcf     TPACKET,1               ;Clear minute bit in TDATA
+00C6 1A15           00476         btfsc   MINS,4                  ;Check appropriate minute bit
+00C7 1498           00477         bsf     TPACKET,1               ;Set minute bit on in TDATA if needed
+                    00478 
+00C8 1118           00479         bcf     TPACKET,2               ;Clear seconds bit in TDATA
+00C9 1A16           00480         btfsc   SECS,4                  ;Check appropriate second bit
+00CA 1518           00481         bsf     TPACKET,2               ;Set seconds bit on in TDATA if needed
+                    00482 
+00CB 1398           00483         bcf     TPACKET,7               ;Swing clocking pin once to 
+00CC 0818           00484         movf    TPACKET,0               ;transmit this packet
+00CD 0086           00485         movwf   PORTB
+                    00486 
+00CE 1798           00487         bsf     TPACKET,7       
+00CF 0818           00488         movf    TPACKET,0
+00D0 0086           00489         movwf   PORTB
+                    00490 
+                    00491 
+00D1 1018           00492         bcf     TPACKET,0               ;Clear hour bit in TDATA
+00D2 1994           00493         btfsc   HRS,3                   ;Check the appropriate hour bit         
+00D3 1418           00494         bsf     TPACKET,0               ;Set hour bit on in TDATA if needed
+                    00495 
+00D4 1098           00496         bcf     TPACKET,1               ;Clear minute bit in TDATA
+00D5 1995           00497         btfsc   MINS,3                  ;Check appropriate minute bit
+00D6 1498           00498         bsf     TPACKET,1               ;Set minute bit on in TDATA if needed
+                    00499 
+00D7 1118           00500         bcf     TPACKET,2               ;Clear seconds bit in TDATA
+00D8 1996           00501         btfsc   SECS,3                  ;Check appropriate second bit
+00D9 1518           00502         bsf     TPACKET,2               ;Set seconds bit on in TDATA if needed
+                    00503 
+00DA 1398           00504         bcf     TPACKET,7               ;Swing clocking pin once to 
+00DB 0818           00505         movf    TPACKET,0               ;transmit this packet
+00DC 0086           00506         movwf   PORTB
+                    00507 
+00DD 1798           00508         bsf     TPACKET,7       
+00DE 0818           00509         movf    TPACKET,0
+00DF 0086           00510         movwf   PORTB
+                    00511 
+                    00512 
+00E0 1018           00513         bcf     TPACKET,0               ;Clear hour bit in TDATA
+00E1 1914           00514         btfsc   HRS,2                   ;Check the appropriate hour bit         
+00E2 1418           00515         bsf     TPACKET,0               ;Set hour bit on in TDATA if needed
+                    00516 
+00E3 1098           00517         bcf     TPACKET,1               ;Clear minute bit in TDATA
+00E4 1915           00518         btfsc   MINS,2                  ;Check appropriate minute bit
+00E5 1498           00519         bsf     TPACKET,1               ;Set minute bit on in TDATA if needed
+                    00520 
+00E6 1118           00521         bcf     TPACKET,2               ;Clear seconds bit in TDATA
+00E7 1916           00522         btfsc   SECS,2                  ;Check appropriate second bit
+00E8 1518           00523         bsf     TPACKET,2               ;Set seconds bit on in TDATA if needed
+                    00524 
+00E9 1398           00525         bcf     TPACKET,7               ;Swing clocking pin once to 
+00EA 0818           00526         movf    TPACKET,0               ;transmit this packet
+MPASM 02.30 Released           BINART.ASM   3-23-2005  22:15:06         PAGE 11
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00EB 0086           00527         movwf   PORTB
+                    00528 
+00EC 1798           00529         bsf     TPACKET,7       
+00ED 0818           00530         movf    TPACKET,0
+00EE 0086           00531         movwf   PORTB
+                    00532 
+                    00533 
+00EF 1018           00534         bcf     TPACKET,0               ;Clear hour bit in TDATA
+00F0 1894           00535         btfsc   HRS,1                   ;Check the appropriate hour bit         
+00F1 1418           00536         bsf     TPACKET,0               ;Set hour bit on in TDATA if needed
+                    00537 
+00F2 1098           00538         bcf     TPACKET,1               ;Clear minute bit in TDATA
+00F3 1895           00539         btfsc   MINS,1                  ;Check appropriate minute bit
+00F4 1498           00540         bsf     TPACKET,1               ;Set minute bit on in TDATA if needed
+                    00541 
+00F5 1118           00542         bcf     TPACKET,2               ;Clear seconds bit in TDATA
+00F6 1896           00543         btfsc   SECS,1                  ;Check appropriate second bit
+00F7 1518           00544         bsf     TPACKET,2               ;Set seconds bit on in TDATA if needed
+                    00545 
+00F8 1398           00546         bcf     TPACKET,7               ;Swing clocking pin once to 
+00F9 0818           00547         movf    TPACKET,0               ;transmit this packet
+00FA 0086           00548         movwf   PORTB
+                    00549 
+00FB 1798           00550         bsf     TPACKET,7       
+00FC 0818           00551         movf    TPACKET,0
+00FD 0086           00552         movwf   PORTB
+                    00553 
+                    00554 
+00FE 1018           00555         bcf     TPACKET,0               ;Clear hour bit in TDATA
+00FF 1814           00556         btfsc   HRS,0                   ;Check the appropriate hour bit         
+0100 1418           00557         bsf     TPACKET,0               ;Set hour bit on in TDATA if needed
+                    00558 
+0101 1098           00559         bcf     TPACKET,1               ;Clear minute bit in TDATA
+0102 1815           00560         btfsc   MINS,0                  ;Check appropriate minute bit
+0103 1498           00561         bsf     TPACKET,1               ;Set minute bit on in TDATA if needed
+                    00562 
+0104 1118           00563         bcf     TPACKET,2               ;Clear seconds bit in TDATA
+0105 1816           00564         btfsc   SECS,0                  ;Check appropriate second bit
+0106 1518           00565         bsf     TPACKET,2               ;Set seconds bit on in TDATA if needed
+                    00566 
+0107 1398           00567         bcf     TPACKET,7               ;Swing clocking pin once to 
+0108 0818           00568         movf    TPACKET,0               ;transmit this packet
+0109 0086           00569         movwf   PORTB
+                    00570 
+010A 1798           00571         bsf     TPACKET,7       
+010B 0818           00572         movf    TPACKET,0
+010C 0086           00573         movwf   PORTB
+                    00574 
+                    00575         ;Clear all PortB pins:
+010D 3000           00576         movlw   0
+010E 0086           00577         movwf   PORTB
+                    00578 
+010F 0008           00579         RETURN  
+MPASM 02.30 Released           BINART.ASM   3-23-2005  22:15:06         PAGE 12
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                    00580         
+                    00581 
+                    00582 ; **************************************************************************
+                    00583 ; ** Main Program Loop - Uses 6 instruction cycles as RUN sees it    
+                    00584 ; **
+0110 2001           00585 START   call SETUP      ;Initial setup of pins and variables
+                    00586 
+0111                00587 MAIN    
+0111 1C05           00588         btfss   PORTA,0 ;Check "mode" pin--if on call SET subroutine, otherwise call RUN
+0112 206A           00589         call    SETCLK
+0113 2010           00590         call    RUN
+                    00591 
+0114 2911           00592         goto    MAIN
+                    00593 
+Warning[205]: Found directive in column 1. (END)
+                    00594 END
+MPASM 02.30 Released           BINART.ASM   3-23-2005  22:15:06         PAGE 13
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+BIGPAUSE                          00000057
+C                                 00000000
+COUNT1                            0000001B
+COUNT2                            0000001C
+COUNT3                            0000001D
+DC                                00000001
+DISPLAY                           00000095
+DLOOP1                            0000004A
+DLOOP2                            0000004E
+DLOOP3                            00000054
+DLOOP4                            0000005D
+DLOOP5                            00000061
+DLOOP6                            00000067
+EEADR                             00000009
+EECON1                            00000088
+EECON2                            00000089
+EEDATA                            00000008
+EEIE                              00000006
+EEIF                              00000004
+EOSET                             00000092
+F                                 00000001
+FLAGS                             0000001A
+FSR                               00000004
+GIE                               00000007
+HRS                               00000014
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+MAIN                              00000111
+MINS                              00000015
+MYW                               0000001E
+NOT_PD                            00000003
+NOT_RBPU                          00000007
+NOT_TO                            00000004
+OPTION_REG                        00000081
+PCL                               00000002
+PCLATH                            0000000A
+PORTA                             00000005
+PORTB                             00000006
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+RBIE                              00000003
+RBIF                              00000000
+RD                                00000000
+RP0                               00000005
+RP1                               00000006
+RUN                               00000010
+RUNCYCLE                          00000019
+MPASM 02.30 Released           BINART.ASM   3-23-2005  22:15:06         PAGE 14
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+SECS                              00000016
+SETCLK                            0000006A
+SETUP                             00000001
+SMLPAUSE                          00000044
+START                             00000110
+STATUS                            00000003
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+TICK                              0000001A
+TMR0                              00000001
+TPACKET                           00000018
+TRISA                             00000085
+TRISB                             00000086
+UPHR                              00000087
+UPMIN                             0000007C
+UPSEC                             00000071
+W                                 00000000
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+Z                                 00000002
+_CP_OFF                           00003FFF
+_CP_ON                            0000000F
+_HS_OSC                           00003FFE
+_LP_OSC                           00003FFC
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FFD
+__16F84A                          00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+00C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0100 : XXXXXXXXXXXXXXXX XXXXX----------- ---------------- ----------------
+2000 : -------X-------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:   277
+Program Memory Words Free:   747
+
+
+MPASM 02.30 Released           BINART.ASM   3-23-2005  22:15:06         PAGE 15
+
+
+
+
+
+Errors   :     0
+Warnings :     1 reported,     0 suppressed
+Messages :     1 reported,     0 suppressed
+
+

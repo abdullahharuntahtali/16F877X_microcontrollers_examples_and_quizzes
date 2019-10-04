@@ -1,0 +1,67 @@
+-- --------------------------------------------------------------------------
+-- 
+-- read from eeprom and send asynchronously  
+-- 1200 baud; 8 data bits; no parity; 2 stop bits
+-- PICmicro pin 6 <== PC; pin7 ==> PC; without inverting
+-- use: wisp go a877 tty 1200
+--
+-- see: http://www.voti.nl/wisp628
+--
+-- --------------------------------------------------------------------------
+--
+-- (c) Wouter van Ooijen / voti
+--
+-- Redistribution and use in source and binary forms, with or without 
+-- modification, are permitted.
+--
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER "AS IS" AND ANY EXPRESS 
+-- OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+-- WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+-- DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
+-- LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+-- CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+-- SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+-- INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+-- CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+-- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
+-- THE POSSIBILITY OF SUCH DAMAGE.
+--
+-- --------------------------------------------------------------------------
+
+include f877_20
+include jascii
+
+const asynch_baudrate = 1200
+const asynch_polarity = active_high
+const asynch_parity   = parity_none
+const asynch_stopbits = 2
+
+var volatile bit asynch_in_pin        is pin_b6
+var volatile bit asynch_in_direction  is pin_b6_direction
+
+var volatile bit asynch_out_pin       is pin_b7
+var volatile bit asynch_out_direction is pin_b7_direction
+
+include seriali
+
+pragma eedata "a", "8", "7", "7", ":", " "
+pragma eedata "h", "e", "l", "l", "o"
+pragma eedata " "
+pragma eedata "w", "o", "r", "l", "d"
+pragma eedata ascii_cr, ascii_lf
+pragma eedata 0
+
+var byte i, c
+forever loop
+   i = 0
+   eeprom_get( i, c )
+   while c != 0 loop
+      asynch = c     
+      delay_100ms
+      i = i + 1
+      eeprom_get( i, c )
+   end loop
+   delay_1S
+end loop
+
+

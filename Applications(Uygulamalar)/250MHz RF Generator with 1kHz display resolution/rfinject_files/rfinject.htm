@@ -1,0 +1,385 @@
+<html><head>
+
+<script language="JavaScript" type="text/javascript" src="rfinject_files/frameit.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="RF generator" content="Microsoft Word 97"><title>250MHz RF Generator</title>
+
+<meta name="keywords" content="spolar, coil, toroid, rf, ham, ham radio, circuit, CW, QRP, RX, 
+TX, RF, IF, PCB, PSU, GDO, QRP, home brew, home-brew, amateur radio, 
+amatöradio, construction, transmitter, receiver, key, keys, fm, fet, 
+hams, transistor, power supply, printed circuit boards, 
+amplifier, homebrew, Q, q, keyer, printed circuit board, FET, rfamp, 
+rf-amp, ift, pcb, transmitter, psu, gdo, gdos, tubes, pcbs, gdo, cw, 
+g4vvj, SA602, SA612, mc13135, mc13136, datasheet, zn414, zn416, zn414z, pdf, 
+zn416e, qrp, notepad, tda7000, calc, parallel, series, frequency, a,
+A,  heatsink, software, download">
+
+<meta name="Template" content="C:\Program\Microsoft Office\Mallar\Webbsidor\Webbsideguiden.wiz"></head><body background="rfinject_data/background4.GIF" bgcolor="#ffffff" link="#0000ff" vlink="#800080">
+
+<img src="rfinject_data/rfgen.jpg" alt="250 MHz RF generator" align="right" border="1" height="268" width="312">
+<font color="#0000ff" face="Arial" size="5"><b>250MHz RF Generator with 1kHz display resolution</b></font><br>
+
+<font color="#0000ff" face="Arial" size="2">
+This project shows how you can build a RF signal generator with a frequency range of 0 to 250MHz.<br>
+Perfect to use for testing and tuning any radio equipment or filter.<br>
+The frequency is PLL controlled and a 2 line display shows the exact frequency.<br>
+The output frequency is a combination of digital step-tuning (50kHz),<br> and analogue fine-tuning (10 turn pot) to a precision of a few Hz.<br>
+
+This results in a very stable frequency and with a very high resolution.<br>
+You can also FM modulate the RF signal output.<br>
+
+
+</font><font color="#ff0000" face="Arial" size="1">All contribution to this page are most welcome!</font>
+<br>
+<br>
+
+<font color="#0080ff" face="Arial" size="3"><b>Background</b><br></font>
+<font color="#000000" face="Arial" size="2">
+
+
+A good tool to have in the workshop is a RF signal generator.<br>
+All receiver and preamplifier need to be tuned in one way or the other. <br>
+The easiest way to tune your equipment is to inject a RF signal into
+the unit and tune for best signal. With a good RF generator you can
+also simulate IF signal (455kHz) and (10.7MHz) and test the IF part of
+the receiver or filters. <br>
+
+What is important with a RF generator?<br>
+We want it to be stable in frequency, wide frequency range, high resolution and  easy to use and build.<br>
+All this has been taken in consideration while constructing this project.<br>
+<br><img src="rfinject_data/inctblock.gif" alt="" align="right" border="1" height="350" width="448">
+<strong>So how does it work?</strong><br>
+Here is the basic principal of the project. (Take a look at the block diagram to the right.)<br>
+It is impossible to build an oscillator that will work from 0 Hz to 250MHz in one sweep.<br>
+The solution must be to use two <strong>oscillators</strong> (red boxes) and a <strong>mixer</strong> (green circle).<br>
+If you mix two frequencies you will get a lot of products. f1,f2, f2-f1, f2+f1 and lot of multiplier of these. 
+The interesting product in this case is the f2-f1 product.<br>
+<br>
+f1 and f2 are produced by two 900MHz VCOs which are controlled by 2 PLL circuits.<br>
+f1 will be constant at 820 MHz and f2 will step from 820 MHz to 1070 MHz.<br>
+Since the output from the mixer will be f2 - f1, we get 1070 - 820 =
+250 MHz as max difference..Great! How about the other frequencies?<br>
+Well, since they all will be quit high we can use a low pass filter to reject them.<br>
+<br>
+As you know, a PLL regulating system need a reference frequency to be stable and work properly. <br>
+In this project I use a very stable and exact 12.8MHz TCXO to control PLL 1 and VCO 1. This TCXO will also feed the PIC16F870.<br>
+
+PLL 2 and VCO 2 has a different reference frequency feed from a VCXO (Voltage controlled Crystal oscillator). <br>
+This oscillator is also very stable but the nice thing is that the frequency can be varied by a controlling voltage (<strong>Tune</strong>).<br>
+<br>
+<strong>What is the purpose  of that?</strong><br>
+Well, the PLL will be able to step in 50 kHz steps, very exact and stable, and with the <strong>Tune</strong> voltage we can 
+tune the frequency within the 50 kHz steps.<br> 
+In this way you will have a digitally PLL controlled RF generator with analogue tuning possibility!!!<br>
+<br>
+<strong>So how do I keep track of the output frequency?</strong><br>
+The PIC16F870 will control both PLL 1, PLL 2 and also measure the TRUE output frequency and display it on the LCD. <br>
+In this way you will always see the exact frequency even if you are changing the output frequency by changing the Tune voltage.<br>
+<li>The output frequency will be set with two switches (Inc/Dec).</li>
+<li>The Tune voltage comes from a ten turn potentiometer.</li>
+
+
+
+<br><br><a href="http://hem.passagen.se/communication/pic/rfinject.gif" target="afsads"><img src="rfinject_data/rfinjects.jpg" alt="Click here to view a larger schematic" align="right" border="1" height="113" width="200"></a>
+<font color="#0080ff" face="Arial" size="3"><b>PLL controlled VCO units (800-1050MHz)</b></font><br>
+In the block diagram above you can see that the two VCO:s and PLL have basically the same configuration.<br>
+To make my main PCB easier to build, I decided to make the VCO and PLL units on separate PCBs.<br>
+I can also use the VCO+ PLL in other projects in the future.
+Take a look at the schematic at right and I will explain.<br>
+This little PCB contain a VCO, PLL and the component around it to make
+a fully functional unit.
+In the schematic you find the PLL LMX2322 and the VCO unit. L1 and L2
+is to prevent RF on powerline. Any inductor or ferrite bead will do the
+job.<br>
+Pin 5 of the PLL is the output current pump which produce a tuning voltage to the VCO.<br>
+At pin "C" of the VCO you find the tuning voltage that set the output
+frequency of the VCO.
+Pin "P" is the output and you will have about 10mW here.
+Resistor R5, R6 makes a 50 ohm load which the VCO expects.
+You could remove the resistor R5, R6 and connect an antenna here and
+have a PLL controlled transmitter working from 800-1050MHz. There is a
+frequency feedback to the PLL by R1 and C2 which the PLL.
+I have not implemented any reference oscillator on this pcb because I
+want a general solution which can be used in all kins of other
+constructions. You can FM modulate the RF signal of the VCO, by
+applying your signal to the input labelled <strong>FM</strong> in a red box.
+<br>
+<br><a href="http://hem.passagen.se/communication/pic/pllvco900.jpg" target="afs3ads"><img src="rfinject_data/pllvco9s.jpg" alt="Click here to view a larger photo" align="right" border="1" height="124" width="128"></a>
+This PLL controlled VCO unit has 7 connection (green).<br>
+<li><strong>+ 5V</strong> input</li>
+<li><strong>Reference oscillator</strong> input</li>
+<li><strong>LE</strong> input</li>
+<li><strong>Data</strong> input</li>
+<li><strong>Clock</strong> input</li>
+<li><strong>Ground</strong> input</li>
+<br>
+<li><strong>Power</strong> output</li>
+<br><br><a name="latest"></a>
+<strong>Some measurement of output frequency with input voltage pin C of VCO</strong><br>
+0.1V =&gt; 815 MHz<br>
+0.8V =&gt; 850 MHz<br>
+1.8V =&gt; 900 MHz<br>
+2.8V =&gt; 950 MHz<br>
+3.8V =&gt; 1000 MHz<br>
+4.8V =&gt; 1050 MHz<br>
+<br><br>
+<a href="http://hem.passagen.se/communication/pic/injecpcb.gif" target="de2"><img src="rfinject_data/injecpcbs.jpg" alt="Click on the pic to see a larger format." align="right" border="1" height="126" width="128"></a>
+<font color="#0080ff" face="Arial" size="3"><b>PCB of the PLL controlled VCO units</b><br></font>
+
+<table bgcolor="#e0fce1" border="1" cellpadding="0" cellspacing="0" width="450">
+<tbody><tr>
+	<td> <a href="http://hem.passagen.se/communication/pic/inject.pdf" target="pr5">inject.pdf</a></td>
+	<td>PLL controlled VCO units (pdf).</td>
+</tr>
+</tbody></table>
+<br>
+
+Above you can download a (pdf) filer which is the black PCB. <br>The PCB is mirrored because the 
+printed side should be faced down the board during UV exposure.<br>
+To the right you will find a pic showing the assembly of all components on the same board.<br>
+This is how the real board should look when you are going to solder the components.<br>
+It is a board made for surface mounted components, so the copper is on the top layer.<br>
+
+<br>
+Grey area is coppar and each component is draw in different colours all to make it easy to 
+identify for you.<br>
+The scale of the pdf is 1:1 and the picture at right is magnified with 4 times.<br>
+
+All component for <em>PLL controlled VCO units</em>  (<a href="http://hem.passagen.se/communication/pic/injct.txt" target="e1">Click here to download component injct.txt</a>).<br>
+<br>
+<a href="http://hem.passagen.se/communication/pic/rfgscem.gif" target="afsas"><img src="rfinject_data/rfgscems.jpg" alt="Click here to view a larger schematic" align="right" border="1" height="123" width="200"></a>
+<font color="#0080ff" face="Arial" size="3"><b>RF generator hardware and schematic</b><br></font>
+Click on the right picture to see the main schematic of the unit.
+Let's identify the different blocks.<br>
+To the left you will find a 2 line x 16 Char LCD display.<br>
+It use a HD44780 controller which is very common.
+<strong>J1</strong> is a jumper which will give the LCD a strong or soft back light.<br>
+
+In the middle you will find the PIC16F870 which will handle all controlling.<br>
+To the left you will find the two VCO modules labelled <strong>VCO2</strong> and <strong>VCO1</strong>.<br>
+Take a look at <strong>VCO1</strong>. The reference frequency for this VCO is set by a 12.8MHz module (NKG3001B).<br>
+The frequency is very exact and as you see it also drive the PIC16F870.
+The output frequency from the <strong>VCO1</strong> (<em>pin 7</em>) is feed to gate 1 of a dualgate FET which will act as a mixer.
+The RF output (<em>pin 7</em>) of the <strong>VCO2</strong> is connected to gate 2 of same dualgate FET.<br>
+The gate 2 of the dual gate FET is DC biased and the FET will work in a non linear way to produce a mixing product of the 
+two frequencies f2 and f1.<br>
+ The output product frequency (f2-f1) will be amplified in the BFG193 transistor and a low pass filter cleans up the output 
+ RF signal from unwanted frequencies.<br>
+The frequency from the <strong>VCO2</strong> is probed by a LMX2322, which will measure the output frequency and make the PIC16F870 
+display the exact output frequency from the mixer.
+
+
+The reference frequency (Ref#1 on schematic) to <strong>VCO2</strong> is connected to (<em>pin 2</em>) and comes from our voltage controlled crystal 
+oscillator which you will find at the left bottom corner.<br>
+<br>
+Here you will see a crystal oscillator based around a 13MHz crystal.
+To make it voltage controlled, I have added a varicap diode which will
+make it possible to adjust the frequency (-8 ppm to + 60ppm) by
+changing the <strong>Tune</strong> voltage from 0V to + 5V.<br>
+
+The <strong>Tune</strong> voltage comes from a potentiometer. If you want really fine tuning you can use a 10 turns potentiometer.<br>
+Since we can adjust the reference frequency to <strong>VCO1</strong>, the output RF frequency from <strong>VCO1</strong> will 
+also be changed.<br>
+So if you change the reference with 1ppm you will change the output frequency 1ppm.<br>
+<strong>Example:</strong><br>
+-8ppm = -8e^6 *1000 = -8kHz at 1000MHz.<br>
++60ppm = 60e^6 *1000= 60kHz at 1000MHz.<br>
+This means that <strong>VCO2</strong> can be changed about 68kHz in an analogue way by a potentiometer.
+The digital step will change the RF from 820 to 1070 MHz.<br>
+In this great way you can get advantage from both a digital and analogue system to generate a RF signal from 0 to 250MHz.<br>
+<br>
+If you wish to FM modulate the RF signal with an audio or digital signal, you can connect the signal to the (<em> FM #2 </em>)
+input of the <strong>VCO2</strong>.<br>
+ Any AC signal connected to this input will directly modulate the RF output signal.
+It can be very good option to use for testing your receiver.<br>
+<br>
+
+All system in this unit use +5V which comes from V1 (7805) circuit.<br>
+A jumper <strong>J1</strong> is added to choose if you want strong backlight or not.<br>
+If jumper <strong>J1</strong> is disconnected the LCD will have soft backlight because a low current will pass through R3.<br>
+If jumper <strong>J1</strong> is connected you will have strong backlight.<br>
+More details will be found under assembly and testing.
+
+<br><br>
+<a href="http://hem.passagen.se/communication/pic/mrf.gif" target="de2"><img src="rfinject_data/mrf.jpg" alt="Click on the pic to see a larger format." align="right" border="1" height="130" width="200"></a>
+<font color="#0080ff" face="Arial" size="3"><b>Main PCB of the RF generator</b><br></font>
+
+<table bgcolor="#e0fce1" border="1" cellpadding="0" cellspacing="0" width="450">
+<tbody><tr>
+	<td> <a href="http://hem.passagen.se/communication/pic/rfg.pdf" target="pr5">rfg.pdf</a></td>
+	<td>Main PCB of RF generator (pdf).</td>
+</tr>
+</tbody></table>
+<br>
+
+Above you can download a (pdf) filer which is the black PCB. <br>The PCB is mirrored because the 
+printed side should be faced down the board during UV exposure.<br>
+To the right you will find a pic showing the assembly of all components on the same board.<br>
+This is how the real board should look when you are going to solder the components.<br>
+It is a board made for surface mounted components, so the copper is on the top layer.<br>
+
+<br>
+Grey area is coppar and each component is draw in different colours all to make it easy to 
+identify for you.<br>
+The scale of the pdf is 1:1 and the picture at right is magnified with 4 times.<br>
+
+All component for <em>Main PCB RF generator</em>  (<a href="http://hem.passagen.se/communication/pic/injct2.txt" target="e1">Click here to download component injct2.txt</a>).<br>
+<br>
+
+
+The scale of the pdf is 1:1 and the picture at right is magnified with 4 times.<br>
+
+<br>
+<font color="#0080ff" face="Arial" size="3"><b>Assembly</b><br></font>
+Good grounding is very important in a RF system. I use bottom layer as Ground and I connect it 
+with the top layer at six places (via-holes) to get a good grounding.<br>
+Drill a small hole through the PCB and solder a wire in each via-hole
+to connect the top layer with the bottom layer which is the ground
+layer. The six via-holes can easy be found on the PCB and in the
+assembly pic at right, they are labelled "GND" and marked with red
+colour. Drill the remaining 16 holes for the pin header 2.54mm which
+will connect the LCD to the PCB. <br>Since the backplane of the PCB is Ground you
+must make sure there is no connecting copper to the pin header 2.54mm
+at the backside. Easiest way is to remove the coppar at the backside is
+to use a larger drill (3mm) and drill a bit in the holes at the
+backside of the PCB. <br><br>
+The first assembly step is to connect the PIC and make sure the LCD starts up.<br>
+So, connect these parts:<br>
+V1, IC1, X1, X2, J1,  Display, INC and DEC buttons,  Q2, D1<br>
+C1, C2, C13, C14, C16, C17, C18, C19, C20, C21<br>
+R1, R2, R3, R4, R11, R12, R13, R14, R15, P1, P2<br>
+FB1, FB2, FB3, FB4<br>
+<br>
+When power is applied, the LCD should wake up and display information text.<br>
+P1 should be set so the  voltage at pin 3 of the LCD should be about 0.70V to 0.75V. This will give good contrast!<br>
+You can now also make sure that the frequency from the 13MHz oscillator (Ref #2) is working.<br>
+<br>
+Since we have not connected any VCO:s and IC2, the display will not show correct frequency.<br>
+
+When we knows that the PIC is running and the display is working we can go further to test the VCO:s. 
+Connect the VCO 1/VCO 2. <br>A good thing is to test them separately. <br>
+If you push both INC and DEC buttons at same time the PIC will go into a "SILENT MODE" then it will go into "VCO TEST MODE"<br>
+In the VCO test mode the PIC will set each VCO to 820/850/950/1000MHz.<br>
+The software keeps changing the VCO every 5 seconds and starts over until you push any buttons again.<br>
+<br>
+This mode will help you to test the function of the VCO:s. You can either use a <a href="http://hem.passagen.se/communication/fcntlcd.html" target="ee">frequency counter</a> to verify the VCO or you can measure the tuning voltage pin C of the VCO. 
+You can read more in <em>PIC software</em> section below.<br>
+When both VCO:s are working you can add the rest of the components.
+When all components are attached, you should see the output frequency
+on the display.<br>
+If you still wont see any frequency on the display, I advice you to
+check the soldering of the IC2. Make sure you have no soldering bridges.<br>
+
+<br>
+<strong>Soldering the hole mounted components</strong><br>
+X2 can be a little bit tricky to solder since its legs are a bit short.
+Before you solder X2, make sure you have solder C2 and R2<br>
+Connect the LCD to the PCB with the (Pin Header 2.54mm). The LCD is placed at the back side of the PCB. <br>
+In the photo at top of the page, I have used a flat cable to connect the LCD.<br>
+You can also see the two VCO:s standing up. In my test unit I use a
+socket (green) for the PIC16F870 because I needed to test and reprogram
+it.<br>
+
+
+<br>
+<img src="rfinject_data/soldwick.jpg" alt="The desoldering wick is a flattened, braided copper sheath" align="right" border="1" height="204" width="234">
+<strong>Soldering the surface mounted components</strong><br>
+Here comes the big challenge. <a href="http://hem.passagen.se/communication/pcbsmd.html" target="ertvs">Click here to see photo and read how to solder SOIC and smd components.</a><br>
+The LMX2322 circuit is a fine pitch SO-IC circuit and this little bug can make your life miserable.<br>
+Don't worry I will explain how to handle it. Use thin lead solder and a clean soldering tool.<br>
+I start by fixate one leg on each side of the circuit and makes sure it is correct placed. <br>
+Then I solder all other legs and I don't care if there will be any lead bridges.<br>
+After that it is time to clean up and for that I use a "wick".<br>
+The desoldering wick is a flattened, braided copper sheath looking for all the world like shielding on phono cord 
+(except that the shielding is tinned) without the cord. <br>
+I impregnate the wick with some rosin and place it over the legs and
+bridges of the circuit. The wick is then heated by the soldering iron,
+and the molten solder flows up the braid by capillary action. <br>
+After that, all bridges will be gone and the circuit looks perfect.<br>
+You can find wick and rosin at my <a href="http://www.rfcandy.com/" target="candy">component page</a>.<br>
+<br>
+<font color="#0080ff" face="Arial" size="3"><b>PIC Software</b><br></font>
+Let's have a look of the different menu systems and choices of this
+frequency generator. All settings are made by the two switches INC and
+DEC.<br>
+Figure below show all the different menu choices.<br>
+<br>
+When you start the unit, the display will show you the output frequency (MENU 1). <br>
+<li>By pressing INC button the unit will step up 50 kHz. If you hold
+the button pressed the unit will continue to increase the frequency
+with larger steps.</li>
+<li>By pressing DEC button the unit will step down 50 kHz. If you hold
+the button pressed the unit will continue to increase the frequency
+with larger steps.</li>
+<br>
+By holding the button pressed, you can easy INC or DEC the hole frequency range within a few seconds.<br>
+The display present the frequency 2-3 times/ second and the resolution is 1kHz.<br>
+<br>
+Since there is lot of data transmission to the LCD you might get
+"digital glitches" and disturbance on the RF. It is very difficult to
+get rid of small digital disturbances in a RF construction. Sometime
+you might want to have a very clean RF signal.<br>
+<br>
+<li>If you press both INC and DEC at the same time you will enter MENU 2, called "Silent Mode".</li><br>
+In this mode you will have no update on the display, but the generator
+will still work. The RF line is now silent from all "digital glitches".<br>
+By pressing INC or DEC, you will go back to MENU 1 again.<br>
+<br>
+<li>If you are in MENU 2 and you press both INC and DEC at the same time you will enter MENU 3.</li><br>
+The "MENU 3" is only for testing the VCO:s. In this Menu, the two VCO:s
+will be set to the frequency 820, 850, 950 and 1000 MHz. The display
+show what happens all the time and each frequency is set for 5 seconds.
+When VCO 2 has reached 1000MHz it all starts over again and VCO 1 sets
+to 820MHz.<br>
+This test mode is good thing to have when you test the function of the
+VCO:s. You can either measure the output frequency of the VCO:s with a
+frequency counter or you can measure the VCO voltage from the LMX2322
+circuit that control the two VCO.
+Look at the <a href="#latest">table above</a> to see my measurements.<br>
+<br>
+<li>The RF generator will always remember the last frequency settings, even if power is switched off.</li><br>
+<br>
+
+<img src="rfinject_data/dispdt.gif" alt="" align="bottom" border="1" height="791" width="434"><br>
+<br>
+
+<font color="#0080ff" face="Arial" size="3"><b>Download PIC16F870 programs (INHX8M format)</b><br></font>
+
+Here you can download the software for this project. The zip file contains hex file made for this project.<br>
+<br>
+
+<table bgcolor="#e0fce1" border="1" cellpadding="0" cellspacing="0" width="650">
+<tbody><tr>
+	<td> <a href="http://hem.passagen.se/communication/pic/rf_generator_v11.zip" target="pr5">rf_generator_v11.zip</a></td>
+	<td>PLL software to 250MHz RF Generator (the hex files are zipped!).</td>
+</tr>
+</tbody></table>
+<br>
+
+
+
+<font color="#0080ff" face="Arial" size="3"><b>KIT</b></font><br>
+I have not yet decide if this project will be in a KIT from. All parts can be found on my component page <a href="http://www.rfcandy.com/" target="candy">www.rfcandy.com</a>.<br>
+If there will be interest of KITs, I will consider the option.<br>
+
+
+<br>
+
+<font color="#0080ff" face="Arial" size="3"><b>Final word</b></font>
+<br>
+A good RF generator is a tool we all need in our radio experiments. <br>
+In this project I have tried to build a stable  frequency generator and still make it simple to build.<br>
+<br>
+You can always mail me if there is anything unclear.<br>
+I wish you good luck with your projects and thanks for visit my page.
+<br>
+
+<br>
+</font><hr align="center" size="3" width="85%">
+<font color="#000000" face="Arial" size="2"><font color="#0080ff" size="2"><font face="verdana,arial,helvetica,geneva,sans-serif">
+</font></font></font><div align="center"><font color="#000000" face="Arial" size="2"><font color="#0080ff" size="2"><font face="verdana,arial,helvetica,geneva,sans-serif"><a href="http://hem.passagen.se/communication/meny.html">Back to main Page</a>&nbsp; | &nbsp;<a href="mailto:maxit91@hotmail.com">Contact Me</a>&nbsp; | &nbsp;<a href="http://rfcandy.com/" target="comp1">Cheap components</a><br></font></font></font></div>
+
+<font color="#000000" face="Arial" size="2"><font color="#0080ff" size="2"><font face="verdana,arial,helvetica,geneva,sans-serif"><br></font></font></font><div align="center"><font color="#000000" face="Arial" size="2"><font color="#0080ff" size="2"><font face="verdana,arial,helvetica,geneva,sans-serif">Copyright © Last modified on 02 Dec 2006.</font></font></font></div><font color="#000000" face="Arial" size="2"><font color="#0080ff" size="2"><font face="verdana,arial,helvetica,geneva,sans-serif"> 
+
+
+</font></font></font></body></html>

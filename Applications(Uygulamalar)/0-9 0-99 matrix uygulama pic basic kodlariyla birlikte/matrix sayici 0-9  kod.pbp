@@ -1,0 +1,315 @@
+include "modedefs.bas"
+'cmcon=7
+trisa=0
+trisb=0
+trisc=0
+trisd=0
+
+porta=0'%111111
+portb=0'%111111
+portc=255'%111111
+portd=0'255'%111111
+
+i var byte
+i=0
+
+sayac var byte
+sayac=0
+
+ekran var byte[60]
+
+ekran[1]=%00001111 '9 sayýsý
+ekran[2]=%00001001
+ekran[3]=%00001111
+ekran[4]=%00000001
+ekran[5]=%00001111
+
+ekran [6]=%00001111 '8 sayýsý
+ekran [7]=%00001001
+ekran [8]=%00001111
+ekran [9]=%00001001
+ekran[10]=%00001111
+
+ekran[11]=%00001111 '7 sayýsý
+ekran[12]=%00000001
+ekran[13]=%00000010
+ekran[14]=%00000100
+ekran[15]=%00000100
+
+ekran[16]=%00001111 '6 sayýsý
+ekran[17]=%00001000
+ekran[18]=%00001111
+ekran[19]=%00001001
+ekran[20]=%00001111
+
+ekran[21]=%00001111 '5 sayýsý
+ekran[22]=%00001000
+ekran[23]=%00001111
+ekran[24]=%00000001
+ekran[25]=%00001111
+
+ekran[26]=%00001001 '4 sayýsý
+ekran[27]=%00001001
+ekran[28]=%00001111
+ekran[29]=%00000001
+ekran[30]=%00000001
+
+ekran[31]=%00001111 '3 sayýsý
+ekran[32]=%00000001
+ekran[33]=%00001111
+ekran[34]=%00000001
+ekran[35]=%00001111
+
+ekran[36]=%00001111 '2 sayýsý
+ekran[37]=%00000001
+ekran[38]=%00001111
+ekran[39]=%00001000
+ekran[40]=%00001111
+
+ekran[41]=%00000001 '1 sayýsý
+ekran[42]=%00000011
+ekran[43]=%00000001
+ekran[44]=%00000001
+ekran[45]=%00000001
+
+ekran[46]=%00001111 '0 sayýsý
+ekran[47]=%00001001
+ekran[48]=%00001001
+ekran[49]=%00001001
+ekran[50]=%00001111
+
+p var word
+p=4
+
+sayi var byte
+sayi=0
+'*******************************************************************************
+basla:
+sayi=sayi+1
+if sayi>9 then sayi=0
+branchl sayi,[sifir,bir,iki,uc,dort,bes,alti,yedi,sekiz,dokuz]
+goto basla
+'*******************************************************************************
+sayac1:
+sayac=sayac+1
+return
+
+sifir:
+gosub sayac1
+portb=ekran[46]'255'ekran[8]
+portc=%11110
+pause p
+portb=ekran[47]
+portc=%11101
+pause p
+portb=ekran[48]
+portc=%11011
+pause p
+portb=ekran[49]
+portc=%10111
+pause p
+portb=ekran[50]
+portc=%01111
+pause p
+if sayac<50 then goto sifir
+sayac=0
+goto basla'return
+
+bir:
+gosub sayac1
+portb=ekran[41]'255'ekran[8]
+portc=%11110
+pause p
+portb=ekran[42]
+portc=%11101
+pause p
+portb=ekran[43]
+portc=%11011
+pause p
+portb=ekran[44]
+portc=%10111
+pause p
+portb=ekran[45]
+portc=%01111
+pause p
+if sayac<50 then goto bir
+sayac=0
+goto basla'return
+
+iki:
+gosub sayac1
+portb=ekran[36]'255'ekran[8]
+portc=%11110
+pause p
+portb=ekran[37]
+portc=%11101
+pause p
+portb=ekran[38]
+portc=%11011
+pause p
+portb=ekran[39]
+portc=%10111
+pause p
+portb=ekran[40]
+portc=%01111
+pause p
+if sayac<50 then goto iki
+sayac=0
+goto basla'return
+
+uc:
+gosub sayac1
+portb=ekran[31]'255'ekran[8]
+portc=%11110
+pause p
+portb=ekran[32]
+portc=%11101
+pause p
+portb=ekran[33]
+portc=%11011
+pause p
+portb=ekran[34]
+portc=%10111
+pause p
+portb=ekran[35]
+portc=%01111
+pause p
+if sayac<50 then goto uc
+sayac=0
+goto basla'return
+
+dort:
+gosub sayac1
+portb=ekran[26]'255'ekran[8]
+portc=%11110
+pause p
+portb=ekran[27]
+portc=%11101
+pause p
+portb=ekran[28]
+portc=%11011
+pause p
+portb=ekran[29]
+portc=%10111
+pause p
+portb=ekran[30]
+portc=%01111
+pause p
+if sayac<50 then goto dort
+sayac=0
+goto basla'return
+
+bes:
+gosub sayac1
+portb=ekran[21]'255'ekran[8]
+portc=%11110
+pause p
+portb=ekran[22]
+portc=%11101
+pause p
+portb=ekran[23]
+portc=%11011
+pause p
+portb=ekran[24]
+portc=%10111
+pause p
+portb=ekran[25]
+portc=%01111
+pause p
+if sayac<50 then goto bes
+sayac=0
+goto basla'return
+
+
+
+alti:
+gosub sayac1
+portb=ekran[16]'255'ekran[8]
+portc=%11110
+pause p
+portb=ekran[17]
+portc=%11101
+pause p
+portb=ekran[18]
+portc=%11011
+pause p
+portb=ekran[19]
+portc=%10111
+pause p
+portb=ekran[20]
+portc=%01111
+pause p
+if sayac<50 then goto alti
+sayac=0
+goto basla'return
+
+yedi:
+gosub sayac1
+portb=ekran[11]'255'ekran[8]
+portc=%11110
+pause p
+portb=ekran[12]
+portc=%11101
+pause p
+portb=ekran[13]
+portc=%11011
+pause p
+portb=ekran[14]
+portc=%10111
+pause p
+portb=ekran[15]
+portc=%01111
+pause p
+if sayac<50 then goto yedi
+sayac=0
+goto basla'return
+
+
+sekiz:
+gosub sayac1
+portb=ekran[6]'255'ekran[8]
+portc=%11110
+pause p
+portb=ekran[7]
+portc=%11101
+pause p
+portb=ekran[8]
+portc=%11011
+pause p
+portb=ekran[9]
+portc=%10111
+pause p
+portb=ekran[10]
+portc=%01111
+pause p
+if sayac<50 then goto sekiz
+sayac=0
+goto basla'return
+
+dokuz:
+gosub sayac1
+portb=ekran[1]'255'ekran[8]
+portc=%11110
+pause p
+portb=ekran[2]
+portc=%11101
+pause p
+portb=ekran[3]
+portc=%11011
+pause p
+portb=ekran[4]
+portc=%10111
+pause p
+portb=ekran[5]
+portc=%01111
+pause p
+if sayac<50 then goto dokuz
+sayac=0
+goto basla'return
+
+
+end
+
+
+
+

@@ -1,0 +1,274 @@
+<html><head><title>APRS Tracker</title></head><body>
+  <table bgcolor="black" border="0" cellspacing="1" width="100%">
+   <tbody><tr bgcolor="yellow">
+    <td>
+     <h1><center>
+      APRS Tracker
+     </center></h1>
+    </td>
+   </tr>
+   <tr bgcolor="white">
+    <td>
+     <p>
+     APRS Tracker is a firmware for APRS beacons based on a PIC processor such
+     as the well known Tinytrak.
+     (Version 0.7 supported both the PIC16F84 as the PIC16F6xx, version 0.8 only
+     works with the PIC16F628 or PIC16F648).
+     It is distributed under the GNU GPL.
+     </p><p>
+     </p><center>
+      <img src="aprstracker_files/aprstracker.jpg" alt="aprstracker">
+      <img src="aprstracker_files/aprstracker2.jpg" alt="aprstracker">
+      <br>
+      <i>Some images of my own home-build tracker</i>
+     </center>
+    <p>
+    This software is also used for the 
+    <a href="http://www.jancorver.org/bouw/track/">KF161-Tracker</a>,
+    a tracker that can be build into a Bosch KF161 instead of the tone unit.
+    </p><center>
+     <img src="aprstracker_files/print1.jpg" alt="KF161-Tracker">
+     <br>
+     <i>KF161-Tracker</i>
+    </center>
+    <p>
+     There are several reasons why I wrote this firmware instead of using one
+     of the hex files available on the web.<br>
+     I have a GPS receiver that outputs GPGGA messages and wanted a Tinytrak that
+     could use them. I also wanted to build it myself and experiment with it.
+     Experimentation is the most important aspect of my hobby and as
+     such I want to be able to not only use my tracker but also to change it as
+     I like.
+     This is also the reason I published it under the GPL, I want others to be
+     able to continue to experiment and learn from my experience and I can again
+     learn from theirs.
+     While searching for tinytrak sourcecode I did found a project called SOTT
+     (Son of TinyTrak) by Michael Pendley K5ATM. 
+     Unfortunatly it also didn't understand GPGGA sentences and it was written
+     for a very specific compiler I did not have access to.
+     I decided not to port the code but to start over myself and use Michaels
+     comments as a guide.
+    </p><p>
+   </p></td>
+  </tr>
+  <tr bgcolor="lightyellow">
+   <td>
+    <b>
+     Download
+    </b>
+   </td>
+  </tr>
+  <tr bgcolor="white">
+   <td>
+    <p>
+      The current version is version 0.8:
+      </p><ul>
+       <li>understands GPGGA and GPVTG sentences
+       </li><li>does smartbeaconing (0.8 has improved smartbeaconing)
+       </li><li>autodetects serial polarity (RS232 or TTL)
+       </li><li>has 4800 and 9600 Baud support
+       </li><li>is configurable via a serial null-modem cable<br>
+          <i>Included is a config program for linux, please don't ask for a windows
+           tool, I won't make it (if anyone really wants it it is not that hard to
+           do yourself)</i>
+  	 <b><i>Ok, so not everyboddy uses Linux yet... below you can download a
+  	 floppy image I made with a menu controlled version of the config tool
+	 </i></b>
+       </li><li>reports course and speed
+       </li><li>includes altitude reporting
+       </li><li>Works with PIC16F84, PIC16F627, PIC16F628 and PIC16F648 controllers.
+      </li></ul>
+      The digipeater path has a default of RELAY WIDE2-2, this should be enough
+      for normal use. Please think carefully before changing it!!!!!!
+      (In fact changing it isn't even implemented in the current config tool :)
+     <br>
+     <a href="http://sharon.esrac.ele.tue.nl/users/pe1rxq/aprstracker/aprstracker-0.8.tar.gz">aprstracker-0.8.tar.gz</a><br>
+     <a href="http://sharon.esrac.ele.tue.nl/users/pe1rxq/aprstracker/aprstracker-0.7.tar.gz">aprstracker-0.7.tar.gz</a><br>
+    <p></p>
+    <p>
+    </p>
+   </td>
+  </tr>
+  <tr bgcolor="lightyellow">
+   <td>
+    <b>
+     Programming interface
+    </b>
+   </td>
+  </tr>
+  <tr bgcolor="white">
+   <td>
+    <p>
+    <a href="http://sharon.esrac.ele.tue.nl/users/pe1rxq/aprstracker/atprogram.dsk">atprogram.dsk</a> is a floppy image containing a
+    linux kernel and the config tool. Write this file to a floppy disk with
+    a tool such as <a href="http://uranus.it.swin.edu.au/%7Ejn/linux/rawwrite.htm">
+    rawwrite</a> and boot your computer with it. (It needs atleast a 386)
+    <br>
+    For the curious: The disk image contains a linux 2.4.20 kernel with just
+    about everything stripped out and a modified atprogram (with some basic menu)
+    compiled against <a href="http://www.fefe.de/dietlibc/">dietlibc</a>.
+    </p><p>
+    The programming protocol is relativly simple, connect a serial cross cable
+    to the tracker on the gps port.
+    To put the tracker in programming mode send the '!' character.
+    The tracker will report itself with 'AT' followed by two version bytes.
+    The first version byte is the firmware version, the second the ROM map version
+    (All firmware versions with the same ROM map version number look the same
+    to the programmer.)
+    When in programming mode you can read and write the 64 bytes of internal
+    eeprom memmory with the read command ('R' followed by the address, the
+    tracker responds with one byte) and the write command ('W' followed
+    by the address and the to be written byte, tracker responds with the data
+    written).
+    Any other character than 'R' and 'W' will return the tracker in normal
+    operating mode.
+    </p><p>
+    This is the layout of the version 2 ROM map:
+    <table bgcolor="darkgrey" border="0" cellspacing="1" width="100%">
+     <tbody><tr bgcolor="lightgreen"><th>address</th><th>content</th></tr>
+     <tr bgcolor="white">
+      <td>0x00 - 0x06
+      </td><td>
+       Destination address in AX.25 address format
+      </td>
+     </tr><tr bgcolor="white">
+      <td>0x07 - 0x0d
+      </td><td>
+       Source address in AX.25 address format
+      </td>
+     </tr><tr bgcolor="white">
+      <td>0x0e - 0x1b
+      </td><td>
+       Digipeater fields in AX.25 address format<br>
+       This field is terminated by setting bit0 of the last byte of the last
+       digipeater address.<br>
+       (As one might have noticed the source, destination and digipeater
+       fields are transmitted by the transmitter without modification)
+      </td>
+     </tr><tr bgcolor="white">
+      <td>0x1c</td>
+     <td>
+       Beacon interval in minutes
+      </td>
+     </tr>
+     <tr bgcolor="white">
+      <td>0x1d</td>
+      <td>
+       Tx delay, measured in flags (about 0.8ms)
+      </td>
+     </tr>
+     <tr bgcolor="white">
+      <td>0x1e</td>
+      <td>
+       Symbol table
+      </td>
+     </tr>
+     <tr bgcolor="white">
+      <td>0x1f</td>
+      <td>
+       Symbol id
+      </td>
+     </tr>
+     <tr bgcolor="white">
+      <td>0x20 - 0x47</td>
+      <td>Null terminated comment text
+      </td>
+     </tr>
+     <tr bgcolor="white">
+      <td>0x48</td>
+      <td>Minumum threshold for corner pegging (degrees)
+      </td>
+     </tr>
+     <tr bgcolor="white">
+      <td>0x49</td>
+      <td>Threshold slope for corner pegging (degrees/knot)
+      </td>
+     </tr>
+     <tr bgcolor="white">
+      <td>0x4a</td>
+      <td>Time between other beacon &amp; turn beacon (secs)
+      </td>
+     </tr>
+     <tr bgcolor="white">
+      <td>0x4b</td>
+      <td>Fast beacon rate (secs)
+      </td>
+     </tr>
+     <tr bgcolor="white">
+      <td>0x4c</td>
+      <td>Slow beacon rate (mins)
+      </td>
+     </tr>
+     <tr bgcolor="white">
+      <td>0x4d</td>
+      <td>Speed below which SmartBeaconing is disabled (knots)
+      </td>
+     </tr>
+     <tr bgcolor="white">
+      <td>0x4e</td>
+      <td>Speed above which we'll beacon at the fast rate (knots)
+      </td>
+     </tr>
+    </tbody></table>
+    </p>
+    <p>
+    This is the layout of the version 1 ROM map:
+    <table bgcolor="darkgrey" border="0" cellspacing="1" width="100%">
+     <tbody><tr bgcolor="lightgreen"><th>address</th><th>content</th></tr>
+     <tr bgcolor="white">
+      <td>0x00 - 0x06
+      </td><td>
+       Destination address in AX.25 address format
+      </td>
+     </tr><tr bgcolor="white">
+      <td>0x07 - 0x0d
+      </td><td>
+       Source address in AX.25 address format
+      </td>
+     </tr><tr bgcolor="white">
+      <td>0x0e - 0x1b
+      </td><td>
+       Digipeater fields in AX.25 address format<br>
+       This field is terminated by setting bit0 of the last byte of the last
+       digipeater address.<br>
+       (As one might have noticed the source, destination and digipeater
+       fields are transmitted by the transmitter without modification)
+      </td>
+     </tr><tr bgcolor="white">
+      <td>0x1c</td>
+     <td>
+       Beacon interval in minutes
+      </td>
+     </tr><tr bgcolor="white">
+      <td>0x1d</td>
+      <td>
+       Tx delay, measured in flags (about 0.8ms)
+      </td>
+     </tr><tr bgcolor="white">
+      <td>0x1e</td>
+      <td>
+       Symbol table
+      </td>
+     </tr><tr bgcolor="white">
+      <td>0x1f</td>
+      <td>
+       Symbol id
+      </td>
+     </tr><tr bgcolor="white">
+      <td>0x20 - 0x3f</td>
+      <td>Null terminated comment text
+      </td>
+     </tr>
+    </tbody></table>
+    </p>
+   </td>
+  </tr>
+  <tr bgcolor="lightblue">
+   <th><h5><i>
+    INET: <a href="mailto:pe1rxq@amsat.org">Jeroen Vreeken, pe1rxq@amsat.org</a><br>
+    AX.25: pe1rxq@pi8zaa
+   </i></h5></th>
+  </tr>
+ </tbody></table>
+
+</body></html>

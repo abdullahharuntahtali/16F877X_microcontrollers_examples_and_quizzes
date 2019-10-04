@@ -1,0 +1,169 @@
+<html><head><script language="JavaScript" type="text/javascript">
+	var ad_frame = 0;
+	var ad_url_top = "http://pub.chez.com/cgi-bin/perl/frame.pl/popup/default";	
+	var myurl = new String(window.top.location);
+	
+	if(window.location == window.top.location) {
+			var address=window.location;
+			
+			if (myurl.substr(myurl.length-1,1) != "?" && navigator.userAgent.indexOf('Safari') == -1) {
+				var s='<html><head><title>'+'</title></head>' +
+				'<frameset rows="105,*" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">' +
+				'<frame src="' + ad_url_top + '" name="PPAdFrame"  marginwidth="0" marginheight="0" scrolling="no" noresize>' +
+				'<frame src="' + address + '?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>' +
+				'</frameset>' +
+				'</html>';
+			}			
+			else {
+				s = '<div align=center style="width:100%;padding:5px;border-bottom:2px solid #CBCBCB;background:#F2F2F2;"><table width="762" border="0" cellspacing="0" cellpadding="0" align="center"><tr><td align="right" width="17"><img src="http://pub.chez.com/images/onglet_gauche.gif" border="0" alt=""></td><td style="border-top:1px solid #C6C6C6;border-bottom:1px solid #C6C6C6;background:#F2F2F2;width:728px;"><IFRAME WIDTH=728 HEIGHT=90 MARGINWIDTH=0 MARGINHEIGHT=0 HSPACE=0 VSPACE=0 FRAMEBORDER=0 SCROLLING=no BORDERCOLOR="#000000" SRC="http://ads.tiscali.fr/html.ng/site=tiscali&Ads.Segment!=popup&cat=/services/pagesperso/popup&type=largebanner&placement=haut&adsize=728x90&cnt=yes"></IFRAME></td><td align="left" width="17"><img src="http://pub.chez.com/images/onglet_droit.gif" border="0" alt=""></td></tr></table></div>';
+			}
+			document.write(s);
+	}
+</script><title>Page automates</title></head><body topmargin="0" leftmargin="0" background="home_api_2004_data/fond.gif" link="#0000ff" marginheight="0" marginwidth="0" text="#555555" vlink="#800080">
+
+<font face="Trebuchet MS,Arial,Helvetica">
+<br></font><center><font face="Trebuchet MS,Arial,Helvetica"><a><font size="+3">LES AUTOMATES PROGRAMMABLES INDUSTRIELS 2004 D'ULYSSE <br>A BASE DE PIC16F873, 16F874, 16F876 OU 16F877</font> <br></a></font></center>
+
+<center>
+<!--<BR><BR><IMG hspace=0 src="bug.gif"><FONT size="+1"><B>Mon systeme de pilotage de reseau "UTS"</B></FONT>-->
+<font face="Trebuchet MS,Arial,Helvetica"><br>
+<br>Cette page permet de télécharger la description, les fichiers et le
+logiciel afin de realiser vous même et d'utiliser mes API 2004.
+<br>
+<br><img src="home_api_2004_data/api2004.jpg">
+<br>
+<br>Ces API sont une evolution de mes precedents automates a base de PIC16F84.
+<br>
+<br>Ils sont plus performants et simples d'utilisation.
+<br>
+<br>La documentation décrit en detail cette realisation.
+<br>
+<br>Contactez moi pour toute question.
+<br>
+<br>Bien entendu, cette réalisation est entièrement gratuite. 
+<br>
+<br>
+   <table border="0" cellpadding="1" cellspacing="1">
+
+    <tbody><tr bgcolor="#7fff7f"> 
+     <td align="center"> <img src="home_api_2004_data/manual.gif"> <a href="http://www.chez.com/udelmas/um_api2004a.doc">Lisez </a> </td>
+     <td align="center"> La description (WORD) </td>
+    </tr>
+
+    <tr bgcolor="#7fff7f"> 
+     <td align="center"> <img src="home_api_2004_data/manual.gif"> <img src="home_api_2004_data/pdf.gif"> <a href="http://www.chez.com/udelmas/um_api2004a.pdf">Lisez </a> </td>
+     <td align="center"> La description (PDF) </td>
+    </tr>
+
+    <tr bgcolor="#7fff7f"> 
+     <td align="center"> <img src="home_api_2004_data/winzip.gif"> <a href="http://www.chez.com/udelmas/api2004a_26avril2005.zip">Téléchargez</a> </td>
+     <td align="center">  le logiciel, la documentation, les fichiers et les sources </td>
+    </tr>
+   </tbody></table>
+
+</font></center>
+
+<font face="Trebuchet MS,Arial,Helvetica"><br><br></font><hr><font face="Trebuchet MS,Arial,Helvetica"><br>
+
+<b>Dernières nouvelles :</b><br><br>
+</font><ul><font face="Trebuchet MS,Arial,Helvetica"> 
+<li> <b>1 Aout 2005</b>Attention, n'utilisez pas les versions A des
+PICs (ex 16f876A). En effet, Microchip a changé la procedure
+programmation de la FLASH par le firmware. Vous ne pourrez donc pas
+télécharger le grapcet dans la flash. si vous souhaitez utiliser une
+version A, la solution a ce probleme est d'utiliser icprog + JDM pour
+flasher le fichier .hex disponible en fin de compilation. Ce fichier
+contient le firmware plus le graphcet.
+</li>
+<li> <b>24 mai 2005:</b>La societe Modtronix m'a propose de diffuser un
+Kit de l'API 10E/8S basé sur une de leur carte. J'ai accepté
+gratuitement afin d'aider ceux qui hesite a se lancer dans une
+réalisation complète. Mais il faudra tout de meme réaliser une carte
+fille non incluse pour la partie interface (E/S, relais). Ce kit
+comprend une carte avec un PIC programmé, un cable et un CD. En toute
+mpartialite, a vous de voir, si cela vaut le coup <a href="http://www.modtronix.fr/"> ici</a>.</li>
+<li> <b>26 avril mars 2005:</b> Correction d'un probleme de progapi
+(dans certaines conditions la compilation d'une etape sans aucune
+action echouée). Pour mettre a jour, Téléchargez l'archive et remplacer
+juste progapi_2004.exe par prograpi_2004_101.exe (v1.01). Merci a
+Laurent pour avoir trouvé ce probleme.</li>   
+<li> <b>31 mars 2005:</b> Correction d'un pb de comparaison des
+variables 8 bits (can ...). Merci à Gilbert pour l'identification de ce
+probleme. Téléchargez le nouveau zip afin de mettre à jour les fichiers
+api2004a.hex et api2004a.def. Il faut aussi reflasher le UC avec le
+nouveau api2004a.hex </li>
+<li> <b>07 jan 2005:</b> Correction d'un pb sur le portD pour
+l'automate 15E/14S. Merci à Jean Pierre pour l'identification et la
+correction de ce probleme. Téléchargez le nouveau zip afin de mettre à
+jour les fichiers api2004a.hex et api2004a.def. Il faut aussi reflasher
+le UC avec le nouveau api2004a.hex </li>
+<li> <b>22 nov 2004:</b> Correction d'un pb firmware pour l'automate
+15E/14S. Téléchargez le nouveau zip afin de mettre à jour les fichiers
+api2004a.hex et api2004a.def. Il faut aussi reflasher le UC avec
+api2004a.hex </li>
+<li> <b>22 nov 2004:</b> Manuel disponible en PDF pour ceux qui n'ont pas word. </li>
+<li> <b>15 nov 2004:</b> Mise en ligne des automates 2004. </li>
+</font></ul>
+<font face="Trebuchet MS,Arial,Helvetica"><br>
+
+
+</font>
+
+<script language="javascript">	
+if (navigator.userAgent.indexOf('Safari') == -1) {
+	var ad_url = "http://pub.chez.com/cgi-bin/perl/frame.pl/popup/default";
+	var ref = window.document.referrer;
+	if(parent.PPAdFrame) {			
+			if(parent.memberPage && parent.memberPage.document.title )
+			{
+				parent.document.title=parent.memberPage.document.title;
+			}
+			if(parent.PPAdFrame && parent.PPAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "/")) ) {
+					parent.PPAdFrame.location.replace(ad_url);
+			}		
+	}
+	else
+	 if(top.PPAdFrame && top.PPAdFrame.location) {
+			if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+					top.PPAdFrame.location.replace(ad_url);
+			}
+	}	
+	if (window.top.location.href.indexOf("www.chez.com") != -1 && window.top.location.href.indexOf("pub.chez.com") == -1)
+	{
+		ad_frame = 1;
+		window.top.document.body.rows = "105, *";
+	}
+	function resizePPAdFrame()
+	{
+		window.top.document.body.rows = "105, *";
+	}
+	if (ad_frame == 1)
+	{
+		setInterval("resizePPAdFrame()", 105);
+	}
+	
+}
+</script>
+
+
+
+
+<!-- Cyberestat -->
+<script language="JavaScript" type="text/javascript">
+<!--
+CM_CLIENT = "tiscali";
+CM_SECTION1 = "PagesPersoChez";
+CM_RUBRIQUE = "divers"; 
+// -->
+</script>
+<script language="JavaScript" src="home_api_2004_files/tiscali.js" type="text/javascript"></script>
+<noscript><img src="http://stat3.cybermonitor.com/tiscali_v?R=divers&S=total;PagesPersoChez"></noscript>
+<!-- /Cyberestat -->
+<script language="JavaScript" type="text/javascript">
+<!--
+portal_category="/PagesPerso/";
+portal_pagename="Chez";
+document.write('<scr'+'ipt language="javascript1.1" src="http://static.aliceadsl.fr/comportemental/Tagcomportemental.js"></sc'+'ript>');
+-->
+</script><script language="javascript1.1" src="home_api_2004_data/Tagcomportemental.js"></script><script language="javascript1.1" src="home_api_2004_data/comportemental.js"></script>
+</body></html>

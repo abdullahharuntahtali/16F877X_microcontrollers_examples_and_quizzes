@@ -1,0 +1,1991 @@
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 1
+
+     1					
+     2					; PicBasic Pro Compiler 2.45a, (c) 1998, 2004 microEngineering Labs, Inc. 
+     3	=0001				PM_USED			EQU	1
+     4					
+     5						INCLUDE	"16F877.INC"
+*    1					;****************************************************************
+*    2					;*  16F877.INC                                                  *
+*    3					;*                                                              *
+*    4					;*  By        : Leonard Zerman, Jeff Schmoyer                   *
+*    5					;*  Notice    : Copyright (c) 2003 microEngineering Labs, Inc.  *
+*    6					;*              All Rights Reserved                             *
+*    7					;*  Date      : 11/07/03                                        *
+*    8					;*  Version   : 2.45                                            *
+*    9					;*  Notes     :                                                 *
+*   10					;****************************************************************
+*   13					        LIST
+*   14					        include 'M16F87x.INC'   ; PM header
+*    1					;*************************************************************************
+*    2					; PIC16F87x Family Header
+*    3					;       Copyright 1995, 2002 microEngineering Labs, Inc.
+*    4					;*************************************************************************
+*  274					        LIST
+*   15					        device  pic16F877, xt_osc, wdt_on, pwrt_on, lvp_off, protect_off
+*   16					        XALL
+*   25					        LIST
+     6					
+     7					
+     8					; Define statements.
+     9					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\16F877.BAS	00018	DEFINE  CODE_SIZE 
+    10					#define		CODE_SIZE		 8
+    11					
+    12	=0020				RAM_START       		EQU	00020h
+    13	=01EF				RAM_END         		EQU	001EFh
+    14	=0004				RAM_BANKS       		EQU	00004h
+    15	=0020				BANK0_START     		EQU	00020h
+    16	=007F				BANK0_END       		EQU	0007Fh
+    17	=00A0				BANK1_START     		EQU	000A0h
+    18	=00EF				BANK1_END       		EQU	000EFh
+    19	=0110				BANK2_START     		EQU	00110h
+    20	=016F				BANK2_END       		EQU	0016Fh
+    21	=0190				BANK3_START     		EQU	00190h
+    22	=01EF				BANK3_END       		EQU	001EFh
+    23	=2100				EEPROM_START    		EQU	02100h
+    24	=21FF				EEPROM_END      		EQU	021FFh
+    25					
+    26					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\PBPPIC14.RAM	00012	R0      VAR     WO
+    27	=0020				R0              		EQU	RAM_START + 000h
+    28					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\PBPPIC14.RAM	00013	R1      VAR     WO
+    29	=0022				R1              		EQU	RAM_START + 002h
+    30					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\PBPPIC14.RAM	00014	R2      VAR     WO
+    31	=0024				R2              		EQU	RAM_START + 004h
+    32					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\PBPPIC14.RAM	00015	R3      VAR     WO
+    33	=0026				R3              		EQU	RAM_START + 006h
+    34					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\PBPPIC14.RAM	00016	R4      VAR     WO
+    35	=0028				R4              		EQU	RAM_START + 008h
+    36					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\PBPPIC14.RAM	00017	R5      VAR     WO
+    37	=002A				R5              		EQU	RAM_START + 00Ah
+    38					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\PBPPIC14.RAM	00018	R6      VAR     WO
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 2
+
+    39	=002C				R6              		EQU	RAM_START + 00Ch
+    40					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\PBPPIC14.RAM	00019	R7      VAR     WO
+    41	=002E				R7              		EQU	RAM_START + 00Eh
+    42					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\PBPPIC14.RAM	00020	R8      VAR     WO
+    43	=0030				R8              		EQU	RAM_START + 010h
+    44					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\PBPPIC14.RAM	00026	FLAGS   VAR     BY
+    45	=0032				FLAGS           		EQU	RAM_START + 012h
+    46					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\PBPPIC14.RAM	00025	GOP     VAR     BY
+    47	=0033				GOP             		EQU	RAM_START + 013h
+    48					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\PBPPIC14.RAM	00022	RM1     VAR     BY
+    49	=0034				RM1             		EQU	RAM_START + 014h
+    50					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\PBPPIC14.RAM	00024	RM2     VAR     BY
+    51	=0035				RM2             		EQU	RAM_START + 015h
+    52					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\PBPPIC14.RAM	00021	RR1     VAR     BY
+    53	=0036				RR1             		EQU	RAM_START + 016h
+    54					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\PBPPIC14.RAM	00023	RR2     VAR     BY
+    55	=0037				RR2             		EQU	RAM_START + 017h
+    56					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00019	ekran var byte[60]
+    57	=0038				_ekran           		EQU	RAM_START + 018h
+    58					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00093	p var word
+    59	=0074				_p               		EQU	RAM_START + 054h
+    60					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00013	i var byte
+    61	=0076				_i               		EQU	RAM_START + 056h
+    62					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00016	sayac var byte
+    63	=0077				_sayac           		EQU	RAM_START + 057h
+    64					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00096	sayi var byte
+    65	=0078				_sayi            		EQU	RAM_START + 058h
+    66					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\16F877.BAS	00022	PORTL   VAR     PO
+    67	=0006				_PORTL           		EQU	 PORTB
+    68					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\16F877.BAS	00023	PORTH   VAR     PO
+    69	=0007				_PORTH           		EQU	 PORTC
+    70					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\16F877.BAS	00024	TRISL   VAR     TR
+    71	=0086				_TRISL           		EQU	 TRISB
+    72					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\16F877.BAS	00025	TRISH   VAR     TR
+    73	=0087				_TRISH           		EQU	 TRISC
+    74					
+    75					; Constants.
+    76	=0000				_T2400           		EQU	00000h
+    77	=0001				_T1200           		EQU	00001h
+    78	=0002				_T9600           		EQU	00002h
+    79	=0003				_T300            		EQU	00003h
+    80	=0004				_N2400           		EQU	00004h
+    81	=0005				_N1200           		EQU	00005h
+    82	=0006				_N9600           		EQU	00006h
+    83	=0007				_N300            		EQU	00007h
+    84	=0008				_OT2400          		EQU	00008h
+    85	=0009				_OT1200          		EQU	00009h
+    86	=000A				_OT9600          		EQU	0000Ah
+    87	=000B				_OT300           		EQU	0000Bh
+    88	=000C				_ON2400          		EQU	0000Ch
+    89	=000D				_ON1200          		EQU	0000Dh
+    90	=000E				_ON9600          		EQU	0000Eh
+    91	=000F				_ON300           		EQU	0000Fh
+    92	=0000				_MSBPRE          		EQU	00000h
+    93	=0001				_LSBPRE          		EQU	00001h
+    94	=0002				_MSBPOST         		EQU	00002h
+    95	=0003				_LSBPOST         		EQU	00003h
+    96	=0000				_LSBFIRST        		EQU	00000h
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 3
+
+    97	=0001				_MSBFIRST        		EQU	00001h
+    98	=0000				_CLS             		EQU	00000h
+    99	=0001				_HOME            		EQU	00001h
+   100	=0007				_BELL            		EQU	00007h
+   101	=0008				_BKSP            		EQU	00008h
+   102	=0009				_TAB             		EQU	00009h
+   103	=000D				_CR              		EQU	0000Dh
+   104	=0012				_UnitOn          		EQU	00012h
+   105	=001A				_UnitOff         		EQU	0001Ah
+   106	=001C				_UnitsOff        		EQU	0001Ch
+   107	=0014				_LightsOn        		EQU	00014h
+   108	=0010				_LightsOff       		EQU	00010h
+   109	=001E				_Dim             		EQU	0001Eh
+   110	=0016				_Bright          		EQU	00016h
+   111						INCLUDE	"MATRIX~4.MAC"
+*    1					
+*  134						LIST
+   112						INCLUDE	"PBPPIC14.LIB"
+*    1					;******************************************************************
+*    2					;*  PBPPIC14.LIB                                                  *
+*    3					;*                                                                *
+*    4					;*  By        : Leonard Zerman, Jeff Schmoyer                     *
+*    5					;*  Notice    : Copyright (c) 2004 microEngineering Labs, Inc.    *
+*    6					;*              All Rights Reserved                               *
+*    7					;*  Date      : 01/06/04                                          *
+*    8					;*  Version   : 2.45                                              *
+*    9					;*  Notes     :                                                   *
+*   10					;******************************************************************
+*   45					  LIST
+*   46					; Oscillator is 4MHz
+* 1110					  LIST
+* 1111					    ORG 0                       ; Reset vector at 0
+* 1125					  LIST
+* 1126	0000- 2828			        goto    INIT            ; Finish initialization
+* 6133					  LIST
+* 6134	0001- 01A3			PAUSE   clrf    R1 + 1
+* 6135	0002- 00A2			PAUSEL  movwf   R1
+* 6136	0003- 30FF			pauseloop movlw -1              ; 1 (9)
+* 6137	0004- 07A2			        addwf   R1, F           ; 1
+* 6138	0005- 1C03			        btfss   STATUS, C       ; 1 / 2
+* 6139	0006- 07A3			        addwf   R1 + 1, F       ; 1 / 0
+* 6140	0007- 1C03			        btfss   STATUS, C       ; 2
+* 6141	0008- 2823			        goto    DONE
+* 6142	0009- 3003			        movlw   (PAUSE_DELAY) >> 8      ; 1
+* 6143	000A- 00A1			        movwf   R0 + 1          ; 1
+* 6144	000B- 30DF			        movlw   low (PAUSE_DELAY)       ; 1
+* 6145	000C- 200F			        call    PAUSEUSL        ; -2 (PAUSEUSL gives you 2 less than you a
+* 6146	000D- 2803			        goto    pauseloop       ; 2
+* 6190					  LIST
+* 6191	000E- 01A1			PAUSEUS clrf    R0 + 1          ; 1
+* 6192	000F- 3EE8			PAUSEUSL addlw  -24             ; 1 Subtract overhead
+* 6193	0010- 00A0			        movwf   R0              ; 1
+* 6194	0011- 09A1			        comf    R0 + 1, F       ; 1
+* 6195	0012- 30FC			        movlw   -4              ; 1
+* 6196	0013- 1C03			        btfss   STATUS, C       ; 1 / 2
+* 6197	0014- 2818			        goto    pauseush        ; 2 / 0
+* 6198	0015- 07A0			pauseusloop addwf R0, F         ; 1
+* 6199	0016- 1803			        btfsc   STATUS, C       ; 1 / 2
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 4
+
+* 6200	0017- 2815			        goto    pauseusloop     ; 2 / 0
+* 6201	0018- 07A0			pauseush addwf  R0, F           ; 1 Do an extra countdown
+* 6202					        CLRWDT?NOP		; 1 Keep Watchdog clear
+     +	0019- 0064			        clrwdt
+* 6203	001A- 0FA1			        incfsz  R0 + 1, F       ; 1 / 2
+* 6204	001B- 2815			        goto    pauseusloop     ; 2 / 0
+* 6205	001C- 1820			        btfsc   R0, 0           ; 1 / 2
+* 6206	001D- 281E			        goto    $ + 1           ; 2 / 0 Burn an extra cycle
+* 6207	001E- 1CA0			        btfss   R0, 1           ; 1 / 2
+* 6208	001F- 2822			        goto    pauseusdone     ; 2 / 0
+* 6209	0020- 0000			        nop                     ; 1
+* 6210	0021- 2822			        goto    $ + 1           ; 2 Burn an extra 2 cycles
+* 6211	0022- 0008			pauseusdone return              ; 2 + 3 (call + setup)
+* 7398					  LIST
+* 7399	0023- 1383			DONE    bcf     STATUS, IRP     ; 1 Set FSR to bank 0/1
+* 7400	0024- 1303			        bcf     STATUS, RP1     ; 1 Show direct bank 0
+* 7401	0025- 1283			        bcf     STATUS, RP0     ; 1
+* 7402					        CLRWDT?NOP		; 1 Hit Watchdog timer
+     +	0026- 0064			        clrwdt
+* 7403	0027- 0008			DONERET return                  ; 2 Done
+* 7427					  LIST
+* 7428	0028-				INIT
+* 7466					  LIST
+* 7467	0028-				main
+   113					
+   114					
+   115					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\16F877.BAS	00012	BANK0   $0020, $00
+   116					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\16F877.BAS	00013	BANK1   $00A0, $00
+   117					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\16F877.BAS	00014	BANK2   $0110, $01
+   118					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\16F877.BAS	00015	BANK3   $0190, $01
+   119					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\16F877.BAS	00016	EEPROM  $2100, $21
+   120					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\16F877.BAS	00017	LIBRARY "PBPPIC14"
+   121					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\16F877.BAS	00018	DEFINE  CODE_SIZE 
+   122					
+   123					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\16F877.BAS	00020	        include "P
+   124					
+   125					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\16F877.BAS	00027	        include "P
+   126					
+   127					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00001	include "modedefs.bas"
+   128					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00014	Symbol T2400  = 0 
+   129					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00015	Symbol T1200  = 1 
+   130					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00016	Symbol T9600  = 2 
+   131					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00017	Symbol T300   = 3 
+   132					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00019	Symbol N2400  = 4 
+   133					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00020	Symbol N1200  = 5 
+   134					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00021	Symbol N9600  = 6 
+   135					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00022	Symbol N300   = 7 
+   136					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00024	Symbol OT2400 = 8 
+   137					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00025	Symbol OT1200 = 9 
+   138					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00026	Symbol OT9600 = 10
+   139					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00027	Symbol OT300  = 11
+   140					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00029	Symbol ON2400 = 12
+   141					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00030	Symbol ON1200 = 13
+   142					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00031	Symbol ON9600 = 14
+   143					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00032	Symbol ON300  = 15
+   144					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00036	Symbol MSBPRE = 0 
+   145					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00037	Symbol LSBPRE = 1 
+   146					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00038	Symbol MSBPOST = 2
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 5
+
+   147					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00039	Symbol LSBPOST = 3
+   148					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00042	Symbol LSBFIRST = 
+   149					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00043	Symbol MSBFIRST = 
+   150					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00047	Symbol CLS = 0
+   151					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00048	Symbol HOME = 1
+   152					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00049	Symbol BELL = 7
+   153					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00050	Symbol BKSP = 8
+   154					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00051	Symbol TAB = 9
+   155					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00052	Symbol CR = 13
+   156					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00056	Symbol UnitOn = %1
+   157					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00057	Symbol UnitOff = %
+   158					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00058	Symbol UnitsOff = 
+   159					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00059	Symbol LightsOn = 
+   160					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00060	Symbol LightsOff =
+   161					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00061	Symbol Dim = %1111
+   162					; F:\ISTEMP~1\MECANI~1\MCS\PBP245\MODEDEFS.BAS	00062	Symbol Bright = %1
+   163					
+   164					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00003	trisa=0
+   165						MOVE?CB	000h, TRISA
+     +	0028- 1683			        bsf     STATUS, RP0
+     +	0029- 0185			        clrf    TRISA
+   166					
+   167					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00004	trisb=0
+   168						MOVE?CB	000h, TRISB
+     +	002A- 0186			        clrf    TRISB
+   169					
+   170					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00005	trisc=0
+   171						MOVE?CB	000h, TRISC
+     +	002B- 0187			        clrf    TRISC
+   172					
+   173					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00006	trisd=0
+   174						MOVE?CB	000h, TRISD
+     +	002C- 0188			        clrf    TRISD
+   175					
+   176					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00008	porta=0'%111111
+   177						MOVE?CB	000h, PORTA
+     +	002D- 1283			        bcf     STATUS, RP0
+     +	002E- 0185			        clrf    PORTA
+   178					
+   179					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00009	portb=0'%111111
+   180						MOVE?CB	000h, PORTB
+     +	002F- 0186			        clrf    PORTB
+   181					
+   182					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00010	portc=255'%111111
+   183						MOVE?CB	0FFh, PORTC
+     +	0030- 30FF			        movlw   low (0FFh)
+     +	0031- 0087			        movwf   PORTC
+   184					
+   185					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00011	portd=0'255'%111111
+   186						MOVE?CB	000h, PORTD
+     +	0032- 0188			        clrf    PORTD
+   187					
+   188					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00014	i=0
+   189						MOVE?CB	000h, _i
+     +	0033- 01F6			        clrf    _i
+   190					
+   191					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00017	sayac=0
+   192						MOVE?CB	000h, _sayac
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 6
+
+     +	0034- 01F7			        clrf    _sayac
+   193					
+   194					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00033	ekran[1]=%00001111 '9 sayý
+   195						MOVE?CB	00Fh, _ekran + 00001h
+     +	0035- 300F			        movlw   low (00Fh)
+     +	0036- 00B9			        movwf   _ekran + 00001h
+   196					
+   197					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00034	ekran[2]=%00001001
+   198						MOVE?CB	009h, _ekran + 00002h
+     +	0037- 3009			        movlw   low (009h)
+     +	0038- 00BA			        movwf   _ekran + 00002h
+   199					
+   200					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00035	ekran[3]=%00001111
+   201						MOVE?CB	00Fh, _ekran + 00003h
+     +	0039- 300F			        movlw   low (00Fh)
+     +	003A- 00BB			        movwf   _ekran + 00003h
+   202					
+   203					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00036	ekran[4]=%00000001
+   204						MOVE?CB	001h, _ekran + 00004h
+     +	003B- 3001			        movlw   low (001h)
+     +	003C- 00BC			        movwf   _ekran + 00004h
+   205					
+   206					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00037	ekran[5]=%00001111
+   207						MOVE?CB	00Fh, _ekran + 00005h
+     +	003D- 300F			        movlw   low (00Fh)
+     +	003E- 00BD			        movwf   _ekran + 00005h
+   208					
+   209					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00039	ekran [6]=%00001111 '8 say
+   210						MOVE?CB	00Fh, _ekran + 00006h
+     +	003F- 300F			        movlw   low (00Fh)
+     +	0040- 00BE			        movwf   _ekran + 00006h
+   211					
+   212					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00040	ekran [7]=%00001001
+   213						MOVE?CB	009h, _ekran + 00007h
+     +	0041- 3009			        movlw   low (009h)
+     +	0042- 00BF			        movwf   _ekran + 00007h
+   214					
+   215					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00041	ekran [8]=%00001111
+   216						MOVE?CB	00Fh, _ekran + 00008h
+     +	0043- 300F			        movlw   low (00Fh)
+     +	0044- 00C0			        movwf   _ekran + 00008h
+   217					
+   218					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00042	ekran [9]=%00001001
+   219						MOVE?CB	009h, _ekran + 00009h
+     +	0045- 3009			        movlw   low (009h)
+     +	0046- 00C1			        movwf   _ekran + 00009h
+   220					
+   221					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00043	ekran[10]=%00001111
+   222						MOVE?CB	00Fh, _ekran + 0000Ah
+     +	0047- 300F			        movlw   low (00Fh)
+     +	0048- 00C2			        movwf   _ekran + 0000Ah
+   223					
+   224					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00045	ekran[11]=%00001111 '7 say
+   225						MOVE?CB	00Fh, _ekran + 0000Bh
+     +	0049- 300F			        movlw   low (00Fh)
+     +	004A- 00C3			        movwf   _ekran + 0000Bh
+   226					
+   227					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00046	ekran[12]=%00000001
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 7
+
+   228						MOVE?CB	001h, _ekran + 0000Ch
+     +	004B- 3001			        movlw   low (001h)
+     +	004C- 00C4			        movwf   _ekran + 0000Ch
+   229					
+   230					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00047	ekran[13]=%00000010
+   231						MOVE?CB	002h, _ekran + 0000Dh
+     +	004D- 3002			        movlw   low (002h)
+     +	004E- 00C5			        movwf   _ekran + 0000Dh
+   232					
+   233					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00048	ekran[14]=%00000100
+   234						MOVE?CB	004h, _ekran + 0000Eh
+     +	004F- 3004			        movlw   low (004h)
+     +	0050- 00C6			        movwf   _ekran + 0000Eh
+   235					
+   236					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00049	ekran[15]=%00001000
+   237						MOVE?CB	008h, _ekran + 0000Fh
+     +	0051- 3008			        movlw   low (008h)
+     +	0052- 00C7			        movwf   _ekran + 0000Fh
+   238					
+   239					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00051	ekran[16]=%00001111 '6 say
+   240						MOVE?CB	00Fh, _ekran + 00010h
+     +	0053- 300F			        movlw   low (00Fh)
+     +	0054- 00C8			        movwf   _ekran + 00010h
+   241					
+   242					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00052	ekran[17]=%00001000
+   243						MOVE?CB	008h, _ekran + 00011h
+     +	0055- 3008			        movlw   low (008h)
+     +	0056- 00C9			        movwf   _ekran + 00011h
+   244					
+   245					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00053	ekran[18]=%00001111
+   246						MOVE?CB	00Fh, _ekran + 00012h
+     +	0057- 300F			        movlw   low (00Fh)
+     +	0058- 00CA			        movwf   _ekran + 00012h
+   247					
+   248					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00054	ekran[19]=%00001001
+   249						MOVE?CB	009h, _ekran + 00013h
+     +	0059- 3009			        movlw   low (009h)
+     +	005A- 00CB			        movwf   _ekran + 00013h
+   250					
+   251					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00055	ekran[20]=%00001111
+   252						MOVE?CB	00Fh, _ekran + 00014h
+     +	005B- 300F			        movlw   low (00Fh)
+     +	005C- 00CC			        movwf   _ekran + 00014h
+   253					
+   254					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00057	ekran[21]=%00001111 '5 say
+   255						MOVE?CB	00Fh, _ekran + 00015h
+     +	005D- 300F			        movlw   low (00Fh)
+     +	005E- 00CD			        movwf   _ekran + 00015h
+   256					
+   257					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00058	ekran[22]=%00001000
+   258						MOVE?CB	008h, _ekran + 00016h
+     +	005F- 3008			        movlw   low (008h)
+     +	0060- 00CE			        movwf   _ekran + 00016h
+   259					
+   260					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00059	ekran[23]=%00001111
+   261						MOVE?CB	00Fh, _ekran + 00017h
+     +	0061- 300F			        movlw   low (00Fh)
+     +	0062- 00CF			        movwf   _ekran + 00017h
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 8
+
+   262					
+   263					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00060	ekran[24]=%00000001
+   264						MOVE?CB	001h, _ekran + 00018h
+     +	0063- 3001			        movlw   low (001h)
+     +	0064- 00D0			        movwf   _ekran + 00018h
+   265					
+   266					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00061	ekran[25]=%00001111
+   267						MOVE?CB	00Fh, _ekran + 00019h
+     +	0065- 300F			        movlw   low (00Fh)
+     +	0066- 00D1			        movwf   _ekran + 00019h
+   268					
+   269					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00063	ekran[26]=%00001001 '4 say
+   270						MOVE?CB	009h, _ekran + 0001Ah
+     +	0067- 3009			        movlw   low (009h)
+     +	0068- 00D2			        movwf   _ekran + 0001Ah
+   271					
+   272					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00064	ekran[27]=%00001001
+   273						MOVE?CB	009h, _ekran + 0001Bh
+     +	0069- 3009			        movlw   low (009h)
+     +	006A- 00D3			        movwf   _ekran + 0001Bh
+   274					
+   275					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00065	ekran[28]=%00001111
+   276						MOVE?CB	00Fh, _ekran + 0001Ch
+     +	006B- 300F			        movlw   low (00Fh)
+     +	006C- 00D4			        movwf   _ekran + 0001Ch
+   277					
+   278					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00066	ekran[29]=%00000001
+   279						MOVE?CB	001h, _ekran + 0001Dh
+     +	006D- 3001			        movlw   low (001h)
+     +	006E- 00D5			        movwf   _ekran + 0001Dh
+   280					
+   281					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00067	ekran[30]=%00000001
+   282						MOVE?CB	001h, _ekran + 0001Eh
+     +	006F- 3001			        movlw   low (001h)
+     +	0070- 00D6			        movwf   _ekran + 0001Eh
+   283					
+   284					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00069	ekran[31]=%00001111 '3 say
+   285						MOVE?CB	00Fh, _ekran + 0001Fh
+     +	0071- 300F			        movlw   low (00Fh)
+     +	0072- 00D7			        movwf   _ekran + 0001Fh
+   286					
+   287					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00070	ekran[32]=%00000001
+   288						MOVE?CB	001h, _ekran + 00020h
+     +	0073- 3001			        movlw   low (001h)
+     +	0074- 00D8			        movwf   _ekran + 00020h
+   289					
+   290					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00071	ekran[33]=%00001111
+   291						MOVE?CB	00Fh, _ekran + 00021h
+     +	0075- 300F			        movlw   low (00Fh)
+     +	0076- 00D9			        movwf   _ekran + 00021h
+   292					
+   293					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00072	ekran[34]=%00000001
+   294						MOVE?CB	001h, _ekran + 00022h
+     +	0077- 3001			        movlw   low (001h)
+     +	0078- 00DA			        movwf   _ekran + 00022h
+   295					
+   296					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00073	ekran[35]=%00001111
+   297						MOVE?CB	00Fh, _ekran + 00023h
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 9
+
+     +	0079- 300F			        movlw   low (00Fh)
+     +	007A- 00DB			        movwf   _ekran + 00023h
+   298					
+   299					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00075	ekran[36]=%00001111 '2 say
+   300						MOVE?CB	00Fh, _ekran + 00024h
+     +	007B- 300F			        movlw   low (00Fh)
+     +	007C- 00DC			        movwf   _ekran + 00024h
+   301					
+   302					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00076	ekran[37]=%00000001
+   303						MOVE?CB	001h, _ekran + 00025h
+     +	007D- 3001			        movlw   low (001h)
+     +	007E- 00DD			        movwf   _ekran + 00025h
+   304					
+   305					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00077	ekran[38]=%00001111
+   306						MOVE?CB	00Fh, _ekran + 00026h
+     +	007F- 300F			        movlw   low (00Fh)
+     +	0080- 00DE			        movwf   _ekran + 00026h
+   307					
+   308					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00078	ekran[39]=%00001000
+   309						MOVE?CB	008h, _ekran + 00027h
+     +	0081- 3008			        movlw   low (008h)
+     +	0082- 00DF			        movwf   _ekran + 00027h
+   310					
+   311					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00079	ekran[40]=%00001111
+   312						MOVE?CB	00Fh, _ekran + 00028h
+     +	0083- 300F			        movlw   low (00Fh)
+     +	0084- 00E0			        movwf   _ekran + 00028h
+   313					
+   314					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00081	ekran[41]=%00000001 '1 say
+   315						MOVE?CB	001h, _ekran + 00029h
+     +	0085- 3001			        movlw   low (001h)
+     +	0086- 00E1			        movwf   _ekran + 00029h
+   316					
+   317					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00082	ekran[42]=%00000011
+   318						MOVE?CB	003h, _ekran + 0002Ah
+     +	0087- 3003			        movlw   low (003h)
+     +	0088- 00E2			        movwf   _ekran + 0002Ah
+   319					
+   320					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00083	ekran[43]=%00000001
+   321						MOVE?CB	001h, _ekran + 0002Bh
+     +	0089- 3001			        movlw   low (001h)
+     +	008A- 00E3			        movwf   _ekran + 0002Bh
+   322					
+   323					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00084	ekran[44]=%00000001
+   324						MOVE?CB	001h, _ekran + 0002Ch
+     +	008B- 3001			        movlw   low (001h)
+     +	008C- 00E4			        movwf   _ekran + 0002Ch
+   325					
+   326					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00085	ekran[45]=%00000001
+   327						MOVE?CB	001h, _ekran + 0002Dh
+     +	008D- 3001			        movlw   low (001h)
+     +	008E- 00E5			        movwf   _ekran + 0002Dh
+   328					
+   329					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00087	ekran[46]=%00001111 '0 say
+   330						MOVE?CB	00Fh, _ekran + 0002Eh
+     +	008F- 300F			        movlw   low (00Fh)
+     +	0090- 00E6			        movwf   _ekran + 0002Eh
+   331					
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 10
+
+   332					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00088	ekran[47]=%00001001
+   333						MOVE?CB	009h, _ekran + 0002Fh
+     +	0091- 3009			        movlw   low (009h)
+     +	0092- 00E7			        movwf   _ekran + 0002Fh
+   334					
+   335					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00089	ekran[48]=%00001001
+   336						MOVE?CB	009h, _ekran + 00030h
+     +	0093- 3009			        movlw   low (009h)
+     +	0094- 00E8			        movwf   _ekran + 00030h
+   337					
+   338					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00090	ekran[49]=%00001001
+   339						MOVE?CB	009h, _ekran + 00031h
+     +	0095- 3009			        movlw   low (009h)
+     +	0096- 00E9			        movwf   _ekran + 00031h
+   340					
+   341					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00091	ekran[50]=%00001111
+   342						MOVE?CB	00Fh, _ekran + 00032h
+     +	0097- 300F			        movlw   low (00Fh)
+     +	0098- 00EA			        movwf   _ekran + 00032h
+   343					
+   344					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00094	p=4
+   345						MOVE?CW	004h, _p
+     +	0099- 3004			        movlw   low (004h)
+     +	009A- 00F4			        movwf   _p
+     +	009B- 01F5			        clrf    (_p) + 1
+   346					
+   347					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00097	sayi=0
+   348						MOVE?CB	000h, _sayi
+     +	009C- 01F8			        clrf    _sayi
+   349					
+   350					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00099	basla:
+   351					
+   352						LABEL?L	_basla	
+     +					        LALL
+     +	009D-				_basla
+   353					
+   354					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00100	sayi=sayi+1
+   355						ADD?BCB	_sayi, 001h, _sayi
+     +	009D- 0AF8			        incf    _sayi, F
+   356					
+   357					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00101	if sayi>9 then sayi=0
+   358						CMPLE?BCL	_sayi, 009h, L00002
+     +	009E- 0064			        clrwdt
+     +	009F- 300A			        movlw   low (009h + 1)
+     +	00A0- 0278			        subwf   _sayi, W
+     +	00A1- 118A			        bcf     PCLATH, 3
+     +	00A2- 120A			        bcf     PCLATH, 4
+     +	00A3- 1C03			        btfss   STATUS, C
+     +	00A4- 28A6			        goto    L00002
+   359						MOVE?CB	000h, _sayi
+     +	00A5- 01F8			        clrf    _sayi
+   360						LABEL?L	L00002	
+     +					        LALL
+     +	00A6-				L00002
+   361					
+   362					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00104	branchl sayi,[sifir,bir,ik
+   363						BRANCHL?BCL	_sayi, 00Ah, L00001
+     +	00A6- 0878			        movf    _sayi, W
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 11
+
+     +	00A7- 00A1			        movwf   R0 + 1
+     +	00A8- 3C09			        sublw   00Ah - 1
+     +	00A9- 118A			        bcf     PCLATH, 3
+     +	00AA- 120A			        bcf     PCLATH, 4
+     +	00AB- 1C03			        btfss   STATUS, C
+     +	00AC- 28D1			        goto    L00001
+     +	00AD- 0DA1			        rlf     R0 + 1, F
+     +	00AE- 118A			        bcf     PCLATH, 3
+     +	00AF- 120A			        bcf     PCLATH, 4
+     +	00B0- 20B9			        call    @@0000
+     +	00B1- 00A0			        movwf   R0
+     +	00B2- 1021			        bcf     R0 + 1, 0
+     +	00B3- 118A			        bcf     PCLATH, 3
+     +	00B4- 120A			        bcf     PCLATH, 4
+     +	00B5- 20B9			        call    @@0000
+     +	00B6- 008A			        movwf   PCLATH
+     +	00B7- 0820			        movf    R0, W
+     +	00B8- 0082			        movwf   PCL
+     +	00B9- 3000			@@0000  movlw   (@@0001) >> 8
+     +	00BA- 008A			        movwf   PCLATH
+     +	00BB- 0821			        movf    R0 + 1, W
+     +	00BC- 0782			        addwf   PCL, F
+   364						BRLGOTO?L	_sifir
+     +	00BD- 3400			        retlw   (_sifir) >> 8
+     +	00BE- 34D5			        retlw   low (_sifir)
+   365						BRLGOTO?L	_bir
+     +	00BF- 3401			        retlw   (_bir) >> 8
+     +	00C0- 3410			        retlw   low (_bir)
+   366						BRLGOTO?L	_iki
+     +	00C1- 3401			        retlw   (_iki) >> 8
+     +	00C2- 344B			        retlw   low (_iki)
+   367						BRLGOTO?L	_uc
+     +	00C3- 3401			        retlw   (_uc) >> 8
+     +	00C4- 3486			        retlw   low (_uc)
+   368						BRLGOTO?L	_dort
+     +	00C5- 3401			        retlw   (_dort) >> 8
+     +	00C6- 34C1			        retlw   low (_dort)
+   369						BRLGOTO?L	_bes
+     +	00C7- 3401			        retlw   (_bes) >> 8
+     +	00C8- 34FC			        retlw   low (_bes)
+   370						BRLGOTO?L	_alti
+     +	00C9- 3402			        retlw   (_alti) >> 8
+     +	00CA- 3437			        retlw   low (_alti)
+   371						BRLGOTO?L	_yedi
+     +	00CB- 3402			        retlw   (_yedi) >> 8
+     +	00CC- 3472			        retlw   low (_yedi)
+   372						BRLGOTO?L	_sekiz
+     +	00CD- 3402			        retlw   (_sekiz) >> 8
+     +	00CE- 34AD			        retlw   low (_sekiz)
+   373						BRLGOTO?L	_dokuz
+     +	00CF- 3402			        retlw   (_dokuz) >> 8
+     +	00D0- 34E8			        retlw   low (_dokuz)
+   374					
+   375						LABEL?L	L00001	
+     +					        LALL
+     +	00D1-				L00001
+   376					
+   377					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00126	goto basla
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 12
+
+   378						GOTO?L	_basla
+     +	00D1- 018A				clrf	PCLATH
+     +	00D2- 289D			        goto    _basla
+   379					
+   380					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00128	sayac1:
+   381					
+   382						LABEL?L	_sayac1	
+     +					        LALL
+     +	00D3-				_sayac1
+   383					
+   384					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00129	sayac=sayac+1
+   385						ADD?BCB	_sayac, 001h, _sayac
+     +	00D3- 0AF7			        incf    _sayac, F
+   386					
+   387					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00130	return
+   388						RETURN?	
+     +	00D4- 0008			        return
+   389					
+   390					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00132	sifir:
+   391					
+   392						LABEL?L	_sifir	
+     +					        LALL
+     +	00D5-				_sifir
+   393					
+   394					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00133	gosub sayac1
+   395						GOSUB?L	_sayac1
+     +	00D5- 018A				clrf	PCLATH
+     +	00D6- 20D3			        call    _sayac1
+   396					
+   397					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00134	portb=ekran[46]'255'ekran[
+   398						MOVE?BB	_ekran + 0002Eh, PORTB
+     +	00D7- 0866			        movf    _ekran + 0002Eh, W
+     +	00D8- 0086			        movwf   PORTB
+   399					
+   400					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00135	portc=%11110
+   401						MOVE?CB	01Eh, PORTC
+     +	00D9- 301E			        movlw   low (01Eh)
+     +	00DA- 0087			        movwf   PORTC
+   402					
+   403					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00136	pause p
+   404						PAUSE?W	_p
+     +	00DB- 0875			        movf    (_p) + 1, W
+     +	00DC- 00A3			        movwf   (R1) + 1
+     +	00DD- 0874			        movf    _p, W
+     +	00DE- 018A				clrf	PCLATH
+     +	00DF- 2002			        call    PAUSEL
+   405					
+   406					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00137	portb=ekran[47]
+   407						MOVE?BB	_ekran + 0002Fh, PORTB
+     +	00E0- 0867			        movf    _ekran + 0002Fh, W
+     +	00E1- 0086			        movwf   PORTB
+   408					
+   409					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00138	portc=%11101
+   410						MOVE?CB	01Dh, PORTC
+     +	00E2- 301D			        movlw   low (01Dh)
+     +	00E3- 0087			        movwf   PORTC
+   411					
+   412					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00139	pause p
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 13
+
+   413						PAUSE?W	_p
+     +	00E4- 0875			        movf    (_p) + 1, W
+     +	00E5- 00A3			        movwf   (R1) + 1
+     +	00E6- 0874			        movf    _p, W
+     +	00E7- 018A				clrf	PCLATH
+     +	00E8- 2002			        call    PAUSEL
+   414					
+   415					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00140	portb=ekran[48]
+   416						MOVE?BB	_ekran + 00030h, PORTB
+     +	00E9- 0868			        movf    _ekran + 00030h, W
+     +	00EA- 0086			        movwf   PORTB
+   417					
+   418					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00141	portc=%11011
+   419						MOVE?CB	01Bh, PORTC
+     +	00EB- 301B			        movlw   low (01Bh)
+     +	00EC- 0087			        movwf   PORTC
+   420					
+   421					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00142	pause p
+   422						PAUSE?W	_p
+     +	00ED- 0875			        movf    (_p) + 1, W
+     +	00EE- 00A3			        movwf   (R1) + 1
+     +	00EF- 0874			        movf    _p, W
+     +	00F0- 018A				clrf	PCLATH
+     +	00F1- 2002			        call    PAUSEL
+   423					
+   424					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00143	portb=ekran[49]
+   425						MOVE?BB	_ekran + 00031h, PORTB
+     +	00F2- 0869			        movf    _ekran + 00031h, W
+     +	00F3- 0086			        movwf   PORTB
+   426					
+   427					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00144	portc=%10111
+   428						MOVE?CB	017h, PORTC
+     +	00F4- 3017			        movlw   low (017h)
+     +	00F5- 0087			        movwf   PORTC
+   429					
+   430					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00145	pause p
+   431						PAUSE?W	_p
+     +	00F6- 0875			        movf    (_p) + 1, W
+     +	00F7- 00A3			        movwf   (R1) + 1
+     +	00F8- 0874			        movf    _p, W
+     +	00F9- 018A				clrf	PCLATH
+     +	00FA- 2002			        call    PAUSEL
+   432					
+   433					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00146	portb=ekran[50]
+   434						MOVE?BB	_ekran + 00032h, PORTB
+     +	00FB- 086A			        movf    _ekran + 00032h, W
+     +	00FC- 0086			        movwf   PORTB
+   435					
+   436					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00147	portc=%01111
+   437						MOVE?CB	00Fh, PORTC
+     +	00FD- 300F			        movlw   low (00Fh)
+     +	00FE- 0087			        movwf   PORTC
+   438					
+   439					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00148	pause p
+   440						PAUSE?W	_p
+     +	00FF- 0875			        movf    (_p) + 1, W
+     +	0100- 00A3			        movwf   (R1) + 1
+     +	0101- 0874			        movf    _p, W
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 14
+
+     +	0102- 018A				clrf	PCLATH
+     +	0103- 2002			        call    PAUSEL
+   441					
+   442					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00149	if sayac<50 then goto sifi
+   443						CMPGE?BCL	_sayac, 032h, L00004
+     +	0104- 0064			        clrwdt
+     +	0105- 3032			        movlw   low (032h)
+     +	0106- 0277			        subwf   _sayac, W
+     +	0107- 118A			        bcf     PCLATH, 3
+     +	0108- 120A			        bcf     PCLATH, 4
+     +	0109- 1803			        btfsc   STATUS, C
+     +	010A- 290D			        goto    L00004
+   444						GOTO?L	_sifir
+     +	010B- 018A				clrf	PCLATH
+     +	010C- 28D5			        goto    _sifir
+   445						LABEL?L	L00004	
+     +					        LALL
+     +	010D-				L00004
+   446					
+   447					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00150	sayac=0
+   448						MOVE?CB	000h, _sayac
+     +	010D- 01F7			        clrf    _sayac
+   449					
+   450					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00151	goto basla'return
+   451						GOTO?L	_basla
+     +	010E- 018A				clrf	PCLATH
+     +	010F- 289D			        goto    _basla
+   452					
+   453					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00153	bir:
+   454					
+   455						LABEL?L	_bir	
+     +					        LALL
+     +	0110-				_bir
+   456					
+   457					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00154	gosub sayac1
+   458						GOSUB?L	_sayac1
+     +	0110- 018A				clrf	PCLATH
+     +	0111- 20D3			        call    _sayac1
+   459					
+   460					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00155	portb=ekran[41]'255'ekran[
+   461						MOVE?BB	_ekran + 00029h, PORTB
+     +	0112- 0861			        movf    _ekran + 00029h, W
+     +	0113- 0086			        movwf   PORTB
+   462					
+   463					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00156	portc=%11110
+   464						MOVE?CB	01Eh, PORTC
+     +	0114- 301E			        movlw   low (01Eh)
+     +	0115- 0087			        movwf   PORTC
+   465					
+   466					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00157	pause p
+   467						PAUSE?W	_p
+     +	0116- 0875			        movf    (_p) + 1, W
+     +	0117- 00A3			        movwf   (R1) + 1
+     +	0118- 0874			        movf    _p, W
+     +	0119- 018A				clrf	PCLATH
+     +	011A- 2002			        call    PAUSEL
+   468					
+   469					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00158	portb=ekran[42]
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 15
+
+   470						MOVE?BB	_ekran + 0002Ah, PORTB
+     +	011B- 0862			        movf    _ekran + 0002Ah, W
+     +	011C- 0086			        movwf   PORTB
+   471					
+   472					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00159	portc=%11101
+   473						MOVE?CB	01Dh, PORTC
+     +	011D- 301D			        movlw   low (01Dh)
+     +	011E- 0087			        movwf   PORTC
+   474					
+   475					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00160	pause p
+   476						PAUSE?W	_p
+     +	011F- 0875			        movf    (_p) + 1, W
+     +	0120- 00A3			        movwf   (R1) + 1
+     +	0121- 0874			        movf    _p, W
+     +	0122- 018A				clrf	PCLATH
+     +	0123- 2002			        call    PAUSEL
+   477					
+   478					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00161	portb=ekran[43]
+   479						MOVE?BB	_ekran + 0002Bh, PORTB
+     +	0124- 0863			        movf    _ekran + 0002Bh, W
+     +	0125- 0086			        movwf   PORTB
+   480					
+   481					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00162	portc=%11011
+   482						MOVE?CB	01Bh, PORTC
+     +	0126- 301B			        movlw   low (01Bh)
+     +	0127- 0087			        movwf   PORTC
+   483					
+   484					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00163	pause p
+   485						PAUSE?W	_p
+     +	0128- 0875			        movf    (_p) + 1, W
+     +	0129- 00A3			        movwf   (R1) + 1
+     +	012A- 0874			        movf    _p, W
+     +	012B- 018A				clrf	PCLATH
+     +	012C- 2002			        call    PAUSEL
+   486					
+   487					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00164	portb=ekran[44]
+   488						MOVE?BB	_ekran + 0002Ch, PORTB
+     +	012D- 0864			        movf    _ekran + 0002Ch, W
+     +	012E- 0086			        movwf   PORTB
+   489					
+   490					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00165	portc=%10111
+   491						MOVE?CB	017h, PORTC
+     +	012F- 3017			        movlw   low (017h)
+     +	0130- 0087			        movwf   PORTC
+   492					
+   493					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00166	pause p
+   494						PAUSE?W	_p
+     +	0131- 0875			        movf    (_p) + 1, W
+     +	0132- 00A3			        movwf   (R1) + 1
+     +	0133- 0874			        movf    _p, W
+     +	0134- 018A				clrf	PCLATH
+     +	0135- 2002			        call    PAUSEL
+   495					
+   496					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00167	portb=ekran[45]
+   497						MOVE?BB	_ekran + 0002Dh, PORTB
+     +	0136- 0865			        movf    _ekran + 0002Dh, W
+     +	0137- 0086			        movwf   PORTB
+   498					
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 16
+
+   499					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00168	portc=%01111
+   500						MOVE?CB	00Fh, PORTC
+     +	0138- 300F			        movlw   low (00Fh)
+     +	0139- 0087			        movwf   PORTC
+   501					
+   502					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00169	pause p
+   503						PAUSE?W	_p
+     +	013A- 0875			        movf    (_p) + 1, W
+     +	013B- 00A3			        movwf   (R1) + 1
+     +	013C- 0874			        movf    _p, W
+     +	013D- 018A				clrf	PCLATH
+     +	013E- 2002			        call    PAUSEL
+   504					
+   505					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00170	if sayac<50 then goto bir
+   506						CMPGE?BCL	_sayac, 032h, L00006
+     +	013F- 0064			        clrwdt
+     +	0140- 3032			        movlw   low (032h)
+     +	0141- 0277			        subwf   _sayac, W
+     +	0142- 118A			        bcf     PCLATH, 3
+     +	0143- 120A			        bcf     PCLATH, 4
+     +	0144- 1803			        btfsc   STATUS, C
+     +	0145- 2948			        goto    L00006
+   507						GOTO?L	_bir
+     +	0146- 018A				clrf	PCLATH
+     +	0147- 2910			        goto    _bir
+   508						LABEL?L	L00006	
+     +					        LALL
+     +	0148-				L00006
+   509					
+   510					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00171	sayac=0
+   511						MOVE?CB	000h, _sayac
+     +	0148- 01F7			        clrf    _sayac
+   512					
+   513					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00172	goto basla'return
+   514						GOTO?L	_basla
+     +	0149- 018A				clrf	PCLATH
+     +	014A- 289D			        goto    _basla
+   515					
+   516					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00174	iki:
+   517					
+   518						LABEL?L	_iki	
+     +					        LALL
+     +	014B-				_iki
+   519					
+   520					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00175	gosub sayac1
+   521						GOSUB?L	_sayac1
+     +	014B- 018A				clrf	PCLATH
+     +	014C- 20D3			        call    _sayac1
+   522					
+   523					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00176	portb=ekran[36]'255'ekran[
+   524						MOVE?BB	_ekran + 00024h, PORTB
+     +	014D- 085C			        movf    _ekran + 00024h, W
+     +	014E- 0086			        movwf   PORTB
+   525					
+   526					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00177	portc=%11110
+   527						MOVE?CB	01Eh, PORTC
+     +	014F- 301E			        movlw   low (01Eh)
+     +	0150- 0087			        movwf   PORTC
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 17
+
+   528					
+   529					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00178	pause p
+   530						PAUSE?W	_p
+     +	0151- 0875			        movf    (_p) + 1, W
+     +	0152- 00A3			        movwf   (R1) + 1
+     +	0153- 0874			        movf    _p, W
+     +	0154- 018A				clrf	PCLATH
+     +	0155- 2002			        call    PAUSEL
+   531					
+   532					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00179	portb=ekran[37]
+   533						MOVE?BB	_ekran + 00025h, PORTB
+     +	0156- 085D			        movf    _ekran + 00025h, W
+     +	0157- 0086			        movwf   PORTB
+   534					
+   535					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00180	portc=%11101
+   536						MOVE?CB	01Dh, PORTC
+     +	0158- 301D			        movlw   low (01Dh)
+     +	0159- 0087			        movwf   PORTC
+   537					
+   538					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00181	pause p
+   539						PAUSE?W	_p
+     +	015A- 0875			        movf    (_p) + 1, W
+     +	015B- 00A3			        movwf   (R1) + 1
+     +	015C- 0874			        movf    _p, W
+     +	015D- 018A				clrf	PCLATH
+     +	015E- 2002			        call    PAUSEL
+   540					
+   541					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00182	portb=ekran[38]
+   542						MOVE?BB	_ekran + 00026h, PORTB
+     +	015F- 085E			        movf    _ekran + 00026h, W
+     +	0160- 0086			        movwf   PORTB
+   543					
+   544					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00183	portc=%11011
+   545						MOVE?CB	01Bh, PORTC
+     +	0161- 301B			        movlw   low (01Bh)
+     +	0162- 0087			        movwf   PORTC
+   546					
+   547					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00184	pause p
+   548						PAUSE?W	_p
+     +	0163- 0875			        movf    (_p) + 1, W
+     +	0164- 00A3			        movwf   (R1) + 1
+     +	0165- 0874			        movf    _p, W
+     +	0166- 018A				clrf	PCLATH
+     +	0167- 2002			        call    PAUSEL
+   549					
+   550					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00185	portb=ekran[39]
+   551						MOVE?BB	_ekran + 00027h, PORTB
+     +	0168- 085F			        movf    _ekran + 00027h, W
+     +	0169- 0086			        movwf   PORTB
+   552					
+   553					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00186	portc=%10111
+   554						MOVE?CB	017h, PORTC
+     +	016A- 3017			        movlw   low (017h)
+     +	016B- 0087			        movwf   PORTC
+   555					
+   556					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00187	pause p
+   557						PAUSE?W	_p
+     +	016C- 0875			        movf    (_p) + 1, W
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 18
+
+     +	016D- 00A3			        movwf   (R1) + 1
+     +	016E- 0874			        movf    _p, W
+     +	016F- 018A				clrf	PCLATH
+     +	0170- 2002			        call    PAUSEL
+   558					
+   559					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00188	portb=ekran[40]
+   560						MOVE?BB	_ekran + 00028h, PORTB
+     +	0171- 0860			        movf    _ekran + 00028h, W
+     +	0172- 0086			        movwf   PORTB
+   561					
+   562					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00189	portc=%01111
+   563						MOVE?CB	00Fh, PORTC
+     +	0173- 300F			        movlw   low (00Fh)
+     +	0174- 0087			        movwf   PORTC
+   564					
+   565					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00190	pause p
+   566						PAUSE?W	_p
+     +	0175- 0875			        movf    (_p) + 1, W
+     +	0176- 00A3			        movwf   (R1) + 1
+     +	0177- 0874			        movf    _p, W
+     +	0178- 018A				clrf	PCLATH
+     +	0179- 2002			        call    PAUSEL
+   567					
+   568					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00191	if sayac<50 then goto iki
+   569						CMPGE?BCL	_sayac, 032h, L00008
+     +	017A- 0064			        clrwdt
+     +	017B- 3032			        movlw   low (032h)
+     +	017C- 0277			        subwf   _sayac, W
+     +	017D- 118A			        bcf     PCLATH, 3
+     +	017E- 120A			        bcf     PCLATH, 4
+     +	017F- 1803			        btfsc   STATUS, C
+     +	0180- 2983			        goto    L00008
+   570						GOTO?L	_iki
+     +	0181- 018A				clrf	PCLATH
+     +	0182- 294B			        goto    _iki
+   571						LABEL?L	L00008	
+     +					        LALL
+     +	0183-				L00008
+   572					
+   573					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00192	sayac=0
+   574						MOVE?CB	000h, _sayac
+     +	0183- 01F7			        clrf    _sayac
+   575					
+   576					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00193	goto basla'return
+   577						GOTO?L	_basla
+     +	0184- 018A				clrf	PCLATH
+     +	0185- 289D			        goto    _basla
+   578					
+   579					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00195	uc:
+   580					
+   581						LABEL?L	_uc	
+     +					        LALL
+     +	0186-				_uc
+   582					
+   583					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00196	gosub sayac1
+   584						GOSUB?L	_sayac1
+     +	0186- 018A				clrf	PCLATH
+     +	0187- 20D3			        call    _sayac1
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 19
+
+   585					
+   586					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00197	portb=ekran[31]'255'ekran[
+   587						MOVE?BB	_ekran + 0001Fh, PORTB
+     +	0188- 0857			        movf    _ekran + 0001Fh, W
+     +	0189- 0086			        movwf   PORTB
+   588					
+   589					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00198	portc=%11110
+   590						MOVE?CB	01Eh, PORTC
+     +	018A- 301E			        movlw   low (01Eh)
+     +	018B- 0087			        movwf   PORTC
+   591					
+   592					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00199	pause p
+   593						PAUSE?W	_p
+     +	018C- 0875			        movf    (_p) + 1, W
+     +	018D- 00A3			        movwf   (R1) + 1
+     +	018E- 0874			        movf    _p, W
+     +	018F- 018A				clrf	PCLATH
+     +	0190- 2002			        call    PAUSEL
+   594					
+   595					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00200	portb=ekran[32]
+   596						MOVE?BB	_ekran + 00020h, PORTB
+     +	0191- 0858			        movf    _ekran + 00020h, W
+     +	0192- 0086			        movwf   PORTB
+   597					
+   598					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00201	portc=%11101
+   599						MOVE?CB	01Dh, PORTC
+     +	0193- 301D			        movlw   low (01Dh)
+     +	0194- 0087			        movwf   PORTC
+   600					
+   601					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00202	pause p
+   602						PAUSE?W	_p
+     +	0195- 0875			        movf    (_p) + 1, W
+     +	0196- 00A3			        movwf   (R1) + 1
+     +	0197- 0874			        movf    _p, W
+     +	0198- 018A				clrf	PCLATH
+     +	0199- 2002			        call    PAUSEL
+   603					
+   604					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00203	portb=ekran[33]
+   605						MOVE?BB	_ekran + 00021h, PORTB
+     +	019A- 0859			        movf    _ekran + 00021h, W
+     +	019B- 0086			        movwf   PORTB
+   606					
+   607					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00204	portc=%11011
+   608						MOVE?CB	01Bh, PORTC
+     +	019C- 301B			        movlw   low (01Bh)
+     +	019D- 0087			        movwf   PORTC
+   609					
+   610					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00205	pause p
+   611						PAUSE?W	_p
+     +	019E- 0875			        movf    (_p) + 1, W
+     +	019F- 00A3			        movwf   (R1) + 1
+     +	01A0- 0874			        movf    _p, W
+     +	01A1- 018A				clrf	PCLATH
+     +	01A2- 2002			        call    PAUSEL
+   612					
+   613					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00206	portb=ekran[34]
+   614						MOVE?BB	_ekran + 00022h, PORTB
+     +	01A3- 085A			        movf    _ekran + 00022h, W
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 20
+
+     +	01A4- 0086			        movwf   PORTB
+   615					
+   616					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00207	portc=%10111
+   617						MOVE?CB	017h, PORTC
+     +	01A5- 3017			        movlw   low (017h)
+     +	01A6- 0087			        movwf   PORTC
+   618					
+   619					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00208	pause p
+   620						PAUSE?W	_p
+     +	01A7- 0875			        movf    (_p) + 1, W
+     +	01A8- 00A3			        movwf   (R1) + 1
+     +	01A9- 0874			        movf    _p, W
+     +	01AA- 018A				clrf	PCLATH
+     +	01AB- 2002			        call    PAUSEL
+   621					
+   622					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00209	portb=ekran[35]
+   623						MOVE?BB	_ekran + 00023h, PORTB
+     +	01AC- 085B			        movf    _ekran + 00023h, W
+     +	01AD- 0086			        movwf   PORTB
+   624					
+   625					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00210	portc=%01111
+   626						MOVE?CB	00Fh, PORTC
+     +	01AE- 300F			        movlw   low (00Fh)
+     +	01AF- 0087			        movwf   PORTC
+   627					
+   628					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00211	pause p
+   629						PAUSE?W	_p
+     +	01B0- 0875			        movf    (_p) + 1, W
+     +	01B1- 00A3			        movwf   (R1) + 1
+     +	01B2- 0874			        movf    _p, W
+     +	01B3- 018A				clrf	PCLATH
+     +	01B4- 2002			        call    PAUSEL
+   630					
+   631					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00212	if sayac<50 then goto uc
+   632						CMPGE?BCL	_sayac, 032h, L00010
+     +	01B5- 0064			        clrwdt
+     +	01B6- 3032			        movlw   low (032h)
+     +	01B7- 0277			        subwf   _sayac, W
+     +	01B8- 118A			        bcf     PCLATH, 3
+     +	01B9- 120A			        bcf     PCLATH, 4
+     +	01BA- 1803			        btfsc   STATUS, C
+     +	01BB- 29BE			        goto    L00010
+   633						GOTO?L	_uc
+     +	01BC- 018A				clrf	PCLATH
+     +	01BD- 2986			        goto    _uc
+   634						LABEL?L	L00010	
+     +					        LALL
+     +	01BE-				L00010
+   635					
+   636					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00213	sayac=0
+   637						MOVE?CB	000h, _sayac
+     +	01BE- 01F7			        clrf    _sayac
+   638					
+   639					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00214	goto basla'return
+   640						GOTO?L	_basla
+     +	01BF- 018A				clrf	PCLATH
+     +	01C0- 289D			        goto    _basla
+   641					
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 21
+
+   642					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00216	dort:
+   643					
+   644						LABEL?L	_dort	
+     +					        LALL
+     +	01C1-				_dort
+   645					
+   646					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00217	gosub sayac1
+   647						GOSUB?L	_sayac1
+     +	01C1- 018A				clrf	PCLATH
+     +	01C2- 20D3			        call    _sayac1
+   648					
+   649					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00218	portb=ekran[26]'255'ekran[
+   650						MOVE?BB	_ekran + 0001Ah, PORTB
+     +	01C3- 0852			        movf    _ekran + 0001Ah, W
+     +	01C4- 0086			        movwf   PORTB
+   651					
+   652					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00219	portc=%11110
+   653						MOVE?CB	01Eh, PORTC
+     +	01C5- 301E			        movlw   low (01Eh)
+     +	01C6- 0087			        movwf   PORTC
+   654					
+   655					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00220	pause p
+   656						PAUSE?W	_p
+     +	01C7- 0875			        movf    (_p) + 1, W
+     +	01C8- 00A3			        movwf   (R1) + 1
+     +	01C9- 0874			        movf    _p, W
+     +	01CA- 018A				clrf	PCLATH
+     +	01CB- 2002			        call    PAUSEL
+   657					
+   658					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00221	portb=ekran[27]
+   659						MOVE?BB	_ekran + 0001Bh, PORTB
+     +	01CC- 0853			        movf    _ekran + 0001Bh, W
+     +	01CD- 0086			        movwf   PORTB
+   660					
+   661					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00222	portc=%11101
+   662						MOVE?CB	01Dh, PORTC
+     +	01CE- 301D			        movlw   low (01Dh)
+     +	01CF- 0087			        movwf   PORTC
+   663					
+   664					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00223	pause p
+   665						PAUSE?W	_p
+     +	01D0- 0875			        movf    (_p) + 1, W
+     +	01D1- 00A3			        movwf   (R1) + 1
+     +	01D2- 0874			        movf    _p, W
+     +	01D3- 018A				clrf	PCLATH
+     +	01D4- 2002			        call    PAUSEL
+   666					
+   667					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00224	portb=ekran[28]
+   668						MOVE?BB	_ekran + 0001Ch, PORTB
+     +	01D5- 0854			        movf    _ekran + 0001Ch, W
+     +	01D6- 0086			        movwf   PORTB
+   669					
+   670					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00225	portc=%11011
+   671						MOVE?CB	01Bh, PORTC
+     +	01D7- 301B			        movlw   low (01Bh)
+     +	01D8- 0087			        movwf   PORTC
+   672					
+   673					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00226	pause p
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 22
+
+   674						PAUSE?W	_p
+     +	01D9- 0875			        movf    (_p) + 1, W
+     +	01DA- 00A3			        movwf   (R1) + 1
+     +	01DB- 0874			        movf    _p, W
+     +	01DC- 018A				clrf	PCLATH
+     +	01DD- 2002			        call    PAUSEL
+   675					
+   676					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00227	portb=ekran[29]
+   677						MOVE?BB	_ekran + 0001Dh, PORTB
+     +	01DE- 0855			        movf    _ekran + 0001Dh, W
+     +	01DF- 0086			        movwf   PORTB
+   678					
+   679					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00228	portc=%10111
+   680						MOVE?CB	017h, PORTC
+     +	01E0- 3017			        movlw   low (017h)
+     +	01E1- 0087			        movwf   PORTC
+   681					
+   682					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00229	pause p
+   683						PAUSE?W	_p
+     +	01E2- 0875			        movf    (_p) + 1, W
+     +	01E3- 00A3			        movwf   (R1) + 1
+     +	01E4- 0874			        movf    _p, W
+     +	01E5- 018A				clrf	PCLATH
+     +	01E6- 2002			        call    PAUSEL
+   684					
+   685					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00230	portb=ekran[30]
+   686						MOVE?BB	_ekran + 0001Eh, PORTB
+     +	01E7- 0856			        movf    _ekran + 0001Eh, W
+     +	01E8- 0086			        movwf   PORTB
+   687					
+   688					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00231	portc=%01111
+   689						MOVE?CB	00Fh, PORTC
+     +	01E9- 300F			        movlw   low (00Fh)
+     +	01EA- 0087			        movwf   PORTC
+   690					
+   691					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00232	pause p
+   692						PAUSE?W	_p
+     +	01EB- 0875			        movf    (_p) + 1, W
+     +	01EC- 00A3			        movwf   (R1) + 1
+     +	01ED- 0874			        movf    _p, W
+     +	01EE- 018A				clrf	PCLATH
+     +	01EF- 2002			        call    PAUSEL
+   693					
+   694					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00233	if sayac<50 then goto dort
+   695						CMPGE?BCL	_sayac, 032h, L00012
+     +	01F0- 0064			        clrwdt
+     +	01F1- 3032			        movlw   low (032h)
+     +	01F2- 0277			        subwf   _sayac, W
+     +	01F3- 118A			        bcf     PCLATH, 3
+     +	01F4- 120A			        bcf     PCLATH, 4
+     +	01F5- 1803			        btfsc   STATUS, C
+     +	01F6- 29F9			        goto    L00012
+   696						GOTO?L	_dort
+     +	01F7- 018A				clrf	PCLATH
+     +	01F8- 29C1			        goto    _dort
+   697						LABEL?L	L00012	
+     +					        LALL
+     +	01F9-				L00012
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 23
+
+   698					
+   699					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00234	sayac=0
+   700						MOVE?CB	000h, _sayac
+     +	01F9- 01F7			        clrf    _sayac
+   701					
+   702					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00235	goto basla'return
+   703						GOTO?L	_basla
+     +	01FA- 018A				clrf	PCLATH
+     +	01FB- 289D			        goto    _basla
+   704					
+   705					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00237	bes:
+   706					
+   707						LABEL?L	_bes	
+     +					        LALL
+     +	01FC-				_bes
+   708					
+   709					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00238	gosub sayac1
+   710						GOSUB?L	_sayac1
+     +	01FC- 018A				clrf	PCLATH
+     +	01FD- 20D3			        call    _sayac1
+   711					
+   712					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00239	portb=ekran[21]'255'ekran[
+   713						MOVE?BB	_ekran + 00015h, PORTB
+     +	01FE- 084D			        movf    _ekran + 00015h, W
+     +	01FF- 0086			        movwf   PORTB
+   714					
+   715					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00240	portc=%11110
+   716						MOVE?CB	01Eh, PORTC
+     +	0200- 301E			        movlw   low (01Eh)
+     +	0201- 0087			        movwf   PORTC
+   717					
+   718					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00241	pause p
+   719						PAUSE?W	_p
+     +	0202- 0875			        movf    (_p) + 1, W
+     +	0203- 00A3			        movwf   (R1) + 1
+     +	0204- 0874			        movf    _p, W
+     +	0205- 018A				clrf	PCLATH
+     +	0206- 2002			        call    PAUSEL
+   720					
+   721					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00242	portb=ekran[22]
+   722						MOVE?BB	_ekran + 00016h, PORTB
+     +	0207- 084E			        movf    _ekran + 00016h, W
+     +	0208- 0086			        movwf   PORTB
+   723					
+   724					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00243	portc=%11101
+   725						MOVE?CB	01Dh, PORTC
+     +	0209- 301D			        movlw   low (01Dh)
+     +	020A- 0087			        movwf   PORTC
+   726					
+   727					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00244	pause p
+   728						PAUSE?W	_p
+     +	020B- 0875			        movf    (_p) + 1, W
+     +	020C- 00A3			        movwf   (R1) + 1
+     +	020D- 0874			        movf    _p, W
+     +	020E- 018A				clrf	PCLATH
+     +	020F- 2002			        call    PAUSEL
+   729					
+   730					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00245	portb=ekran[23]
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 24
+
+   731						MOVE?BB	_ekran + 00017h, PORTB
+     +	0210- 084F			        movf    _ekran + 00017h, W
+     +	0211- 0086			        movwf   PORTB
+   732					
+   733					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00246	portc=%11011
+   734						MOVE?CB	01Bh, PORTC
+     +	0212- 301B			        movlw   low (01Bh)
+     +	0213- 0087			        movwf   PORTC
+   735					
+   736					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00247	pause p
+   737						PAUSE?W	_p
+     +	0214- 0875			        movf    (_p) + 1, W
+     +	0215- 00A3			        movwf   (R1) + 1
+     +	0216- 0874			        movf    _p, W
+     +	0217- 018A				clrf	PCLATH
+     +	0218- 2002			        call    PAUSEL
+   738					
+   739					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00248	portb=ekran[24]
+   740						MOVE?BB	_ekran + 00018h, PORTB
+     +	0219- 0850			        movf    _ekran + 00018h, W
+     +	021A- 0086			        movwf   PORTB
+   741					
+   742					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00249	portc=%10111
+   743						MOVE?CB	017h, PORTC
+     +	021B- 3017			        movlw   low (017h)
+     +	021C- 0087			        movwf   PORTC
+   744					
+   745					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00250	pause p
+   746						PAUSE?W	_p
+     +	021D- 0875			        movf    (_p) + 1, W
+     +	021E- 00A3			        movwf   (R1) + 1
+     +	021F- 0874			        movf    _p, W
+     +	0220- 018A				clrf	PCLATH
+     +	0221- 2002			        call    PAUSEL
+   747					
+   748					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00251	portb=ekran[25]
+   749						MOVE?BB	_ekran + 00019h, PORTB
+     +	0222- 0851			        movf    _ekran + 00019h, W
+     +	0223- 0086			        movwf   PORTB
+   750					
+   751					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00252	portc=%01111
+   752						MOVE?CB	00Fh, PORTC
+     +	0224- 300F			        movlw   low (00Fh)
+     +	0225- 0087			        movwf   PORTC
+   753					
+   754					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00253	pause p
+   755						PAUSE?W	_p
+     +	0226- 0875			        movf    (_p) + 1, W
+     +	0227- 00A3			        movwf   (R1) + 1
+     +	0228- 0874			        movf    _p, W
+     +	0229- 018A				clrf	PCLATH
+     +	022A- 2002			        call    PAUSEL
+   756					
+   757					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00254	if sayac<50 then goto bes
+   758						CMPGE?BCL	_sayac, 032h, L00014
+     +	022B- 0064			        clrwdt
+     +	022C- 3032			        movlw   low (032h)
+     +	022D- 0277			        subwf   _sayac, W
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 25
+
+     +	022E- 118A			        bcf     PCLATH, 3
+     +	022F- 120A			        bcf     PCLATH, 4
+     +	0230- 1803			        btfsc   STATUS, C
+     +	0231- 2A34			        goto    L00014
+   759						GOTO?L	_bes
+     +	0232- 018A				clrf	PCLATH
+     +	0233- 29FC			        goto    _bes
+   760						LABEL?L	L00014	
+     +					        LALL
+     +	0234-				L00014
+   761					
+   762					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00255	sayac=0
+   763						MOVE?CB	000h, _sayac
+     +	0234- 01F7			        clrf    _sayac
+   764					
+   765					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00256	goto basla'return
+   766						GOTO?L	_basla
+     +	0235- 018A				clrf	PCLATH
+     +	0236- 289D			        goto    _basla
+   767					
+   768					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00260	alti:
+   769					
+   770						LABEL?L	_alti	
+     +					        LALL
+     +	0237-				_alti
+   771					
+   772					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00261	gosub sayac1
+   773						GOSUB?L	_sayac1
+     +	0237- 018A				clrf	PCLATH
+     +	0238- 20D3			        call    _sayac1
+   774					
+   775					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00262	portb=ekran[16]'255'ekran[
+   776						MOVE?BB	_ekran + 00010h, PORTB
+     +	0239- 0848			        movf    _ekran + 00010h, W
+     +	023A- 0086			        movwf   PORTB
+   777					
+   778					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00263	portc=%11110
+   779						MOVE?CB	01Eh, PORTC
+     +	023B- 301E			        movlw   low (01Eh)
+     +	023C- 0087			        movwf   PORTC
+   780					
+   781					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00264	pause p
+   782						PAUSE?W	_p
+     +	023D- 0875			        movf    (_p) + 1, W
+     +	023E- 00A3			        movwf   (R1) + 1
+     +	023F- 0874			        movf    _p, W
+     +	0240- 018A				clrf	PCLATH
+     +	0241- 2002			        call    PAUSEL
+   783					
+   784					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00265	portb=ekran[17]
+   785						MOVE?BB	_ekran + 00011h, PORTB
+     +	0242- 0849			        movf    _ekran + 00011h, W
+     +	0243- 0086			        movwf   PORTB
+   786					
+   787					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00266	portc=%11101
+   788						MOVE?CB	01Dh, PORTC
+     +	0244- 301D			        movlw   low (01Dh)
+     +	0245- 0087			        movwf   PORTC
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 26
+
+   789					
+   790					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00267	pause p
+   791						PAUSE?W	_p
+     +	0246- 0875			        movf    (_p) + 1, W
+     +	0247- 00A3			        movwf   (R1) + 1
+     +	0248- 0874			        movf    _p, W
+     +	0249- 018A				clrf	PCLATH
+     +	024A- 2002			        call    PAUSEL
+   792					
+   793					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00268	portb=ekran[18]
+   794						MOVE?BB	_ekran + 00012h, PORTB
+     +	024B- 084A			        movf    _ekran + 00012h, W
+     +	024C- 0086			        movwf   PORTB
+   795					
+   796					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00269	portc=%11011
+   797						MOVE?CB	01Bh, PORTC
+     +	024D- 301B			        movlw   low (01Bh)
+     +	024E- 0087			        movwf   PORTC
+   798					
+   799					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00270	pause p
+   800						PAUSE?W	_p
+     +	024F- 0875			        movf    (_p) + 1, W
+     +	0250- 00A3			        movwf   (R1) + 1
+     +	0251- 0874			        movf    _p, W
+     +	0252- 018A				clrf	PCLATH
+     +	0253- 2002			        call    PAUSEL
+   801					
+   802					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00271	portb=ekran[19]
+   803						MOVE?BB	_ekran + 00013h, PORTB
+     +	0254- 084B			        movf    _ekran + 00013h, W
+     +	0255- 0086			        movwf   PORTB
+   804					
+   805					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00272	portc=%10111
+   806						MOVE?CB	017h, PORTC
+     +	0256- 3017			        movlw   low (017h)
+     +	0257- 0087			        movwf   PORTC
+   807					
+   808					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00273	pause p
+   809						PAUSE?W	_p
+     +	0258- 0875			        movf    (_p) + 1, W
+     +	0259- 00A3			        movwf   (R1) + 1
+     +	025A- 0874			        movf    _p, W
+     +	025B- 018A				clrf	PCLATH
+     +	025C- 2002			        call    PAUSEL
+   810					
+   811					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00274	portb=ekran[20]
+   812						MOVE?BB	_ekran + 00014h, PORTB
+     +	025D- 084C			        movf    _ekran + 00014h, W
+     +	025E- 0086			        movwf   PORTB
+   813					
+   814					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00275	portc=%01111
+   815						MOVE?CB	00Fh, PORTC
+     +	025F- 300F			        movlw   low (00Fh)
+     +	0260- 0087			        movwf   PORTC
+   816					
+   817					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00276	pause p
+   818						PAUSE?W	_p
+     +	0261- 0875			        movf    (_p) + 1, W
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 27
+
+     +	0262- 00A3			        movwf   (R1) + 1
+     +	0263- 0874			        movf    _p, W
+     +	0264- 018A				clrf	PCLATH
+     +	0265- 2002			        call    PAUSEL
+   819					
+   820					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00277	if sayac<50 then goto alti
+   821						CMPGE?BCL	_sayac, 032h, L00016
+     +	0266- 0064			        clrwdt
+     +	0267- 3032			        movlw   low (032h)
+     +	0268- 0277			        subwf   _sayac, W
+     +	0269- 118A			        bcf     PCLATH, 3
+     +	026A- 120A			        bcf     PCLATH, 4
+     +	026B- 1803			        btfsc   STATUS, C
+     +	026C- 2A6F			        goto    L00016
+   822						GOTO?L	_alti
+     +	026D- 018A				clrf	PCLATH
+     +	026E- 2A37			        goto    _alti
+   823						LABEL?L	L00016	
+     +					        LALL
+     +	026F-				L00016
+   824					
+   825					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00278	sayac=0
+   826						MOVE?CB	000h, _sayac
+     +	026F- 01F7			        clrf    _sayac
+   827					
+   828					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00279	goto basla'return
+   829						GOTO?L	_basla
+     +	0270- 018A				clrf	PCLATH
+     +	0271- 289D			        goto    _basla
+   830					
+   831					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00281	yedi:
+   832					
+   833						LABEL?L	_yedi	
+     +					        LALL
+     +	0272-				_yedi
+   834					
+   835					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00282	gosub sayac1
+   836						GOSUB?L	_sayac1
+     +	0272- 018A				clrf	PCLATH
+     +	0273- 20D3			        call    _sayac1
+   837					
+   838					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00283	portb=ekran[11]'255'ekran[
+   839						MOVE?BB	_ekran + 0000Bh, PORTB
+     +	0274- 0843			        movf    _ekran + 0000Bh, W
+     +	0275- 0086			        movwf   PORTB
+   840					
+   841					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00284	portc=%11110
+   842						MOVE?CB	01Eh, PORTC
+     +	0276- 301E			        movlw   low (01Eh)
+     +	0277- 0087			        movwf   PORTC
+   843					
+   844					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00285	pause p
+   845						PAUSE?W	_p
+     +	0278- 0875			        movf    (_p) + 1, W
+     +	0279- 00A3			        movwf   (R1) + 1
+     +	027A- 0874			        movf    _p, W
+     +	027B- 018A				clrf	PCLATH
+     +	027C- 2002			        call    PAUSEL
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 28
+
+   846					
+   847					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00286	portb=ekran[12]
+   848						MOVE?BB	_ekran + 0000Ch, PORTB
+     +	027D- 0844			        movf    _ekran + 0000Ch, W
+     +	027E- 0086			        movwf   PORTB
+   849					
+   850					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00287	portc=%11101
+   851						MOVE?CB	01Dh, PORTC
+     +	027F- 301D			        movlw   low (01Dh)
+     +	0280- 0087			        movwf   PORTC
+   852					
+   853					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00288	pause p
+   854						PAUSE?W	_p
+     +	0281- 0875			        movf    (_p) + 1, W
+     +	0282- 00A3			        movwf   (R1) + 1
+     +	0283- 0874			        movf    _p, W
+     +	0284- 018A				clrf	PCLATH
+     +	0285- 2002			        call    PAUSEL
+   855					
+   856					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00289	portb=ekran[13]
+   857						MOVE?BB	_ekran + 0000Dh, PORTB
+     +	0286- 0845			        movf    _ekran + 0000Dh, W
+     +	0287- 0086			        movwf   PORTB
+   858					
+   859					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00290	portc=%11011
+   860						MOVE?CB	01Bh, PORTC
+     +	0288- 301B			        movlw   low (01Bh)
+     +	0289- 0087			        movwf   PORTC
+   861					
+   862					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00291	pause p
+   863						PAUSE?W	_p
+     +	028A- 0875			        movf    (_p) + 1, W
+     +	028B- 00A3			        movwf   (R1) + 1
+     +	028C- 0874			        movf    _p, W
+     +	028D- 018A				clrf	PCLATH
+     +	028E- 2002			        call    PAUSEL
+   864					
+   865					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00292	portb=ekran[14]
+   866						MOVE?BB	_ekran + 0000Eh, PORTB
+     +	028F- 0846			        movf    _ekran + 0000Eh, W
+     +	0290- 0086			        movwf   PORTB
+   867					
+   868					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00293	portc=%10111
+   869						MOVE?CB	017h, PORTC
+     +	0291- 3017			        movlw   low (017h)
+     +	0292- 0087			        movwf   PORTC
+   870					
+   871					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00294	pause p
+   872						PAUSE?W	_p
+     +	0293- 0875			        movf    (_p) + 1, W
+     +	0294- 00A3			        movwf   (R1) + 1
+     +	0295- 0874			        movf    _p, W
+     +	0296- 018A				clrf	PCLATH
+     +	0297- 2002			        call    PAUSEL
+   873					
+   874					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00295	portb=ekran[15]
+   875						MOVE?BB	_ekran + 0000Fh, PORTB
+     +	0298- 0847			        movf    _ekran + 0000Fh, W
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 29
+
+     +	0299- 0086			        movwf   PORTB
+   876					
+   877					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00296	portc=%01111
+   878						MOVE?CB	00Fh, PORTC
+     +	029A- 300F			        movlw   low (00Fh)
+     +	029B- 0087			        movwf   PORTC
+   879					
+   880					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00297	pause p
+   881						PAUSE?W	_p
+     +	029C- 0875			        movf    (_p) + 1, W
+     +	029D- 00A3			        movwf   (R1) + 1
+     +	029E- 0874			        movf    _p, W
+     +	029F- 018A				clrf	PCLATH
+     +	02A0- 2002			        call    PAUSEL
+   882					
+   883					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00298	if sayac<50 then goto yedi
+   884						CMPGE?BCL	_sayac, 032h, L00018
+     +	02A1- 0064			        clrwdt
+     +	02A2- 3032			        movlw   low (032h)
+     +	02A3- 0277			        subwf   _sayac, W
+     +	02A4- 118A			        bcf     PCLATH, 3
+     +	02A5- 120A			        bcf     PCLATH, 4
+     +	02A6- 1803			        btfsc   STATUS, C
+     +	02A7- 2AAA			        goto    L00018
+   885						GOTO?L	_yedi
+     +	02A8- 018A				clrf	PCLATH
+     +	02A9- 2A72			        goto    _yedi
+   886						LABEL?L	L00018	
+     +					        LALL
+     +	02AA-				L00018
+   887					
+   888					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00299	sayac=0
+   889						MOVE?CB	000h, _sayac
+     +	02AA- 01F7			        clrf    _sayac
+   890					
+   891					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00300	goto basla'return
+   892						GOTO?L	_basla
+     +	02AB- 018A				clrf	PCLATH
+     +	02AC- 289D			        goto    _basla
+   893					
+   894					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00303	sekiz:
+   895					
+   896						LABEL?L	_sekiz	
+     +					        LALL
+     +	02AD-				_sekiz
+   897					
+   898					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00304	gosub sayac1
+   899						GOSUB?L	_sayac1
+     +	02AD- 018A				clrf	PCLATH
+     +	02AE- 20D3			        call    _sayac1
+   900					
+   901					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00305	portb=ekran[6]'255'ekran[8
+   902						MOVE?BB	_ekran + 00006h, PORTB
+     +	02AF- 083E			        movf    _ekran + 00006h, W
+     +	02B0- 0086			        movwf   PORTB
+   903					
+   904					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00306	portc=%11110
+   905						MOVE?CB	01Eh, PORTC
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 30
+
+     +	02B1- 301E			        movlw   low (01Eh)
+     +	02B2- 0087			        movwf   PORTC
+   906					
+   907					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00307	pause p
+   908						PAUSE?W	_p
+     +	02B3- 0875			        movf    (_p) + 1, W
+     +	02B4- 00A3			        movwf   (R1) + 1
+     +	02B5- 0874			        movf    _p, W
+     +	02B6- 018A				clrf	PCLATH
+     +	02B7- 2002			        call    PAUSEL
+   909					
+   910					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00308	portb=ekran[7]
+   911						MOVE?BB	_ekran + 00007h, PORTB
+     +	02B8- 083F			        movf    _ekran + 00007h, W
+     +	02B9- 0086			        movwf   PORTB
+   912					
+   913					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00309	portc=%11101
+   914						MOVE?CB	01Dh, PORTC
+     +	02BA- 301D			        movlw   low (01Dh)
+     +	02BB- 0087			        movwf   PORTC
+   915					
+   916					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00310	pause p
+   917						PAUSE?W	_p
+     +	02BC- 0875			        movf    (_p) + 1, W
+     +	02BD- 00A3			        movwf   (R1) + 1
+     +	02BE- 0874			        movf    _p, W
+     +	02BF- 018A				clrf	PCLATH
+     +	02C0- 2002			        call    PAUSEL
+   918					
+   919					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00311	portb=ekran[8]
+   920						MOVE?BB	_ekran + 00008h, PORTB
+     +	02C1- 0840			        movf    _ekran + 00008h, W
+     +	02C2- 0086			        movwf   PORTB
+   921					
+   922					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00312	portc=%11011
+   923						MOVE?CB	01Bh, PORTC
+     +	02C3- 301B			        movlw   low (01Bh)
+     +	02C4- 0087			        movwf   PORTC
+   924					
+   925					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00313	pause p
+   926						PAUSE?W	_p
+     +	02C5- 0875			        movf    (_p) + 1, W
+     +	02C6- 00A3			        movwf   (R1) + 1
+     +	02C7- 0874			        movf    _p, W
+     +	02C8- 018A				clrf	PCLATH
+     +	02C9- 2002			        call    PAUSEL
+   927					
+   928					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00314	portb=ekran[9]
+   929						MOVE?BB	_ekran + 00009h, PORTB
+     +	02CA- 0841			        movf    _ekran + 00009h, W
+     +	02CB- 0086			        movwf   PORTB
+   930					
+   931					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00315	portc=%10111
+   932						MOVE?CB	017h, PORTC
+     +	02CC- 3017			        movlw   low (017h)
+     +	02CD- 0087			        movwf   PORTC
+   933					
+   934					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00316	pause p
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 31
+
+   935						PAUSE?W	_p
+     +	02CE- 0875			        movf    (_p) + 1, W
+     +	02CF- 00A3			        movwf   (R1) + 1
+     +	02D0- 0874			        movf    _p, W
+     +	02D1- 018A				clrf	PCLATH
+     +	02D2- 2002			        call    PAUSEL
+   936					
+   937					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00317	portb=ekran[10]
+   938						MOVE?BB	_ekran + 0000Ah, PORTB
+     +	02D3- 0842			        movf    _ekran + 0000Ah, W
+     +	02D4- 0086			        movwf   PORTB
+   939					
+   940					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00318	portc=%01111
+   941						MOVE?CB	00Fh, PORTC
+     +	02D5- 300F			        movlw   low (00Fh)
+     +	02D6- 0087			        movwf   PORTC
+   942					
+   943					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00319	pause p
+   944						PAUSE?W	_p
+     +	02D7- 0875			        movf    (_p) + 1, W
+     +	02D8- 00A3			        movwf   (R1) + 1
+     +	02D9- 0874			        movf    _p, W
+     +	02DA- 018A				clrf	PCLATH
+     +	02DB- 2002			        call    PAUSEL
+   945					
+   946					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00320	if sayac<50 then goto seki
+   947						CMPGE?BCL	_sayac, 032h, L00020
+     +	02DC- 0064			        clrwdt
+     +	02DD- 3032			        movlw   low (032h)
+     +	02DE- 0277			        subwf   _sayac, W
+     +	02DF- 118A			        bcf     PCLATH, 3
+     +	02E0- 120A			        bcf     PCLATH, 4
+     +	02E1- 1803			        btfsc   STATUS, C
+     +	02E2- 2AE5			        goto    L00020
+   948						GOTO?L	_sekiz
+     +	02E3- 018A				clrf	PCLATH
+     +	02E4- 2AAD			        goto    _sekiz
+   949						LABEL?L	L00020	
+     +					        LALL
+     +	02E5-				L00020
+   950					
+   951					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00321	sayac=0
+   952						MOVE?CB	000h, _sayac
+     +	02E5- 01F7			        clrf    _sayac
+   953					
+   954					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00322	goto basla'return
+   955						GOTO?L	_basla
+     +	02E6- 018A				clrf	PCLATH
+     +	02E7- 289D			        goto    _basla
+   956					
+   957					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00324	dokuz:
+   958					
+   959						LABEL?L	_dokuz	
+     +					        LALL
+     +	02E8-				_dokuz
+   960					
+   961					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00325	gosub sayac1
+   962						GOSUB?L	_sayac1
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 32
+
+     +	02E8- 018A				clrf	PCLATH
+     +	02E9- 20D3			        call    _sayac1
+   963					
+   964					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00326	portb=ekran[1]'255'ekran[8
+   965						MOVE?BB	_ekran + 00001h, PORTB
+     +	02EA- 0839			        movf    _ekran + 00001h, W
+     +	02EB- 0086			        movwf   PORTB
+   966					
+   967					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00327	portc=%11110
+   968						MOVE?CB	01Eh, PORTC
+     +	02EC- 301E			        movlw   low (01Eh)
+     +	02ED- 0087			        movwf   PORTC
+   969					
+   970					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00328	pause p
+   971						PAUSE?W	_p
+     +	02EE- 0875			        movf    (_p) + 1, W
+     +	02EF- 00A3			        movwf   (R1) + 1
+     +	02F0- 0874			        movf    _p, W
+     +	02F1- 018A				clrf	PCLATH
+     +	02F2- 2002			        call    PAUSEL
+   972					
+   973					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00329	portb=ekran[2]
+   974						MOVE?BB	_ekran + 00002h, PORTB
+     +	02F3- 083A			        movf    _ekran + 00002h, W
+     +	02F4- 0086			        movwf   PORTB
+   975					
+   976					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00330	portc=%11101
+   977						MOVE?CB	01Dh, PORTC
+     +	02F5- 301D			        movlw   low (01Dh)
+     +	02F6- 0087			        movwf   PORTC
+   978					
+   979					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00331	pause p
+   980						PAUSE?W	_p
+     +	02F7- 0875			        movf    (_p) + 1, W
+     +	02F8- 00A3			        movwf   (R1) + 1
+     +	02F9- 0874			        movf    _p, W
+     +	02FA- 018A				clrf	PCLATH
+     +	02FB- 2002			        call    PAUSEL
+   981					
+   982					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00332	portb=ekran[3]
+   983						MOVE?BB	_ekran + 00003h, PORTB
+     +	02FC- 083B			        movf    _ekran + 00003h, W
+     +	02FD- 0086			        movwf   PORTB
+   984					
+   985					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00333	portc=%11011
+   986						MOVE?CB	01Bh, PORTC
+     +	02FE- 301B			        movlw   low (01Bh)
+     +	02FF- 0087			        movwf   PORTC
+   987					
+   988					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00334	pause p
+   989						PAUSE?W	_p
+     +	0300- 0875			        movf    (_p) + 1, W
+     +	0301- 00A3			        movwf   (R1) + 1
+     +	0302- 0874			        movf    _p, W
+     +	0303- 018A				clrf	PCLATH
+     +	0304- 2002			        call    PAUSEL
+   990					
+   991					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00335	portb=ekran[4]
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 33
+
+   992						MOVE?BB	_ekran + 00004h, PORTB
+     +	0305- 083C			        movf    _ekran + 00004h, W
+     +	0306- 0086			        movwf   PORTB
+   993					
+   994					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00336	portc=%10111
+   995						MOVE?CB	017h, PORTC
+     +	0307- 3017			        movlw   low (017h)
+     +	0308- 0087			        movwf   PORTC
+   996					
+   997					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00337	pause p
+   998						PAUSE?W	_p
+     +	0309- 0875			        movf    (_p) + 1, W
+     +	030A- 00A3			        movwf   (R1) + 1
+     +	030B- 0874			        movf    _p, W
+     +	030C- 018A				clrf	PCLATH
+     +	030D- 2002			        call    PAUSEL
+   999					
+  1000					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00338	portb=ekran[5]
+  1001						MOVE?BB	_ekran + 00005h, PORTB
+     +	030E- 083D			        movf    _ekran + 00005h, W
+     +	030F- 0086			        movwf   PORTB
+  1002					
+  1003					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00339	portc=%01111
+  1004						MOVE?CB	00Fh, PORTC
+     +	0310- 300F			        movlw   low (00Fh)
+     +	0311- 0087			        movwf   PORTC
+  1005					
+  1006					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00340	pause p
+  1007						PAUSE?W	_p
+     +	0312- 0875			        movf    (_p) + 1, W
+     +	0313- 00A3			        movwf   (R1) + 1
+     +	0314- 0874			        movf    _p, W
+     +	0315- 018A				clrf	PCLATH
+     +	0316- 2002			        call    PAUSEL
+  1008					
+  1009					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00341	if sayac<50 then goto doku
+  1010						CMPGE?BCL	_sayac, 032h, L00022
+     +	0317- 0064			        clrwdt
+     +	0318- 3032			        movlw   low (032h)
+     +	0319- 0277			        subwf   _sayac, W
+     +	031A- 118A			        bcf     PCLATH, 3
+     +	031B- 120A			        bcf     PCLATH, 4
+     +	031C- 1803			        btfsc   STATUS, C
+     +	031D- 2B20			        goto    L00022
+  1011						GOTO?L	_dokuz
+     +	031E- 018A				clrf	PCLATH
+     +	031F- 2AE8			        goto    _dokuz
+  1012						LABEL?L	L00022	
+     +					        LALL
+     +	0320-				L00022
+  1013					
+  1014					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00342	sayac=0
+  1015						MOVE?CB	000h, _sayac
+     +	0320- 01F7			        clrf    _sayac
+  1016					
+  1017					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00343	goto basla'return
+  1018						GOTO?L	_basla
+     +	0321- 018A				clrf	PCLATH
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 34
+
+     +	0322- 289D			        goto    _basla
+  1019					
+  1020					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00365	end
+  1021						END?	
+     +	0323- 0063			@@0013    sleep
+     +	0324- 018A				clrf	PCLATH
+     +	0325- 2B23			        goto    @@0013
+  1022					
+  1023						END

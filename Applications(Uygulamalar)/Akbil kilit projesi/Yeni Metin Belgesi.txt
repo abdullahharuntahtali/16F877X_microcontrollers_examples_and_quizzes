@@ -1,0 +1,13 @@
+one wire yada halk dilinde akbil
+akbil ile calisan 7 adet akbili ogrenebilen kilit projesi
+calisma asamasi icin basit aciklamalar
+microlan data dedigi yer dallas i button'un degdirilecegi soket
+jumper 5 cikis 1 saniyemi ? 8 saniyemi cekik kalsin
+
+ogrenmesi icin
+config enable'ye jumperi takiyoruz
+reset mclr jumperini kisa devre yapip birakiyoruz
+yesil led yanip sonmesi bitene kadar akbilimizi degdiriyoruz  simdi birtane ogrendi kabul edelim
+geriye kaldi 6 adet 7 den fazla dene yapar iseniz pic yeniden programlamak gerekiyor
+cikislardan 7 adet led hangi anahtarin degdigini anlayip kendi cikis ledini yakar ayrica enson led ise gecerli her hangi akbil degdirildiginde isildar
+yazar bu devreyi kit olarak sattigi icin programlanmis entegre ile verilmektedir kendisi ile temasa gecip hex kodu'nu rica ettim beni kirmadi  hex'i asm'ye cevirdim ve programda family code reader tag'ini buldum bir kac degisiklik denedim hepside duzgunce calisti elimde bulunan ds1820 ds1990 vd ds1991'i kusursuzca ogrendi  ds1991.asm 'nin icinde aile kodu ile belirttigim satir... kolay gelsin.....

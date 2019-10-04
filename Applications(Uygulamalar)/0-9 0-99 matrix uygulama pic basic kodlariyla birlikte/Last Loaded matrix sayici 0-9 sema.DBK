@@ -1,0 +1,924 @@
+					
+   392					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00121	portb=ekran[12]
+   393						MOVE?BB	_ekran + 0000Ch, PORTB
+     +	00D4- 0844			        movf    _ekran + 0000Ch, W
+     +	00D5- 0086			        movwf   PORTB
+   394					
+   395					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00122	portc=%11101
+   396						MOVE?CB	01Dh, PORTC
+     +	00D6- 301D			        movlw   low (01Dh)
+     +	00D7- 0087			        movwf   PORTC
+   397					
+   398					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00123	pause p
+   399						PAUSE?W	_p
+     +	00D8- 086B			        movf    (_p) + 1, W
+     +	00D9- 00A3			        movwf   (R1) + 1
+     +	00DA- 086A			        movf    _p, W
+     +	00DB- 018A				clrf	PCLATH
+     +	00DC- 2002			        call    PAUSEL
+   400					
+   401					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00124	portb=ekran[13]
+   402						MOVE?BB	_ekran + 0000Dh, PORTB
+     +	00DD- 0845			        movf    _ekran + 0000Dh, W
+     +	00DE- 0086			        movwf   PORTB
+   403					
+   404					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00125	portc=%11011
+   405						MOVE?CB	01Bh, PORTC
+     +	00DF- 301B			        movlw   low (01Bh)
+     +	00E0- 0087			        movwf   PORTC
+   406					
+   407					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00126	pause p
+   408						PAUSE?W	_p
+     +	00E1- 086B			        movf    (_p) + 1, W
+     +	00E2- 00A3			        movwf   (R1) + 1
+     +	00E3- 086A			        movf    _p, W
+     +	00E4- 018A				clrf	PCLATH
+     +	00E5- 2002			        call    PAUSEL
+   409					
+   410					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00127	portb=ekran[14]
+   411						MOVE?BB	_ekran + 0000Eh, PORTB
+     +	00E6- 0846			        movf    _ekran + 0000Eh, W
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 13
+
+     +	00E7- 0086			        movwf   PORTB
+   412					
+   413					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00128	portc=%10111
+   414						MOVE?CB	017h, PORTC
+     +	00E8- 3017			        movlw   low (017h)
+     +	00E9- 0087			        movwf   PORTC
+   415					
+   416					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00129	pause p
+   417						PAUSE?W	_p
+     +	00EA- 086B			        movf    (_p) + 1, W
+     +	00EB- 00A3			        movwf   (R1) + 1
+     +	00EC- 086A			        movf    _p, W
+     +	00ED- 018A				clrf	PCLATH
+     +	00EE- 2002			        call    PAUSEL
+   418					
+   419					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00130	portb=ekran[15]
+   420						MOVE?BB	_ekran + 0000Fh, PORTB
+     +	00EF- 0847			        movf    _ekran + 0000Fh, W
+     +	00F0- 0086			        movwf   PORTB
+   421					
+   422					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00131	portc=%01111
+   423						MOVE?CB	00Fh, PORTC
+     +	00F1- 300F			        movlw   low (00Fh)
+     +	00F2- 0087			        movwf   PORTC
+   424					
+   425					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00132	pause p
+   426						PAUSE?W	_p
+     +	00F3- 086B			        movf    (_p) + 1, W
+     +	00F4- 00A3			        movwf   (R1) + 1
+     +	00F5- 086A			        movf    _p, W
+     +	00F6- 018A				clrf	PCLATH
+     +	00F7- 2002			        call    PAUSEL
+   427					
+   428					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00133	return
+   429						RETURN?	
+     +	00F8- 0008			        return
+   430					
+   431					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00136	sekiz:
+   432					
+   433						LABEL?L	_sekiz	
+     +					        LALL
+     +	00F9-				_sekiz
+   434					
+   435					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00137	portb=ekran[6]'255'ekran[8
+   436						MOVE?BB	_ekran + 00006h, PORTB
+     +	00F9- 083E			        movf    _ekran + 00006h, W
+     +	00FA- 0086			        movwf   PORTB
+   437					
+   438					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00138	portc=%11110
+   439						MOVE?CB	01Eh, PORTC
+     +	00FB- 301E			        movlw   low (01Eh)
+     +	00FC- 0087			        movwf   PORTC
+   440					
+   441					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00139	pause p
+   442						PAUSE?W	_p
+     +	00FD- 086B			        movf    (_p) + 1, W
+     +	00FE- 00A3			        movwf   (R1) + 1
+     +	00FF- 086A			        movf    _p, W
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 14
+
+     +	0100- 018A				clrf	PCLATH
+     +	0101- 2002			        call    PAUSEL
+   443					
+   444					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00140	portb=ekran[7]
+   445						MOVE?BB	_ekran + 00007h, PORTB
+     +	0102- 083F			        movf    _ekran + 00007h, W
+     +	0103- 0086			        movwf   PORTB
+   446					
+   447					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00141	portc=%11101
+   448						MOVE?CB	01Dh, PORTC
+     +	0104- 301D			        movlw   low (01Dh)
+     +	0105- 0087			        movwf   PORTC
+   449					
+   450					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00142	pause p
+   451						PAUSE?W	_p
+     +	0106- 086B			        movf    (_p) + 1, W
+     +	0107- 00A3			        movwf   (R1) + 1
+     +	0108- 086A			        movf    _p, W
+     +	0109- 018A				clrf	PCLATH
+     +	010A- 2002			        call    PAUSEL
+   452					
+   453					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00143	portb=ekran[8]
+   454						MOVE?BB	_ekran + 00008h, PORTB
+     +	010B- 0840			        movf    _ekran + 00008h, W
+     +	010C- 0086			        movwf   PORTB
+   455					
+   456					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00144	portc=%11011
+   457						MOVE?CB	01Bh, PORTC
+     +	010D- 301B			        movlw   low (01Bh)
+     +	010E- 0087			        movwf   PORTC
+   458					
+   459					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00145	pause p
+   460						PAUSE?W	_p
+     +	010F- 086B			        movf    (_p) + 1, W
+     +	0110- 00A3			        movwf   (R1) + 1
+     +	0111- 086A			        movf    _p, W
+     +	0112- 018A				clrf	PCLATH
+     +	0113- 2002			        call    PAUSEL
+   461					
+   462					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00146	portb=ekran[9]
+   463						MOVE?BB	_ekran + 00009h, PORTB
+     +	0114- 0841			        movf    _ekran + 00009h, W
+     +	0115- 0086			        movwf   PORTB
+   464					
+   465					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00147	portc=%10111
+   466						MOVE?CB	017h, PORTC
+     +	0116- 3017			        movlw   low (017h)
+     +	0117- 0087			        movwf   PORTC
+   467					
+   468					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00148	pause p
+   469						PAUSE?W	_p
+     +	0118- 086B			        movf    (_p) + 1, W
+     +	0119- 00A3			        movwf   (R1) + 1
+     +	011A- 086A			        movf    _p, W
+     +	011B- 018A				clrf	PCLATH
+     +	011C- 2002			        call    PAUSEL
+   470					
+   471					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00149	portb=ekran[10]
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 15
+
+   472						MOVE?BB	_ekran + 0000Ah, PORTB
+     +	011D- 0842			        movf    _ekran + 0000Ah, W
+     +	011E- 0086			        movwf   PORTB
+   473					
+   474					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00150	portc=%01111
+   475						MOVE?CB	00Fh, PORTC
+     +	011F- 300F			        movlw   low (00Fh)
+     +	0120- 0087			        movwf   PORTC
+   476					
+   477					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00151	pause p
+   478						PAUSE?W	_p
+     +	0121- 086B			        movf    (_p) + 1, W
+     +	0122- 00A3			        movwf   (R1) + 1
+     +	0123- 086A			        movf    _p, W
+     +	0124- 018A				clrf	PCLATH
+     +	0125- 2002			        call    PAUSEL
+   479					
+   480					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00152	return
+   481						RETURN?	
+     +	0126- 0008			        return
+   482					
+   483					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00154	dokuz:
+   484					
+   485						LABEL?L	_dokuz	
+     +					        LALL
+     +	0127-				_dokuz
+   486					
+   487					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00155	portb=ekran[1]'255'ekran[8
+   488						MOVE?BB	_ekran + 00001h, PORTB
+     +	0127- 0839			        movf    _ekran + 00001h, W
+     +	0128- 0086			        movwf   PORTB
+   489					
+   490					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00156	portc=%11110
+   491						MOVE?CB	01Eh, PORTC
+     +	0129- 301E			        movlw   low (01Eh)
+     +	012A- 0087			        movwf   PORTC
+   492					
+   493					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00157	pause p
+   494						PAUSE?W	_p
+     +	012B- 086B			        movf    (_p) + 1, W
+     +	012C- 00A3			        movwf   (R1) + 1
+     +	012D- 086A			        movf    _p, W
+     +	012E- 018A				clrf	PCLATH
+     +	012F- 2002			        call    PAUSEL
+   495					
+   496					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00158	portb=ekran[2]
+   497						MOVE?BB	_ekran + 00002h, PORTB
+     +	0130- 083A			        movf    _ekran + 00002h, W
+     +	0131- 0086			        movwf   PORTB
+   498					
+   499					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00159	portc=%11101
+   500						MOVE?CB	01Dh, PORTC
+     +	0132- 301D			        movlw   low (01Dh)
+     +	0133- 0087			        movwf   PORTC
+   501					
+   502					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00160	pause p
+   503						PAUSE?W	_p
+     +	0134- 086B			        movf    (_p) + 1, W
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 16
+
+     +	0135- 00A3			        movwf   (R1) + 1
+     +	0136- 086A			        movf    _p, W
+     +	0137- 018A				clrf	PCLATH
+     +	0138- 2002			        call    PAUSEL
+   504					
+   505					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00161	portb=ekran[3]
+   506						MOVE?BB	_ekran + 00003h, PORTB
+     +	0139- 083B			        movf    _ekran + 00003h, W
+     +	013A- 0086			        movwf   PORTB
+   507					
+   508					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00162	portc=%11011
+   509						MOVE?CB	01Bh, PORTC
+     +	013B- 301B			        movlw   low (01Bh)
+     +	013C- 0087			        movwf   PORTC
+   510					
+   511					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00163	pause p
+   512						PAUSE?W	_p
+     +	013D- 086B			        movf    (_p) + 1, W
+     +	013E- 00A3			        movwf   (R1) + 1
+     +	013F- 086A			        movf    _p, W
+     +	0140- 018A				clrf	PCLATH
+     +	0141- 2002			        call    PAUSEL
+   513					
+   514					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00164	portb=ekran[4]
+   515						MOVE?BB	_ekran + 00004h, PORTB
+     +	0142- 083C			        movf    _ekran + 00004h, W
+     +	0143- 0086			        movwf   PORTB
+   516					
+   517					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00165	portc=%10111
+   518						MOVE?CB	017h, PORTC
+     +	0144- 3017			        movlw   low (017h)
+     +	0145- 0087			        movwf   PORTC
+   519					
+   520					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00166	pause p
+   521						PAUSE?W	_p
+     +	0146- 086B			        movf    (_p) + 1, W
+     +	0147- 00A3			        movwf   (R1) + 1
+     +	0148- 086A			        movf    _p, W
+     +	0149- 018A				clrf	PCLATH
+     +	014A- 2002			        call    PAUSEL
+   522					
+   523					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00167	portb=ekran[5]
+   524						MOVE?BB	_ekran + 00005h, PORTB
+     +	014B- 083D			        movf    _ekran + 00005h, W
+     +	014C- 0086			        movwf   PORTB
+   525					
+   526					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00168	portc=%01111
+   527						MOVE?CB	00Fh, PORTC
+     +	014D- 300F			        movlw   low (00Fh)
+     +	014E- 0087			        movwf   PORTC
+   528					
+   529					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00169	pause p
+   530						PAUSE?W	_p
+     +	014F- 086B			        movf    (_p) + 1, W
+     +	0150- 00A3			        movwf   (R1) + 1
+     +	0151- 086A			        movf    _p, W
+     +	0152- 018A				clrf	PCLATH
+     +	0153- 2002			        call    PAUSEL
+PM Assembler 4.06, Copyright (c) 1995, 2003 microEngineering Labs, Inc.					Page 17
+
+   531					
+   532					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00170	return
+   533						RETURN?	
+     +	0154- 0008			        return
+   534					
+   535					; H:\20DÖNE~1\MATRIX~1\MATRIX~4.PBP	00191	end
+   536						END?	
+     +	0155- 0063			@@0001    sleep
+     +	0156- 018A				clrf	PCLATH
+     +	0157- 2955			        goto    @@0001
+   537					
+   538						END
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                ´ð9W„áóú2Ÿ/XÚPü‘˜Ö2Gî'±$qX¡•èšu¾AhÂhÈhÁše#LOi­(Ï¾Æ“Ì[·¨ ÃÌZßNrèÛÀQy–ÕøæzpEa­6œ­([Ñ“Ð¿ûÞ'ˆ¡uÃDrre(¦`)Šª€…PÛgý*HbËí‹¥¥ŸèRÈÙBÔAÝRL!Ë0‡˜ÍF@Û¯ËVà´§ÊîT§»Ð&Û—êm§i(§=–[wÁºj§OjpF›aâ†ÝPöq_„Õ?/÷BYiÆÄ @è¿>tcÅµ4Óm]áH2\û'´x˜ëŒV^¥°1+õ.p²ì*°`ßQÍvé] ¿»ÀÇ:àò_ÉGà[÷Ù‡1':í¶r{j¹Ýi/”SeÉžºÂí,²{ h“SÝ.Ùæp•³†,G¡Ç](9ÊRmååöRÐšçA6N
+Ìgåë1fùdÓÙD<P‹}Q-ª‰«Z­1¡ÃÐ8‡ò…Ð?}ã°ÙÈî˜Môÿžøt6™tr6i=ÉqÔQ'i¿3ù·SI}ÀLÌûÍäèÄL2ùk3™0!“˜á©¬~‰ìýÀL2Ó¦’¢f²žúƒfÒ:ËD6ÂØ–V3qn™J‚F‘¤î3“×Þ5‘c„gÂ›&RÿW3Ùù†‰X6‘lxvüÍL‚%&Òši"sç˜ÈV¿üïfR5×D’›IÙc&†þ«êþÞDò¦ùÍ$õ8ð|Æn&ç¿4“Ý]@¿2“–JÙþ¡gÌ$ï¿`^ƒHF7˜ÉÁ½fÒuÎL67›IÈ¼*Q$]°Î×ˆHüÔL¤8‘lÞFâm´¢½Éð¹¶»Óä.[íqKòQ˜e/´¹+½ö69h²v°j2«æÚ=å°wv2h„šç--°{º Á@†Í*µÛaè,“™2ÄAzØÈ!l¤Åé-O"· Hwã`LNGác)$ý³ÙdÈt·§”Õ2	êF¬[%wÅ²ªÃ°:Ç¾Úì®pÝ@vÀTCÙ öF"C—d¦ÊŽ_”J‚ Ýl•lev³½Ô-²/Êr{Ëí8ÇÐlÖ»Àí•ãHëâi¤~ŽH?úW’®ý/ï93É%Cr\™as¸7âŽ«¦yÎÛ<Q)tŽVAÐ_BEñµò˜m 07}îQ¶“`œ$†ì\,RbÀd#Af)þ”ÀyjÅ%5 ÉrÙƒ÷Þ[QQ1¾4¢´ñ…îñÞÇð|cw¡–éßS¡§âo°À@¥íH;€sd¿‹ñ
+›C?~<‹Gv€K¤[`0¨´=ÁÊÓÝ—ŸEÓ] ²ÉÔ…ÿ‚'º}*Ý~ÿ%Ìçu]{Ù!ÏÛ«ò„Î˜?
+ÌµÎšWB×hœ÷|Æ™-Ã|4"™Ú“™$É‘\q{g,WTêsÅ]˜+Ž/ŒåŠJ–+*;çŠ«ÿ­‡v<8Ò”Lâ‡üÐO+<˜+ÂÉá!§ /<Ã³­«]…’Ç=¿ Úæ®áÑí·ô‡xÌ„¹WÁSOJ¶Éã…6§X@ŒÕf’€öXs«ŽÈF_S6/€Œÿ‰çj¦³æCnŸž`¡Ol´¹ª]è t(Ú”ˆRøš’•æeì—KÏhYÿ­[ òQåça˜$&©j_›Å÷ ëïóC§uÐ)R»••ÁF <¸Ÿ%ðóÚhÿ©˜ªô6j9…6š˜³Q³Œ«³¶ÂÙgØôEdß”¹Ð@Ö^§^ß”™Xª$8ÛjmBõ¨Ôaƒ…Þ½÷úW±d=ãþêFN6s²•“ç9ÙÎÉN^ãd''õœìâd7'{8ÙË‰Ÿ“&NrÒÂI+'G9iã¤ƒ“NNº8¡œôpää<'!NÂœ¾°NŒœ$s’ÂÉHNFsr+'©œ¤qr'éœLàd'“9yˆ“ÌÃ:ûýÌÂ5Î×ÓR6Xò,N±þuÎ[»¸ç|sf½_€±
+áT åC=óLŸZàSó” Tâ-tàÌtÒ*ƒZQZ¯!CAƒJÛ5äÂf@Ð¶R½†|‰Èózä#DÐâR‹†4"‚Æ—:5ä-DÐ¤óò""è’‘rDA½CJÓÕˆ £HiH1"è3Ò\ÉAÝGÊ×"èIR™†Ü‡:•ô¼†üô/i§†\ºš´GC.o½N:¨!§A”Ú4ä"è‹R—†ìGÝR
+iÈ»ˆ ‡JÉ§9R‡:«t«†lBýVJ×5ˆP¶vy‘¶vY„:¶T¤!3A—d¹‘³²†Ü‰H˜YYCn@ƒ@Ú­!êÓ€`<HMré¨†´#‚Q"uiÈ!D0`¤†ü	ŒÉøG^GÃH­!Ï"‚%¥iÈ“ˆ`pI“4ÄÆ™dÑ¥ˆ`ÈIN™ƒFŸT¥! ‚(m×GcRÚ¥!£Áð”Z5$ŒT©GC¾­$S‹µçÄØ»àëHìÎ»„±[oÁØÝ ª¸ÑÂîà]GùRûø"§“Ì‡3D6ÖÌ6Ùm&§»Ü®Ì[«N³>Vìq{]E1,Û¾
+Cd†]¾ª‹	îv—¼ ¶3]»Åæ‘­ŽÇÙ}9‚áâ*ì<Ë²ËGaù5æ^`/†-ç˜é³íåW·ëd‹Š‘Y´>«œUÇl_ápÁñ+‚Å¦ÁV‡Íé\í±¹ÊËl&bT“Ûéöèê\ÞXÝ
+UW±N7n·S¿îY0[¤,º¼¥¹6§×®×•»Ü!këŒ`ÓÝL„h]SoL›§.jzså1>œ=òêùp%p¸ðŽ&ó7a¬UÇÇá„cié ;YW—G–ülšÇ[.ÆÙruufv]-Eß®©K¡Š"va§z;³ÝÔ²2aßAòó#>w^0»ÉëaëÐæ„kW‚(O˜YS‘Ã^Îî°×Æ¡¿ÉëA‡`ÍóPU‘9ÌîBo)´ØÐx…ë}ÐÂ<Iï®:¹¹´“Ï¯Fª£0Uûå¡ê¨Ñ¬äÏðvØ{_Üv¥îØ¶k†ÞÛ#§¨áô™~UÕjëzy>˜&ê^¸»ñˆ¶i.?¢ÁÙÎ7§0”ßðŽ¡îy8¿Òu}ªú*Œòûo¿lýya/›lÚÜØy›kF»Dz`®îÈVNv®Ã¿©ž›Þ5HÉÐRçd§¹;±½ŠJ _´•–;J‹3&²5ÕY&Ù¦O‚²¬÷ù·/®9üd/!©dÁ‹ÛßwX³àÅ=øþSx¥&pŸßwÙâra!•D6d.ágÕÜ…5Í5'1Yp[¿PÐ¯ˆFÁEÛ¡àÌ¼Ý®NÁÖ%t	gýÂòë„•­Fáì!a¹ ¸+…‹Â±fa`k¹Ø$œÙ/4	Å~am’¯9Áw a–·éÑeK÷	èRÇóËÇýBIÿ?ÃðÏÈP»»ýkt‡‡*”¨Â±+ÂÊ|Í~X„Ýú5®[»PÐþ1 »Ã‚íˆPpD¸ø‘’e5	g»„å-Â±–7	Çö	ŒNWå„ÙÞ.\Ì)T6[sæøšê•‹JoÆ™Œ#5ÿÏM%Iz|Fi«n—oË.É¶ÒÉúT_(Û›¢8ÓF*æ´[k®ƒ¿©5IÊ~_SöÒGá‚ƒ~lÍU–«­Mûá,åc¥·ñ«D_óÏ|_u
+o«î_ïkNj¼¬ùVi\¶D“ÆùšZð£‘wdíšÐë¯+ßÖ®iy¯“ç^g·+±ÅBÇÃ‘¥Ú/T‹pÞ ¦¤<c„ª·¡Ï•ƒBÕT§ =}'ô¨ÍêªÍ¡pûw¡1X›ÕQ›Ó©è0Vïñ­	Ùé[ÓCäŠ·m¬·u^uÿK¦g´+bk|À¢du)0^ÒcÎ+bKcgœaÖÞ¡À|b½NÅëy¨ñó¸ø}JNò%Ç¸@É::6«EiUÄóô“°ªšæywÒZ8ìŸþA'Ûº+ƒes_‰É&1Ù
+b²-¼†l®ü°l%Wô²–ë\®zÚ×ŒÓg‰N®¯Ëub &W“kYL.ë5äêÐä
+][®#(×wuµ…Ë´‹Ú C÷²¨ ¹€µ)Æz²Žudê
+6u‹òAã©¸øFˆŒGÁÊa%+9²æ©zñÏ|ûR–š„4þ‡KxªB³ªÏ+ÀXâsû"¦d§%@;xÇU	j=Ó•ÐüjUØ8zÎÈhÏðo0¿WÑŽÏ¸úÞÙäÓC5 šÖŽÏ¸=ý´ð„— ¾«ŸqMLÍÀ…Îœ–^“6á3gZúÉü4ã?ÍÔ§'gê”Ÿhê§¿;õèNšÓŒT†–õÀ*)´˜WPMc%á%Ó|¡º\UUg	Õ[ èkšÄ’ÊÝù›öõÝ•¿éÊÃ„°°¯oç ”ßœqêñ‘ðç2”¹ý‚:ûÍ„D±ñ÷`´LÈxµËRÁ‚4jÁ º’{z†Z›ÿ>lºâ3Žl°Æ_ø†&Ã“Ûîß~6Ù†Ÿƒ¬pDØ`2\»Ã6ì Ð#îÚ=*X¸ó¼[q©êÜ4£P½BÅÕ¦°Õ¢”ëL,v°|˜\»&Èóa‡–krB5bØ7¥Œ¿ÀaÜ¼]c½Ê:vM'/,oL%tÏhXc›r\	à'ÇLå/Lz'	ÂIwA•RIûƒ_Èúÿõ‚JOô«–…¹Ð/ê=ÝûkØ
+ô·`–f±‡4‹g ×‹ÿhÏToOtÌ[8æ/ÇÙ4ÎHð„èsˆÿ'âê(~¡#ê‹ 1ºø¯ZóÁAk†H+¬!Ã+¶0Ÿc6;€\¨‰œ\Î¦Û`ñ!V	Ñ_ßÆâU¤lÀù€6«/Ç×ˆMíbSÛý-}³ÉÉ¥	/s°#«óãÄVÀ;ìÜéE»ègÎ^w?s\6‡ášÝ1vbýWÞÏ½žˆûžqº™|@œIÍjª-øªYìQ³:„êÑªÓó8Ž=ÌôG™þŒÑ=”FöÐ^¥­rÊrôí?ì²ªî zGbü•'ÖŠ!K‰¡®O‹%øíË1`±óGÁbÐ½+_C¥6‹.¦óBšçìp°á‹pxªæòM8¤²­„¢ïÑû0ßV9¥„µúN{â•èb¸tÁj²ÂÊ%%ø¾=ýìžjÄ©¿Åœº™ÇmkÄ·›yÎnÕ»øÎ{4‡sø`Ø¢ i|=¬·FÓ-šëž¿Öè_×õiS-µb%Âï`Æ‘?-¾õÐÅÊ&,‹]–Ú¬å#µV‹« }'}ó£kpÕIõ4¶Ó¼u,Æ&÷]¥>45tŒD5°e6ÞÅéi\Îyw1©öF©zÐr· ‹©ñoýªò!ìµ ¢|ÓEs",3="Millivolts",4="Microvolts"}
+{LOAD="Load Resistance",FLOAT,PNZ}
+{TC="Time Constant",FLOAT,PNZ}
+{*INDEX}
+{*COMPONENT}
+{LOAD=100M}
+{MODDLL=READOUT}
+{MODFILE=ACVMETER}
+{STATE=2}
+{TC=100ms}
+ $ICOUNTER TIMERa)‚AE$  k"      Ü  ;      @   8   "    Àž  €    ÈÈª ÈÈª COMPONENT     @ðÿ    ýÁÿÀ€ 0   4                    $MKRORIGIN          @   8   "    Àž  €        ÈÈª `COMPONENT  Ú
+ Xoòÿ     œ1   <   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT ¨ ƒüÿØp ƒüÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT p- Ðüÿ8Ê Ø¢øÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT p-  ?øÿ   ?øÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT Ô ÐüÿØp Ø¢øÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT 8Ê hÜ÷ÿ g p_ôÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT Øp hÜ÷ÿ  p_ôÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT 8Ê 8üóÿhª 8üóÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT ð` ƒüÿ A ƒüÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT ¸ý Ðüÿ€š Ø¢øÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT ¸ý  ?øÿèÝ  ?øÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT X¤ Ðüÿ A Ø¢øÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT €š hÜ÷ÿH7 p_ôÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT  A hÜ÷ÿèÝ p_ôÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT €š 8üóÿ°z 8üóÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT 81 ƒüÿh ƒüÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT  Î ÐüÿÈj Ø¢øÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT  Î  ?øÿ0®  ?øÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT  t Ðüÿh Ø¢øÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT Èj hÜ÷ÿ p_ôÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT h hÜ÷ÿ0® p_ôÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT Èj 8üóÿøJ 8üóÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT € ƒüÿ°á" ƒüÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT Hž Ðüÿ; Ø¢øÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT Hž  ?øÿx~"  ?øÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT èD# Ðüÿ°á" Ø¢øÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT ; hÜ÷ÿØ× p_ôÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT °á" hÜ÷ÿx~" p_ôÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT ; 8üóÿ@" 8üóÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT ÈÑ$ ƒüÿø±( ƒüÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT n$ ÐüÿX$ Ø¢øÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT n$  ?øÿÀN(  ?øÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT 0) Ðüÿø±( Ø¢øÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT X$ hÜ÷ÿ ¨# p_ôÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT ø±( hÜ÷ÿÀN( p_ôÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT X$ 8üóÿˆë' 8üóÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT ¢* ƒüÿ@‚. ƒüÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT Ø>* Ðüÿ Û) Ø¢øÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT Ø>*  ?øÿ.  ?øÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT xå. Ðüÿ@‚. Ø¢øÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT  Û) hÜ÷ÿhx) p_ôÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT @‚. hÜ÷ÿ. p_ôÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT  Û) 8üóÿÐ»- 8üóÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT Xr0 ƒüÿˆR4 ƒüÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT  0 Ðüÿè«/ Ø¢øÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT  0  ?øÿPï3  ?øÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT Àµ4 ÐüÿˆR4 Ø¢øÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT è«/ hÜ÷ÿ°H/ p_ôÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT ˆR4 hÜ÷ÿPï3 p_ôÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT è«/ 8üóÿŒ3 8üóÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT  B6 ƒüÿÐ": ƒüÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT hß5 Ðüÿ0|5 Ø¢øÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT hß5  ?øÿ˜¿9  ?øÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT †: ÐüÿÐ": Ø¢øÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT 0|5 hÜ÷ÿø5 p_ôÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT Ð": hÜ÷ÿ˜¿9 p_ôÿ<   4    "    Àž  €    ÈÈª ÈÈª xCOMPONENT 0|5 8üóÿ`\9 8üóÿ      p_ôÿ    $PINDEFAULT RST        Ðüÿ    $PINPOSCLK CLK         ?øÿ    $PINDEFAULT CE  CTIMER_0 à        <   4    "    ø  F    ÈÈª ÈÈª xCOMPONENT àŒ ¸/úÿm ¸/úÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT ¨) €ÌùÿpÆ  ˆOöÿ0   4                     $MKRORIGIN          <   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT ¨) PìõÿØ	 Pìõÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT àŒ èþÿ¨) ð’úÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT €3 èþÿHÐ ð’úÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT HÐ €Ìùÿm ˆOöÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT ð  sþÿHÐ  sþÿCTIMER_1 à        <   4    "    ø  F    ÈÈª ÈÈª xCOMPONENT àŒ èþÿ¨) ð’úÿ<   4    "    ø  F    ÈÈª ÈÈª xCOMPONENT ¨) €ÌùÿpÆ  ˆOöÿ<   4    "    ø  F    ÈÈª ÈÈª xCOMPONENT ¨) PìõÿØ	 Pìõÿ<   4    "    ø  F    ÈÈª ÈÈª xCOMPONENT àŒ ¸/úÿm ¸/úÿ<   4    "    ø  F    ÈÈª ÈÈª xCOMPONENT ð  sþÿHÐ  sþÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT €3 èþÿHÐ ð’úÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT HÐ €Ìùÿm ˆOöÿ0   4                     $MKRORIGIN          CTIMER_2 à        <   4    "    ø  F    ÈÈª ÈÈª xCOMPONENT HÐ €Ìùÿm ˆOöÿ<   4    "    ø  F    ÈÈª ÈÈª xCOMPONENT àŒ èþÿ¨) ð’úÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT ¨) €ÌùÿpÆ  ˆOöÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT ¨) PìõÿØ	 Pìõÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT àŒ ¸/úÿm ¸/úÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT ð  sþÿHÐ  sþÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT €3 èþÿHÐ ð’úÿ0   4                     $MKRORIGIN          CTIMER_3 à        <   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT HÐ €Ìùÿm ˆOöÿ<   4    "    ø  F    ÈÈª ÈÈª xCOMPONENT àŒ èþÿ¨) ð’úÿ<   4    "    ø  F    ÈÈª ÈÈª xCOMPONENT ¨) €ÌùÿpÆ  ˆOöÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT ¨) PìõÿØ	 Pìõÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT àŒ ¸/úÿm ¸/úÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT ð  sþÿHÐ  sþÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT €3 èþÿHÐ ð’úÿ0   4                     $MKRORIGIN          CTIMER_4 à        <   4    "    ø  F    ÈÈª ÈÈª xCOMPONENT ¨) €ÌùÿpÆ  ˆOöÿ<   4    "    ø  F    ÈÈª ÈÈª xCOMPONENT ¨) PìõÿØ	 Pìõÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT àŒ ¸/úÿm ¸/úÿ<   4    "    ø  F    ÈÈª ÈÈª xCOMPONENT ð  sþÿHÐ  sþÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT €3 èþÿHÐ ð’úÿ0   4                     $MKRORIGIN          <   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT àŒ èþÿ¨) ð’úÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT HÐ €Ìùÿm ˆOöÿCTIMER_5 à        <   4    "    ø  F    ÈÈª ÈÈª xCOMPONENT ¨) €ÌùÿpÆ  ˆOöÿ<   4    "    ø  F    ÈÈª ÈÈª xCOMPONENT €3 èþÿHÐ ð’úÿ0   4                     $MKRORIGIN          <   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT HÐ €Ìùÿm ˆOöÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT ¨) PìõÿØ	 Pìõÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT àŒ ¸/úÿm ¸/úÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT ð  sþÿHÐ  sþÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT àŒ èþÿ¨) ð’úÿCTIMER_6 à        <   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT ¨) €ÌùÿpÆ  ˆOöÿ<   4    "    ø  F    ÈÈª ÈÈª xCOMPONENT €3 èþÿHÐ ð’úÿ0   4                     $MKRORIGIN          <   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT HÐ €Ìùÿm ˆOöÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT ¨) PìõÿØ	 Pìõÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT àŒ ¸/úÿm ¸/úÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT ð  sþÿHÐ  sþÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT àŒ èþÿ¨) ð’úÿCTIMER_7 à        <   4    "    ø  F    ÈÈª ÈÈª xCOMPONENT ¨) €ÌùÿpÆ  ˆOöÿ0   4                     $MKRORIGIN          <   4    "    ø  F    ÈÈª ÈÈª xCOMPONENT ¨) PìõÿØ	 Pìõÿ<   4    "    ø  F    ÈÈª ÈÈª xCOMPONENT àŒ ¸/úÿm ¸/úÿ<   4    "    ø  F    ÈÈª ÈÈª xCOMPONENT àŒ èþÿ¨) ð’úÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT €3 èþÿHÐ ð’úÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT HÐ €Ìùÿm ˆOöÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT ð  sþÿHÐ  sþÿCTIMER_8 à        <   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT àŒ ¸/úÿm ¸/úÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT ¨) €ÌùÿpÆ  ˆOöÿ0   4                     $MKRORIGIN          <   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT ¨) PìõÿØ	 Pìõÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT àŒ èþÿ¨) ð’úÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT €3 èþÿHÐ ð’úÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT HÐ €Ìùÿm ˆOöÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT ð  sþÿHÐ  sþÿCTIMER_9 à        <   4    "    ø  F    ÈÈª ÈÈª xCOMPONENT ¨) €ÌùÿpÆ  ˆOöÿ0   4                     $MKRORIGIN          <   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT ¨) PìõÿØ	 Pìõÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT àŒ ¸/úÿm ¸/úÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT àŒ èþÿ¨) ð’úÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT €3 èþÿHÐ ð’úÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT HÐ €Ìùÿm ˆOöÿ<   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT ð  sþÿHÐ  sþÿCTIMER_10 x         0   4                     $MKRORIGIN          <   4    "    ø  F    ÈÈª ÈÈª xCOMPONENT €3 ‰õÿ€3 ‰õÿCTIMER_11 x         0   4                     $MKRORIGIN          <   4    "    ø  ÿ    ÈÈª ÈÈª xCOMPONENT €3 ‰õÿ€3 ‰õÿÖ  {*DEVICE}
+{ACTIVE=CTIMER,12,DLL}
+{HELP=INSTRUMENTS>POPUP,505}
+{*PROPDEFS}
+{PRIMITIVE="Primitive Type",HIDDEN STRING}
+{MODDLL="VSM Model DLL",HIDDEN STRING}
+{MODE="Operating Mode",KWDLIST,4,0="Time (secs)",1="Time (hms)",2="Frequency",3="Count"}
+{GATEPOL="Count Enable Polarity",KWDLIST,2,0="High",1="Low"}
+{RSTEDGE="Reset Edge Polarity",KWDLIST,2,0="Low-High",1="High-Low"}
+{*INDEX}
+{*COMPONENT}
+{PRIMITIVE=DIGITAL}
+{MODDLL=CTIMER.DLL}
+{RSTEDGE=0}
+{GATEPOL=0}
+{MODE=0}
+ $IDC AMMETERa)‚Aî	  Ä      s  	      8   0   "    Àž  €    ÈÈª ÈÈª COMPONENT         `À m   e   "    Àž  €    ÈÈª ÈÈª COMPONENT     ƒüÿ   
+ ÿÿ”® À Arial                              Amps 0   4                     $MKRORIGIN          <   4    "    œ1  €    ÈÈª ÈÈª }COMPONENT ¨Âôÿˆ¶ ˆOöÿˆ¶ <   4    "    œ1  €    ÈÈª ÈÈª }COMPONENT ‰õÿø| ‰õÿð <   4    "    œ1  €    ÈÈª ÈÈª }COMPONENT x°	 PS X= PS @   8   "    `O   ÿ    @   @  INDICATOR ð’úÿ9ÿÿ     Ú
+ 0à 0   4                     $MKRORIGIN          n   f   "    `O   €    @   @  {INDICATOR     ¨)     
+ þÿ0à À Default Font                        +88.8     ?øÿ        $PINSHORT +   
+  `À     øø $PINSHORT -  IMETER_C         8   0   "    Àž  €    ÈÈª ÈÈª COMPONENT         `À 0   4                     $MKRORIGIN          <   4    "    œ1  €    ÈÈª ÈÈª }COMPONENT ¨Âôÿˆ¶ ˆOöÿˆ¶ <   4    "    œ1  €    ÈÈª ÈÈª }COMPONENT ‰õÿø| ‰õÿð <   4    "    œ1  €    ÈÈª ÈÈª }COMPONENT x°	 PS X= PS @   8   "    `O   ÿ    @   @  INDICATOR ð’úÿ9ÿÿ     Ú
+ 0à 0   4                     $MKRORIGIN          n   f   "    `O   €    @   @  {INDICATOR     ¨)     
+ þÿ0à À Default Font                        +88.8 IMETER_0 X        8   0   "    Àž  €    ÈÈª ÈÈª COMPONENT         `À 0   4                     $MKRORIGIN          <   4    "    œ1  €    ÈÈª ÈÈª }COMPONENT ¨Âôÿˆ¶ ˆOöÿˆ¶ <   4    "    œ1  €    ÈÈª ÈÈª }COMPONENT ‰õÿø| ‰õÿð <   4    "    œ1  €    ÈÈª ÈÈª }COMPONENT x°	 PS X= PS 0   4                     $MKRORIGIN          IMETER_1 |         @   8   "    `O   ÿ    @   @  INDICATOR m 9ÿÿ    Ú
+ 0à 0   4                    $MKRORIGIN          IMETER_2 ©         m   e   "    Àž  €    ÈÈª ÈÈª COMPONENT     ƒüÿ   
+ ÿÿ”® À Arial                              Amps 0   4                     $MKRORIGIN          IMETER_3 §         k   c   "    Àž  €    ÈÈª ÈÈª COMPONENT     ƒüÿ    
+ ÿÿ”® À Arial                              mA 0   4                    $MKRORIGIN          IMETER_4 §         0   4                    $MKRORIGIN          k   c   "    Àž  €    ÈÈª ÈÈª COMPONENT     ƒüÿ    
+ ÿÿ”® À Arial                              µA &  {*DEVICE}
+{ACTIVE=IMETER,5,DLL}
+{HELP=INSTRUMENTS>POPUP,507}
+{*PROPDEFS}
+{MODDLL="VSM Model DLL",HIDDEN STRING}
+{MODFILE="LISA Model File",HIDDEN STRING}
+{STATE="Display Range",KWDLIST,3,2="Amps",3="Milliamps",4="Microamps"}
+{*INDEX}
+{*COMPONENT}
+{MODDLL=READOUT}
+{MODFILE=DCIMETER}
+{STATE=2}
+ $IDC VOLTMETERa)‚Aò	  –      D        8   0   "    Àž  €    ÈÈª ÈÈª COMPONENT         `À n   f   "    Àž  €    ÈÈª ÈÈª COMPONENT     ƒüÿ   
+ ÿÿ”® À Arial                              Volts <   4    "    œ1  €    ÈÈª ÈÈª }COMPONENT  sþÿèv
+ @æüÿèv
+ <   4    "    œ1  €    ÈÈª ÈÈª }COMPONENT °¬ýÿX= °¬ýÿx°	 <   4    "    œ1  €    ÈÈª ÈÈª }COMPONENT  sþÿ‰õÿ@æüÿ‰õÿ@   8   "    `O   ÿ    @   @  INDICATOR ð’úÿ9ÿÿ     Ú
+ 0à n   f   "    `O   €    @   @  {INDICATOR     ¨)     
+ þÿ0à À Default Font                        +88.8 0   4                     $MKRORIGIN           
+       ?øÿŒ
+ $PINSHORT -   
+      `À tõ $PINSHORT +  VMETER_C Ö        8   0   "    Àž  €    ÈÈª ÈÈª COMPONENT         `À <   4    "    œ1  €    ÈÈª ÈÈª }COMPONENT  sþÿèv
+ @æüÿèv
+ <   4    "    œ1  €    ÈÈª ÈÈª }COMPONENT °¬ýÿX= °¬ýÿx°	 <   4    "    œ1  €    ÈÈª ÈÈª }COMPONENT  sþÿ‰õÿ@æüÿ‰õÿ@   8   "    `O   ÿ    @   @  INDICATOR ð’úÿ9ÿÿ     Ú
+ 0à n   f   "    `O   €    @   @  {INDICATOR     ¨)     
+ þÿ0à À Default Font                        +88.8 0   4                     $MKRORIGIN          VMETER_0 (        8   0   "    Àž  €    ÈÈª ÈÈª COMPONENT         `À <   4    "    œ1  €    ÈÈª ÈÈª }COMPONENT  sþÿèv
+ @æüÿèv
+ <   4    "    œ1  €    ÈÈª ÈÈª }COMPONENT °¬ýÿX= °¬ýÿx°	 <   4    "    œ1  €    ÈÈª ÈÈª }COMPONENT  sþÿ‰õÿ@æüÿ‰õÿ0   4                     $MKRORIGIN          VMETER_1 |         @   8   "    `O   ÿ    @   @  INDICATOR m 9ÿÿ    Ú
+ 0à 0   4                    $MKRORIGIN          VMETER_2 ª         n   f   "    Àž  €    ÈÈª ÈÈª COMPONENT     ƒüÿ   
+ ÿÿ”® À Arial                              Volts 0   4                     $MKRORIGIN          VMETER_3 ×         k   c   "    Àž  €    ÈÈª ÈÈª COMPONENT     ƒüÿ    
+ ÿÿ”® À Arial                              mV 0   4                    $MKRORIGIN          0   4                    $MKRORIGIN          VMETER_4 ×         k   c   "    Àž  €    ÈÈª ÈÈª COMPONENT     ƒüÿ    
+ ÿÿ”® À Arial                              µV 0   4                    $MKRORIGIN          0   4                    $MKRORIGIN          X  {*DEVICE}
+{ACTIVE=VMETER,5,DLL}
+{HELP=INSTRUMENTS>POPUP,507}
+{*PROPDEFS}
+{MODDLL="VSM Model DLL",HIDDEN STRING}
+{MODFILE="LISA Model File",HIDDEN STRING}
+{STATE="Display Range",KWDLIST,3,2="Volts",3="Millivolts",4="Microvolts"}
+{LOAD="Load Resistance",FLOAT,PNZ}
+{*INDEX}
+{*COMPONENT}
+{LOAD=100M}
+{MODDLL=READOUT}
+{MODFILE=DCVMETER}
+{STATE=2}
+ $II2C DEBUGGERa)‚Aµ  z       (        @   8   "    Àž  €    ÈÈª ÈÈª COMPONENT ŸìÿˆOöÿ    àÁ& Q @   8   "    Àž    €  ÿÿÿ ÈÈª bCOMPONENT ¸/úÿ¸/úÿ    èÝ àó l   d   "    Àž    À  ÈÈª ÈÈª {COMPONENT °¬ýÿ(]      ì ¨ À Arial                            F I2C 0   4                     $MKRORIGIN            Ÿìÿ`À     $PINDEFAULT SDA    Ÿìÿ        $PINDEFAULT SCL  7  {*DEVICE}
+{ACTIVE=TERM_I2C,0,DLL}
+{HELP=INSTRUMENTS>POPUP,510}
+{*PROPDEFS}
+{PRIMITIVE="Primitive Type",HIDDEN STRING}
+{MODDLL="VSM Model DLL",HIDDEN STRING}
+{BUSTYPE="Bus type",HIDDEN STRING}
+{I2C_ADDRESS1="Address byte 1",INT,0,255}
+{I2C_ADDRESS2="Address byte 2",INT,0,255}
+{I2C_STOPONEMPTY="Stop on buffer empty",YESNO}
+{SEQUENCE_FILE="Sequence file",ADVANCED FILENAME,FALSE,,Text file/*.txt}
+{AUTOLOAD="Queue stored sequences at startup",ADVANCED YESNO}
+{*INDEX}
+{*COMPONENT}
+{PRIMITIVE=DIGITAL}
+{MODDLL=STERM.DLL}
+{BUSTYPE=I2C}
+{I2C_STOPONEMPTY=0}
+{AUTOLOAD=0}
+ $ILOGIC ANALYSERa)‚A  <  
+     è        @   8   "    Àž  €    ÈÈª ÈÈª COMPONENT @ðÿ >Ùÿ    Ð": ¢* 0   4                     $MKRORIGIN          @   8   "    8c  €        ÈÈª dCOMPONENT ÈœÿÿPÝÿ    Pˆ' èD# 0   4                     $MKRORIGIN          <   4    "    ì	  €€€  ÈÈª ÈÈª xCOMPONENT     ÐüÿàÁ& Ðüÿ<   4    "    ì	  €€€  ÈÈª ÈÈª xCOMPONENT      ?øÿàÁ&  ?øÿ<   4    "    ì	  €€€  ÈÈª ÈÈª xCOMPONENT     p_ôÿàÁ& p_ôÿ<   4    "    ì	  €€€  ÈÈª ÈÈª xCOMPONENT     @ðÿàÁ& @ðÿ<   4    "    ì	  €€€  ÈÈª ÈÈª xCOMPONENT     ŸìÿàÁ& Ÿìÿ<   4    "    ì	  €€€  ÈÈª ÈÈª xCOMPONENT     à¾èÿàÁ& à¾èÿ<   4    "    ì	  €€€  ÈÈª ÈÈª xCOMPONENT     °ÞäÿàÁ& °Þäÿ<   4    "       €€€  ÈÈª ÈÈª xCOMPONENT 0à     0à PÝÿ<   4    "    ì	  €€€  ÈÈª ÈÈª xCOMPONENT     €þàÿàÁ& €þàÿ<   4    "       €€€  ÈÈª ÈÈª xCOMPONENT `À     `À PÝÿ<   4    "       €€€  ÈÈª ÈÈª xCOMPONENT         PÝÿ<   4    "       €€€  ÈÈª ÈÈª xCOMPONENT À€     À€ PÝÿ<   4    "       €€€  ÈÈª ÈÈª xCOMPONENT ð`     ð` PÝÿ<   4    "       €€€  ÈÈª ÈÈª xCOMPONENT  A      A PÝÿ<   4    "       €€€  ÈÈª ÈÈª xCOMPONENT P!     P! PÝÿ<   4    "       €€€  ÈÈª ÈÈª xCOMPONENT €     € PÝÿ<   4    "       €€€  ÈÈª ÈÈª xCOMPONENT °á"     °á" PÝÿ  @ðÿ        $PINDEFAULT A1    @ðÿÐüÿ    $PINDEFAULT A2    @ðÿ ?øÿ    $PINDEFAULT A3    @ðÿp_ôÿ    $PINDEFAULT A4    @ðÿ@ðÿ    $PINDEFAULT A5    @ðÿŸìÿ    $PINDEFAULT A6    @ðÿà¾èÿ    $PINDEFAULT A7    @ðÿ°Þäÿ    $PINDEFAULT A8     @ðÿ€þàÿ    $PINBUS B1[0..7]     @ðÿPÝÿ    $PINBUS B2[0..7]  Ò   {*DEVICE}
+{ACTIVE=LOGAN,0,DLL}
+{HELP=INSTRUMENTS>POPUP,502}
+{*PROPDEFS}
+{PRIMITIVE="Primitive Type",HIDDEN STRING}
+{MODDLL="VSM Model",READONLY STRING}
+{*INDEX}
+{*COMPONENT}
+{PRIMITIVE=DIGITAL}
+{MODDLL=LOGAN}
+ $IOSCILLOSCOPEa)‚A›  Â       t        @   8   "    Àž  €    ÈÈª ÈÈª wCOMPONENT ŸìÿXoòÿ    °á" P! @   8   "    8c        0  ÈÈª hCOMPONENT ˆOöÿˆOöÿ    Q ð` <   4    "             ÈÈª ÈÈª xCOMPONENT ˆOöÿ`À   `À <   4    "             ÈÈª ÈÈª xCOMPONENT Ðüÿx°	 ÐüÿˆOöÿ<   4    "             ÈÈª ÈÈª xCOMPONENT èþÿx°	 èþÿˆOöÿ<   4    "             ÈÈª ÈÈª xCOMPONENT     x°	     ˆOöÿ<   4    "             ÈÈª ÈÈª xCOMPONENT ð x°	 ð ˆOöÿ<   4    "             ÈÈª ÈÈª xCOMPONENT 0à x°	 0à ˆOöÿ<   4    "             ÈÈª ÈÈª xCOMPONENT HÐ x°	 HÐ ˆOöÿ<   4    "             ÈÈª ÈÈª xCOMPONENT `À x°	 `À ˆOöÿ<   4    "             ÈÈª ÈÈª xCOMPONENT x°	 x°	 x°	 ˆOöÿ<   4    "             ÈÈª ÈÈª xCOMPONENT ˆOöÿHÐ   HÐ <   4    "             ÈÈª ÈÈª xCOMPONENT ˆOöÿ0à   0à <   4    "             ÈÈª ÈÈª xCOMPONENT ˆOöÿð   ð <   4    "             ÈÈª ÈÈª xCOMPONENT ˆOöÿ          <   4    "             ÈÈª ÈÈª xCOMPONENT ˆOöÿèþÿ  èþÿ<   4    "             ÈÈª ÈÈª xCOMPONENT ˆOöÿÐüÿ  Ðüÿ<   4    "             ÈÈª ÈÈª xCOMPONENT ˆOöÿ¸/úÿ  ¸/úÿ<   4    "             ÈÈª ÈÈª xCOMPONENT ˆOöÿ ?øÿ   ?øÿ<   4    "             ÈÈª ÈÈª xCOMPONENT ¸/úÿx°	 ¸/úÿˆOöÿ<   4    "             ÈÈª ÈÈª xCOMPONENT  ?øÿx°	  ?øÿˆOöÿL   D   "    pÆ   À   ÈÈª ÈÈª xCOMPONENT x°	 À @M	 ð `À 9ÿÿHÐ 9ÿÿL   D   "    pÆ   À   ÈÈª ÈÈª xCOMPONENT ð À PS ð 0à 9ÿÿHÐ 9ÿÿL   D   "    pÆ   À   ÈÈª ÈÈª xCOMPONENT ð À àŒ hC     ðù èþÿðù L   D   "    pÆ   À   ÈÈª ÈÈª xCOMPONENT ¸/úÿÀ ð’úÿhC Ðüÿðù èþÿðù <   4    "    pÆ   À   ÈÈª ÈÈª xCOMPONENT À²öÿ¸/úÿX= ¸/úÿL   D   "    pÆ   À   ÈÈª ÈÈª xCOMPONENT x°	 À °
+ hC  Ú
+ HÐ X= €3 L   D   "    pÆ   À   ÈÈª ÈÈª xCOMPONENT ¸/úÿÀ €Ìùÿð  ?øÿ9ÿÿÀ²öÿ9ÿÿ@   8   "    8c  €   ÈÈª ÈÈª uCOMPONENT ˆOöÿˆOöÿ    Q ð` 0   4                     $MKRORIGIN            Ÿìÿ`À     $PINDEFAULT A    Ÿìÿ ?øÿ    $PINDEFAULT B  Õ   {*DEVICE}
+{ACTIVE=SCOPE,0,DLL}
+{HELP=INSTRUMENTS>POPUP,501}
+{*PROPDEFS}
+{PRIMITIVE="Primitive Type",HIDDEN STRING}
+{MODDLL="VSM Model",READONLY STRING}
+{*INDEX}
+{*COMPONENT}
+{MODDLL=SCOPE.DLL}
+{PRIMITIVE=ANALOG}
+ $IPATTERN GENERATORa)‚A¤  ½       ¼  S      @   8   "    Àž  €    ÈÈª ÈÈª COMPONENT     ð]Õÿ    0ãA ¢* 0   4                     $MKRORIGIN          @   8   "    Àž  €€€  ¾¾¾ ÈÈª kCOMPONENT Ô  ËÚÿ    àÁ& € @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT Àµ4 Pìõÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT Àµ4  òÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT Àµ4 ð+îÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT Àµ4 ÀKêÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT Àµ4 kæÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT Àµ4 `‹âÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT Àµ4 0«Þÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT Àµ4  ËÚÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT Õ0 Pìõÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT Õ0  òÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT Õ0 ð+îÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT Õ0 ÀKêÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT Õ0 kæÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT Õ0 `‹âÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT Õ0 0«Þÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT Õ0  ËÚÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT `õ, Pìõÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT `õ,  òÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT `õ, ð+îÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT `õ, ÀKêÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT `õ, kæÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT `õ, `‹âÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT `õ, 0«Þÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT `õ,  ËÚÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT 0) Pìõÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT 0)  òÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT 0) ð+îÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT 0) ÀKêÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT 0) kæÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT 0) `‹âÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT 0) 0«Þÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT 0)  ËÚÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT  5% Pìõÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT  5%  òÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT  5% ð+îÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT  5% ÀKêÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT  5% kæÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT  5% `‹âÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT  5% 0«Þÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT  5%  ËÚÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT ÐT! Pìõÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT ÐT!  òÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT ÐT! ð+îÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT ÐT! ÀKêÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT ÐT! kæÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT ÐT! `‹âÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT ÐT! 0«Þÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT ÐT!  ËÚÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT  t Pìõÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT  t  òÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT  t ð+îÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT  t ÀKêÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT  t kæÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT  t `‹âÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT  t 0«Þÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT  t  ËÚÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT p” Pìõÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT p”  òÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT p” ð+îÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT p” ÀKêÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT p” kæÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT p” `‹âÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT p” 0«Þÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT p”  ËÚÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT @´ Pìõÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT @´  òÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT @´ ð+îÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT @´ ÀKêÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT @´ kæÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT @´ `‹âÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT @´ 0«Þÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT @´  ËÚÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT Ô Pìõÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT Ô  òÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT Ô ð+îÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT Ô ÀKêÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT Ô kæÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT Ô `‹âÿ    0à 0à @   8   "    Àž  ÀÀÀ  ÿÿÿ ÈÈª kCOMPONENT Ô 0«Þÿ    0à 0à @   8   "    Àž  ÀÀÀ      ÈÈª kCOMPONENT Ô  ËÚÿ    0à 0à       @ðÿ    $PINDEFAULT OE    0ãA Ðüÿ   $PINBUS B[0..7]    0ãA p_ôÿ   $PINDEFAULT Q0    0ãA @ðÿ   $PINDEFAULT Q1    0ãA Ÿìÿ   $PINDEFAULT Q2    0ãA à¾èÿ   $PINDEFAULT Q3    0ãA °Þäÿ   $PINDEFAULT Q4    0ãA €þàÿ   $PINDEFAULT Q5    0ãA PÝÿ   $PINDEFAULT Q6    0ãA  >Ùÿ   $PINDEFAULT Q7         >Ùÿ    $PINDEFAULT CASCADE        Ðüÿ    $PINDEFAULT CLKIN         ?øÿ    $PINDEFAULT HOLD        p_ôÿ    $PINDEFAULT TRIG        PÝÿ    $PINDEFAULT CLKOUT  ã  {*DEVICE}
+{ACTIVE=PATTGEN,0,DLL}
+{HELP=INSTRUMENTS>POPUP,504}
+{*PROPDEFS}
+{PRIMITIVE="Primitive Type",HIDDEN STRING}
+{MODDATA="",HIDDEN STRING}
+{MODDLL="VSM Model DLL",READONLY STRING}
+{CLOCKRATE="Clock Rate",STRING}
+{TRIGGERRATE="Reset Rate",STRING}
+{CLOCKMODE="Clock Mode",KWDLIST,3,0="Internal",1="External Pos Edge",2="External Neg Edge"}
+{TRIGGERMODE="Reset Mode",KWDLIST,5,0="Internal",1="Async External Pos Edge",2="Sync External Pos Edge",3="Async External Neg Edge",4="Sync External Neg Edge"}
+{PERIODSEL="Period Selected",HIDDEN INT}
+{CLOCKOUTSEL="Clockout Enabled in Internal Mode",YESNO}
+{OUTPUTMODE="Output Configuration",KWDLIST,3,0="Output to Both Pins and Bus",1="Output to Pins Only",2="Output to Bus Only"}
+{PROGRAM="Pattern Generator Script",FILENAME,FALSE,,Pattern Generator Script/*.PTN}
+{*INDEX}
+{*COMPONENT}
+{PRIMITIVE=DIGITAL}
+{MODDATA=1024,0}
+{MODDLL=PATTGEN.DLL}
+{CLOCKRATE=1.200kHz}
+{TRIGGERRATE=500.0mHz}
+{CLOCKOUTSEL=0}
+{TRIGGERMODE=0}
+{CLOCKMODE=0}
+{OUTPUTMODE=0}
+ $ISIGNAL GENERATORa)‚Aá         ‚        @   8   "    Àž  €    ÈÈª ÈÈª wCOMPONENT @ðÿp_ôÿ    €  A 8   0   "    `O       ÿ   ÈÈª aCOMPONENT  ?øÿø| HÐ L   D   "    Àž  €    ÈÈª ÈÈª COMPONENT ð `À ð n× "É x°	 0à x°	 L   D   "    Àž  €    ÈÈª ÈÈª COMPONENT HÐ `À HÐ n× =÷ x°	 0à x°	 L   D   "    Àž  €    ÈÈª ÈÈª COMPONENT HÐ `À HÐ S© R© HÐ `À HÐ L   D   "    Àž  €    ÈÈª ÈÈª COMPONENT x°	 `À x°	 S© m× HÐ `À HÐ <   4    "    Àž  €    ÈÈª ÈÈª COMPONENT ð pÆ  ð  ¦ <   4    "    Àž  €    ÈÈª ÈÈª COMPONENT ð  ¦ HÐ pÆ  <   4    "    Àž  €    ÈÈª ÈÈª COMPONENT HÐ pÆ  HÐ  ¦ <   4    "    Àž  €    ÈÈª ÈÈª COMPONENT HÐ  ¦ x°	 pÆ  <   4    "    Àž  €    ÈÈª ÈÈª COMPONENT ð @æüÿ0à XÖþÿ<   4    "    Àž  €    ÈÈª ÈÈª COMPONENT 0à XÖþÿ`À (öúÿ<   4    "    Àž  €    ÈÈª ÈÈª COMPONENT `À (öúÿx°	 @æüÿ<   4    "    Àž  €    ÈÈª ÈÈª COMPONENT ð ˆOöÿð ¸/úÿ<   4    "    Àž  €    ÈÈª ÈÈª COMPONENT ð ¸/úÿHÐ ¸/úÿ<   4    "    Àž  €    ÈÈª ÈÈª COMPONENT HÐ ¸/úÿHÐ ˆOöÿ<   4    "    Àž  €    ÈÈª ÈÈª COMPONENT HÐ ˆOöÿx°	 ˆOöÿ<   4    "    Àž  €    ÈÈª ÈÈª COMPONENT x°	 ˆOöÿx°	 ¸/úÿ<   4    "    w  ÀÀÀ  ÈÈª ÈÈª xCOMPONENT  ?øÿ@M	  ?øÿÀ 8   0   "    `O         À ÈÈª `COMPONENT  ™óÿð’úÿëù <   4    "    w  ÀÀÀ  ÈÈª ÈÈª xCOMPONENT ¨Âôÿ˜¼ûÿ ™óÿð’úÿ8   0   "    `O         À ÈÈª `COMPONENT @æüÿð’úÿëù <   4    "    w  ÀÀÀ  ÈÈª ÈÈª xCOMPONENT èþÿ˜¼ûÿ@æüÿð’úÿk   c   "    Àž  €    ÈÈª ÈÈª COMPONENT p_ôÿˆOöÿ    
+   ð À Arial                              AM k   c   "    Àž  €    ÈÈª ÈÈª COMPONENT ÐüÿˆOöÿ    
+   ð À Arial                              FM j   b   "    Àž  €    ÈÈª ÈÈª COMPONENT ¨ `À     
+   À À Arial                              + j   b   "    Àž  €    ÈÈª ÈÈª COMPONENT ¨  ?øÿ    
+   À À Arial                              - 0   4                     $MKRORIGIN          
+  p_ôÿp_ôÿ„  $PINSHORT A  
+  Ðüÿp_ôÿ„  $PINSHORT F  
+  À€ `À øø  $PINSHORT +  
+  À€  ?øÿøø  $PINSHORT -  ×   {*DEVICE}
+{ACTIVE=SIGGEN,0,DLL}
+{HELP=INSTRUMENTS>POPUP,503}
+{*PROPDEFS}
+{PRIMITIVE="Primitive Type",HIDDEN STRING}
+{MODDLL="VSM Model",READONLY STRING}
+{*INDEX}
+{*COMPONENT}
+{MODDLL=SIGGEN.DLL}
+{PRIMITIVE=ANALOG}
+ $ISPI DEBUGGERa)‚A  ¾       (        @   8   "    Àž  €    ÈÈª ÈÈª COMPONENT à¾èÿˆOöÿ    àÁ& Q @   8   "    Àž    €  ÿÿÿ ÈÈª bCOMPONENT ˆOöÿ¸/úÿ    èÝ àó 0   4                     $MKRORIGIN          l   d   "    Àž    À  ÈÈª ÈÈª {COMPONENT àŒ ¨)     
+ ¨ À Arial                              SPI   à¾èÿ`À     $PINDEFAULT DIN    à¾èÿ0à     $PINDEFAULT DOUT    à¾èÿ        $PINDEFAULT SCK    à¾èÿÐüÿ    $PINDEFAULT $SS$  J  {*DEVICE}
+{ACTIVE=TERM_SPI,0,DLL}
+{HELP=INSTRUMENTS>POPUP,509}
+{*PROPDEFS}
+{PRIMITIVE="Primitive Type",HIDDEN STRING}
+{MODDLL="VSM Model DLL",HIDDEN STRING}
+{BUSTYPE="",HIDDEN STRING}
+{SPI_IDLESTATE="SCK Idle state is",HILOW}
+{SPI_SAMPLEEDGE="Sampling edge",KWDLIST,2,Idle to active,Active to idle}
+{SPI_BITORDER="Bit order",KWDLIST,2,MSB first,LSB first}
+{SPI_WORDLENGTH="Word length",INT,1,16}
+{SPI_STOPONEMPTY="Stop on output buffer empty",YESNO}
+{SPI_LOOPBACK="Loopback mode",YESNO}
+{SEQUENCE_FILE="Sequence file",ADVANCED FILENAME,FALSE,,Text file/*.txt}
+{AUTOLOAD="Queue stored sequences at startup",ADVANCED YESNO}
+{*INDEX}
+{*COMPONENT}
+{PRIMITIVE=DIGITAL}
+{MODDLL=STERM.DLL}
+{SPI_IDLESTATE=0}
+{SPI_SAMPLEEDGE=Idle to active}
+{SPI_BITORDER=MSB first}
+{SPI_WORDLENGTH=8}
+{SPI_STOPONEMPTY=0}
+{BUSTYPE=SPI}
+{AUTOLOAD=0}
+{SPI_LOOPBACK=0}
+ $IVIRTUAL TERMINALa)‚A!         ü         @   8   "    Àž  €    ÈÈª ÈÈª wCOMPONENT °Þäÿ@ðÿ    @‚. € @   8   "    8c  €        ÈÈª mCOMPONENT @ðÿp_ôÿ    €  A 0   4                     $MKRORIGIN          @   8   "   Àž  €     ÿ  ÈÈª fCOMPONENT Xoòÿ`À     ð ð   °Þäÿ      $PINDEFAULT RXD    °ÞäÿÐüÿ    $PINDEFAULT RTS    °Þäÿ0à     $PINDEFAULT TXD    °Þäÿp_ôÿ    $PINDEFAULT CTS    {*DEVICE}
+{HELP=INSTRUMENTS>POPUP,506}
+{*PROPDEFS}
+{PRIMITIVE="Simulator Primitive",HIDDEN STRING}
+{MODDLL="VSM Model",HIDDEN STRING}
+{BAUDRATE="Baud Rate",KWDEDIT,9,110,300,1200,2400,4800,9600,19200,38400,57600}
+{DATABITS="Data Bits",KWDLIST,2,7,8}
+{PARITY="Parity",KWDLIST,3,NONE,EVEN,ODD}
+{STOPBITS="Stop Bits",KWDLIST,2,1,2}
+{XONXOFF="Send XON/XOFF",YESNO}
+{SIGPOL="RX/TX Polarity",ADVANCED KWDLIST,2,0="Normal",1="Inverted"}
+{CTLPOL="RTS/CTS Polarity",ADVANCED KWDLIST,2,0="Normal",1="Inverted"}
+{*INDEX}
+{*COMPONENT}
+{PRIMITIVE=DIGITAL}
+{MODDLL=VTERM.DLL}
+{BAUDRATE=9600}
+{DATABITS=8}
+{PARITY=NONE}
+{STOPBITS=1}
+{XONXOFF=0}
+{SIGPOL=0}
+{CTLPOL=0}
+ MTX-LED-MPX-7X5B-CA~Ê’?µ  „      T
+  /      @   8   "    Àž  €€   €€  ÈÈª cCOMPONENT     ð]Õÿ    àÁ& ¢* @   8   "    Àž           ÈÈª cCOMPONENT     ð]Õÿ    `À ¢* 0   4                     $MKRORIGIN          @   8   "    Àž           ÈÈª cCOMPONENT `À ð]Õÿ    `À ¢* 0   4         `À         $MKRORIGIN          @   8   "    Àž           ÈÈª cCOMPONENT À€ ð]Õÿ    `À ¢* 0   4         À€         $MKRORIGIN          @   8   "    Àž           ÈÈª cCOMPONENT  A ð]Õÿ    `À ¢* 0   4          A         $MKRORIGIN          @   8   "    Àž           ÈÈª cCOMPONENT € ð]Õÿ    `À ¢* 0   4         €         $MKRORIGIN          8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT 0à  >Ùÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT 0à hßÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT 0à °Þäÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT 0à ø®êÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT 0à @ðÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT 0à ˆOöÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT    >Ùÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT   hßÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT   °Þäÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT   ø®êÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT   @ðÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT   ˆOöÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT   Ðüÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT ð`  >Ùÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT ð` hßÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT ð` °Þäÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT ð` ø®êÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT ð` @ðÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT ð` ˆOöÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT ð` Ðüÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT P!  >Ùÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT P! hßÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT P! °Þäÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT P! ø®êÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT P! @ðÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT P! ˆOöÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT P! Ðüÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT °á"  >Ùÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT °á" hßÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT °á" °Þäÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT °á" ø®êÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT °á" @ðÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT °á" ˆOöÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT °á" Ðüÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT 0à Ðüÿð 0   4                     $MKRORIGIN          
+      Ðüÿ    $PINSHORT A A 
+      ˆOöÿ    $PINSHORT B B 
+      @ðÿ    $PINSHORT C C 
+      ø®êÿ    $PINSHORT D D 
+      °Þäÿ    $PINSHORT E E 
+      hßÿ    $PINSHORT F F 
+       >Ùÿ    $PINSHORT G G 
+  0à ð]Õÿ„  $PINSHORT 1 1 
+    ð]Õÿ„  $PINSHORT 2 2 
+  ð` ð]Õÿ„  $PINSHORT 3 3 
+  P! ð]Õÿ„  $PINSHORT 4 4 
+  °á" ð]Õÿ„  $PINSHORT 5 5 LEDAB_C |         @   8   "    Àž           ÈÈª cCOMPONENT     ð]Õÿ    `À ¢* 0   4                     $MKRORIGIN          LEDAB_0_0 ¤         8   0   "    ì	           ÈÈª `COMPONENT 0à Ðüÿð 0   4                     $MKRORIGIN          0   4                     $MKRORIGIN          LEDAB_0_1 t         8   0   "    ì	    ÿ    ÿ ÈÈª `COMPONENT 0à Ðüÿð 0   4                     $MKRORIGIN          LEDAB_1_0 ¤         8   0   "    ì	           ÈÈª `COMPONENT 0à ˆOöÿð 0   4                     $MKRORIGIN          0   4                     $MKRORIGIN          LEDAB_1_1 t         8   0   "    ì	    ÿ    ÿ ÈÈª `COMPONENT 0à ˆOöÿð 0   4                     $MKRORIGIN          LEDAB_2_0 ¤         8   0   "    ì	           ÈÈª `COMPONENT 0à @ðÿð 0   4                     $MKRORIGIN          0   4                     $MKRORIGIN          LEDAB_2_1 t         8   0   "    ì	    ÿ    ÿ ÈÈª `COMPONENT 0à @ðÿð 0   4                     $MKRORIGIN          LEDAB_3_0 ¤         8   0   "    ì	           ÈÈª `COMPONENT 0à ø®êÿð 0   4                     $MKRORIGIN          0   4                     $MKRORIGIN          LEDAB_3_1 t         8   0   "    ì	    ÿ    ÿ ÈÈª `COMPONENT 0à ø®êÿð 0   4                     $MKRORIGIN          LEDAB_4_0 ¤         8   0   "    ì	           ÈÈª `COMPONENT 0à °Þäÿð 0   4                     $MKRORIGIN          0   4                     $MKRORIGIN          LEDAB_4_1 t         8   0   "    ì	    ÿ    ÿ ÈÈª `COMPONENT 0à °Þäÿð 0   4                     $MKRORIGIN          LEDAB_5_0 ¤         8   0   "    ì	           ÈÈª `COMPONENT 0à hßÿð 0   4                     $MKRORIGIN          0   4                     $MKRORIGIN          LEDAB_5_1 t         8   0   "    ì	    ÿ    ÿ ÈÈª `COMPONENT 0à hßÿð 0   4                     $MKRORIGIN          LEDAB_6_0 ¤         8   0   "    ì	           ÈÈª `COMPONENT 0à  >Ùÿð 0   4                     $MKRORIGIN          0   4                     $MKRORIGIN          LEDAB_6_1 t         8   0   "    ì	    ÿ    ÿ ÈÈª `COMPONENT 0à  >Ùÿð 0   4                     $MKRORIGIN          -  {*DEVICE}
+PREFIX=LEDM
+ACTIVE=LEDAB,7,BITWISE,DLL
+{*PROPDEFS}
+{MODDLL="VSM Model",STRING}
+{PRIMITIVE="Primitive Type",STRING}
+{INVERT="Cathodes",STRING}
+{TTRIGMIN="Minimum Trigger Time",FLOAT,PNZ}
+{PACKAGE="PCB Package",PACKAGE,1,LEDMATRIS5X7}
+{*COMPONENT}
+{PRIMITIVE=DIGITAL}
+{MODDLL=LEDMPX}
+{INVERT=A,B,C,D,E,F,G}
+{TTRIGMIN=1ms}
+
+{PACKAGE=LEDMATRIS5X7}
+*PINOUT LEDMATRIS5X7
+{ELEMENTS=1}
+{PIN "1" = 1}
+{PIN "2" = 2}
+{PIN "3" = 3}
+{PIN "4" = 4}
+{PIN "5" = 5}
+{PIN "A" = A}
+{PIN "B" = B}
+{PIN "C" = C}
+{PIN "D" = D}
+{PIN "E" = E}
+{PIN "F" = F}
+{PIN "G" = G}
+ MTX-LED-MPX-7X5B-CCÞÉ’?±  „      T
+  /      @   8   "    Àž  €€   €€  ÈÈª cCOMPONENT     ð]Õÿ    àÁ& ¢* @   8   "    Àž           ÈÈª cCOMPONENT     ð]Õÿ    `À ¢* 0   4                     $MKRORIGIN          @   8   "    Àž           ÈÈª cCOMPONENT `À ð]Õÿ    `À ¢* 0   4         `À         $MKRORIGIN          @   8   "    Àž           ÈÈª cCOMPONENT À€ ð]Õÿ    `À ¢* 0   4         À€         $MKRORIGIN          @   8   "    Àž           ÈÈª cCOMPONENT  A ð]Õÿ    `À ¢* 0   4          A         $MKRORIGIN          @   8   "    Àž           ÈÈª cCOMPONENT € ð]Õÿ    `À ¢* 0   4         €         $MKRORIGIN          8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT 0à  >Ùÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT 0à hßÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT 0à °Þäÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT 0à ø®êÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT 0à @ðÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT 0à ˆOöÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT    >Ùÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT   hßÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT   °Þäÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT   ø®êÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT   @ðÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT   ˆOöÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT   Ðüÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT ð`  >Ùÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT ð` hßÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT ð` °Þäÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT ð` ø®êÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT ð` @ðÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT ð` ˆOöÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT ð` Ðüÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT P!  >Ùÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT P! hßÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT P! °Þäÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT P! ø®êÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT P! @ðÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT P! ˆOöÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT P! Ðüÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT °á"  >Ùÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT °á" hßÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT °á" °Þäÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT °á" ø®êÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT °á" @ðÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT °á" ˆOöÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT °á" Ðüÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT 0à Ðüÿð 0   4                     $MKRORIGIN          
+      Ðüÿ    $PINSHORT A A 
+      ˆOöÿ    $PINSHORT B B 
+      @ðÿ    $PINSHORT C C 
+      ø®êÿ    $PINSHORT D D 
+      °Þäÿ    $PINSHORT E E 
+      hßÿ    $PINSHORT F F 
+       >Ùÿ    $PINSHORT G G 
+  0à ð]Õÿ„  $PINSHORT 1 1 
+    ð]Õÿ„  $PINSHORT 2 2 
+  ð` ð]Õÿ„  $PINSHORT 3 3 
+  P! ð]Õÿ„  $PINSHORT 4 4 
+  °á" ð]Õÿ„  $PINSHORT 5 5 LEDAB_C |         @   8   "    Àž           ÈÈª cCOMPONENT     ð]Õÿ    `À ¢* 0   4                     $MKRORIGIN          LEDAB_0_0 ¤         8   0   "    ì	           ÈÈª `COMPONENT 0à Ðüÿð 0   4                     $MKRORIGIN          0   4                     $MKRORIGIN          LEDAB_0_1 t         8   0   "    ì	    ÿ    ÿ ÈÈª `COMPONENT 0à Ðüÿð 0   4                     $MKRORIGIN          LEDAB_1_0 ¤         8   0   "    ì	           ÈÈª `COMPONENT 0à ˆOöÿð 0   4                     $MKRORIGIN          0   4                     $MKRORIGIN          LEDAB_1_1 t         8   0   "    ì	    ÿ    ÿ ÈÈª `COMPONENT 0à ˆOöÿð 0   4                     $MKRORIGIN          LEDAB_2_0 ¤         8   0   "    ì	           ÈÈª `COMPONENT 0à @ðÿð 0   4                     $MKRORIGIN          0   4                     $MKRORIGIN          LEDAB_2_1 t         8   0   "    ì	    ÿ    ÿ ÈÈª `COMPONENT 0à @ðÿð 0   4                     $MKRORIGIN          LEDAB_3_0 ¤         8   0   "    ì	           ÈÈª `COMPONENT 0à ø®êÿð 0   4                     $MKRORIGIN          0   4                     $MKRORIGIN          LEDAB_3_1 t         8   0   "    ì	    ÿ    ÿ ÈÈª `COMPONENT 0à ø®êÿð 0   4                     $MKRORIGIN          LEDAB_4_0 ¤         8   0   "    ì	           ÈÈª `COMPONENT 0à °Þäÿð 0   4                     $MKRORIGIN          0   4                     $MKRORIGIN          LEDAB_4_1 t         8   0   "    ì	    ÿ    ÿ ÈÈª `COMPONENT 0à °Þäÿð 0   4                     $MKRORIGIN          LEDAB_5_0 ¤         8   0   "    ì	           ÈÈª `COMPONENT 0à hßÿð 0   4                     $MKRORIGIN          0   4                     $MKRORIGIN          LEDAB_5_1 t         8   0   "    ì	    ÿ    ÿ ÈÈª `COMPONENT 0à hßÿð 0   4                     $MKRORIGIN          LEDAB_6_0 ¤         8   0   "    ì	           ÈÈª `COMPONENT 0à  >Ùÿð 0   4                     $MKRORIGIN          0   4                     $MKRORIGIN          LEDAB_6_1 t         8   0   "    ì	    ÿ    ÿ ÈÈª `COMPONENT 0à  >Ùÿð 0   4                     $MKRORIGIN          )  {*DEVICE}
+PREFIX=LEDM
+ACTIVE=LEDAB,7,BITWISE,DLL
+{*PROPDEFS}
+{MODDLL="VSM Model",STRING}
+{PRIMITIVE="Primitive Type",STRING}
+{INVERT="Cathodes",STRING}
+{TTRIGMIN="Minimum Trigger Time",FLOAT,PNZ}
+{PACKAGE="PCB Package",PACKAGE,1,LEDMATRIS5X7}
+{*COMPONENT}
+{PRIMITIVE=DIGITAL}
+{MODDLL=LEDMPX}
+{INVERT=1,2,3,4,5}
+{TTRIGMIN=1ms}
+
+{PACKAGE=LEDMATRIS5X7}
+*PINOUT LEDMATRIS5X7
+{ELEMENTS=1}
+{PIN "1" = 1}
+{PIN "2" = 2}
+{PIN "3" = 3}
+{PIN "4" = 4}
+{PIN "5" = 5}
+{PIN "A" = A}
+{PIN "B" = B}
+{PIN "C" = C}
+{PIN "D" = D}
+{PIN "E" = E}
+{PIN "F" = F}
+{PIN "G" = G}
+ MTX-LED-MPX-7X5G-CA’Ê’?µ  „      T
+  /      @   8   "    Àž  €€   €€  ÈÈª cCOMPONENT     ð]Õÿ    àÁ& ¢* @   8   "    Àž           ÈÈª cCOMPONENT     ð]Õÿ    `À ¢* 0   4                     $MKRORIGIN          @   8   "    Àž           ÈÈª cCOMPONENT `À ð]Õÿ    `À ¢* 0   4         `À         $MKRORIGIN          @   8   "    Àž           ÈÈª cCOMPONENT À€ ð]Õÿ    `À ¢* 0   4         À€         $MKRORIGIN          @   8   "    Àž           ÈÈª cCOMPONENT  A ð]Õÿ    `À ¢* 0   4          A         $MKRORIGIN          @   8   "    Àž           ÈÈª cCOMPONENT € ð]Õÿ    `À ¢* 0   4         €         $MKRORIGIN          8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT 0à  >Ùÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT 0à hßÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT 0à °Þäÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT 0à ø®êÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT 0à @ðÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT 0à ˆOöÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT 0à Ðüÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT    >Ùÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT   hßÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT   °Þäÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT   ø®êÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT   @ðÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT   ˆOöÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT   Ðüÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT ð`  >Ùÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT ð` hßÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT ð` °Þäÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT ð` ø®êÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT ð` @ðÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT ð` ˆOöÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT ð` Ðüÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT P!  >Ùÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT P! hßÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT P! °Þäÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT P! ø®êÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT P! @ðÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT P! ˆOöÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT P! Ðüÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT °á"  >Ùÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT °á" hßÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT °á" °Þäÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT °á" ø®êÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT °á" @ðÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT °á" ˆOöÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT °á" Ðüÿð 0   4                     $MKRORIGIN          
+      Ðüÿ    $PINSHORT A A 
+      ˆOöÿ    $PINSHORT B B 
+      @ðÿ    $PINSHORT C C 
+      ø®êÿ    $PINSHORT D D 
+      °Þäÿ    $PINSHORT E E 
+      hßÿ    $PINSHORT F F 
+       >Ùÿ    $PINSHORT G G 
+  0à ð]Õÿ„  $PINSHORT 1 1 
+    ð]Õÿ„  $PINSHORT 2 2 
+  ð` ð]Õÿ„  $PINSHORT 3 3 
+  P! ð]Õÿ„  $PINSHORT 4 4 
+  °á" ð]Õÿ„  $PINSHORT 5 5 LEDAG_C |         @   8   "    Àž           ÈÈª cCOMPONENT     ð]Õÿ    `À ¢* 0   4                     $MKRORIGIN          LEDAG_0_0 ¤         8   0   "    ì	           ÈÈª `COMPONENT 0à Ðüÿð 0   4                     $MKRORIGIN          0   4                     $MKRORIGIN          LEDAG_0_1 t         0   4                     $MKRORIGIN          8   0   "    ì	  çS  çS ÈÈª `COMPONENT 0à Ðüÿð LEDAG_1_0 ¤         8   0   "    ì	           ÈÈª `COMPONENT 0à ˆOöÿð 0   4                     $MKRORIGIN          0   4                     $MKRORIGIN          LEDAG_1_1 t         8   0   "    ì	  çS  çS ÈÈª `COMPONENT 0à ˆOöÿð 0   4                     $MKRORIGIN          LEDAG_2_0 ¤         8   0   "    ì	           ÈÈª `COMPONENT 0à @ðÿð 0   4                     $MKRORIGIN          0   4                     $MKRORIGIN          LEDAG_2_1 t         8   0   "    ì	  çS  çS ÈÈª `COMPONENT 0à @ðÿð 0   4                     $MKRORIGIN          LEDAG_3_0 ¤         8   0   "    ì	           ÈÈª `COMPONENT 0à ø®êÿð 0   4                     $MKRORIGIN          0   4                     $MKRORIGIN          LEDAG_3_1 t         8   0   "    ì	  çS  çS ÈÈª `COMPONENT 0à ø®êÿð 0   4                     $MKRORIGIN          LEDAG_4_0 ¤         8   0   "    ì	           ÈÈª `COMPONENT 0à °Þäÿð 0   4                     $MKRORIGIN          0   4                     $MKRORIGIN          LEDAG_4_1 t         8   0   "    ì	  çS  çS ÈÈª `COMPONENT 0à °Þäÿð 0   4                     $MKRORIGIN          LEDAG_5_0 ¤         8   0   "    ì	           ÈÈª `COMPONENT 0à hßÿð 0   4                     $MKRORIGIN          0   4                     $MKRORIGIN          LEDAG_5_1 t         8   0   "    ì	  çS  çS ÈÈª `COMPONENT 0à hßÿð 0   4                     $MKRORIGIN          LEDAG_6_0 ¤         8   0   "    ì	           ÈÈª `COMPONENT 0à  >Ùÿð 0   4                     $MKRORIGIN          0   4                     $MKRORIGIN          LEDAG_6_1 t         8   0   "    ì	  çS  çS ÈÈª `COMPONENT 0à  >Ùÿð 0   4                     $MKRORIGIN          -  {*DEVICE}
+PREFIX=LEDM
+ACTIVE=LEDAG,7,BITWISE,DLL
+{*PROPDEFS}
+{MODDLL="VSM Model",STRING}
+{PRIMITIVE="Primitive Type",STRING}
+{INVERT="Cathodes",STRING}
+{TTRIGMIN="Minimum Trigger Time",FLOAT,PNZ}
+{PACKAGE="PCB Package",PACKAGE,1,LEDMATRIS5X7}
+{*COMPONENT}
+{PRIMITIVE=DIGITAL}
+{MODDLL=LEDMPX}
+{INVERT=A,B,C,D,E,F,G}
+{TTRIGMIN=1ms}
+
+{PACKAGE=LEDMATRIS5X7}
+*PINOUT LEDMATRIS5X7
+{ELEMENTS=1}
+{PIN "1" = 1}
+{PIN "2" = 2}
+{PIN "3" = 3}
+{PIN "4" = 4}
+{PIN "5" = 5}
+{PIN "A" = A}
+{PIN "B" = B}
+{PIN "C" = C}
+{PIN "D" = D}
+{PIN "E" = E}
+{PIN "F" = F}
+{PIN "G" = G}
+ MTX-LED-MPX-7X5Y-CCË’?±  „      T
+  /      @   8   "    Àž  €€   €€  ÈÈª cCOMPONENT     ð]Õÿ    àÁ& ¢* @   8   "    Àž           ÈÈª cCOMPONENT     ð]Õÿ    `À ¢* 0   4                     $MKRORIGIN          @   8   "    Àž           ÈÈª cCOMPONENT `À ð]Õÿ    `À ¢* 0   4         `À         $MKRORIGIN          @   8   "    Àž           ÈÈª cCOMPONENT À€ ð]Õÿ    `À ¢* 0   4         À€         $MKRORIGIN          @   8   "    Àž           ÈÈª cCOMPONENT  A ð]Õÿ    `À ¢* 0   4          A         $MKRORIGIN          @   8   "    Àž           ÈÈª cCOMPONENT € ð]Õÿ    `À ¢* 0   4         €         $MKRORIGIN          8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT 0à  >Ùÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT 0à hßÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT 0à °Þäÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT 0à ø®êÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT 0à @ðÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT 0à ˆOöÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT 0à Ðüÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT    >Ùÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT   hßÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT   °Þäÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT   ø®êÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT   @ðÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT   ˆOöÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT   Ðüÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT ð`  >Ùÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT ð` hßÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT ð` °Þäÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT ð` ø®êÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT ð` @ðÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT ð` ˆOöÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT ð` Ðüÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT P!  >Ùÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT P! hßÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT P! °Þäÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT P! ø®êÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT P! @ðÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT P! ˆOöÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT P! Ðüÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT °á"  >Ùÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT °á" hßÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT °á" °Þäÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT °á" ø®êÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT °á" @ðÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT °á" ˆOöÿð 8   0   "    ì	       ÀÀÀ ÈÈª `COMPONENT °á" Ðüÿð 0   4                     $MKRORIGIN          
+      Ðüÿ    $PINSHORT A A 
+      ˆOöÿ    $PINSHORT B B 
+      @ðÿ    $PINSHORT C C 
+      ø®êÿ    $PINSHORT D D 
+      °Þäÿ    $PINSHORT E E 
+      hßÿ    $PINSHORT F F 
+       >Ùÿ    $PINSHORT G G 
+  0à ð]Õÿ„  $PINSHORT 1 1 
+    ð]Õÿ„  $PINSHORT 2 2 
+  ð` ð]Õÿ„  $PINSHORT 3 3 
+  P! ð]Õÿ„  $PINSHORT 4 4 
+  °á" ð]Õÿ„  $PINSHORT 5 5 LEDAY_C |         @   8   "    Àž           ÈÈª cCOMPONENT     ð]Õÿ    `À ¢* 0   4                     $MKRORIGIN          LEDAY_0_0 ¤         8   0   "    ì	           ÈÈª `COMPONENT 0à Ðüÿð 0   4                     $MKRORIGIN          0   4                     $MKRORIGIN          LEDAY_0_1 t         8   0   "    ì	  ýò+  ýò+ ÈÈª `COMPONENT 0à Ðüÿð 0   4                     $MKRORIGIN          LEDAY_1_0 ¤         8   0   "    ì	           ÈÈª `COMPONENT 0à ˆOöÿð 0   4                     $MKRORIGIN          0   4                     $MKRORIGIN          LEDAY_1_1 t         8   0   "    ì	  ýò+  ýò+ ÈÈª `COMPONENT 0à ˆOöÿð 0   4                     $MKRORIGIN          LEDAY_2_0 ¤         8   0   "    ì	           ÈÈª `COMPONENT 0à @ðÿð 0   4                     $MKRORIGIN          0   4                     $MKRORIGIN          LEDAY_2_1 t         8   0   "    ì	  ýò+  ýò+ ÈÈª `COMPONENT 0à @ðÿð 0   4                     $MKRORIGIN          LEDAY_3_0 ¤         8   0   "    ì	           ÈÈª `COMPONENT 0à ø®êÿð 0   4                     $MKRORIGIN          0   4                     $MKRORIGIN          LEDAY_3_1 t         8   0   "    ì	  ýò+  ýò+ ÈÈª `COMPONENT 0à ø®êÿð 0   4                     $MKRORIGIN          LEDAY_4_0 ¤         8   0   "    ì	           ÈÈª `COMPONENT 0à °Þäÿð 0   4                     $MKRORIGIN          0   4                     $MKRORIGIN          LEDAY_4_1 t         8   0   "    ì	  ýò+  ýò+ ÈÈª `COMPONENT 0à °Þäÿð 0   4                     $MKRORIGIN          LEDAY_5_0 ¤         8   0   "    ì	           ÈÈª `COMPONENT 0à hßÿð 0   4                     $MKRORIGIN          0   4                     $MKRORIGIN          LEDAY_5_1 t         8   0   "    ì	  ýò+  ýò+ ÈÈª `COMPONENT 0à hßÿð 0   4                     $MKRORIGIN          LEDAY_6_0 ¤         8   0   "    ì	           ÈÈª `COMPONENT 0à  >Ùÿð 0   4                     $MKRORIGIN          0   4                     $MKRORIGIN          LEDAY_6_1 t         8   0   "    ì	  ýò+  ýò+ ÈÈª `COMPONENT 0à  >Ùÿð 0   4                     $MKRORIGIN          )  {*DEVICE}
+PREFIX=LEDM
+ACTIVE=LEDAY,7,BITWISE,DLL
+{*PROPDEFS}
+{MODDLL="VSM Model",STRING}
+{PRIMITIVE="Primitive Type",STRING}
+{INVERT="Cathodes",STRING}
+{TTRIGMIN="Minimum Trigger Time",FLOAT,PNZ}
+{PACKAGE="PCB Package",PACKAGE,1,LEDMATRIS5X7}
+{*COMPONENT}
+{PRIMITIVE=DIGITAL}
+{MODDLL=LEDMPX}
+{INVERT=1,2,3,4,5}
+{TTRIGMIN=1ms}
+
+{PACKAGE=LEDMATRIS5X7}
+*PINOUT LEDMATRIS5X7
+{ELEMENTS=1}
+{PIN "1" = 1}
+{PIN "2" = 2}
+{PIN "3" = 3}
+{PIN "4" = 4}
+{PIN "5" = 5}
+{PIN "A" = A}
+{PIN "B" = B}
+{PIN "C" = C}
+{PIN "D" = D}
+{PIN "E" = E}
+{PIN "F" = F}
+{PIN "G" = G}
+ 	PIC16C62B#Éæ;N  §       |         @   8   "    Àž  €    ÈÈª ÈÈª COMPONENT `À Ð¾ÿ    Ð": `ÃE 0   4                     $MKRORIGIN            `À @ðÿ    $PINDEFAULT RA0 2   `À Ÿìÿ    $PINDEFAULT RA1 3   `À à¾èÿ    $PINDEFAULT RA2 4   `À €þàÿ    $PINDEFAULT RA4/T0CKI 6   `À PÝÿ    $PINDEFAULT RA5/$SS$ 7   àÁ& Ð¾ÿ„  $PINDEFAULT VSS 19   `À         $PINDEFAULT OSC1/CLKIN 9   `À Ðüÿ    $PINDEFAULT OSC2/CLKOUT 10   0ãA  >Ùÿ   $PINDEFAULT RC1/T1OSI 12   0ãA ð]Õÿ   $PINDEFAULT RC2/CCP1 13   0ãA À}Ñÿ   $PINDEFAULT RC3/SCK/SCL 14   0ãA °Þäÿ   $PINDEFAULT RB7 28   0ãA à¾èÿ   $PINDEFAULT RB6 27   0ãA Ÿìÿ   $PINDEFAULT RB5 26   0ãA @ðÿ   $PINDEFAULT RB4 25   0ãA p_ôÿ   $PINDEFAULT RB3 24   0ãA  ?øÿ   $PINDEFAULT RB2 23   0ãA Ðüÿ   $PINDEFAULT RB1 22   0ãA        $PINDEFAULT RB0/INT 21   °á" 0à Œ
+  $PINDEFAULT VDD 20   °á" Ð¾ÿ„  $PINDEFAULT VSS 8   0ãA  ýÁÿ   $PINDEFAULT RC7 18   0ãA 0ÝÅÿ   $PINDEFAULT RC6 17   0ãA `½Éÿ   $PINDEFAULT RC5/SDO 16   0ãA Íÿ   $PINDEFAULT RC4/SDI/SDA 15   `À °Þäÿ    $PINDEFAULT RA3 5   0ãA PÝÿ   $PINDEFAULT RC0/T1OSO/T1CKI 11   `À  ?øÿ    $PINDEFAULT $MCLR$/Vpp 1 £  {*DEVICE}
+PREFIX=U
+{HELP=PIC16>POPUP,1}
+{DATA=PIC16C62B-72A.PDF}
+{*PROPDEFS}
+{PACKAGE=PCB Package,PACKAGE,0}
+{PRIMITIVE=Primitive Type,HIDDEN STRING}
+{MODDLL=VSM Model DLL,HIDDEN STRING}
+{MODDATA=Persistent Model Data,HIDDEN STRING}
+{ITFMOD=Interface Model,HIDDEN STRING}
+{PROGRAM=Program File,FILENAME,FALSE,,Intel Hex Files/*.HEX}
+{CLOCK=Processor Clock Frequency,FLOAT,PNZ}
+{CFGWORD=Program Configuration Word,INT,0,16383}
+{DBG_RANDOM_PMEM=Radomize Program Memory?,ADVANCED YESNO}
+{DBG_RANDOM_DMEM=Radomize Data Memory?,ADVANCED YESNO}
+{DBG_DUMP_CFGWORD=Dump Configuration Word?,ADVANCED YESNO}
+{DBG_STARTUP_DELAY=Model PIC Start-up Delays?,ADVANCED YESNO}
+{DBG_WAKEUP_DELAY=Model PIC Wake-up Delays?,ADVANCED YESNO}
+{DBG_STACK=Warn If Stack Under/Over-flows?,ADVANCED YESNO}
+{DBG_UNIMPLEMENTED_MEMORY=Warn If Accessing Unimplemented Memory?,ADVANCED YESNO}
+{DBG_UNIMPLEMENTED_OPCODES=Warn If Executing Illegal Op-codes?,ADVANCED YESNO}
+{DBG_ADDRESSES=Warn If Illegal Addresses Decoded?,ADVANCED YESNO}
+{DBG_I2C_OPERATIONS=Warn If Executing I2C Code?,ADVANCED YESNO}
+{DBG_GENERATE_CLKOUT=Generate Q clock on CLKOUT Pin?,ADVANCED YESNO}
+{WDT_PERIOD=Watchdog Timer Period,ADVANCED FLOAT,PNZ}
+{PORTTDLH=Port Pin Low-High Delay,ADVANCED FLOAT,POZ}
+{PORTTDHL=Port Pin High-Low Delay,ADVANCED FLOAT,POZ}
+{*COMPONENT}
+{MODDLL=PIC16}
+{ITFMOD=PIC}
+{CLOCK=1MHz}
+{CFGWORD=0x3FFF}
+{WDT_PERIOD=18m}
+{PORTTDLH=0}
+{PORTTDHL=0}
+{DBG_GENERATE_CLKOUT=0}
+{DBG_STARTUP_DELAY=0}
+{DBG_WAKEUP_DELAY=0}
+{DBG_RANDOM_PMEM=0}
+{DBG_RANDOM_DMEM=1}
+{DBG_DUMP_CFGWORD=0}
+{DBG_STACK=1}
+{DBG_UNIMPLEMENTED_MEMORY=1}
+{DBG_UNIMPLEMENTED_OPCODES=1}
+{DBG_I2C_OPERATIONS=1}
+{DBG_ADDRESSES=0}
+{PRIMITIVE=DIGITAL,1662}
+{PACKAGE=DIL28}
+ PIC16F84úF:ú         |         @   8   "    Àž  €    ÈÈª ÈÈª COMPONENT `À `½Éÿ    ¢* Ð": 0   4                     $MKRORIGIN             `À         $PINDEFAULT OSC1/CLKIN 16   pb2 à¾èÿ   $PINDEFAULT RB0/INT 6   pb2 °Þäÿ   $PINDEFAULT RB1 7   pb2 €þàÿ   $PINDEFAULT RB2 8   pb2 PÝÿ   $PINDEFAULT RB3 9   pb2  >Ùÿ   $PINDEFAULT RB4 10   pb2 ð]Õÿ   $PINDEFAULT RB5 11   pb2 À}Ñÿ   $PINDEFAULT RB6 12   pb2 Íÿ   $PINDEFAULT RB7 13   pb2        $PINDEFAULT RA0 17   pb2 Ðüÿ   $PINDEFAULT RA1 18   pb2  ?øÿ   $PINDEFAULT RA2 1   pb2 p_ôÿ   $PINDEFAULT RA3 2   pb2 @ðÿ   $PINDEFAULT RA4/TOCKI 3    `À Ðüÿ    $PINDEFAULT OSC2/CLKOUT 15    `À p_ôÿ    $PINDEFAULT $MCLR$ 4    P! `½Éÿ„  $PINDEFAULT VSS 5    P! 0à Œ
+  $PINDEFAULT VDD 14 á  {*DEVICE}
+PREFIX=U
+HELP="PIC1684",1
+{*PROPDEFS}
+{MODDLL="VSM Model",HIDDEN STRING}
+{PRIMITIVE="Primitive Type",HIDDEN STRING}
+{INVERT="INVERT",HIDDEN STRING}
+{PROGRAM="Program File",FILENAME,FALSE,,HEX Files/*.HEX}
+{CLOCK="Clock Frequency",FLOAT,PNZ}
+{PACKAGE=PCB Package,PACKAGE,0}
+{WDTIMER="Watchdog Enabled",ADVANCED YESNO}
+{DBG_BANKSEL="Debug: Illegal Bank Selections",ADVANCED YESNO}
+{DBG_IRP="Debug: IRP Bit Set",ADVANCED YESNO}
+{DBG_MEMORY="Debug: Illegal Memory Accesses",ADVANCED YESNO}
+{DBG_PCLATH="Debug: Illegal PCLATH Bit Settings",ADVANCED YESNO}
+{DBG_RP1="Debug: RP1 Bit Set",ADVANCED YESNO}
+{DBG_STACK="Debug: Stack Underflow/Overflow",ADVANCED YESNO}
+{DBG_TMR0="Debug: Illegal TMR0 behviour",ADVANCED YESNO}
+{ITFMOD="Interface Model",HIDDEN STRING}
+{*COMPONENT}
+{MODDLL=PIC1684.DLL}
+{PRIMITIVE=DIGITAL,1684}
+{INVERT=$MCLR$}
+{CLOCK=1MHz}
+{PACKAGE=DIL18}
+{DBG_BANKSEL=1}
+{DBG_IRP=1}
+{DBG_MEMORY=1}
+{DBG_PCLATH=1}
+{DBG_RP1=1}
+{DBG_STACK=1}
+{DBG_TMR0=1}
+{ITFMOD=PIC}
+{WDTIMER=0}
+ 	PIC16F877#Éæ;X  Ï  (     |         @   8   "    Àž  €    ÈÈª ÈÈª COMPONENT `À  ;›ÿ    Ð": ¥h 0   4                     $MKRORIGIN            `À @ðÿ    $PINDEFAULT RA0/AN0 2   `À Ÿìÿ    $PINDEFAULT RA1/AN1 3   `À à¾èÿ    $PINDEFAULT RA2/AN2/VREF- 4   `À €þàÿ    $PINDEFAULT RA4/T0CKI 6   `À PÝÿ    $PINDEFAULT RA5/AN4/$SS$ 7   `À ð]Õÿ    $PINDEFAULT RE0/AN5/$RD$ 8   `À À}Ñÿ    $PINDEFAULT RE1/AN6/$WR$ 9   `À Íÿ    $PINDEFAULT RE2/AN7/$CS$ 10   àÁ& 0à Œ
+  $PINDEFAULT VDD 11   àÁ&  ;›ÿ„  $PINDEFAULT VSS 12   `À         $PINDEFAULT OSC1/CLKIN 13   `À Ðüÿ    $PINDEFAULT OSC2/CLKOUT 14   0ãA  >Ùÿ   $PINDEFAULT RC1/T1OSI/CCP2 16   0ãA ð]Õÿ   $PINDEFAULT RC2/CCP1 17   0ãA À}Ñÿ   $PINDEFAULT RC3/SCK/SCL 18   0ãA  <ºÿ   $PINDEFAULT RD0/PSP0 19   0ãA p\¶ÿ   $PINDEFAULT RD1/PSP1 20   0ãA °Þäÿ   $PINDEFAULT RB7/PGD 40   0ãA à¾èÿ   $PINDEFAULT RB6/PGC 39   0ãA Ÿìÿ   $PINDEFAULT RB5 38   0ãA @ðÿ   $PINDEFAULT RB4 37   0ãA p_ôÿ   $PINDEFAULT RB3/PGM 36   0ãA  ?øÿ   $PINDEFAULT RB2 35   0ãA Ðüÿ   $PINDEFAULT RB1 34   0ãA        $PINDEFAULT RB0/INT 33   °á" 0à Œ
+  $PINDEFAULT VDD 32   °á"  ;›ÿ„  $PINDEFAULT VSS 31   0ãA PŸÿ   $PINDEFAULT RD7/PSP7 30   0ãA €û¢ÿ   $PINDEFAULT RD6/PSP6 29   0ãA °Û¦ÿ   $PINDEFAULT RD5/PSP5 28   0ãA à»ªÿ   $PINDEFAULT RD4/PSP4 27   0ãA œ®ÿ   $PINDEFAULT RD3/PSP3 22   0ãA @|²ÿ   $PINDEFAULT RD2/PSP2 21   0ãA  ýÁÿ   $PINDEFAULT RC7/RX/DT 26   0ãA 0ÝÅÿ   $PINDEFAULT RC6/TX/CK 25   0ãA `½Éÿ   $PINDEFAULT RC5/SDO 24   0ãA Íÿ   $PINDEFAULT RC4/SDI/SDA 23   `À °Þäÿ    $PINDEFAULT RA3/AN3/VREF+ 5   0ãA PÝÿ   $PINDEFAULT RC0/T1OSO/T1CKI 15   `À  ?øÿ    $PINDEFAULT $MCLR$/Vpp/THV 1 …	  {*DEVICE}
+PREFIX=U
+{HELP=PIC16>POPUP,1}
+{DATA=PIC16F873-874-876-877.PDF}
+{*PROPDEFS}
+{PACKAGE=PCB Package,PACKAGE,0}
+{PRIMITIVE=Primitive Type,HIDDEN STRING}
+{MODDLL=VSM Model DLL,HIDDEN STRING}
+{MODDATA=Persistent Model Data,HIDDEN STRING}
+{ITFMOD=Interface Model,HIDDEN STRING}
+{PROGRAM=Program File,FILENAME,FALSE,,Intel Hex Files/*.HEX}
+{CLOCK=Processor Clock Frequency,FLOAT,PNZ}
+{CFGWORD=Program Configuration Word,INT,0,16383}
+{DBG_RANDOM_PMEM=Radomize Program Memory?,ADVANCED YESNO}
+{DBG_RANDOM_DMEM=Radomize Data Memory?,ADVANCED YESNO}
+{DBG_DUMP_CFGWORD=Dump Configuration Word?,ADVANCED YESNO}
+{DBG_STARTUP_DELAY=Model PIC Start-up Delays?,ADVANCED YESNO}
+{DBG_WAKEUP_DELAY=Model PIC Wake-up Delays?,ADVANCED YESNO}
+{DBG_ADC_BREAK=Force ADC Breakpoint at Sample Time?,ADVANCED YESNO}
+{DBG_STACK=Warn If Stack Under/Over-flows?,ADVANCED YESNO}
+{DBG_UNIMPLEMENTED_MEMORY=Warn If Accessing Unimplemented Memory?,ADVANCED YESNO}
+{DBG_UNIMPLEMENTED_OPCODES=Warn If Executing Illegal Op-codes?,ADVANCED YESNO}
+{DBG_ADDRESSES=Warn If Illegal Addresses Decoded?,ADVANCED YESNO}
+{DBG_ADC_WARNINGS=Warn If ADC Incorrectly Configured?,ADVANCED YESNO}
+{DBG_I2C_OPERATIONS=Warn If Executing I2C Code?,ADVANCED YESNO}
+{DBG_GENERATE_CLKOUT=Generate Q clock on CLKOUT Pin?,ADVANCED YESNO}
+{WDT_PERIOD=Watchdog Timer Period,ADVANCED FLOAT,PNZ}
+{ADC_RCCLOCK_PERIOD=ADC RC Clock Period,ADVANCED FLOAT,PNZ}
+{ADC_ACQUISITION_TIME=ADC Minimum Acquisition Time,ADVANCED FLOAT,PNZ}
+{ADC_SAMPLE_DELAY=ADC Sample Delay,ADVANCED FLOAT,PNZ}
+{EPR_WRITECODE_DELAY=Code EEPROM Write Delay,ADVANCED FLOAT,PNZ}
+{EPR_WRITEDATA_DELAY=Data EEPROM Write Delay,ADVANCED FLOAT,PNZ}
+{PORTTDLH=Port Pin Low-High Delay,ADVANCED FLOAT,POZ}
+{PORTTDHL=Port Pin High-Low Delay,ADVANCED FLOAT,POZ}
+{MODDATAFILE=Initial contents of EEPROM,ADVANCED FILENAME,FALSE,,Binary Image Files/*.BIN}
+{*COMPONENT}
+{MODDLL=PIC16}
+{ITFMOD=PIC}
+{CLOCK=1MHz}
+{CFGWORD=0x3FFF}
+{WDT_PERIOD=18m}
+{ADC_RCCLOCK_PERIOD=4u}
+{ADC_ACQUISITION_TIME=20u}
+{ADC_SAMPLE_DELAY=100n}
+{EPR_WRITEDATA_DELAY=10m}
+{EPR_WRITECODE_DELAY=10m}
+{PORTTDLH=0}
+{PORTTDHL=0}
+{DBG_GENERATE_CLKOUT=0}
+{DBG_STARTUP_DELAY=0}
+{DBG_WAKEUP_DELAY=0}
+{DBG_RANDOM_PMEM=0}
+{DBG_RANDOM_DMEM=1}
+{DBG_DUMP_CFGWORD=0}
+{DBG_STACK=1}
+{DBG_UNIMPLEMENTED_MEMORY=1}
+{DBG_UNIMPLEMENTED_OPCODES=1}
+{DBG_I2C_OPERATIONS=1}
+{DBG_ADDRESSES=0}
+{DBG_ADC_BREAK=0}
+{DBG_ADC_WARNINGS=0}
+{PRIMITIVE=DIGITAL,16877}
+{MODDATA=256,255}
+{PACKAGE=DIL40}
+  ™L ISIS CIRCUIT FILE    À’ƒ M  OBJECT DATA  ÿU1ÀëšÿÀF       2   HÐ À      ÿDefault Font COMPONENT ID     ÿ	PIC16F877ÀëšÿðÎÜÿ     5   0à À      ÿDefault Font COMPONENT VALUE     ÿ	PIC16F877ÀëšÿÀîØÿ     1   0à À       ÿ Default Font SUBCKT NAME     ÿ{MODDLL=PIC16}
+{ITFMOD=PIC}
+ÀëšÿÀîØÿ     0   0à À      ÿDefault Font PROPERTIES     c  {PACKAGE=DIL40}
+{PRIMITIVE=DIGITAL,16877}
+{MODDLL=PIC16}
+{MODDATA=256,255}
+{ITFMOD=PIC}
+{PROGRAM=matrix sayici 99 deneme kod.hex}
+{CLOCK=4MHz}
+{CFGWORD=0x3FFF}
+{DBG_RANDOM_PMEM=0}
+{DBG_RANDOM_DMEM=1}
+{DBG_DUMP_CFGWORD=0}
+{DBG_STARTUP_DELAY=0}
+{DBG_WAKEUP_DELAY=0}
+{DBG_ADC_BREAK=0}
+{DBG_STACK=1}
+{DBG_UNIMPLEMENTED_MEMORY=1}
+{DBG_UNIMPLEMENTED_OPCODES=1}
+{DBG_ADDRESSES=0}
+{DBG_ADC_WARNINGS=0}
+{DBG_I2C_OPERATIONS=1}
+{DBG_GENERATE_CLKOUT=0}
+{WDT_PERIOD=18m}
+{ADC_RCCLOCK_PERIOD=4u}
+{ADC_ACQUISITION_TIME=20u}
+{ADC_SAMPLE_DELAY=100n}
+{EPR_WRITECODE_DELAY=10m}
+{EPR_WRITEDATA_DELAY=10m}
+{PORTTDLH=0}
+{PORTTDHL=0}
+( 	PIC16F877Àz“ÿ0ãA     
+                                                          eA ûA ‘B             9@ £? ? w> á= K= µ<                                             'C     Ï@     °Þäÿ0ãA   $TERDEFAULT	 ÿAø®êÿ0ãA    	 4   0à À      ÿDefault Font TERMINAL LABEL     µ<      Àž   @  ÿÿÿ ÿÿÿ WIRE    PÝÿ0ãA €þàÿ0ãA °Þäÿ >   $TERDEFAULT	 ÿBø®êÿ >    	 4   0à À      ÿDefault Font TERMINAL LABEL     K=      Àž   @  ÿÿÿ ÿÿÿ WIRE    PÝÿ > €þàÿ > °ÞäÿÐ":   $TERDEFAULT	 ÿCø®êÿÐ":    	 4   0à À      ÿDefault Font TERMINAL LABEL     á=      Àž   @  ÿÿÿ ÿÿÿ WIRE    PÝÿÐ": €þàÿÐ": °Þäÿ B6   $TERDEFAULT	 ÿDø®êÿ B6    	 4   0à À      ÿDefault Font TERMINAL LABEL     w>      Àž   @  ÿÿÿ ÿÿÿ WIRE    PÝÿ B6 €þàÿ B6 °Þäÿpb2    $TERDEFAULT	 ÿEø®êÿpb2      4   0à À      ÿDefault Font TERMINAL LABEL     ?      Àž   @  ÿÿÿ ÿÿÿ WIRE    PÝÿpb2 €þàÿpb2 °Þäÿ@‚.    $TERDEFAULT	 ÿFø®êÿ@‚.      4   0à À      ÿDefault Font TERMINAL LABEL     £?      Àž   @  ÿÿÿ ÿÿÿ WIRE    PÝÿ@‚. €þàÿ@‚. °Þäÿ¢*    $TERDEFAULT	 ÿGø®êÿ¢*      4   0à À      ÿDefault Font TERMINAL LABEL     9@      Àž   @  ÿÿÿ ÿÿÿ WIRE    PÝÿ¢* €þàÿ¢* °Þäÿ€    $TERDEFAULT	 ÿ1ø®êÿ€      4   0à À      ÿDefault Font TERMINAL LABEL     Ï@      Àž   @  ÿÿÿ ÿÿÿ WIRE    PÝÿ€ €þàÿ€ °ÞäÿP!    $TERDEFAULT	 ÿ2ø®êÿP!      4   0à À      ÿDefault Font TERMINAL LABEL     eA      Àž   @  ÿÿÿ ÿÿÿ WIRE    PÝÿP! €þàÿP! °Þäÿ A    $TERDEFAULT	 ÿ3ø®êÿ A      4   0à À      ÿDefault Font TERMINAL LABEL     ûA      Àž   @  ÿÿÿ ÿÿÿ WIRE    PÝÿ A €þàÿ A °Þäÿð`    $TERDEFAULT	 ÿ4ø®êÿð`      4   0à À      ÿDefault Font TERMINAL LABEL     ‘B      Àž   @  ÿÿÿ ÿÿÿ WIRE    PÝÿð` €þàÿð` °ÞäÿÀ€    $TERDEFAULT	 ÿ5ø®êÿÀ€      4   0à À      ÿDefault Font TERMINAL LABEL     'C      Àž   @  ÿÿÿ ÿÿÿ WIRE    PÝÿÀ€ €þàÿÀ€ ÿLEDM20Q  °ÿÿ     2   HÐ À      ÿDefault Font COMPONENT ID     ÿMTX-LED-MPX-7X5Y-CC0Q Xàùÿ     5   0à À      ÿDefault Font COMPONENT VALUE     ÿMTX-LED-MPX-7X5Y-CC0Q ( öÿ     1   0à À       ÿ Default Font SUBCKT NAME     ÿ{PRIMITIVE=DIGITAL}
+0Q ( öÿ     0   0à À      ÿDefault Font PROPERTIES     ^   {PRIMITIVE=DIGITAL}
+{MODDLL=LEDMPX}
+{INVERT=1,2,3,4,5}
+{TTRIGMIN=1ms}
+
+{PACKAGE=LEDMATRIS5X7}
+ MTX-LED-MPX-7X5Y-CC B6 àÁ& |ü           ÄE ZF ðF †G H ²H HI 6L  K 
+K tJ ÞI pb2 (’, Œ
+  $TERDEFAULT	 ÿApb2 pb2 „ 	 4   0à À      ÿDefault Font TERMINAL LABEL     ÄE      Àž   @  ÿÿÿ ÿÿÿ WIRE    pb2 ¢* pb2 ø±( (’, (’, Œ
+  $TERDEFAULT	 ÿB(’, pb2 „ 	 4   0à À      ÿDefault Font TERMINAL LABEL     ZF      Àž   @  ÿÿÿ ÿÿÿ WIRE    (’, ¢* (’, ø±( àÁ& (’, Œ
+  $TERDEFAULT	 ÿCàÁ& pb2 „ 	 4   0à À      ÿDefault Font TERMINAL LABEL     ðF      Àž   @  ÿÿÿ ÿÿÿ WIRE    àÁ& ¢* àÁ& ø±( ˜ñ  (’, Œ
+  $TERDEFAULT	 ÿD˜ñ  pb2 „ 	 4   0à À      ÿDefault Font TERMINAL LABEL     †G      Àž   @  ÿÿÿ ÿÿÿ WIRE    ˜ñ  ¢* ˜ñ  ø±( P! (’, Œ
+  $TERDEFAULT	 ÿEP! pb2 „ 	 4   0à À      ÿDefault Font TERMINAL LABEL     H      Àž   @  ÿÿÿ ÿÿÿ WIRE    P! ¢* P! ø±( Q (’, Œ
+  $TERDEFAULT	 ÿFQ pb2 „ 	 4   0à À      ÿDefault Font TERMINAL LABEL     ²H      Àž   @  ÿÿÿ ÿÿÿ WIRE    Q ¢* Q ø±( À€ (’, Œ
+  $TERDEFAULT	 ÿGÀ€ pb2 „ 	 4   0à À      ÿDefault Font TERMINAL LABEL     HI      Àž   @  ÿÿÿ ÿÿÿ WIRE    À€ ¢* À€ ø±( HÐ 0à     $TERDEFAULT	 ÿ5    0à     4   0à À      ÿDefault Font TERMINAL LABEL     ÞI      Àž   @  ÿÿÿ ÿÿÿ WIRE    `À 0à x°	 0à HÐ       $TERDEFAULT	 ÿ4          4   0à À      ÿDefault Font TERMINAL LABEL     tJ      Àž   @  ÿÿÿ ÿÿÿ WIRE    `À   x°	   HÐ ð`     $TERDEFAULT	 ÿ3    ð`     4   0à À      ÿDefault Font TERMINAL LABEL     
+K      Àž   @  ÿÿÿ ÿÿÿ WIRE    `À ð` x°	 ð` HÐ P!     $TERDEFAULT	 ÿ2    P!     4   0à À      ÿDefault Font TERMINAL LABEL      K      Àž   @  ÿÿÿ ÿÿÿ WIRE    `À P! x°	 P! HÐ °á"     $TERDEFAULT	 ÿ1    °á"     4   0à À      ÿDefault Font TERMINAL LABEL     6L      Àž   @  ÿÿÿ ÿÿÿ WIRE    `À °á" x°	 °á" ÿISIS CIRCUIT FILE    À’ƒ M  OBJECT DATA ÿ CCT000  ¿7 __DEFAULT__  iL  ROOT10        
+    U1     ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ    LEDM2  AABBCCDDEEFFGG1122334455      CCT000__DEFAULT__           __DEFAULT__   í  ITFMOD.MDF LISA MODEL DESCRIPTION FORMAT 5.0
+=================================
+Design:   K:\Prodev\Spice\ITFMOD.DSN
+Doc. no.: <NONE>
+Revision: <NONE>
+Author:   <NONE>
+Created:  18/03/98
+Modified: 18/03/98
+
+
+*MODELDEFS,15
+CMOS   : RHI=100,RLO=100,TRISE=1u,TFALL=1u,V+=VDD,V-=VSS
+NMOS   : RHI=100,RLO=10,VUD=2,VTL=0.8,VHL=0.2,VTH=2.5,VHH=0.2,V+=VCC,V-=GND
+TTL    : RHI=50, RLO=5,VUD=2,VTL=0.8,VHL=0.2,VTH=2.5,VHH=0.2,RPOS=5k,RNEG=20k,V+=VCC,V-=GND,FLOAT=HIGH
+TTLHC  : RHI=5,RLO=5, V+=VCC,V-=GND
+TTLHCT : RHI=5,RLO=5, V+=VCC,V-=GND
+TTLLS  : RHI=100, RLO=10,VUD=2,VTL=0.8,VHL=0.2,VTH=2.5,VHH=0.2,RPOS=12k,RNEG=50k, V+=VCC,V-=GND,FLOAT=HIGH
+TTLS   : RHI=25, RLO=2.5,VUD=2,VTL=0.8,VHL=0.2,VTH=2.5,VHH=0.2,RPOS=5k,RNEG=20k,TRISE=0.5n,TFALL=0.5n, V+=VCC,V-=GND,FLOAT=HIGH
+PLD    : RHI=20,RLO=20, V+=VCC,V-=GND,FLOAT=HIGH
+PIC    : RHI=20, RLO=20,VUD=2,VTL=0.8,VHL=0.2,VTH=2.5,VHH=0.2,V+=VDD,V-=VSS
+8051   : RHI=20, RLO=20,VUD=2,VTL=0.8,VHL=0.2,VTH=2.5,VHH=0.2,RPOS=5k,RNEG=20k,V+=VCC,V-=GND,FLOAT=HIGH
+AT89   : RHI=20, RLO=20,VUD=2,VTL=0.8,VHL=0.2,VTH=2.5,VHH=0.2,RPOS=5k,RNEG=20k,V+=VCC,V-=GND,FLOAT=HIGH
+HC11   : RHI=20, RLO=20,VUD=2,VTL=0.8,VHL=0.2,VTH=2.5,VHH=0.2,V+=VDD,V-=VSS
+AVR    : RHI=20, RLO=20,VUD=2,VTL=0.8,VHL=0.2,VTH=2.5,VHH=0.2,V+=VCC,V-=GND
+MSP430 : RHI=20, RLO=20,VUD=2,VTL=0.8,VHL=0.2,VTH=2.5,VHH=0.2,V+=VCC,V-=GND
+RS232  : VLO=-8.5,VHI=8.5,RHI=300,RLO=300,VTL=1.2,VHL=0.5,VTH=1.7,VHH=0.5,RPOS=5k,RNEG=5k,V+=VCC,V-=GND,FLOAT=HIGH
+LPC2100: RHI=20, RLO=20,VUD=2,VTL=0.8,VHL=0.2,VTH=2.5,VHH=0.2,V+=VDD,V-=VSS
+    š™™™™™©?š™™™™™©?      @Žíµ ÷Æ°>!  €"      ABSTOL 1e-012    BADMOS3 No    BYPASS Yes    CHGTOL 1e-014 	   CONLOG 2    DEFAD 0    DEFAS 0    DEFL 0.0001    DEFW 0.0001    GLEAK 1e-012    GMIN 1e-012    GMINSTEPS 10 	   ITL1 100    ITL2 50    ITL4 10 	   MAXORD 2    METHOD GEAR    NOOPITER No    NUMSTEPS 50    OLDLIMIT No    PIVREL 0.001    PIVTOL 1e-013    RELTOL 0.001    SRCSTEPS 10    TDLOWER 0.9 
+   TDSCALE 1    TDUPPER 1.1    TEMP 27    TMIN 1e-018    TNOM 27    TRTOL 7    TRYTOCOMPACT No    TTOL 1e-006    VNTOL 1e-006      d            6>ÿpYxÿ`ÉÁ ¦‡ ièøÿ þ	         ÿÿÿÿ´              ð    ð ø                     

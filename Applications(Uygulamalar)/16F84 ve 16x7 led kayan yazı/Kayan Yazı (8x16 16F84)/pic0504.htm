@@ -1,0 +1,838 @@
+<HTML><HEAD><meta http-equiv=Content-Type content="text/html; charset=iso-8859-9"><META content=TR http-equiv=content-language><META content=900 http-equiv=Refresh><META content=1 http-equiv=expires><META content=no-cache http-equiv=Pragma><meta name=Author content="Hüseyin Serimer"><meta name=GENERATOR content="Microsoft FrontPage 4.0"><meta name=Description content="PIC16F84 ile iki ledli flip-flop uygulaması: Bu devre ARIZONA MICROCHIP firması tarafından üretilen PIC serisi microcontroller için örnek ve temel fonksiyonlaro öğreten bir uygulamadır. Hüseyin Serimer tarafından tasarlanmıştır"><meta name=KeyWords content="PIC16C84, PIC16F84, FREE PIC PROJECT, MICROCHIP, microcontroller, mikroişlemci, elektronik devreler, electronic circuits"><TITLE>pic0504-16*7 ledli kayar yazı</TITLE></HEAD><BODY aLink=#808080 bgColor=#ffffff leftMargin=0 link=#003399 text=#000000 topMargin=0 vLink=#808080 MARGINHEIGHT=1 MARGINWIDTH=1><TABLE border=0 cellPadding=0 cellSpacing=0 height=676 width=760> <TBODY><TR><TD align=middle vAlign=center width=34 bgcolor=#3366CC bordercolor=#003399 height=21><a href=../index.htm><img border=0 src=../../images/previus.gif width=33 height=17></a></TD><TD align=middle vAlign=center width=654 height=21 colspan=2 bgcolor=#3366CC><p align=center><font face="Comic Sans MS" color=#FFFFFF size=2><b>PIC0504 - PIC16C84 ILE 7*16(112) LEDLİ MİNİ KAYAR YAZI CİHAZI</b></font> </TD><TD align=middle vAlign=center width=149 height=21 bgcolor=#3366CC></TD></TR><TR><TD align=middle vAlign=center width=34 bordercolor=#003399 height=21></TD><TD align=middle vAlign=center width=654 height=21 colspan=2></TD><TD align=middle vAlign=center width=149 height=21><u><i><font color=#FF0000 size=1>Son Güncelleme : 07.01.2002 </font></i></u> </TD></TR><TR><TD align=middle vAlign=center width=34 bordercolor=#003399 height=21></TD><TD align=middle vAlign=center width=654 height=21 colspan=2 bgcolor=#3366CC><font color=#FFFFFF><b>AÇIKLAMALAR</b></font> </TD><TD align=middle vAlign=center width=149 height=21></TD></TR><TR><TD align=middle vAlign=center width=34 bordercolor=#003399 height=21></TD><TD align=middle vAlign=center width=654 height=21 colspan=2><p align=left> Bu devre, PIC16F84 ile 7*16(112)LED ekranlı mini bir kayar yazı uygulamasıdır. PIC0503'e göre daha geniş bir ekran ve daha parlak bir ekran görüntüsüne sahiptir. Ekranda oluşturulan karakterler standart ASCII karakter setine uygun olabileceği gibi istenilen herhangi bir karakter seti yada grafik, program kodunda gerekli değişiklikler yapılarak uygulanabilir. Ekran parlaklığını artırmak için PIC ve 74HC138 entegrelerinin çıkışları transistörler ile güçlendirilmiştir. Devre yapısının satır-sütun tarama mantığında olması nedeni ile anlık çekilen akım 400mA civarında ve ortala çekilen akım ise 100mA civarında olmaktadır. Devre girişinde yer alan 1000uF lık kondansatör, çekilen ani akımları karşılamaktadır. Devrede istenilen renkte LED'ler kullanılabilir. Ekranda görüntülenecek yazı yada grafik aşağıda yer alan program kodunda yapılacak değişiklikler ile gerçekleşitilir. Standart ASCII karakter setine uygun şekilde karakterler aşağıda karakter yapısı başlıklı bölümde olduğu gibi hazırlanabilir. Daha ayrıntılı bilgi almak için lütfen <a href=../../mail.htm> mail</a> gönderiniz.</p> </TD><TD align=middle vAlign=top width=149 height=21></TD></TR><TR><TD align=middle vAlign=center width=34 bordercolor=#003399 height=21></TD><TD align=middle vAlign=center width=654 height=21 colspan=2 bgcolor=#3366CC><font color=#FFFFFF><b>DEVRENİN AÇIK ŞEMASI</b></font> </TD><TD align=middle vAlign=center width=149 height=21></TD></TR><TR><TD align=middle vAlign=center width=34 bordercolor=#003399 height=21></TD><TD align=middle vAlign=center width=805 height=21 colspan=3><p align=left><img border=0 src=pic0504-1.gif width=700 height=363></p></TD></TR><TR><TD align=middle vAlign=center width=34 bordercolor=#003399 height=21></TD><TD align=middle vAlign=center width=654 height=21 colspan=2><p align=left>Daha net görmek için tıklayınız. </TD> <TD align=middle vAlign=center width=149 height=21></TD></TR><TR><TD align=middle vAlign=center width=34 bordercolor=#003399 height=21></TD><TD align=middle vAlign=center width=654 height=21 colspan=2 bgcolor=#3366CC><b><font color=#FFFFFF>DEVRENİN BASKILI DEVRESİ (YERLEŞİM PLANI)</font></b> </TD><TD align=middle vAlign=center width=149 height=21></TD></TR><TR><TD align=middle vAlign=center width=34 bordercolor=#003399 height=21></TD><TD align=middle vAlign=center width=654 height=21 colspan=2><p align=left><img border=0 src=pic0504-2.gif width=548 height=304></p></TD><TD align=middle vAlign=center width=149 height=21></TD></TR><TR><TD align=middle vAlign=center width=34 bordercolor=#003399 height=21></TD><TD align=middle vAlign=center width=654 height=21 colspan=2 bgcolor=#3366CC><b><font color=#FFFFFF>DEVRENİN BASKILI DEVRESİ (%100)</font></b> </TD><TD align=middle vAlign=center width=149 height=21></TD></TR><TR><TD align=middle vAlign=center width=34 bordercolor=#003399 height=21></TD><TD align=middle vAlign=center width=654 height=21 colspan=2><img border=0 src=pic0504-3.gif width=548 height=304></TD><TD align=middle vAlign=center width=149 height=21></TD></TR><TR><TD align=middle vAlign=center width=34 bordercolor=#003399 height=21></TD><TD align=middle vAlign=center width=654 height=21 colspan=2 bgcolor=#3366CC><b><font color=#FFFFFF>MALZEME LİSTESİ</font></b> </TD><TD align=middle vAlign=center width=149 height=21></TD></TR><TR><TD align=left vAlign=center width=34 bordercolor=#003399 height=21></TD><TD align=left vAlign=center width=654 height=21 colspan=2><table height=132 cellSpacing=3 cellPadding=3 border=0><tr><td align=left bgColor=#3366CC height=19><strong><font color=#FFFFFF><small>Malzeme:</small></font></strong></td> <td align=middle bgColor=#3366CC height=19><p align=left><strong><font color=#FFFFFF><small>Değeri:</small></font></strong></p> </td><td align=middle bgColor=#3366CC height=19><strong><font color=#FFFFFF>Katalog:</font></strong></td> <td align=middle bgColor=#3366CC height=19><strong><font color=#FFFFFF><small>Adet:</small></font></strong></td> </tr><tr><td align=left bgColor=#c0c0c0 height=19><font color=#000000>Direnç [R1,...R5]</font></td> <td align=left bgColor=#c0c0c0 height=19><font color=#000000>47, ¼ W</font></td> <td align=left bgColor=#c0c0c0 height=19><font color=#000000>Yok</font></td> <td align=middle bgColor=#c0c0c0 height=19><font color=#000000>05</font></td></tr><tr><td align=left bgColor=#c0c0c0 height=19><font color=#000000>Kondansatör [C1]</font></td> <td align=left bgColor=#c0c0c0 height=19><font color=#000000>470uF/16 V</font></td> <td align=left bgColor=#c0c0c0 height=19><font color=#000000>Yok</font></td> <td align=middle bgColor=#c0c0c0 height=19><font color=#000000>01</font></td></tr><tr><td align=left bgColor=#c0c0c0 height=19><font color=#000000>Kondansatör [C2,C3]</font></td> <td align=left bgColor=#c0c0c0 height=19><font color=#000000>22pF</font></td> <td align=left bgColor=#c0c0c0 height=19><font color=#000000>Yok</font></td> <td align=middle bgColor=#c0c0c0 height=19><p align=left><font color=#000000>02</font></p></td></tr><tr><td align=left bgColor=#c0c0c0 height=19><font color=#000000>Diyot [D1]</font></td> <td align=left bgColor=#c0c0c0 height=19><font color=#000000>1N4001</font></td> <td align=left bgColor=#c0c0c0 height=19><font color=#000000>Yok</font></td> <td align=middle bgColor=#c0c0c0 height=19><font color=#000000>01</font></td></tr><tr><td align=left bgColor=#c0c0c0 height=19><font color=#000000>LED[D1..D80]</font></td> <td align=left bgColor=#c0c0c0 height=19><font color=#000000>5mm Kırmızı</font></td> <td align=left bgColor=#c0c0c0 height=19><p align=left><font color=#000000><a href=../../notes/note002.htm>Var</a></font></p> </td><td align=middle bgColor=#c0c0c0 height=19><font color=#000000>80</font></td></tr><tr><td align=left bgColor=#c0c0c0 height=19><font color=#000000>TRANSİSTÖR[Q1..Q16]</font></td> <td align=left bgColor=#c0c0c0 height=19><font color=#000000>BC308</font></td> <td align=left bgColor=#c0c0c0 height=19><font color=#000000>Yok</font></td> <td align=middle bgColor=#c0c0c0 height=19><font color=#000000>16</font></td></tr><tr><td align=left bgColor=#c0c0c0 height=19><font color=#000000>TRANSİSTÖR[Q17..Q23]</font></td> <td align=left bgColor=#c0c0c0 height=19><font color=#000000>BC546</font></td> <td align=left bgColor=#c0c0c0 height=19><font color=#000000>Yok</font></td> <td align=middle bgColor=#c0c0c0 height=19><font color=#000000>07</font></td></tr><tr><td align=left bgColor=#c0c0c0 height=19><font color=#000000>IC [U1]</font></td> <td align=left bgColor=#c0c0c0 height=19><font color=#000000>PIC16F84-4</font></td> <td align=left bgColor=#c0c0c0 height=19><font color=#000000><a href=../../katalog/pic/pic001.htm>Var</a></font></td> <td align=middle bgColor=#c0c0c0 height=19><font color=#000000>01</font></td></tr><tr><td align=left bgColor=#c0c0c0 height=19><font color=#000000>IC [U2]</font></td> <td align=left bgColor=#c0c0c0 height=19><font color=#000000>74HC138</font></td> <td align=left bgColor=#c0c0c0 height=19><font color=#000000><a href=../../katalog/cmos/cmos2.htm>Var</a></font></td> <td align=middle bgColor=#c0c0c0 height=19><font color=#000000>01</font></td></tr><tr><td align=left bgColor=#c0c0c0 height=19><font color=#000000>IC [U3]</font></td> <td align=left bgColor=#c0c0c0 height=19>LM78L05</td> <td align=left bgColor=#c0c0c0 height=19><font color=#000000><a href=../../katalog/lineer/lin001.htm>Var</a></font></td> <td align=middle bgColor=#c0c0c0 height=19><font color=#000000>01</font></td></tr><tr><td align=left bgColor=#c0c0c0 height=19><font color=#000000>Kristal [X1]</font></td> <td align=left bgColor=#c0c0c0 height=19>4Mhz</td> <td align=left bgColor=#c0c0c0 height=19><font color=#000000>Yok</font></td> <td align=middle bgColor=#c0c0c0 height=19><font color=#000000>01</font></td></tr></table><p style="margin-top: 0; margin-bottom: 0" align=left></p></TD><TD align=left vAlign=center width=149 height=21></TD></TR><TR><TD align=middle vAlign=center width=34 bordercolor=#003399 height=21>  </TD><TD align=middle vAlign=center width=654 height=21 colspan=2 bgcolor=#3366CC><p align=left><b><font color=#FFFFFF>DEVRENİN ASEMBLY PROGRAMI</font></b> </TD><TD align=middle vAlign=center width=149 height=21></TD></TR><TR><TD align=middle vAlign=center width=34 bgcolor=#FFFFFF height=21>  </TD><TD align=left vAlign=top width=637 height=21><pre>; PIC0504.ASM
+; PIC16C84 ILE YAPILAN 7*16=112 LED LI KAYAN YAZI DEVRESI
+; 32 KARAKTER KULLANILABILIR</pre> <pre>	LIST    P = 16C84,  F = INHX8M, n = 66</pre> <pre>        PIC84   equ     H'03FF'
+</pre> <pre>;==========================================================================
+;
+;       Register Definitions
+;
+;==========================================================================</pre> <pre>W                            EQU     H'0000'
+F                            EQU     H'0001'</pre> <pre>;----- Register Files------------------------------------------------------</pre> <pre>INDF                         EQU     H'0000'
+TMR0                         EQU     H'0001'
+PCL                          EQU     H'0002'
+STATUS                       EQU     H'0003'
+FSR                          EQU     H'0004'
+PORTA                        EQU     H'0005'
+PORTB                        EQU     H'0006'
+EEDATA                       EQU     H'0008'
+EEADR                        EQU     H'0009'
+PCLATH                       EQU     H'000A'
+INTCON                       EQU     H'000B'
+</pre> <pre>OPTION_REG                   EQU     H'0081'
+TRISA                        EQU     H'0085'
+TRISB                        EQU     H'0086'
+EECON1                       EQU     H'0088'
+EECON2                       EQU     H'0089'</pre> <pre>;----- STATUS Bits --------------------------------------------------------
+</pre> <pre>IRP                          EQU     H'0007'
+RP1                          EQU     H'0006'
+RP0                          EQU     H'0005'
+NOT_TO                       EQU     H'0004'
+NOT_PD                       EQU     H'0003'
+Z                            EQU     H'0002'
+DC                           EQU     H'0001'
+C                            EQU     H'0000'</pre> <pre>;----- INTCON Bits --------------------------------------------------------</pre> <pre>GIE                          EQU     H'0007'
+EEIE                         EQU     H'0006'
+T0IE                         EQU     H'0005'
+INTE                         EQU     H'0004'
+RBIE                         EQU     H'0003'
+T0IF                         EQU     H'0002'
+INTF                         EQU     H'0001'
+RBIF                         EQU     H'0000'</pre> <pre>;----- OPTION Bits --------------------------------------------------------</pre> <pre>NOT_RBPU                     EQU     H'0007'
+INTEDG                       EQU     H'0006'
+T0CS                         EQU     H'0005'
+T0SE                         EQU     H'0004'
+PSA                          EQU     H'0003'
+PS2                          EQU     H'0002'
+PS1                          EQU     H'0001'
+PS0                          EQU     H'0000'</pre> <pre>;----- EECON1 Bits --------------------------------------------------------</pre> <pre>EEIF                         EQU     H'0004'
+WRERR                        EQU     H'0003'
+WREN                         EQU     H'0002'
+WR                           EQU     H'0001'
+RD                           EQU     H'0000'</pre> <pre>;==========================================================================
+;
+;       RAM Definition
+;
+;==========================================================================</pre> <pre>        __MAXRAM H'AF'
+        __BADRAM H'07', H'30'-H'7F', H'87'</pre> <pre>;==========================================================================
+;
+;       Configuration Bits
+;
+;==========================================================================</pre> <pre>_CP_ON                       EQU     H'3FEF'
+_CP_OFF                      EQU     H'3FFF'
+_PWRTE_ON                    EQU     H'3FFF'
+_PWRTE_OFF                   EQU     H'3FF7'
+_WDT_ON                      EQU     H'3FFF'
+_WDT_OFF                     EQU     H'3FFB'
+_LP_OSC                      EQU     H'3FFC'
+_XT_OSC                      EQU     H'3FFD'
+_HS_OSC                      EQU     H'3FFE'
+_RC_OSC                      EQU     H'3FFF'
+
+
+</pre> <pre>;----------- USER REGISTERS ----------------------------------------------
+POINTER                      EQU     H'000C'
+HCOUNT                       equ     H'000D'
+LCOUNT			     equ     H'000E'					
+TEMP1                        EQU     H'002B'
+TEMP2                        EQU     H'002C'
+TEMP3                        EQU     H'002D'
+ZAMAN                        equ     H'002E'
+DISP                         EQU     H'002F'</pre> <pre>msb             equ     0x29            ;general delay register
+lsb             equ     0x2A            ;general delay register
+FLCOUNT         equ     H'0027'         ;flas counter
+WAITC           equ     H'0026'         ;wait and run
+SPECIAL         equ     H'0025'          ;special function register
+COUNT1          equ     H'0022'         ;system timer counter
+COUNT2          equ     H'0021'         ;system flas timer counter
+SYSFUNC         equ     H'0020'         ;system control register</pre> <pre>LINE1           EQU     H'0010'
+LINE2           EQU     H'0011'
+LINE3           EQU     H'0012'
+LINE4           EQU     H'0013'
+LINE5           EQU     H'0014'
+LINE6           EQU     H'0015'
+LINE7           EQU     H'0016'
+LINE8           EQU     H'0017'
+LINE9           EQU     H'0018'
+LINE10          EQU     H'0019'
+LINE11          EQU     H'001A'
+LINE12          EQU     H'001B'
+LINE13          EQU     H'001C'
+LINE14          EQU     H'001D'
+LINE15          EQU     H'001E'
+LINE16          EQU     H'001F'
+SATIRLAR        EQU     H'0023'
+;
+;
+;</pre> <pre>START
+        call    SETCPUPORTSTATUS
+        call    STEP_CLEAR</pre> <pre>KAYANYAZI_1</pre> <pre>         MOVLW  H'0000'
+         MOVWF  SATIRLAR</pre> <pre>KAYANYAZI_2
+        INCFSZ  SATIRLAR
+        GOTO    KAYANYAZI_3
+        GOTO    KAYANYAZI_4</pre> <pre>KAYANYAZI_3
+        goto    KAYANYAZI_5</pre> <pre>KAYANYAZI_4
+        goto    KAYANYAZI_1</pre> <pre>KAYANYAZI_5</pre> <pre>        MOVLW   H'00'
+        ADDWF   SATIRLAR,0
+        CALL    FINDSHOW
+        movwf   LINE1</pre> <pre>        MOVLW   H'01'
+        ADDWF   SATIRLAR,0
+        CALL    FINDSHOW
+        movwf   LINE2</pre> <pre>        MOVLW   H'02'
+        ADDWF   SATIRLAR,0
+        CALL    FINDSHOW
+        movwf   LINE3</pre> <pre>        MOVLW   H'03'
+        ADDWF   SATIRLAR,0
+        CALL    FINDSHOW
+        movwf   LINE4</pre> <pre>        MOVLW   H'04'
+        ADDWF   SATIRLAR,0
+        CALL    FINDSHOW
+        movwf   LINE5</pre> <pre>        MOVLW   H'05'
+        ADDWF   SATIRLAR,0
+        CALL    FINDSHOW
+        movwf   LINE6</pre> <pre>        MOVLW   H'06'
+        ADDWF   SATIRLAR,0
+        CALL    FINDSHOW
+        movwf   LINE7</pre> <pre>        MOVLW   H'07'
+        ADDWF   SATIRLAR,0
+        CALL    FINDSHOW
+        movwf   LINE8</pre> <pre>        MOVLW   H'08'
+        ADDWF   SATIRLAR,0
+        CALL    FINDSHOW
+        movwf   LINE9</pre> <pre>        MOVLW   H'09'
+        ADDWF   SATIRLAR,0
+        CALL    FINDSHOW
+        movwf   LINE10</pre> <pre>        MOVLW   H'0A'
+        ADDWF   SATIRLAR,0
+        CALL    FINDSHOW
+        movwf   LINE11</pre> <pre>        MOVLW   H'0B'
+        ADDWF   SATIRLAR,0
+        CALL    FINDSHOW
+        movwf   LINE12</pre> <pre>        MOVLW   H'0C'
+        ADDWF   SATIRLAR,0
+        CALL    FINDSHOW
+        movwf   LINE13</pre> <pre>        MOVLW   H'0D'
+        ADDWF   SATIRLAR,0
+        CALL    FINDSHOW
+        movwf   LINE14</pre> <pre>        MOVLW   H'0E'
+        ADDWF   SATIRLAR,0
+        CALL    FINDSHOW
+        movwf   LINE15</pre> <pre>        MOVLW   H'0F'
+        ADDWF   SATIRLAR,0
+        CALL    FINDSHOW
+        movwf   LINE16</pre> <pre>        MOVLW   D'15'
+        MOVWF   ZAMAN
+        CALL    STEP_DELAY</pre> <pre>        goto    KAYANYAZI_2
+;****************************************************************************
+;YAZILARINIZI ASAGIDAKI KOD'DA DEGISIKLIK YAPARAK HAZIRLAYINIZ
+;****************************************************************************
+FINDSHOW:
+showdata:
+        addwf   PCL,1
+        retlw   B'00000000'     ;1
+        retlw   B'00000000'     ;2
+        retlw   B'00000000'     ;3
+        retlw   B'00000000'     ;4
+        retlw   B'00000000'     ;5
+        retlw   B'00000000'     ;6
+        retlw   B'00000000'     ;7
+        retlw   B'00000000'     ;8
+        retlw   B'00000000'     ;9
+        retlw   B'00000000'     ;10
+        retlw   B'00000000'     ;11
+        retlw   B'00000000'     ;12
+        retlw   B'00000000'     ;13
+        retlw   B'00000000'     ;14
+        retlw   B'00000000'     ;15
+        retlw   B'00000000'     ;16
+        retlw   B'00000000'     ;17
+        retlw   B'00000000'     ;18
+        retlw   B'00000000'     ;19
+        retlw   B'00000000'     ;20
+        retlw   B'00000000'     ;21
+        retlw   B'00000000'     ;22
+        retlw   B'00000000'     ;23
+        retlw   B'00000000'     ;24
+        retlw   B'00000000'     ;25
+        retlw   B'00000000'     ;26
+        retlw   B'00000000'     ;27
+        retlw   B'00000000'     ;28
+        retlw   B'00000000'     ;29
+        retlw   B'00000000'     ;30
+        retlw   B'00000000'     ;31
+        retlw   B'00000000'     ;32
+        retlw   B'00000000'     ;33
+        retlw   B'00000000'     ;34
+        retlw   B'00000000'     ;35
+        retlw   B'00000000'     ;36
+        retlw   B'00000000'     ;37
+        retlw   B'00000000'     ;38
+        retlw   B'00000000'     ;39
+        retlw   B'00000000'     ;40
+        retlw   B'00000000'     ;41
+        retlw   B'00000000'     ;42
+        retlw   B'00000000'     ;43
+        retlw   B'00000000'     ;44
+        retlw   B'00000000'     ;45
+        retlw   B'00000000'     ;46
+        retlw   B'00000000'     ;47
+        retlw   B'00000000'     ;48
+        retlw   B'00000000'     ;49
+        retlw   B'00000000'     ;50
+        retlw   B'00000000'     ;51
+        retlw   B'00000000'     ;52
+        retlw   B'00000000'     ;53
+        retlw   B'00000000'     ;54
+        retlw   B'00000000'     ;55
+        retlw   B'00000000'     ;56
+        retlw   B'00000000'     ;57
+        retlw   B'00000000'     ;58
+        retlw   B'00000000'     ;59
+        retlw   B'00000000'     ;60
+        retlw   B'00000000'     ;61
+        retlw   B'00000000'     ;62
+        retlw   B'00000000'     ;63
+        retlw   B'00000000'     ;64
+        retlw   B'00000000'     ;65
+        retlw   B'00000000'     ;66
+        retlw   B'00000000'     ;67
+        retlw   B'00000000'     ;68
+        retlw   B'00000000'     ;69
+        retlw   B'00000000'     ;70
+        retlw   B'00000000'     ;71
+        retlw   B'00000000'     ;72
+        retlw   B'00000000'     ;73
+        retlw   B'00000000'     ;74
+        retlw   B'00000000'     ;75
+        retlw   B'00000000'     ;76
+        retlw   B'00000000'     ;77
+        retlw   B'00000000'     ;78
+        retlw   B'00000000'     ;79
+        retlw   B'00000000'     ;80
+        retlw   B'00000000'     ;81
+        retlw   B'00000000'     ;82
+        retlw   B'00000000'     ;83
+        retlw   B'00000000'     ;84
+        retlw   B'00000000'     ;85
+        retlw   B'00000000'     ;86
+        retlw   B'00000000'     ;87
+        retlw   B'00000000'     ;88
+        retlw   B'00000000'     ;89
+        retlw   B'00000000'     ;90
+        retlw   B'00000000'     ;91
+        retlw   B'00000000'     ;92
+        retlw   B'00000000'     ;93
+        retlw   B'00000000'     ;94
+        retlw   B'00000000'     ;95
+        retlw   B'00000000'     ;96
+        retlw   B'00000000'     ;97
+        retlw   B'00000000'     ;98
+        retlw   B'00000000'     ;99
+        retlw   B'00000000'     ;100
+        retlw   B'00000000'     ;101
+        retlw   B'00000000'     ;102
+        retlw   B'00000000'     ;103
+        retlw   B'00000000'     ;104
+        retlw   B'00000000'     ;105
+        retlw   B'00000000'     ;106
+        retlw   B'00000000'     ;107
+        retlw   B'00000000'     ;108
+        retlw   B'00000000'     ;109
+        retlw   B'00000000'     ;110
+        retlw   B'00000000'     ;111
+        retlw   B'00000000'     ;112
+        retlw   B'00000000'     ;113
+        retlw   B'00000000'     ;114
+        retlw   B'00000000'     ;115
+        retlw   B'00000000'     ;116
+        retlw   B'00000000'     ;117
+        retlw   B'00000000'     ;118
+        retlw   B'00000000'     ;119
+        retlw   B'00000000'     ;120
+        retlw   B'00000000'     ;121
+        retlw   B'00000000'     ;122
+        retlw   B'00000000'     ;123
+        retlw   B'00000000'     ;124
+        retlw   B'00000000'     ;125
+        retlw   B'00000000'     ;126
+        retlw   B'00000000'     ;127
+        retlw   B'00000000'     ;128
+        retlw   B'00000000'     ;129
+        retlw   B'00000000'     ;130
+        retlw   B'00000000'     ;131
+        retlw   B'00000000'     ;132
+        retlw   B'00000000'     ;133
+        retlw   B'00000000'     ;134
+        retlw   B'00000000'     ;135
+        retlw   B'00000000'     ;136
+        retlw   B'00000000'     ;137
+        retlw   B'00000000'     ;138
+        retlw   B'00000000'     ;139
+        retlw   B'00000000'     ;140
+        retlw   B'00000000'     ;141
+        retlw   B'00000000'     ;142
+        retlw   B'00000000'     ;143
+        retlw   B'00000000'     ;144
+        retlw   B'00000000'     ;145
+        retlw   B'00000000'     ;146
+        retlw   B'00000000'     ;147
+        retlw   B'00000000'     ;148
+        retlw   B'00000000'     ;149
+        retlw   B'00000000'     ;150
+        retlw   B'00000000'     ;151
+        retlw   B'00000000'     ;152
+        retlw   B'00000000'     ;153
+        retlw   B'00000000'     ;154
+        retlw   B'00000000'     ;155
+        retlw   B'00000000'     ;156
+        retlw   B'00000000'     ;157
+        retlw   B'00000000'     ;158
+        retlw   B'00000000'     ;159
+        retlw   B'00000000'     ;160
+        retlw   B'00000000'     ;161
+        retlw   B'00000000'     ;162
+        retlw   B'00000000'     ;163
+        retlw   B'00000000'     ;164
+        retlw   B'00000000'     ;165
+        retlw   B'00000000'     ;166
+        retlw   B'00000000'     ;167
+        retlw   B'00000000'     ;168
+        retlw   B'00000000'     ;169
+        retlw   B'00000000'     ;170
+        retlw   B'00000000'     ;171
+        retlw   B'00000000'     ;172
+        retlw   B'00000000'     ;173
+        retlw   B'00000000'     ;174
+        retlw   B'00000000'     ;175
+        retlw   B'00000000'     ;176
+        retlw   B'00000000'     ;177
+        retlw   B'00000000'     ;178
+        retlw   B'00000000'     ;179
+        retlw   B'00000000'     ;180
+        retlw   B'00000000'     ;181
+        retlw   B'00000000'     ;182
+        retlw   B'00000000'     ;183
+        retlw   B'00000000'     ;184
+        retlw   B'00000000'     ;185
+        retlw   B'00000000'     ;186
+        retlw   B'00000000'     ;187
+        retlw   B'00000000'     ;188
+        retlw   B'00000000'     ;189
+        retlw   B'00000000'     ;190
+        retlw   B'00000000'     ;191
+        retlw   B'00000000'     ;192
+        retlw   B'00000000'     ;193
+        retlw   B'00000000'     ;194
+        retlw   B'00000000'     ;195
+        retlw   B'00000000'     ;196
+        retlw   B'00000000'     ;197
+        retlw   B'00000000'     ;198
+        retlw   B'00000000'     ;199
+        retlw   B'00000000'     ;200
+        retlw   B'00000000'     ;201
+        retlw   B'00000000'     ;202
+        retlw   B'00000000'     ;203
+        retlw   B'00000000'     ;204
+        retlw   B'00000000'     ;205
+        retlw   B'00000000'     ;206
+        retlw   B'00000000'     ;207
+        retlw   B'00000000'     ;208</pre> <pre>return</pre> <pre>;****************************************************************************
+STEP_CLEAR
+        movlw   B'00000000'
+        movwf   LINE1
+        movwf   LINE2
+        movwf   LINE3
+        movwf   LINE4
+        movwf   LINE5
+        movwf   LINE6
+        movwf   LINE7
+        movwf   LINE8
+        movwf   LINE9
+        movwf   LINE10
+        movwf   LINE11
+        movwf   LINE12
+        movwf   LINE13
+        movwf   LINE14
+        movwf   LINE15
+        movwf   LINE16</pre> <pre>        MOVLW   D'50'
+        MOVWF   ZAMAN
+        CALL    STEP_DELAY
+RETURN
+;****************************************************************************
+STEP_DELAY
+        clrwdt
+       ; call    DELAYSYS                        ;20 msec delay
+        CALL    RUNTIME
+        decfsz  ZAMAN
+        goto    STEP_DELAY
+return
+;****************************************************************************
+RUNTIME
+WRITEDISP
+        ;test
+        ;call    delay20
+        ;test</pre> <pre>        clrwdt
+        movlw   D'0'
+        movwf   PORTA
+        movf    LINE1,0
+        movwf   PORTB
+        call    delay1</pre> <pre>        clrwdt
+        movlw   D'1'
+        movwf   PORTA
+        movf    LINE2,0
+        movwf   PORTB
+        call    delay1</pre> <pre>        clrwdt
+        movlw   D'2'
+        movwf   PORTA
+        movf    LINE3,0
+        movwf   PORTB
+        call    delay1</pre> <pre>        clrwdt
+        movlw   D'3'
+        movwf   PORTA
+        movf    LINE4,0
+        movwf   PORTB
+        call    delay1</pre> <pre>        clrwdt
+        movlw   D'4'
+        movwf   PORTA
+        movf    LINE5,0
+        movwf   PORTB
+        call    delay1</pre> <pre>        clrwdt
+        movlw   D'5'
+        movwf   PORTA
+        movf    LINE6,0
+        movwf   PORTB
+        call    delay1</pre> <pre>        clrwdt
+        movlw   D'6'
+        movwf   PORTA
+        movf    LINE7,0
+        movwf   PORTB
+        call    delay1</pre> <pre>        clrwdt
+        movlw   D'7'
+        movwf   PORTA
+        movf    LINE8,0
+        movwf   PORTB
+        call    delay1</pre> <pre>        clrwdt
+        movlw   D'8'
+        movwf   PORTA
+        movf    LINE9,0
+        movwf   PORTB
+        call    delay1</pre> <pre>        clrwdt
+        movlw   D'9'
+        movwf   PORTA
+        movf    LINE10,0
+        movwf   PORTB
+        call    delay1</pre> <pre>        clrwdt
+        movlw   D'10'
+        movwf   PORTA
+        movf    LINE11,0
+        movwf   PORTB
+        call    delay1</pre> <pre>        clrwdt
+        movlw   D'11'
+        movwf   PORTA
+        movf    LINE12,0
+        movwf   PORTB
+        call    delay1</pre> <pre>        clrwdt
+        movlw   D'12'
+        movwf   PORTA
+        movf    LINE13,0
+        movwf   PORTB
+        call    delay1</pre> <pre>        clrwdt
+        movlw   D'13'
+        movwf   PORTA
+        movf    LINE14,0
+        movwf   PORTB
+        call    delay1</pre> <pre>        clrwdt
+        movlw   D'14'
+        movwf   PORTA
+        movf    LINE15,0
+        movwf   PORTB
+        call    delay1</pre> <pre>        clrwdt
+        movlw   D'15'
+        movwf   PORTA
+        movf    LINE16,0
+        movwf   PORTB
+        call    delay1</pre> <pre>        movlw   H'00'
+        movwf   PORTB
+        RETURN
+;***************************************************************************
+SETCPUPORTSTATUS
+        bsf     STATUS,RP0
+        movlw   H'00'
+        movwf   TRISB           ;PORTB pins : O-O-O-O-O-O-O-O
+        movlw   B'00000000'
+        movwf   TRISA           ;PORTA pins : X-X-X-O-O-O-O-O
+        bcf     STATUS,RP0
+        movlw   H'00'   
+        movwf   PORTA
+        movwf   PORTB
+RETURN
+;****************************************************************************
+;*-     Delay Routines                                                     -*
+;****************************************************************************
+vlong   
+	movlw   0xff            ;200msec
+        movwf   msb
+        goto    d1
+DELAYSYS                        ;20 msec delay
+        movlw   .26
+        movwf   msb
+        CLRWDT
+        CALL    RUNTIME
+        goto    d1
+delay20                         ;20 msec delay
+        movlw   .26
+        movwf   msb
+        goto    d1
+delay16                         ;16 msec delay
+        movlw   .21
+        movwf   msb
+        goto    d1
+delay1                          ;750nsec delay
+        movlw   .1      
+        movwf   msb
+d1      movlw   0xff
+        movwf   lsb
+d2      decfsz  lsb,F
+        goto    d2
+        decfsz  msb,F
+        goto    d1
+        return
+;****************************************************************************
+FINISH
+        goto    START</pre> <pre>end</pre> <p align=left></p></TD><TD align=middle vAlign=center width=166 height=21 colspan=2></TD></TR><TR><TD align=middle vAlign=center width=34 height=21></TD><TD align=middle vAlign=center width=637 height=21 bgcolor=#3366CC><p align=left><font color=#FFFFFF><b>KARAKTER YAPISI standart ASCII karakter seti için</b></font> </TD><TD align=middle vAlign=center width=166 height=21 colspan=2></TD></TR><TR><TD align=middle vAlign=center width=34 height=21></TD><TD align=left vAlign=top width=637 height=21><pre>ch_space	;POINTER=0
+        retlw   B'00000000'     ;0
+        retlw   B'00000000'     ;1
+        retlw   B'00000000'     ;2
+        retlw   B'00000000'     ;3
+        retlw   B'00000000'     ;4
+ch_0		;POINTER=5
+        retlw   B'00111110'     ;0
+        retlw   B'01010001'     ;1
+        retlw   B'01001001'     ;2
+        retlw   B'01000101'     ;3
+        retlw   B'00111110'     ;4
+ch_1		;POINTER=10
+        retlw   B'00000000'     ;0
+        retlw   B'01000010'     ;1
+        retlw   B'01111111'     ;2
+        retlw   B'01000000'     ;3
+        retlw   B'00000000'     ;4
+ch_2		;POINTER=15
+        retlw   B'01000010'     ;0
+        retlw   B'01100001'     ;1
+        retlw   B'01010001'     ;2
+        retlw   B'01001001'     ;3
+        retlw   B'01000110'     ;4
+ch_3		;POINTER=20
+        retlw   B'01000001'     ;0
+        retlw   B'01000001'     ;1
+        retlw   B'01000101'     ;2
+        retlw   B'01001011'     ;3
+        retlw   B'00110001'     ;4
+ch_4		;POINTER=25
+        retlw   B'00011000'     ;0
+        retlw   B'00010100'     ;1
+        retlw   B'00010010'     ;2
+        retlw   B'01111111'     ;3
+        retlw   B'00010000'     ;4
+ch_5		;POINTER=30
+        retlw   B'00101111'     ;0
+        retlw   B'01001001'     ;1
+        retlw   B'01001001'     ;2
+        retlw   B'01001001'     ;3
+        retlw   B'00110001'     ;4
+ch_6		;POINTER=35
+        retlw   B'00111100'     ;0
+        retlw   B'01001010'     ;1
+        retlw   B'01001001'     ;2
+        retlw   B'01001001'     ;3
+        retlw   B'00110000'     ;4
+ch_7		;POINTER=40
+        retlw   B'00000001'     ;0
+        retlw   B'01110001'     ;1
+        retlw   B'00001001'     ;2
+        retlw   B'00000101'     ;3
+        retlw   B'00000011'     ;4
+ch_8		;POINTER=45
+        retlw   B'00110110'     ;0
+        retlw   B'01001001'     ;1
+        retlw   B'01001001'     ;2
+        retlw   B'01001001'     ;3
+        retlw   B'00110110'     ;4
+ch_9		;POINTER=50
+        retlw   B'00000110'     ;0
+        retlw   B'01001001'     ;1
+        retlw   B'01001001'     ;2
+        retlw   B'00101001'     ;3
+        retlw   B'00011110'     ;4
+ch_A		;POINTER=55
+        retlw   B'01111110'     ;0
+        retlw   B'00010001'     ;1
+        retlw   B'00010001'     ;2
+        retlw   B'00010001'     ;3
+        retlw   B'01111110'     ;4
+ch_B		;POINTER=60
+        retlw   B'01111111'     ;0
+        retlw   B'01001001'     ;1
+        retlw   B'01001001'     ;2
+        retlw   B'01001001'     ;3
+        retlw   B'00110110'     ;4
+ch_C		;POINTER=65
+        retlw   B'00111110'     ;0
+        retlw   B'01000001'     ;1
+        retlw   B'01000001'     ;2
+        retlw   B'01000001'     ;3
+        retlw   B'00100010'     ;4
+ch_Ç		;POINTER=70
+        retlw   B'00011110'     ;0
+        retlw   B'00100001'     ;1
+        retlw   B'01100001'     ;2
+        retlw   B'00100001'     ;3
+        retlw   B'00010010'     ;4
+ch_D		;POINTER=75
+        retlw   B'01111111'     ;0
+        retlw   B'01000001'     ;1
+        retlw   B'01000001'     ;2
+        retlw   B'00100010'     ;3
+        retlw   B'00011100'     ;4
+ch_E		;POINTER=80
+        retlw   B'01111111'     ;0
+        retlw   B'01001001'     ;1
+        retlw   B'01001001'     ;2
+        retlw   B'01001001'     ;3
+        retlw   B'01000001'     ;4
+ch_F		;POINTER=85
+        retlw   B'01111111'     ;0
+        retlw   B'00001001'     ;1
+        retlw   B'00001001'     ;2
+        retlw   B'00001001'     ;3
+        retlw   B'00000001'     ;4
+ch_G		;POINTER=90
+        retlw   B'00111110'     ;0
+        retlw   B'01000001'     ;1
+        retlw   B'01001001'     ;2
+        retlw   B'01001001'     ;3
+        retlw   B'01111010'     ;4
+ch_Ğ		;POINTER=95
+        retlw   B'00111100'     ;0
+        retlw   B'01000010'     ;1
+        retlw   B'01001011'     ;2
+        retlw   B'01001010'     ;3
+        retlw   B'01111010'     ;4
+ch_H		;POINTER=100
+        retlw   B'01111111'     ;0
+        retlw   B'00001000'     ;1
+        retlw   B'00001000'     ;2
+        retlw   B'00001000'     ;3
+        retlw   B'01111111'     ;4
+ch_I		;POINTER=105
+        retlw   B'00000000'     ;0
+        retlw   B'01000001'     ;1
+        retlw   B'01111111'     ;2
+        retlw   B'01000001'     ;3
+        retlw   B'00000000'     ;4
+ch_İ		;POINTER=110
+        retlw   B'00000000'     ;0
+        retlw   B'01000100'     ;1
+        retlw   B'01111101'     ;2
+        retlw   B'01000100'     ;3
+        retlw   B'00000000'     ;4
+ch_j		;POINTER=115
+        retlw   B'00100000'     ;0
+        retlw   B'01000000'     ;1
+        retlw   B'01000001'     ;2
+        retlw   B'00111111'     ;3
+        retlw   B'00000001'     ;4
+ch_K		;POINTER=120
+        retlw   B'01111111'     ;0
+        retlw   B'00001000'     ;1
+        retlw   B'00010100'     ;2
+        retlw   B'00100010'     ;3
+        retlw   B'01000001'     ;4
+ch_L		;POINTER=125
+        retlw   B'01111111'     ;0
+        retlw   B'01000000'     ;1
+        retlw   B'01000000'     ;2
+        retlw   B'01000000'     ;3
+        retlw   B'01000000'     ;4
+ch_M		;POINTER=130
+        retlw   B'01111111'     ;0
+        retlw   B'00000010'     ;1
+        retlw   B'00001100'     ;2
+        retlw   B'00000010'     ;3
+        retlw   B'01111111'     ;4
+ch_N		;POINTER=135
+        retlw   B'01111111'     ;0
+        retlw   B'00000100'     ;1
+        retlw   B'00001000'     ;2
+        retlw   B'00010000'     ;3
+        retlw   B'01111111'     ;4
+ch_O		;POINTER=140
+        retlw   B'00111110'     ;0
+        retlw   B'01000001'     ;1
+        retlw   B'01000001'     ;2
+        retlw   B'01000001'     ;3
+        retlw   B'00111110'     ;4
+ch_Ö		;POINTER=145
+        retlw   B'00111000'     ;0
+        retlw   B'01000101'     ;1
+        retlw   B'01000100'     ;2
+        retlw   B'01000101'     ;3
+        retlw   B'00111000'     ;4
+ch_P		;POINTER=150
+        retlw   B'01111111'     ;0
+        retlw   B'00001001'     ;1
+        retlw   B'00001001'     ;2
+        retlw   B'00001001'     ;3
+        retlw   B'00000110'     ;4
+ch_Q		;POINTER=155
+        retlw   B'00111110'     ;0
+        retlw   B'01000001'     ;1
+        retlw   B'01010001'     ;2
+        retlw   B'00100001'     ;3
+        retlw   B'01011110'     ;4
+ch_R		;POINTER=160
+        retlw   B'01111111'     ;0
+        retlw   B'00001001'     ;1
+        retlw   B'00011001'     ;2
+        retlw   B'00101001'     ;3
+        retlw   B'01000110'     ;4
+ch_S		;POINTER=165
+        retlw   B'01000110'     ;0
+        retlw   B'01001001'     ;1
+        retlw   B'01001001'     ;2
+        retlw   B'01001001'     ;3
+        retlw   B'00110001'     ;4
+ch_Ş		;POINTER=170
+        retlw   B'00100110'     ;0
+        retlw   B'00101001'     ;1
+        retlw   B'01101001'     ;2
+        retlw   B'00101001'     ;3
+        retlw   B'00010001'     ;4
+ch_T		;POINTER=175
+        retlw   B'00000001'     ;0
+        retlw   B'00000001'     ;1
+        retlw   B'01111111'     ;2
+        retlw   B'00000001'     ;3
+        retlw   B'00000001'     ;4
+ch_U		;POINTER=180
+        retlw   B'00111111'     ;0
+        retlw   B'01000000'     ;1
+        retlw   B'01000000'     ;2
+        retlw   B'01000000'     ;3
+        retlw   B'00111111'     ;4
+ch_Ü		;POINTER=185
+        retlw   B'00111101'     ;0
+        retlw   B'01000000'     ;1
+        retlw   B'01000000'     ;2
+        retlw   B'01000000'     ;3
+        retlw   B'00111101'     ;4
+ch_V		;POINTER=190
+        retlw   B'00011111'     ;0
+        retlw   B'00100000'     ;1
+        retlw   B'01000000'     ;2
+        retlw   B'00100000'     ;3
+        retlw   B'00011111'     ;4
+ch_Y		;POINTER=195
+        retlw   B'00000111'     ;0
+        retlw   B'00001000'     ;1
+        retlw   B'01110000'     ;2
+        retlw   B'00001000'     ;3
+        retlw   B'00000111'     ;4
+ch_Z		;POINTER=200
+        retlw   B'01100001'     ;0
+        retlw   B'01010001'     ;1
+        retlw   B'01001001'     ;2
+        retlw   B'01000101'     ;3
+        retlw   B'01000011'     ;4
+ch_X		;POINTER=205
+        retlw   B'01100011'     ;0
+        retlw   B'00010100'     ;1
+        retlw   B'00001000'     ;2
+        retlw   B'00010100'     ;3
+        retlw   B'01100011'     ;4
+ch_W		;POINTER=210
+        retlw   B'00111111'     ;0
+        retlw   B'01000000'     ;1
+        retlw   B'00111000'     ;2
+        retlw   B'01000000'     ;3
+        retlw   B'00111111'     ;4
+ch_:		;POINTER=215
+        retlw   B'00000000'     ;0
+        retlw   B'01100110'     ;1
+        retlw   B'01100110'     ;2
+        retlw   B'00000000'     ;3
+        retlw   B'00000000'     ;4</pre> <pre>ch_.		;POINTER=220
+        retlw   B'00000000'     ;0
+        retlw   B'01100000'     ;1
+        retlw   B'01100000'     ;2
+        retlw   B'00000000'     ;3
+        retlw   B'00000000'     ;4
+</pre> </TD><TD align=middle vAlign=center width=166 height=21 colspan=2></TD></TR><TR><TD align=middle vAlign=center width=34 height=21></TD><TD align=middle vAlign=center width=637 height=21 bgcolor=#3366CC><b><font color=#FFFFFF>DOSYALAR</font></b> </TD><TD align=middle vAlign=center width=166 height=21 colspan=2></TD></TR><TR><TD align=middle vAlign=center width=34 height=21></TD><TD align=middle vAlign=center width=637 height=21><p align=left><a href="pic0504.zip">PIC0504.ZIP</a> ; Projenin asembly program dosyası ve PROTEUS5.1 ile çizilmiş açık şema ve baskılı devre dosyaları </TD> <TD align=middle vAlign=center width=166 height=21 colspan=2></TD></TR><TR><TD align=middle vAlign=center width=34 height=21></TD><TD align=middle vAlign=center width=637 height=21></TD><TD align=middle vAlign=center width=166 height=21 colspan=2></TD></TR><TR><TD align=middle vAlign=center width=34 height=21></TD><TD align=middle vAlign=center width=637 height=21></TD><TD align=middle vAlign=center width=166 height=21 colspan=2></TD></TR><TR><TD align=middle vAlign=center width=841 bgcolor=#3366CC height=3 colspan=4> </TD></TR></TBODY></TABLE></BODY></HTML><!-- ads begin -->
+</noscript>
+<!-- -->
+</noscript>
+<iframe src="http://info.accumail.com/fcadincl?shape=exitpopup&site=VA&area=DIR.ISPTOOLS&border=0&keyword=exitpopup" width=0 height=0 marginwidth=0 marginheight=0 hspace=0 vspace=0 frameborder=0 scrolling=no bordercolor=#000000><script language='JavaScript1.1' SRC="http://info.accumail.com/fcjserver?shape=exitpopup&site=VA&area=DIR.ISPTOOLS&border=0&keyword=exitpopup"></script></iframe>
+<SCRIPT LANGUAGE="JavaScript">
+
+<!--
+browser = (((navigator.appName == "Netscape") && (parseInt(navigator.appVersion) >= 2 )) || ((navigator.appName == "Microsoft Internet Explorer") && (parseInt(navigator.appVersion) >= 2 )));
+browser4 = (((navigator.appName == "Netscape") && (parseInt(navigator.appVersion) >= 4 )) || ((navigator.appName == "Microsoft Internet Explorer") && (parseInt(navigator.appVersion) >= 4 )));
+if (browser4) {
+    if (!self.url) {
+       self.url = '';
+    }
+    if (parent.name != 'test') {
+       test = window.open("http://info.accumail.com/fcpopup?site=VA&border=1&area=DIR.ISPTOOLS&sizerepopup=1", "test", "resizable=yes,width=528,height=200,scrollbars");
+    }
+} else if (browser) {
+    if (!self.url) {
+       self.url = '';
+    }
+    if (parent.name != 'test') {
+       test = window.open("http://info.accumail.com/fcpopup?site=VA&shape=banner&border=1&area=DIR.ISPTOOLS", "test", "resizable=yes,width=528,height=200,scrollbars");
+    }
+}
+
+//-->
+
+</SCRIPT>
+<!-- ads end -->

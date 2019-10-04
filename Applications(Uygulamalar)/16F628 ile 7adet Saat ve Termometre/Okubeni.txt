@@ -1,0 +1,28 @@
+Saat-Isý-LCD(1):
+Bu program LCD ile çalýþýr. Kesme tipi saat palsý üretir.
+
+
+Saat-Isý-Led(2):
+Bu program 7 segment led display ile çalýþýr. Kesme tipi saat palsý üretir. Saniye göstermez. Eksi sýcaklýk göstermez.
+
+
+Saat-Isý-Led(3):
+Bu program 7 segment led display ile çalýþýr. Kesme tipi saat palsý üretir. Saniye gösterir. Eksi sýcaklýk gösterir.
+
+Saat-Isý-Led(4):
+Bu program 7 segment led display ile çalýþýr. Harici saat den pals alýr. Saniye gösterir. Eksi sýcaklýk gösterir.
+
+Saat-Isý-Led(5):
+Bu program 7 segment led display ile çalýþýr. Saat bilgisini DS1302 den alýr. Saniye gösterir. Eksi sýcaklýk gösterir.
+
+Saat-Isý-Led(6):
+Bu program 7 segment led display ile çalýþýr. Saat bilgisini DS1302 den alýr. Saniye gösterir. Eksi sýcaklýk gösterir. Orta Ledler Kesme yöntemi ile yanýp söner.
+
+
+Saat-Isý-Led(7):
+Bu program 7 segment led display ile çalýþýr. Saat bilgisini DS1302 den alýr. Saniye gösterir. Eksi sýcaklýk gösterir. Orta Ledler Kesme yöntemi ile yanýp söner. TARÝH gösterir.
+
+
+
+
+

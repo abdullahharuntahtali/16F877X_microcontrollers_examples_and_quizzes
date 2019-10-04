@@ -1,0 +1,1112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head>
+
+
+  <meta name="GENERATOR" content="Adobe PageMill 3.0 Win">
+  <!-- base -->
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="author" content="Peter Luethi, Switzerland">
+  <meta name="description" content="Simple AT Keyboard Interface for Microchip PIC 16F84 Microcontroller">
+  <meta name="keywords" content="keyboard, interface, microchip, pic micro controller, micro controller, assembler source, 16f84, electronic, circuits, 8 bit risc"><title>AT Keyboard Interface V1.04 for Microchip PIC 16F84 Microcontroller</title>
+  
+  <link rel="stylesheet" href="keyboard_v1xx_files/projects.css" type="text/css"></head><body alink="#000080" background="keyboard_v1xx_files/background.jpg" link="#000080" vlink="#000080">
+
+<h1><a name="top"></a>AT Keyboard Interface V1.04</h1>
+
+<p><span class="subtitle">for Microchip PIC16F84 &nbsp;(without
+LCD)</span><br>
+&nbsp;</p>
+
+<h4><a name="toc"></a>Table of Contents [Toc]</h4>
+
+<p><a href="#introduction">Introduction</a><br>
+&nbsp;&nbsp; <a href="#possible_applications">Possible Applications</a><br>
+<a href="#concept">Concept</a><br>
+&nbsp;&nbsp; <a href="#how_it_works">How it works</a><br>
+&nbsp;&nbsp; <a href="#specifications">Specifications</a><br>
+&nbsp;&nbsp; <a href="#features">Features</a><br>
+&nbsp;&nbsp; <a href="#limitations">Limitations</a><br>
+<a href="#keyboard_theory">AT Keyboard Theory</a><br>
+&nbsp;&nbsp; <a href="#keyboard_scan_codes">Keyboard Scan Codes</a><br>
+&nbsp;&nbsp; <a href="#kbd2host_protocol">Keyboard to Host Protocol</a><br>
+&nbsp;&nbsp; <a href="#keyboard_commands">Keyboard Commands</a><br>
+&nbsp;&nbsp; <a href="#host2kbd_protocol">Host to Keyboard Protocol</a><br>
+&nbsp;&nbsp; <a href="#host_commands">Host Commands</a><br>
+<a href="#project_resources">Project Resources</a><br>
+&nbsp;&nbsp; <a href="#assembler_code">Available PIC Assembler
+Code</a><br>
+&nbsp;&nbsp; <a href="#schematic">Schematic, Data Sheets, Pinout</a><br>
+<a href="#customization">User-specific Customization / FAQ</a><br>
+&nbsp;&nbsp; <a href="#faq_kbd_input">How do I use the AT Keyboard
+Input?</a><br>
+&nbsp;&nbsp; <a href="#faq_decoding">How does the Scan Pattern
+Decoding work exactly?</a><br>
+&nbsp;&nbsp; <a href="#faq_key_customization">My own Key Customization</a><br>
+&nbsp;&nbsp; <a href="#faq_key_sequence">My own Key Sequence</a><br>
+<a href="#confusion">Confusion about Sweden and Switzerland...?</a><br>
+&nbsp;</p>
+
+<h2><a name="introduction"></a>Introduction <span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></h2>
+
+<p>Sometimes you only need a simple and cheap RS232 terminal to
+get sufficient control over a PC or a RS232 device. There is no
+need, no space or even no power to place a monitor, a computer
+case and a keyboard. Maybe there exists also the problem, that
+the PC or the device is located somewhere else and you want to
+interact with it over a short distance.</p>
+
+<p>The cheapest way to obtain a complete user interface is the
+use of standard components, such as LCD modules and PC keyboards.
+A standard PC keyboard (PS/2 type) costs about US-$&nbsp;12, a
+2 lines by 40 characters dot matrix LCD module around US-$&nbsp;20.<br>
+To connect these items to the serial port by cable, a microcontroller
+and a RS232 level shifter are necessary. For longer distance control,
+there exists also the possibility to interconnect the terminal
+with the other device by a wireless physical transmission layer.<br>
+&nbsp;</p>
+
+<p></p><center><img src="keyboard_v1xx_files/t_kbd_1xx_03.jpg" naturalsizeflag="0" alt="AT Keyboard and PIC16F84" align="bottom" border="0" height="240" width="320"><br>
+&nbsp;</center>
+
+<h3><a name="possible_applications"></a>Possible Applications
+<span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></h3>
+
+<p>The RS232 terminal for instance is very convenient in conjunction
+with a PC based Juke-Box playing MP3 files. You only need a command
+line programmable MP3 player (or a player with a supplied Active-X
+interface) and a software-based connection between player and
+RS232 port. This software 'connection' could be realized using
+Visual Basic and the often supplied Active-X interfaces of the
+various Windows based MP3 players.</p>
+
+<p>Another possible area for applications is PC observed access
+control. Therefore, the RS232 terminal is placed at the entrance
+to the supervised area.</p>
+
+<p>A further enhancement to be able to satisfy todays needs for
+<i>network-based communication</i> would be a complete TCP/IP
+based communication layer together with an Ethernet front-end.
+Then it would be possible to control simple Ethernet appliances,
+e.g. your coffee maker, electrical rolling shutters, autonomous
+net-based lawn mower,... ;-) by this remote terminal. Brave new
+world&nbsp;...<br>
+&nbsp;</p>
+
+<p></p><center><a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/kbd_1xx_02.jpg" target="_self"><img src="keyboard_v1xx_files/t_kbd_1xx_02.jpg" naturalsizeflag="0" alt="Microsoft PS/2 Keyboard" align="bottom" border="0" height="239" width="320"></a><br>
+&nbsp;</center>
+
+<h2><a name="concept"></a>Concept <span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></h2>
+
+<p>The routine below contains <u>no support for an LCD display</u>.
+It only shows the complete fetch and decoding of AT keyboard scan
+patterns and RS232 transmission of ASCII characters to the RS232
+client. If you want a PIC 16F84 based solution with additional
+LCD, have a look at the keyboard <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v2xx/keyboard_v2xx.html">v2xx</a>
+project.</p>
+
+<p>The problem with the PIC 16F84 is the lack of RS232 hardware.
+The whole keyboard scan pattern fetch, decode and RS232 data transmission
+is done by software. Additional RS232 data reception has also
+to be carried out by software - based on interrupts - but is <u>not</u>
+implemented within this project. The current implementation features
+a preemptive interrupt-based keyboard scan pattern acquisition.</p>
+
+<p></p><table border="0" cellpadding="0" cellspacing="2" height="322" width="733">
+  <tbody><tr>
+    <td valign="top" width="380">
+    <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/kbd_1xx_01.jpg" target="_self"><img src="keyboard_v1xx_files/t_kbd_1xx_01.jpg" naturalsizeflag="0" alt="My recent workplace" align="bottom" border="0" height="240" width="376"></a>
+
+    <p><i>A recent picture of my workplace connecting a Microsoft
+    PS/2 AT keyboard to the PIC16F84.</i></p></td> 
+    <td width="25">
+    &nbsp;</td> 
+    <td valign="top" width="330">
+    <img src="keyboard_v1xx_files/kbd_1xx_04.jpg" naturalsizeflag="0" alt="My ancient workplace" align="bottom" border="0" height="240" width="320">
+
+    <p><i>An elderly picture of my workplace, at which the initial
+    development took place.</i></p></td> 
+  </tr>
+</tbody></table>
+
+<h3><a name="how_it_works"></a>How it works <span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></h3>
+
+<p>Any key stroke on the local keyboard will send the corresponding
+scan patterns from the keyboard to the PIC microcontroller. Afterwards,
+the microcontroller converts the keyboard scan patterns to ASCII
+characters and transmits them to the RS232 target device.<br>
+The keyboard scan code capture is done by an interrupt service
+routine (ISR). The event, which triggers the interrupt is a falling
+edge on the keyboard clock line (PORTB,0). Keyboard scan pattern
+acquisition takes place at the keyboard data line (PORTA,4). After
+11 clocks (i.e. 11 external interrupts on RB0/INT), the interrupt
+service routine has completely captured an 8 bit element of the
+entire scan pattern and sets a ready flag. The decoding of this
+8 bit element is then carried out during normal operation mode,
+activated by a valid ready flag whilst keeping the keyboard stalled
+(keyboard clock line low).</p>
+
+<p>The fact, that the scan pattern acquisition is carried out
+using an interrupt service routine and the decoding thereof is
+done during normal operation mode allows for performing other
+tasks concurrently: That's why I call the acquisition methodology
+<i>preemptive</i>, it does not block the processor in the main
+loop while acquiring keyboard data - therefore passing processing
+resources to other services. Explicitely, it works as follows:<br>
+After proper acquisition, the corresponding flag <i>KBDflag</i>
+is set (at the end of the ISR) and the decoded keyboard character
+resides in the register <i>KBD</i>. The <i>KBDflag</i> is cleared
+at the end of the service routine <i>KBDdecode</i>.</p>
+
+<p></p><table border="1" cellpadding="10" cellspacing="0" width="650">
+  <tbody><tr>
+    <td bgcolor="#faf4c9" width="100%">
+    <p>Infinitive main loop to acquire keyboard input (keyboard_v1xx.asm),
+    keyboard data is in register KBD:</p>
+
+    <pre>        ;******************************
+_MLOOP  btfsc   KBDflag      ; check scan pattern reception flag
+        call    KBDdecode    ; if set, call decoding routine
+        ;btfsc   your_other_flag
+        ;call    your_other_service
+        goto    _MLOOP
+        ;******************************</pre>
+</td>
+  </tr>
+</tbody></table>
+
+<p>Only RS232 transmission is supported by this program, since
+PORTB,0 interrupt is already used by the keyboard clock line.
+There exists no possibility to implement also RS232 reception
+using my modules m_rsxxx.asm, because they require PORTB,0 as
+well and are laid out as non-preemptive data acquisition routines
+(see also <a href="#limitations" target="_self">'Limitations'</a>).</p>
+
+<p>For dedicated code adaptations, please refer to the section
+<a href="#customization" target="_self">'User-specific Customization'</a>
+below.<br>
+&nbsp;</p>
+
+<h3><a name="specifications"></a>Specifications <span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></h3>
+
+<p></p><table border="0" cellpadding="0" cellspacing="2" width="92%">
+  <tbody><tr>
+    <td valign="top" width="212">
+    Processor:</td> 
+    <td valign="top" width="383">
+    Microchip PIC 16F84</td> 
+  </tr>
+  <tr>
+    <td valign="top" width="212">
+    Clock Frequency:</td> 
+    <td valign="top" width="383">
+    4 MHz crystal</td> 
+  </tr>
+  <tr>
+    <td valign="top" width="212">
+    Throughput:</td> 
+    <td valign="top" width="383">
+    1 MIPS</td> 
+  </tr>
+  <tr>
+    <td valign="top" width="212">
+    RS232 Baud Rate:</td> 
+    <td valign="top" width="383">
+    9600 baud, 8 bit, no parity, 1 stopbit</td> 
+  </tr>
+  <tr>
+    <td valign="top" width="212">
+    Code Size of entire Program:</td> 
+    <td valign="top" width="383">
+    523 instruction words</td> 
+  </tr>
+  <tr>
+    <td valign="top" width="212">
+    Keyboard Routine Features:</td> 
+    <td valign="top" width="383">
+    Capability of uni-directional communication between microcontroller
+    and keyboard</td> 
+  </tr>
+  <tr>
+    <td valign="top" width="212">
+    Acquisition Methodology:</td> 
+    <td valign="top" width="383">
+    Preemptive, interrupt-based keyboard scan pattern acquisition,
+    decoding to ASCII characters during normal operation mode activated
+    by ready flag</td> 
+  </tr>
+  <tr>
+    <td valign="top" width="212">
+    Required Hardware:</td> 
+    <td valign="top" width="383">
+    AT keyboard, PS/2 connector, MAX232</td> 
+  </tr>
+  <tr>
+    <td valign="top" width="212">
+    Required Software:</td> 
+    <td valign="top" width="383">
+    RS232 terminal software (or Excel 97 RS232 Debug Interface)</td> 
+  </tr>
+</tbody></table><br>
+&nbsp;
+
+<h3><a name="features"></a>Features <span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></h3>
+
+<ul>
+  <li>Uni-directional communication between microcontroller application
+  and remote RS232 client.
+  </li><li>Uni-directional communication between microcontroller and
+  keyboard.
+  </li><li>Support for all keyboard characters typed with shift button
+  active and inactive.
+  </li><li>English and modified Swiss-German 'codepages' available (QWERTY
+  and QWERTZ)
+  </li><li>Caps Lock implemented
+  </li><li>Num Lock always active
+  </li><li>Possibility to implement short-cuts or user defined characters
+  for 'Esc', 'Num Lock', 'Scroll Lock' and 'F1' - 'F12' keys.
+  </li><li>Further enhancement, not implemented: Support of ASCII conversion
+  from direct ALT-DEC and CTRL-HEX entries, e.g. ALT + 6 + 4 =
+  @ or CTRL + 3 + F = ?
+</li></ul>
+
+<p>To visualize the ASCII data sent by this microcontroller application,
+use a terminal program like the Windows Hyperterminal. Below an
+example session, which proves the correct functionality of the
+keyboard interface. This terminal program and the Excel 97 <a href="http://www.electronic-engineering.ch/microchip/software/rs232debug.html" target="_self">RS232
+Debug Interface</a> have been used to debug the interface during
+implementation time.</p>
+
+<p><img src="keyboard_v1xx_files/hyperterminal.gif" naturalsizeflag="0" alt="Connection with HyperTerminal" align="bottom" border="0" height="336" width="400"></p>
+
+<p><i>Example of a session using the Windows HyperTerminal. The
+entire contents was sent by the PIC controller.</i><br>
+&nbsp;</p>
+
+<h3><a name="limitations"></a>Limitations <span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></h3>
+
+<p>In case you want <u>RS232 reception and keyboard decoding simultaneously</u>
+on a single PIC 16X84, you'll have to configure either the keyboard
+clock line or the RS232 reception data line (both targeting PORTB,0
+interrupt) to another separate interrupt source (e.g. PORTB,4
+- PORTB,7 change interrupt) and to alter the RS232 data fetch
+routine to a preemptive one. But then you'll also run into troubles
+by using the LCD modules, because they are written to work on
+entire 8 bit ports (such as PORTB on 16X84, and PORTC &amp; PORTD
+on 16X74).<br>
+So if you really appreciate to run the RS232 terminal entirely
+on a PIC 16X84 - <u>from a technical perspective it is possible</u>
+- you'll have to rewrite the LCD modules and the software RS232
+reception routine. Be aware that there won't be a lot of code
+space remaining for other enhancements after putting all terminal
+related stuff onto the 16X84.</p>
+
+<p>A workaround to get RS232 reception on the PIC 16X84 using
+this software could be a solution based on polling. But make sure
+you are polling fast enough, also in worst case.</p>
+
+<p></p><table bgcolor="#fefde7" border="1" bordercolor="#400000" cellpadding="6" cellspacing="0" width="100%">
+  <tbody><tr>
+    <td width="100%">
+    <p><b><u>Important note from Jason Plumb:</u></b></p>
+
+    <p>«Hey,</p>
+
+    <p>First, lemme say that I like your site and thank you for providing
+    excellent reference material for us home-hobbyist microcontroller
+    geeks. I am currently working on a music/noise project that uses
+    a PS/2 keyboard interfaced to a PIC16F84, and I used your page
+    at http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/keyboard_v1xx.html
+    heavily as a reference when designing hardware and writing code.
+    Anyway, I just thought that I would mention that I ran into a
+    problem that I have since solved. The problem involved sending
+    bytes *TO* the keyboard from the PIC (in order to light NumLock
+    and ScrollLock). Your "Host To Keyboard Protocol" section
+    indicates that the keyboard will take the data line low for a
+    clock after the byte is sent to create an ACK bit. Apparently,
+    the PS/2 keyboard that I have (generic $10 comp-USA brand) doesn't
+    send an ACK bit, but rather sends a whole byte. If my code attempted
+    to wait for the ACK bit, it hung indefinitely. I changed the
+    wait to look for a byte (by calling my existing function) and
+    everything worked perfectly. I stumbled on this idea by looking
+    at other online references (most notably, some Linux kernel code
+    at <a href="http://www.mscs.mu.edu/%7Egeorgec/Classes/207.1998/14Minix_book/S/src%20kernel%20keyboard.c.html#307" target="_self">http://www.mscs.mu.edu/~georgec/Classes/207.1998/14Minix_book/S/src%20kernel%20keyboard.c.html#307</a>).
+    I have seen this ACK *byte* mentioned elsewhere too. I *think*
+    the keyboard sends back 0xFA as an ACK byte, but I have not personally
+    confirmed this. Perhaps your excellent documentation could just
+    use a <i>quick note of clarification</i> so that other don't
+    run into the same problem. Maybe something as simple as: <i><font color="#990000">"NOTE: Some keyboards send an ACK byte
+    (value 0xFA) instead of an ACK bit."</font></i>.</p>
+
+    <p>Thanks again,<br>
+    Jason»</p></td> 
+  </tr>
+</tbody></table>
+
+<p><b><u>Note from the author:</u></b></p>
+
+<p>The comment above refers to bi-directional communication between
+PIC microcontroller and AT keyboard, i.e. to the source code of
+the <i><a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v2xx/keyboard_v2xx.html">AT Keyboard Interface
+V2.xx</a></i> and higher versions. The bi-directional communication
+between host and keyboard is designed to support both <i>Ack bits</i>
+and <i>Ack bytes</i>.</p>
+
+<ul>
+  <li>Every command sent from the host to the keyboard needs to
+  have an <i>Odd Parity bit</i> and an <i>Ack bit</i> at the end.
+  </li><li>Every command received by the keyboard from the host needs
+  to be acknowledged by the keyboard by sending an <i>Ack byte
+  (0xFA)</i> to the host. See also section <a href="#host2kbd_protocol">'Host
+  to Keyboard Protocol'</a>.
+</li></ul>
+
+<p>A corresponding PIC assembler code example is shown below:</p>
+
+<p></p><table border="1" cellpadding="10" cellspacing="0" width="650">
+  <tbody><tr>
+    <td bgcolor="#faf4c9" width="100%">
+    <pre>   ;*** switch keyboard LEDs on (default status) ***
+    KBDcmd 0xED       ; keyboard LEDs' control command
+    KBDexp 0xFA       ; expect keyboard acknowledge (FA)
+    movfw  KBDleds    ; load keyboard LEDs' status
+    KBDcmdw           ; send keyboard LEDs' control data
+    KBDexp 0xFA       ; expect keyboard acknowledge (FA)</pre>
+</td>
+  </tr>
+</tbody></table>
+
+<p>However, some AT keyboards may behave different and may need
+code adaptations to get bi-directional communication working properly.</p>
+
+<p>&nbsp;</p>
+
+<h2><a name="keyboard_theory"></a>AT Keyboard Theory <span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></h2>
+
+<p>A complete functional description and timing diagram of the
+AT keyboard is available at Craig Peacock's website. Please refer
+to his website <a href="http://www.beyondlogic.org/keyboard/keybrd.htm" target="_blank">Interfacing the PC's Keyboard</a> for an excellent
+and comprehensive description of all features and commands of
+the AT keyboard. At this place, I want to thank Craig Peacock
+for his outstanding work with his website.<br>
+Below I only want to sketch the most important technical aspects
+to be known when interfacing a PC's keyboard. Small parts of the
+introduction below are more or less copied from Craig Peacock's
+tutorial.<br>
+&nbsp;</p>
+
+<h3><a name="keyboard_scan_codes"></a>Keyboard Scan Codes <span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></h3>
+
+<p>The diagram below shows the scan codes assigned to the individual
+keys for the english keyboard layout. The keys' corresponding
+scan codes are the numbers on the keys, for example the scan code
+of the ESC key is 0x76. All scan codes are shown in hexadecimal
+representation.<br>
+&nbsp;</p>
+
+<p><img src="keyboard_v1xx_files/scancode.gif" naturalsizeflag="0" alt="AT Keyboard Scan Codes" align="bottom" border="0" height="256" width="587"></p>
+
+<p>&nbsp;<br>
+The scan code assignments are quite random (thanks to IBM and
+other early computer manufacturers) and appear to be really weird
+sometimes, for instance the break key. In many cases the easiest
+way to convert the scan code to ASCII characters would be to use
+a lookup table. Below are the scan codes shown for the extended
+part of the keyboard and the numeric keypad.</p>
+
+<p>Cite of Craig Peacock: <i>"How about E1,14,77,E1,F0,14,F0,77!
+Now that can't be a valid scan code? Wrong again. It happens to
+be sent when you press the pause/break key. Don't ask me why they
+have to make it so long! Maybe they were having a bad day or something?"</i></p>
+
+<p>By the way, AT stands for <u>A</u>dvanced <u>T</u>echnology...<br>
+&nbsp;</p>
+
+<p><img src="keyboard_v1xx_files/scancod1.gif" naturalsizeflag="0" alt="Numeric Pad Scan Codes" align="bottom" border="0" height="285" width="338"></p>
+
+<p>The AT keyboard sends different scan codes on pressing, holding
+and releasing of each button. An example is given at the table
+below:</p>
+
+<p></p><table border="1" cellpadding="4" cellspacing="2">
+  <tbody><tr>
+    <td nowrap="nowrap">
+    &nbsp;</td> 
+    <td align="center" nowrap="nowrap">
+    <b>Press &amp; Hold Down Scan Code</b></td> 
+    <td align="center" nowrap="nowrap">
+    <b>Release Scan Code</b></td> 
+  </tr>
+  <tr>
+    <td nowrap="nowrap">
+    Normal Scan Code</td> 
+    <td align="center" nowrap="nowrap">
+    73</td> 
+    <td align="center" nowrap="nowrap">
+    F0 73</td> 
+  </tr>
+  <tr>
+    <td nowrap="nowrap">
+    Extended Scan Code</td> 
+    <td align="center" nowrap="nowrap">
+    E0 4A</td> 
+    <td align="center" nowrap="nowrap">
+    E0 F0 4A</td> 
+  </tr>
+</tbody></table>
+
+<p>&nbsp;<br>
+All scan patterns can easily be visualized and verified with the
+<a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/scan_deb/scan_deb.html">AT Scan Code Debug Routine</a>
+and the <a href="http://www.electronic-engineering.ch/microchip/software/rs232debug.html" target="_self">RS232
+Debug Interface</a>.<br>
+&nbsp;</p>
+
+<h3><a name="kbd2host_protocol"></a>Keyboard to Host Protocol
+<span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></h3>
+
+<p>The data transfer is implemented as bi-directional protocol:
+The keyboard can send data to the host (microcontroller) and the
+host can send commands and data to the keyboard. The host has
+the ultimate priority over the direction. It can at anytime (although
+not recommended) send a command to the keyboard.</p>
+
+<p>The keyboard is free to send data to the host when both KBD
+data and KBD clock lines are high (idle). The serial clock is
+generated by the keyboard, but the host can also use it as a clear-to-send
+line: If the host takes the KBD clock line low, the keyboard will
+buffer any data until the KBD clock is released, i.e. goes high.
+Should the host take also the KBD data line low, then the keyboard
+will prepare to accept a command from the host.</p>
+
+<p>The transmission of data in the forward direction, i.e. keyboard
+to host, is done with a frame of 11 bits. The first bit is a start
+bit (logic 0) followed by 8 data bits (LSB first), one parity
+bit (odd parity) and a stop bit (logic 1). Each bit has to be
+read on the falling edge of the clock.<br>
+&nbsp;</p>
+
+<p><img src="keyboard_v1xx_files/kbd2host.gif" naturalsizeflag="0" align="bottom" border="0" height="137" width="620"></p>
+
+<p><i>AT keyboard to host protocol, with odd parity bit</i> <br>
+&nbsp;</p>
+
+<h3><a name="keyboard_commands"></a>Keyboard Commands <span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></h3>
+
+<p>Once the host commands are sent from the host to the keyboard,
+the keyboard commands must be<br>
+sent from the keyboard to the host. If you think this way, you
+must be correct. Below details of some of<br>
+the commands which the keyboard is able to send.</p>
+
+<p></p><table border="0" cellpadding="4" cellspacing="2">
+  <tbody><tr>
+    <td valign="top">
+    <b>FA</b></td> 
+    <td valign="top">
+    Acknowledge</td> 
+  </tr>
+  <tr>
+    <td valign="top">
+    <b>AA</b></td> 
+    <td valign="top">
+    Power on self test passed (BAT completed)</td> 
+  </tr>
+  <tr>
+    <td valign="top">
+    <b>EE</b></td> 
+    <td valign="top">
+    See echo command (host commands)</td> 
+  </tr>
+  <tr>
+    <td valign="top">
+    <b>FE</b></td> 
+    <td valign="top">
+    Resend - upon receipt of the resend command the host should re-transmit
+    the last byte sent.</td> 
+  </tr>
+  <tr>
+    <td valign="top">
+    <b>00</b></td> 
+    <td valign="top">
+    Error or buffer overflow</td> 
+  </tr>
+  <tr>
+    <td valign="top">
+    <b>FF</b></td> 
+    <td valign="top">
+    Error or buffer overflow</td> 
+  </tr>
+</tbody></table>
+
+<p>&nbsp;</p>
+
+<h3><a name="host2kbd_protocol"></a>Host to Keyboard Protocol
+<span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></h3>
+
+<p>The host to keyboard protocol is initiated by taking the KBD
+data line low. However to prevent the keyboard from sending data
+at the same time that you attempt to send the keyboard data, it
+is common to take the KBD clock line low for more than 60&nbsp;us.
+This is more than one bit length. Then the KBD data line is taken
+low, while the KBD clock line is released. The keyboard will start
+generating a clock signal on its KBD clock line. This process
+can take up to 10&nbsp;ms. After the first falling edge has been
+detected, you can load the first data bit on the KBD data line.
+This bit will be read into the keyboard on the next falling edge,
+after which you can place the next bit of data. This process is
+repeated for all 8 data bits. After the data bits comes an odd
+parity bit.<br>
+&nbsp;</p>
+
+<p><img src="keyboard_v1xx_files/host2kbd.gif" naturalsizeflag="0" align="bottom" border="0" height="137" width="723"></p>
+
+<p><i>Host to AT keyboard protocol, with odd parity bit and acknowledge</i><br>
+&nbsp;</p>
+
+<p>Odd parity = NOT(XOR(bits[0..7]))</p>
+
+<p>Once the parity bit has been sent and the KBD data line is
+in a idle state (high) for the next clock cycle, the keyboard
+will acknowledge the reception of the new data. The keyboard does
+this by taking the KBD data line low for the next clock transition.
+If the KBD data line is not idle after the 10th bit (start, 8
+data bits, and parity bit), the keyboard will continue to send
+a KBD clock signal until the KBD data line becomes idle <font color="#000000">(Note: see also </font><a href="#limitations" target="_self">Limitations</a><font color="#000000">).<br>
+&nbsp;</font></p>
+
+<h3><a name="host_commands"></a>Host Commands <span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></h3>
+
+<p>These commands are sent by the host to the keyboard. The most
+common command would be the setting/resetting of the status indicators
+(i.e. the Num lock, Caps Lock &amp; Scroll Lock LEDs). The more
+common and useful commands are shown below.</p>
+
+<p></p><table border="0" cellpadding="4" cellspacing="2">
+  <tbody><tr>
+    <td valign="top">
+    <b>ED</b></td> 
+    <td valign="top">
+    Set status LED's - This command can be used to turn on and off
+    the Num Lock, Caps Lock &amp; Scroll Lock LED's. After sending
+    ED, keyboard will reply with ACK (FA) and wait for another byte
+    which determines their status. Bit 0 controls the Scroll Lock,
+    bit 1 the Num Lock and bit 2 the Caps lock. Bits 3 to 7 are ignored.</td> 
+  </tr>
+  <tr>
+    <td valign="top">
+    <b>EE</b></td> 
+    <td valign="top">
+    Echo - upon sending an echo command to the keyboard, the keyboard
+    should reply with an echo (EE).</td> 
+  </tr>
+  <tr>
+    <td valign="top">
+    <b>F0</b></td> 
+    <td valign="top">
+    Set scan code set. Upon sending F0, keyboard will reply with
+    ACK (FA) and wait for another byte, 01-03 which determines the
+    scan code used. Sending 00 as the second byte will return the
+    scan code set currently in use.</td> 
+  </tr>
+  <tr>
+    <td valign="top">
+    <b>F3</b></td> 
+    <td valign="top">
+    Set typematic repeat rate. Keyboard will acknowledge command
+    with FA and wait for a second byte, which determines the typematic
+    repeat rate.</td> 
+  </tr>
+  <tr>
+    <td valign="top">
+    <b>F4</b></td> 
+    <td valign="top">
+    Keyboard enable - clears the keyboard's output buffer, enables
+    keyboard scanning and returns an acknowledgment.</td> 
+  </tr>
+  <tr>
+    <td valign="top">
+    <b>F5</b></td> 
+    <td valign="top">
+    Keyboard disable - resets the keyboard, disables keyboard scanning
+    and returns an acknowledgment.</td> 
+  </tr>
+  <tr>
+    <td valign="top">
+    <b>FE</b></td> 
+    <td valign="top">
+    Resend - upon receipt of the re-send command, the keyboard will
+    re-transmit the last byte sent.</td> 
+  </tr>
+  <tr>
+    <td valign="top">
+    <b>FF</b></td> 
+    <td valign="top">
+    Reset - resets the keyboard.</td> 
+  </tr>
+</tbody></table>
+
+<p>Please refer to Craig Peacock's website for more information:
+<a href="http://www.beyondlogic.org/keyboard/keybrd.htm" target="_blank">Interfacing
+the PC's Keyboard</a><br>
+&nbsp;</p>
+
+<h2><a name="project_resources"></a>Project Resources <span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></h2>
+
+<h3><a name="assembler_code"></a>Available Microchip PIC Assembler
+Code <span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></h3>
+
+<p></p><table border="1" cellpadding="4" cellspacing="2" width="750">
+  <tbody><tr>
+    <td valign="top" width="170">
+    <b>Main File</b></td> 
+    <td valign="top" width="260">
+    <b>Main Keyboard Decode Lookup Table</b></td> 
+    <td valign="top" width="260">
+    <b>SHIFT Keyboard Decode Lookup Table</b></td> 
+    <td valign="top" width="170">
+    <b>HEX Files</b></td> 
+  </tr>
+  <tr>
+    <td rowspan="2" valign="top" width="170">
+    Latest version:<br>
+    <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/kbd_1xx.asm" target="_self">kbd_1xx.asm</a></td> 
+    <td valign="top" width="260">
+    English 'codepage' (QWERTY)<br>
+    View: <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/eng_main.html" target="_self">eng_main.html</a><br>
+    Download: <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/eng_main.asm" target="_self">eng_main.asm</a></td> 
+    <td valign="top" width="260">
+    English 'codepage' (QWERTY)<br>
+    View: <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/eng_shif.html" target="_self">eng_shif.html</a><br>
+    Download: <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/eng_shif.asm" target="_self">eng_shif.asm</a></td> 
+    <td rowspan="2" valign="top" width="170">
+    <p>QWERTY 'codepage': <br>
+    <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/kbd_104_eng.hex" target="_self">kbd_104_eng.hex</a></p>
+
+    <p>QWERTZ 'codepage': <br>
+    <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/kbd_104_sg.hex" target="_self">kbd_104_sg.hex</a></p></td> 
+  </tr>
+  <tr>
+     
+    <td valign="top" width="260">
+    Modified Swiss German 'codepage' (QWERTZ)<br>
+    View: <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/ger_main.html" target="_self">ger_main.html</a><br>
+    Download: <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/ger_main.asm" target="_self">ger_main.asm</a></td> 
+    <td valign="top" width="260">
+    Modified Swiss German 'codepage' (QWERTZ)<br>
+    View: <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/ger_shif.html" target="_self">ger_shif.html</a><br>
+    Download: <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/ger_shif.asm" target="_self">ger_shif.asm</a></td>
+  </tr>
+  <tr>
+    <td colspan="4" valign="top">
+    The above programs need additional include files (<a href="http://www.electronic-engineering.ch/microchip/modules/modules.html" target="_self">modules</a>) to get successfully assembled: m_bank.asm,
+    m_wait.asm, m_rs096.asm</td>
+     
+  </tr>
+  <tr>
+    <td colspan="4" valign="top">
+    For those, who are not familiar with interfacing a PIC to the
+    RS232 using a MAX232: &nbsp;&nbsp;<a href="http://www.electronic-engineering.ch/microchip/projects/rs_test/RS232-Interface.pdf">RS232-Interface.pdf</a>&nbsp;&nbsp;
+    (9.7 kB)</td>
+     
+  </tr>
+</tbody></table><br>
+&nbsp;
+
+<h3><a name="schematic"></a>Schematic, Data Sheets and Pinout
+<span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></h3>
+
+<p><a href="http://www.electronic-engineering.ch/microchip/datasheets/kbd_spec.pdf">AT Keyboard Specification</a>
+(PDF, 189 kB)</p>
+
+<p>The schematic of the AT keyboard interface using the PIC 16F84:&nbsp;
+&nbsp;<a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/Keyboard_V1xx.pdf">Keyboard_V1xx.pdf</a>.</p>
+
+<p>You don't know how a dot matrix LCD is working? Have a look
+at my <a href="http://www.electronic-engineering.ch/microchip/datasheets/datasheets.html" target="_self">data
+sheets page</a>.</p>
+
+<p>Download ASCII Character Map: <a href="http://www.electronic-engineering.ch/microchip/datasheets/ASCII-Map.pdf">ASCII-Map.pdf</a></p>
+
+<p>You can get the pinout and a description of the various keyboard
+connectors <a href="http://www.electronic-engineering.ch/microchip/datasheets/pinout/pinout.html#keyboard_5" target="_self">&lt;here&gt;</a>.<br>
+&nbsp;</p>
+
+<h2><a name="customization"></a>User-specific Customization /
+FAQ <span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></h2>
+
+<p>This section covers important details of the code structure.
+For a high level view, please refer to the section <a href="#how_it_works" target="_self">'How it works'</a> above. Basically, I have written
+this keyboard project in such a way that it is completely customizable
+depending on your programming/PIC assembler skills.<br>
+&nbsp;</p>
+
+<h3><a name="faq_kbd_input"></a>How do I use the AT Keyboard Input?
+<span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></h3>
+
+<p><b>Question:</b> I'm running your AT Keyboard code. But how
+do I use the decoded input of the AT keyboard...?</p>
+
+<p><b>Answer:</b> The decoded content resides usually in the register
+<i>KBD</i>. You can use the content of this register in the main
+routine in the infinitive loop. Please see the section <a href="#how_it_works" target="_self">'How it works'</a> above.<br>
+&nbsp;</p>
+
+<h3><a name="faq_decoding"></a>How does the Scan Pattern Decoding
+work exactly? <span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>]
+[<a href="#top">Top</a>]</span></h3>
+
+<p><b>Question:</b> How does your AT scan pattern decoding work
+exactly? You are using two strange look-up tables...</p>
+
+<p><b>Answer:</b> Have a look at some parts of the <i>'AT Keyboard
+Lookup Table'</i>, e.g. the <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/eng_main.asm" target="_self">eng_main.asm
+(QWERTY)</a>:</p>
+
+<p>The simple lookup table decoding is done with <i>retlw x</i>
+and <i>DT x</i>. These directives just return the corresponding
+ASCII character. The more sophisticated decoding is done with
+subroutines, i.e. <i>goto _XYZ</i>. This means for instance that
+for a ENTER/RETURN key hit on the keyboard, the subroutine <i>_CRLF</i>
+is executed (carriage return, line feed) and for ALT, CTRL, SHIFT
+and CAPS_LOCK, the corresponding flags are set in their corresponding
+subroutines.</p>
+
+<p></p><table border="1" cellpadding="10" cellspacing="0" width="650">
+  <tbody><tr>
+    <td bgcolor="#faf4c9" width="100%">
+    <table border="0" cellpadding="0" cellspacing="2" width="630">
+      <tbody><tr>
+        <td width="160">
+        goto _ALT</td> 
+        <td>
+        ; ALT (set/clear ALT flag)</td> 
+      </tr>
+      <tr>
+        <td width="160">
+        goto _SHIFT</td> 
+        <td>
+        ; SHIFT (set/clear SHIFT flag)</td> 
+      </tr>
+      <tr>
+        <td width="160">
+        retlw 0</td> 
+        <td>
+        ;</td> 
+      </tr>
+      <tr>
+        <td width="160">
+        goto _CTRL</td> 
+        <td>
+        ; CTRL (set/clear CTRL flag)</td> 
+      </tr>
+      <tr>
+        <td width="160">
+        DT "q1"</td> 
+        <td>
+        ; DT: MPASM directive to create a table (retlw x)</td> 
+      </tr>
+      <tr>
+        <td width="160">
+        goto _CRLF</td> 
+        <td>
+        ; CR, LF 0x5A</td> 
+      </tr>
+    </tbody></table></td>
+  </tr>
+</tbody></table>
+
+<p>Because the keyboard sends slightly different scan patterns
+for both, key hit and key release, there is need for a key release
+handling. This is done with the so-called release flag. So for
+every single character typed, the interrupt service routine is
+called twice (due to two different scan codes for hit and release)
+and the scan pattern decoding routine is executed twice.</p>
+
+<p></p><table border="1" cellpadding="10" cellspacing="0" width="650">
+  <tbody><tr>
+    <td bgcolor="#faf4c9" width="100%">
+    <table border="0" cellpadding="0" cellspacing="2" width="630">
+      <tbody><tr>
+        <td width="260">
+        #define RELflag FLAGreg,0x00</td> 
+        <td>
+        ; release flag (0xF0)</td> 
+      </tr>
+      <tr>
+        <td width="260">
+        #define SHIflag FLAGreg,0x01</td> 
+        <td>
+        ; shift flag (0x12 / 0x59)</td> 
+      </tr>
+      <tr>
+        <td width="260">
+        #define SPEflag FLAGreg,0x02</td> 
+        <td>
+        ; special code flag (0xE0)</td> 
+      </tr>
+      <tr>
+        <td width="260">
+        #define CAPflag FLAGreg,0x03</td> 
+        <td>
+        ; caps lock flag (0x0D)</td> 
+      </tr>
+      <tr>
+        <td width="260">
+        #define ALTflag FLAGreg,0x04</td> 
+        <td>
+        ; ALT flag (0x11)</td> 
+      </tr>
+      <tr>
+        <td width="260">
+        #define CTRLflag FLAGreg,0x05</td> 
+        <td>
+        ; CTRL flag (0x14)</td> 
+      </tr>
+      <tr>
+        <td width="260">
+        #define KBDflag FLAGreg,0x06</td> 
+        <td>
+        ; keyboard data reception flag</td> 
+      </tr>
+    </tbody></table></td>
+  </tr>
+</tbody></table>
+
+<p>There are these four main code blocks in the keyboard assembler
+source:</p>
+
+<ol>
+  <li>Interrupt based keyboard scan pattern acquisition
+  </li><li>Keyboard scan code pre-decoding, set / clear flags
+  </li><li>Scan code range checking (consistency checks)
+  </li><li>Scan code decoding (look-up tables) &amp; ASCII character
+  conversion and output (LCD, RS232)
+</li></ol>
+
+<p>To save code space, I've implemented the two look-up tables
+(main and shift) as follows:</p>
+
+<ul>
+  <li>Small letters (a-z) are translated directly with the main
+  look-up table, capital letters (A-Z) are obtained by simply adding
+  d'224' (8 bit unsigned wrap-around) to the main look-up table
+  results of small letters. Active shift button of the keyboard
+  is only tracked by the shift flag.
+  </li><li>Shift table is only used for special character conversion,
+  e.g. +, %, &amp;, (, ), ?
+  </li><li>Compression is also applied to lookup sections, where scan
+  patterns are quite distant, e.g. for the entire keyboard num-block
+  (keypad).
+</li></ul>
+
+<p>If you apply changes to the existing code, you may need to
+change the ORG directives in order to realign the assembler code
+properly, due to the different lookup tables and the PIC page
+boundaries.<br>
+&nbsp;</p>
+
+<h3><a name="faq_key_customization"></a>My own Key Customization
+<span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></h3>
+
+<p><b>Question:</b> I have built successfully your AT keyboard
+project and it is running very well.<br>
+Now I want to customize my code such as to print out a predefined
+phrase e.g. <i>'Hello World'</i> whenever I hit a specific key...?</p>
+
+<p><b>Answer:</b> This is not a difficult task, if you just use
+<i>one</i> specific key, for instance F9.<br>
+(For sequences like <i>'asdf'</i>, you must write your own detection
+routine for the main loop by checking the values in register KBD.)
+First look at the look-up tables (LUT), for instance the <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/eng_main.asm" target="_self">eng_main.asm (QWERTY)</a>:</p>
+
+<p>It is essentially a LUT which performs the decoding of the
+acquired keyboard scan codes into characters. At the top, the
+entries for the F1-F12 function keys are located.<br>
+If you want a specific text to be displayed by pressing F9, change
+the line<br>
+&nbsp;&nbsp;<font color="#ff0000">retlw A'9' ; F9 -&gt; 9 0x01</font></p>
+
+<p></p><table border="1" cellpadding="10" cellspacing="0" width="650">
+  <tbody><tr>
+    <td bgcolor="#faf4c9" width="100%">
+    <pre>KBDtable ; (not used for characters typed with shift button active)
+        addwf   PCL,F
+        retlw   0       ; invalid entry
+        <font color="#ff0000">retlw   A'9'    ; F9 -&gt; 9       0x01</font>
+        retlw   0       ; 
+        retlw   A'5'    ; F5 -&gt; 5</pre>
+</td>
+  </tr>
+</tbody></table>
+
+<p>to<br>
+&nbsp;&nbsp;<font color="#ff0000">goto _MyRoutine</font></p>
+
+<p></p><table border="1" cellpadding="10" cellspacing="0" width="650">
+  <tbody><tr>
+    <td bgcolor="#faf4c9" width="100%">
+    <pre>KBDtable ; (not used for characters typed with shift button active)
+        addwf   PCL,F
+        retlw   0       ; invalid entry
+        <font color="#ff0000">goto    _MyRoutine ; NEW: user-specific decoding for F9</font>
+        retlw   0       ; 
+        retlw   A'5'    ; F5 -&gt; 5</pre>
+</td>
+  </tr>
+</tbody></table>
+
+<p>Then you implement your own key-specific handler/subroutine
+_MyRoutine in the main file (section sub-routines), which displays
+your string, e.g. something like:</p>
+
+<p></p><table border="1" cellpadding="10" cellspacing="0" width="650">
+  <tbody><tr>
+    <td bgcolor="#faf4c9" width="100%">
+    <pre>_MyRoutine
+        SENDw    'H'    ; send to RS232
+        SENDw    'e'
+        SENDw    'l'
+        SENDw    'l'
+        SENDw    'o'
+        SENDw    ' '
+        SENDw    'W'
+        SENDw    'o'
+        SENDw    'r'
+        SENDw    'l'
+        RETLW    'd'    ; return with last character in w
+; alternative termination:
+;       SENDw    'd'
+;       RETLW    0      ; clear w to obtain invalid entry</pre>
+</td>
+  </tr>
+</tbody></table>
+
+<p>You can do anything in this routine, just terminate with a
+RETLW 0 and ensure not to change any reserved registers...<br>
+If you want to alter the output for the keyboard characters in
+general, look at the the '_OUTP' section in the assembler source
+file <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/kbd_1xx.asm" target="_self">kbd_1xx.asm</a>:</p>
+
+<p></p><table border="1" cellpadding="10" cellspacing="0" width="650">
+  <tbody><tr>
+    <td bgcolor="#faf4c9" width="100%">
+    <pre>_OUTP  ;*** RS232 ***
+       movfw    KBD
+       SENDw            ; send actual pressed keyboard character
+       goto _ClrStall</pre>
+</td>
+  </tr>
+</tbody></table>
+
+<p>There, the acquired keyboard character (in KBD) is sent to
+the RS232 interface.<br>
+If having a LCD display, the value of KBD might also be displayed
+using:</p>
+
+<p></p><table border="1" cellpadding="10" cellspacing="0" width="650">
+  <tbody><tr>
+    <td bgcolor="#faf4c9" width="100%">
+    <pre>_OUTP  ;*** LCD &amp; RS232 ***
+       movfw    KBD
+       LCDw             ; display keyboard character on LCD
+       movfw    KBD
+       SENDw            ; send actual pressed keyboard character
+       goto _ClrStall</pre>
+</td>
+  </tr>
+</tbody></table>
+
+<p>This is roughly what is done in the '_OUTP' section in the
+assembler source file <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v2xx/kbd_2xx.asm" target="_self">kbd_2xx.asm</a>.<br>
+&nbsp;</p>
+
+<h3><a name="faq_key_sequence"></a>My own Key Sequence <span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></h3>
+
+<p><b>Question:</b> I have built successfully your AT keyboard
+project and it is running very well.<br>
+Now I want to customize my code such as to detect a specific key
+sequence, e.g. <i>'asdf'</i>. Is this feasible...?</p>
+
+<p><b>Answer:</b> This is a more challenging task. (Alternatively,
+consider to just use one specific key e.g. F9 as described above.)<br>
+You need to write your own subroutine in the main loop in order
+to detect the desired character sequence. The keyboard character
+is usually passed within the register <i>KBD</i>.</p>
+
+<p></p><table border="1" cellpadding="10" cellspacing="0" width="650">
+  <tbody><tr>
+    <td bgcolor="#faf4c9" width="100%">
+    <pre>        ;******************************
+_MLOOP  btfsc   KBDflag      ; check scan pattern reception flag
+        call    KBDdecode    ; if set, call decoding routine
+        ;btfsc   your_other_flag
+        ;call    your_other_service
+        goto    _MLOOP
+        ;******************************</pre>
+</td>
+  </tr>
+</tbody></table>
+
+<p>&nbsp;</p>
+
+<h2><a name="confusion"></a>Confusion about Sweden and Switzerland...?
+<span class="toc">&nbsp;&nbsp;[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></h2>
+
+<p>Do you know <i>Microsoft</i>? Are you a global player, too?
+Or do you travel sometimes to Europe?<br>
+Did it happen to you, that you ended up in Stockholm instead of
+Zurich?</p>
+
+<p>Don't worry, even Microsoft is confused by the two european
+countries, Sweden and Switzerland.<br>
+You are excused as well if you mix this up...</p>
+
+<p></p><table border="0" cellpadding="8" cellspacing="2" width="773">
+  <tbody><tr>
+    <td valign="top" width="270">
+    <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/ms_wired500_01.jpg" target="_self"><img src="keyboard_v1xx_files/t_ms_wired500_01.jpg" naturalsizeflag="0" alt="Microsoft Wired 500 PS/2" align="bottom" border="0" height="200" width="248"></a>
+</td>
+    <td valign="top" width="250">
+    <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/ms_wired500_02.jpg" target="_self"><img src="keyboard_v1xx_files/t_ms_wired500_02.jpg" naturalsizeflag="0" alt="Swiss-German Keyboard Layout" align="bottom" border="0" height="200" width="235"></a>
+</td>
+    <td valign="top" width="250">
+    <a href="http://www.electronic-engineering.ch/microchip/projects/keyboard/v1xx/ms_wired500_03.jpg" target="_self"><img src="keyboard_v1xx_files/t_ms_wired500_03.jpg" naturalsizeflag="0" alt="Skandinavian Manual" align="bottom" border="0" height="200" width="199"></a>
+</td>
+  </tr>
+  <tr>
+    <td colspan="3" valign="top">
+    <b><i>Microsoft Wired Keyboard 500</i></b><i><br>
+    I recently bought two cheap, but nice Microsoft PS/2 keyboards
+    - before PS/2 products are fading out. Microsoft obviously does
+    not know the difference between Sweden and Switzerland: They
+    supplied a skandinavian manual (swedish, norwegian, danish, finnish)
+    instead of a central europe one (german, french, italian, english).
+    Ok, it could have been worse: they could have shipped a japanese
+    keyboard layout...</i></td>
+     
+  </tr>
+</tbody></table>
+
+<p>&nbsp;</p>
+
+<p>Last updated: 23.04.2006</p>
+
+<p></p><center><span class="toc">[<a href="#toc">Toc</a>] [<a href="#top">Top</a>]</span></center>
+
+<p></p><center><hr width="290"><table border="0" cellpadding="0" cellspacing="2" height="20" width="300">
+  <tbody><tr>
+    <td align="center" valign="top">
+    <span class="footer">If you see only this page in your browser
+    window,</span></td> 
+  </tr>
+  <tr>
+    <td align="center" valign="top">
+    <a href="http://www.electronic-engineering.ch/microchip/index.html" target="_top"><span class="footer">click here</span></a></td> 
+  </tr>
+  <tr>
+    <td align="center" valign="top">
+    <span class="footer">to get the entire site.</span></td> 
+  </tr>
+</tbody></table></center>
+
+</body></html>

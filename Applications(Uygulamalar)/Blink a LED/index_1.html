@@ -1,0 +1,779 @@
+<html><head><title>blink a LED</title>
+
+
+
+<meta name="Keywords" content="Microchip, PIC, PICmicro, flash,
+   blink, led, example,
+   12F629, 12F675,
+   16F630, 16f676,
+   16F818, 16f819,
+   18F242, 18F442, 18F252, 18F452,
+   18F248, 18F448, 18F258, 18F458,
+   16F87x, 16F877, 16F876, 16F874, 16F873, 16F872, 16F871, 16F870,   
+   16F87xA, 16F877A, 16F876A, 16F874A, 16F873A, 16F872A, 16F871A, 16F870A,   
+   16F72, 16F73, 16F74, 16F76, 16F77,
+   16F87x, 16F628, 16F627,
+   16x84, 16C84, 16F84, 16F84A,
+   16F87, 16F88">
+
+<meta name="Description" content="blink-a-LED examples for Microchip PICmicro controllers,
+   with circuits, code and pictures."></head><body onload="self.focus()" alink="#558888" bgcolor="#cccc99" link="#336666" vlink="#558888">    
+
+<!-- -------------------------------------------------------------------- -->
+
+<h1>blink a LED</h1>
+    
+using one of these flash PICmicro controllers:                                     
+
+<p>
+
+<a href="#12F629">12F629</a>
+<a href="#12F629">12F675</a>
+<br>
+
+<a href="#16C84">16C84</a>
+<br>
+
+<a href="#16F627">16F627</a>
+<a href="#16F627">16F628</a>
+<br>
+
+<a href="#16F630">16F630</a>
+<a href="#16F630">16F676</a>
+<br>
+
+<a href="#16F73">16F72</a>
+<a href="#16F73">16F73</a>
+<a href="#16F74">16F74</a>
+<a href="#16F73">16F76</a>
+<a href="#16F74">16F77</a>
+<br>
+
+<a href="#16F818">16F818</a>
+<a href="#16F818">16F819</a>
+<br>
+
+<a href="#16C84">16C84</a>
+<a href="#16F84A">16F84</a>
+<a href="#16F84A">16F84A</a>
+<br>
+
+<a href="#16F88">16F87</a>
+<a href="#16F88">16F88</a>
+<br>
+
+<a href="#16F870">16F870</a>
+<a href="#16F871">16F871</a>
+<a href="#16F870">16F872</a>
+<a href="#16F870">16F873(A)</a>
+<a href="#16F871">16F874(A)</a>
+<a href="#16F870">16F876(A)</a>
+<a href="#16F871">16F877(A)</a>
+<br>
+
+<a href="#18F1220">18F1220</a>
+<a href="#18F1220">18F1320</a>
+<br>
+
+<a href="#18F242">18F242</a>
+<a href="#18F242">18F248</a>
+<a href="#18F242">18F252</a>
+<a href="#18F242">18F258</a>
+<br>
+
+<a href="#18F442">18F442</a>
+<a href="#18F442">18F448</a>
+<a href="#18F442">18F452</a>
+<a href="#18F442">18F458</a>
+<br>
+
+<a href="#18F442">18F4320</a>
+<br>
+
+<a href="#16F877asynch">16F877 asynchronous communication</a>
+
+</p>
+
+<!-- -------------------------------------------------------------------- -->
+<hr>                     
+
+<p>
+For non-embedded programmers the first thing to try on a new 
+system or in a new programming language is to print out "hello world".
+The equivalent for microcontrollers and other embedded systems is to 
+blink a LED. When even the target circuit 
+and the programmer are freshly put together it is
+wise to start even lower, with a blink-a-LED program 
+written by someone else that is known to be working. 
+Then when the LED does not blink (which is likely) 
+there is one thing less to doubt about.
+On this page you will find 1 and 2 Hz blink-a-LED (and some other) test 
+programs for various targets chips and circuits. 
+Two blink frequencies are provided so you can check 
+whether a target that already contains one of the blink
+programs is realy reprogrammed by using the other one.
+</p>        
+
+<p>
+When you are new to PICmicro controller use, do
+read my <a href="http://www.voti.nl/swp">Start With PICs</a> document,
+before you attempt to use a PICmicro controller.
+</p>
+
+<p>
+Looking closely at the breadboard pictures you will
+notice a few components that are not show in the circuit diagrams:
+a resistor / LED to indicate power, and some extra 
+power decoupling.
+</p>
+
+<p>
+The colors of the wires that connect the programmer to the 
+target breadboard and
+the corresponding explantion are as advised for use
+with my <a href="http://www.voti.nl/wisp628">Wisp628</a> programmer.
+Note that recent kits use a purple wire for what used to be the green wire (RB6).
+All pictures on this page still show a green wire.
+</p>
+
+<p>
+If are looking for other (mostly non-PIC) LED blink, flash and
+sequencing circuits look 
+<a target="_blank" href="http://www.discovercircuits.com/L/lite-flash.htm">here</a>.
+
+
+<!-- FILES ./code -->
+
+
+<!-- -------------------------------------------------------------------- -->
+</p><hr>                     
+
+<a name="12F629"></a>
+
+<h3>12F629, 12F675 <br>&nbsp;&nbsp;&nbsp;with crystal</h3>
+
+<a target="_blank" href="http://www.voti.nl/blink/pics/b-675-150.gif"><img src="index_1_files/b-675-85.gif" border="1" height="201" width="345"></a>
+<!-- FILES ./pics/b-675-150.gif ./pics/b-675-85.gif -->
+
+<a target="_blank" href="http://www.voti.nl/blink/pics/bb-675-big.jpg"><img src="index_1_files/bb-675-200.jpg" border="1" height="144" width="200"></a>
+<!-- FILES ./pics/bb-675-big.jpg ./pics/bb-675-200.jpg -->
+     
+
+&nbsp;<br>
+<table><tbody><tr><td width="200">
+source
+</td><td>
+<a target="_blank" href="http://www.voti.nl/blink/code/b675-1.jal">b675-1.jal</a>,
+<a target="_blank" href="http://www.voti.nl/blink/code/b675-2.jal">b675-2.jal</a>
+</td></tr>
+<tr><td>
+xwisp command line
+</td><td>
+<b><code>python xwisp.py go <a target="_blank" href="http://www.voti.nl/blink/code/b675-1.hex">b675-1.hex</a></code></b>
+(or <b><code>go <a target="_blank" href="http://www.voti.nl/blink/code/b675-2.hex">b675-2.hex</a>)</code></b><br>
+</td></tr></tbody></table>
+
+<p>
+The 12F629 and 12F675 are currently the only 8-pin flash PICmicro chips available.
+The price of these chips makes them very attractive for small projects.
+These chips do not support LVP, so pin 6 of the target connector (white wire)
+can be left unconnected.
+</p>
+
+<p>
+&nbsp;
+</p>
+
+<h3>12F629, 12F675 <br>&nbsp;&nbsp;&nbsp;with internal oscillator and internal /MCLR</h3>
+
+<a target="_blank" href="http://www.voti.nl/blink/pics/b-675i-150.gif"><img src="index_1_files/b-675i-85.gif" border="1" height="199" width="344"></a>
+<!-- FILES ./pics/b-675i-150.gif ./pics/b-675i-85.gif -->
+
+<a target="_blank" href="http://www.voti.nl/blink/pics/bb-675i-big.jpg"><img src="index_1_files/bb-675i-200.jpg" border="1" height="141" width="200"></a>
+<!-- FILES ./pics/bb-675i-big.jpg ./pics/bb-675i-200.jpg -->
+     
+
+&nbsp;<br>
+<table><tbody><tr><td width="200">
+source
+</td><td>
+<a target="_blank" href="http://www.voti.nl/blink/code/b675i-1.jal">b675i-1.jal</a>,
+<a target="_blank" href="http://www.voti.nl/blink/code/b675i-2.jal">b675i-2.jal</a>
+</td></tr>
+<tr><td>
+xwisp command line
+</td><td>
+<b><code>python xwisp.py go <a target="_blank" href="http://www.voti.nl/blink/code/b675i-1.hex">b675i-1.hex</a></code></b>
+(or <b><code>go <a target="_blank" href="http://www.voti.nl/blink/code/b675i-2.hex">b675i-2.hex</a>)</code></b><br>
+</td></tr></tbody></table>
+
+<p>
+The 12F chips have an internal 4 Mhz oscillator and can be configured for
+internal /MCLR, which reduces the number of external components,
+and makes more pins available for I/O 
+(with internal oscillator and internal /MCLR 6 I/O pins are available).
+Note that the internal 4 MHz clock is sufficiently accurate 
+for blinking a LED, but just barely adequate for reliable asynchronous serial 
+communication.
+</p>
+
+ 
+
+
+<!-- -------------------------------------------------------------------- -->
+<hr>                     
+
+<a name="16F630"></a>
+
+<h3>16F630, 16F676 <br>&nbsp;&nbsp;&nbsp;with crystal</h3>
+
+<a target="_blank" href="http://www.voti.nl/blink/pics/b-630-150.gif"><img src="index_1_files/b-630-85.gif" border="1" height="201" width="388"></a>
+<!-- FILES ./pics/b-630-150.gif ./pics/b-630-85.gif -->
+
+<a target="_blank" href="http://www.voti.nl/blink/pics/bb-630-big.jpg"><img src="index_1_files/bb-630-200.jpg" border="1" height="134" width="200"></a>
+<!-- FILES ./pics/bb-630-big.jpg ./pics/bb-630-200.jpg -->
+     
+
+&nbsp;<br>
+<table><tbody><tr><td width="200">
+source
+</td><td>
+<a target="_blank" href="http://www.voti.nl/blink/code/b630-1.jal">b630-1.jal</a>,
+<a target="_blank" href="http://www.voti.nl/blink/code/b630-2.jal">b630-2.jal</a>
+</td></tr>
+<tr><td>
+xwisp command line
+</td><td>
+<b><code>python xwisp.py go <a target="_blank" href="http://www.voti.nl/blink/code/b630-1.hex">b630-1.hex</a></code></b>
+(or <b><code>go <a target="_blank" href="http://www.voti.nl/blink/code/b630-2.hex">b630-2.hex</a>)</code></b><br>
+</td></tr></tbody></table>
+
+<p>
+The 16F630 and 16F676 are currently the only 14-pin flash PICmicro chips available.
+The price of these chips makes them very attractive for small projects,
+that need some more I/O pins that provided by the 8-pin chips.
+These chips do not support LVP, so pin 6 of the target connector (white wire)
+can be left unconnected.
+Note that (unlike other chips) the 16F630 and 16F676 use RA0 as one of the
+programming pins. Hence the circuits connect the LED to pin RC0. The programs
+blink both RC0 and RA0, but connecting a LED to RA0 will make in-circuit
+programming with Wisp628 impossible because the load is too high for the 
+programmer.
+</p>
+
+<p>
+&nbsp;
+</p>
+
+<h3>16F630, 16F676 <br>&nbsp;&nbsp;&nbsp;with internal oscillator and internal /MCLR</h3>
+
+<a target="_blank" href="http://www.voti.nl/blink/pics/b-630i-150.gif"><img src="index_1_files/b-630i-85.gif" border="1" height="201" width="345"></a>
+<!-- FILES ./pics/b-630i-150.gif ./pics/b-630i-85.gif -->
+
+<a target="_blank" href="http://www.voti.nl/blink/pics/bb-630i-big.jpg"><img src="index_1_files/bb-630i-200.jpg" border="1" height="140" width="200"></a>
+<!-- FILES ./pics/bb-630i-big.jpg ./pics/bb-630i-200.jpg -->
+     
+
+&nbsp;<br>
+<table><tbody><tr><td width="200">
+source
+</td><td>
+<a target="_blank" href="http://www.voti.nl/blink/code/b630i-1.jal">b630i-1.jal</a>,
+<a target="_blank" href="http://www.voti.nl/blink/code/b630i-2.jal">b630i-2.jal</a>
+</td></tr>
+<tr><td>
+xwisp command line
+</td><td>
+<b><code>python xwisp.py go <a target="_blank" href="http://www.voti.nl/blink/code/b630i-1.hex">b630i-1.hex</a></code></b>
+(or <b><code>go <a target="_blank" href="http://www.voti.nl/blink/code/b630-2.hex">b630i-2.hex</a>)</code></b><br>
+</td></tr></tbody></table>
+
+<p>
+The 16F630 and 16F676 chips have an internal 4 Mhz oscillator and can be configured for
+internal /MCLR, which reduces the number of external components,
+and makes some more pins available for I/O.
+Note that the internal 4 MHz clock is sufficiently accurate 
+for blinking a LED, but just barely adequate for reliable asynchronous serial 
+communication.
+</p>
+
+ 
+
+
+<!-- -------------------------------------------------------------------- -->
+<hr>         
+
+<a name="16C84"></a>            
+
+<h3>16C84, 16F84</h3>
+
+<a target="_blank" href="http://www.voti.nl/blink/pics/b-84-150.gif"><img src="index_1_files/b-84-85.gif" border="1" height="199" width="344"></a>
+<!-- FILES ./pics/b-84-150.gif ./pics/b-84-85.gif -->
+
+<a target="_blank" href="http://www.voti.nl/blink/pics/bb-x84-big.jpg"><img src="index_1_files/bb-x84-200.jpg" border="1" height="151" width="200"></a>
+<!-- FILES ./pics/bb-x84-big.jpg ./pics/bb-x84-200.jpg -->
+     
+
+&nbsp;<br>
+<table><tbody><tr><td width="200">
+source
+</td><td>
+<a target="_blank" href="http://www.voti.nl/blink/code/b84-1.jal">b84-1.jal</a>,
+<a target="_blank" href="http://www.voti.nl/blink/code/b84-2.jal">b84-2.jal</a>
+</td></tr>
+<tr><td>
+xwisp command line
+</td><td>
+<b><code>python xwisp.py target C84 go <a target="_blank" href="http://www.voti.nl/blink/code/b84-1.hex">b84-1.hex</a></code></b>
+(or <b><code>go <a target="_blank" href="http://www.voti.nl/blink/code/b84-2.hex">b84-2.hex</a>)</code></b><br>
+</td></tr></tbody></table>
+
+<p>
+The 16C84 and 16F84 are obsolete (and no longer produced by Microchip),
+but can still be found in published designs.
+Unlike the other supported PICmicro's these chips have a maximum clock frequency 
+of 10 Mhz. 
+These chips do not support LVP, so pin 6 of the target connector (white wire)
+can be left unconnected.
+</p>
+
+
+<!-- -------------------------------------------------------------------- -->
+<hr>                     
+
+<a name="16F84A"></a>
+
+<h3>16F84A</h3>
+
+<a target="_blank" href="http://www.voti.nl/blink/pics/b-84a-150.gif"><img src="index_1_files/b-84a-85.gif" border="1" height="199" width="344"></a>
+<!-- FILES ./pics/b-84a-150.gif ./pics/b-84a-85.gif -->
+
+<a target="_blank" href="http://www.voti.nl/blink/pics/bb-x84-big.jpg"><img src="index_1_files/bb-x84-200.jpg" border="1" height="151" width="200"></a>
+<!-- FILES ./pics/bb-x84-big.jpg ./pics/bb-x84-200.jpg -->
+
+
+&nbsp;<br>
+<table><tbody><tr><td width="200">
+source
+</td><td>
+<a target="_blank" href="http://www.voti.nl/blink/code/b84a-1.jal">b84a-1.jal</a>
+<a target="_blank" href="http://www.voti.nl/blink/code/b84a-2.jal">b84a-2.jal</a>
+</td></tr>
+<tr><td>
+xwisp command line
+</td><td>
+<b><code>python xwisp.py target f84a go <a target="_blank" href="http://www.voti.nl/blink/code/b84a-1.hex">b84a-1.hex</a></code></b>
+(or <b><code>go <a target="_blank" href="http://www.voti.nl/blink/code/b84a-2.hex">b84a-2.hex</a>)</code></b>
+</td></tr></tbody></table>
+
+<p>
+The 16F84A is still produced, but for new designs it obsoleted by the cheaper and more powerfull 16F628.
+Unlike the 16C84 and the plain 16F84 (without the 'a') the maximum clock frequency 
+is 20 MHz.   
+This chip does not support LVP, so pin 6 of the target connector (white wire)
+can be left unconnected.
+</p>
+
+
+<!-- -------------------------------------------------------------------- -->
+<hr>                     
+
+<a name="16F627"></a>
+<a name="16F818"></a>
+<a name="16F88"></a>
+
+<h3>16F627, 16F628,<br> 16F818, 16F819,<br> 16F87, 16F88 <br>&nbsp;&nbsp;&nbsp;with crystal</h3>
+
+<a target="_blank" href="http://www.voti.nl/blink/pics/b-628-150.gif"><img src="index_1_files/b-628-85.gif" border="1" height="199" width="344"></a>
+<!-- FILES ./pics/b-628-150.gif ./pics/b-628-85.gif -->
+
+<a target="_blank" href="http://www.voti.nl/blink/pics/bb-f628-big.jpg"><img src="index_1_files/bb-f628-200.jpg" border="1" height="129" width="200"></a>
+<!-- FILES ./pics/bb-f628-big.jpg ./pics/bb-f628-200.jpg -->
+
+
+&nbsp;<br>
+<table><tbody><tr><td width="120">
+</td></tr><tr><td>
+for 16F62x
+</td><td width="200">
+source
+</td><td>
+<a target="_blank" href="http://www.voti.nl/blink/code/b628-1.jal">b628-1.jal</a>
+<a target="_blank" href="http://www.voti.nl/blink/code/b628-2.jal">b628-2.jal</a>
+</td></tr>
+<tr><td></td><td>
+xwisp command line
+</td><td>
+<b><code>python xwisp.py go <a target="_blank" href="http://www.voti.nl/blink/code/b628-1.hex">b628-1.hex</a></code></b>
+(or <b><code>go <a target="_blank" href="http://www.voti.nl/blink/code/b628-2.hex">b628-2.hex</a>)</code></b>
+</td></tr>
+
+<tr><td>
+for 16F81x, 16F8x
+</td><td width="200">
+source
+</td><td>
+<a target="_blank" href="http://www.voti.nl/blink/code/b818-1.jal">b818-1.jal</a>
+<a target="_blank" href="http://www.voti.nl/blink/code/b818-2.jal">b818-2.jal</a>
+</td></tr>
+<tr><td></td><td>
+xwisp command line
+</td><td>
+<b><code>python xwisp.py go <a target="_blank" href="http://www.voti.nl/blink/code/b818-1.hex">b818-1.hex</a></code></b>
+(or <b><code>go <a target="_blank" href="http://www.voti.nl/blink/code/b818-2.hex">b818-2.hex</a>)</code></b>
+</td></tr></tbody></table>
+
+<p>
+The 16F628 is the cheapest 18-pin flash PICmicro (disregarding the 16F627, which
+has half the code size but is only marginally cheaper - in fact it 
+is sometimes more expensive). The 16F818 and 16F819 are 18-pins chips
+with A/D converter (which the 16F62x do not have), but without the UART
+(which the 16F62x do have).
+</p>
+
+<p>
+&nbsp;
+</p>
+
+<h3>16F627, 16F628, <br>16F818, 16F819 , <br>16F87, 16F88 <br>&nbsp;&nbsp;&nbsp;with internal OSC and /MCLR</h3>
+
+<a target="_blank" href="http://www.voti.nl/blink/pics/b-628-i-150.gif"><img src="index_1_files/b-628-i-85.gif" border="1" height="199" width="344"></a>
+<!-- FILES ./pics/b-628-i-150.gif ./pics/b-628-i-85.gif -->
+
+<a target="_blank" href="http://www.voti.nl/blink/pics/bb-f628-i-big.jpg"><img src="index_1_files/bb-f628-i-200.jpg" border="1" height="144" width="200"></a>
+<!-- FILES ./pics/bb-f628-i-big.jpg ./pics/bb-f628-i-200.jpg -->
+
+
+&nbsp;<br>
+<table><tbody><tr><td width="120">
+</td></tr><tr><td>
+for 16F62x
+</td><td width="200">
+source
+</td><td>
+<a target="_blank" href="http://www.voti.nl/blink/code/b628i-1.jal">b628i-1.jal</a>
+<a target="_blank" href="http://www.voti.nl/blink/code/b628i-2.jal">b628i-2.jal</a>
+</td></tr>
+<tr><td></td><td>
+xwisp command line
+</td><td>
+<b><code>python xwisp.py go <a target="_blank" href="http://www.voti.nl/blink/code/b628i-1.hex">b628i-1.hex</a></code></b>
+(or <b><code>go <a target="_blank" href="http://www.voti.nl/blink/code/b628i-2.hex">b628i-2.hex</a>)</code></b>
+</td></tr>
+
+<tr><td>
+for 16F81x, 16F8x
+</td><td width="200">
+source
+</td><td>
+<a target="_blank" href="http://www.voti.nl/blink/code/b818i-1.jal">b818i-1.jal</a>
+<a target="_blank" href="http://www.voti.nl/blink/code/b818i-2.jal">b818i-2.jal</a>
+</td></tr>
+<tr><td></td><td>
+xwisp command line
+</td><td>
+<b><code>python xwisp.py go <a target="_blank" href="http://www.voti.nl/blink/code/b818i-1.hex">b818i-1.hex</a></code></b>
+(or <b><code>go <a target="_blank" href="http://www.voti.nl/blink/code/b818i-2.hex">b818i-2.hex</a>)</code></b>
+</td></tr></tbody></table>
+
+<p>
+The 16F62x and 16F81x have an internal oscillator 
+(4 MHz fixed for the 16F62x, 32 kHz .. 8 MHz configurable for the 16F81x)
+and can be configured for
+internal /MCLR, which reduces the number of external components,
+and makes more pins available for I/O.
+Note that the internal 4 MHz clock is sufficiently accurate 
+for blinking a LED, but not for reliable asynchronous serial 
+communication.
+</p>
+
+
+<!-- -------------------------------------------------------------------- -->
+<hr>                     
+
+<a name="18F1220"></a>
+
+<h3>18F1220, 18F1320</h3>
+
+<a target="_blank" href="http://www.voti.nl/blink/pics/b-1220-150.gif"><img src="index_1_files/b-1220-85.gif" border="1" height="201" width="338"></a>
+<!-- FILES ./pics/b-1220-150.gif ./pics/b-1220-85.gif -->
+
+<a target="_blank" href="http://www.voti.nl/blink/pics/bb-1220-big.jpg"><img src="index_1_files/bb-1220-200.jpg" border="1" height="138" width="200"></a>
+<!-- FILES ./pics/bb-1220-big.jpg ./pics/bb-1220-200.jpg -->
+
+
+&nbsp;<br>
+<table><tbody><tr><td width="200">
+source
+</td><td>
+<a target="_blank" href="http://www.voti.nl/blink/code/b452-1.jal">b452-1.jal</a>
+<a target="_blank" href="http://www.voti.nl/blink/code/b452-2.jal">b452-2.jal</a>
+</td></tr>
+<tr><td>
+xwisp command line
+</td><td>
+<b><code>python xwisp.py go <a target="_blank" href="http://www.voti.nl/blink/code/b452-1.hex">b452-1.hex</a></code></b>
+(or <b><code>go <a target="_blank" href="http://www.voti.nl/blink/code/b452-2.hex">b452-2.hex</a>)</code></b>
+</td></tr></tbody></table>
+
+<p>
+The 18F1220 and 18F1320 are the smallest (and cheapest) members of the 18F family.
+These are 18-pins chips, but the pinout differs subtly from the 18-pins chips in the 16F family.
+The blink code is the same as for the bigger 18Fxxx chips.
+These chips can also run on an internal clock.
+</p>
+
+
+<!-- -------------------------------------------------------------------- -->
+<hr>                     
+
+<a name="16F73"></a>
+<a name="16F870"></a>
+<a name="18F242"></a>
+
+<h3>
+16F73, 16F76<br>
+16F870, 16F872, 16F873(A), 16F876(A)<br>
+18F242, 18F248, 18F252, 18F258
+</h3>
+
+<a target="_blank" href="http://www.voti.nl/blink/pics/b-870-150.gif"><img src="index_1_files/b-870-85.gif" border="1" height="210" width="443"></a>
+<!-- FILES ./pics/b-870-150.gif ./pics/b-870-85.gif -->
+
+<a target="_blank" href="http://www.voti.nl/blink/pics/bb-870-big.jpg"><img src="index_1_files/bb-870-200.jpg" border="1" height="124" width="200"></a>
+<!-- FILES ./pics/bb-870-big.jpg ./pics/bb-870-200.jpg -->
+
+
+&nbsp;<br>
+<table><tbody><tr><td width="120">
+for 16F7x
+</td><td width="200">
+source
+</td><td>
+<a target="_blank" href="http://www.voti.nl/blink/code/b77-1.jal">b77-1.jal</a>
+<a target="_blank" href="http://www.voti.nl/blink/code/b77-2.jal">b77-2.jal</a>
+</td></tr>
+<tr><td></td><td>
+xwisp command line
+</td><td>
+<b><code>python xwisp.py go <a target="_blank" href="http://www.voti.nl/blink/code/b77-1.hex">b77-1.hex</a></code></b>
+(or <b><code>go <a target="_blank" href="http://www.voti.nl/blink/code/b77-2.hex">b77-2.hex</a>)</code></b>
+</td></tr>
+
+<tr><td>
+for 16F87x(A)
+</td><td width="200">
+source
+</td><td>
+<a target="_blank" href="http://www.voti.nl/blink/code/b877-1.jal">b877-1.jal</a>
+<a target="_blank" href="http://www.voti.nl/blink/code/b877-2.jal">b877-2.jal</a>
+</td></tr>
+<tr><td></td><td>
+xwisp command line
+</td><td>
+<b><code>python xwisp.py go <a target="_blank" href="http://www.voti.nl/blink/code/b877-1.hex">b877-1.hex</a></code></b>
+(or <b><code>go <a target="_blank" href="http://www.voti.nl/blink/code/b877-2.hex">b877-2.hex</a>)</code></b>
+</td></tr>
+
+<tr><td>
+for 18F2xx(A)
+</td><td width="200">
+source
+</td><td>
+<a target="_blank" href="http://www.voti.nl/blink/code/b452-1.jal">b452-1.jal</a>
+<a target="_blank" href="http://www.voti.nl/blink/code/b452-2.jal">b452-2.jal</a>
+</td></tr>
+<tr><td></td><td>
+xwisp command line
+</td><td>
+<b><code>python xwisp.py go <a target="_blank" href="http://www.voti.nl/blink/code/b452-1.hex">b452-1.hex</a></code></b>
+(or <b><code>go <a target="_blank" href="http://www.voti.nl/blink/code/b452-2.hex">b452-2.hex</a>)</code></b>
+</td></tr></tbody></table>
+
+<p>
+These 28-pin chips can all be regarded as 
+cheaper, stripped-down 16F877(A)'s or 18F2xx's.
+The blink program for the 16F87x (with or without the A) chips is the same as for the 16F877 itself,
+for the 16F7x and the 18F25x the program is slightly different.
+</p>
+
+<p>
+Note for 18F2xx: the LVP wire (white) must be connected to RB5 instead
+of RB3 (for the breadboard: next to the purple (used to be green) wire).
+</p>
+
+
+<!-- -------------------------------------------------------------------- -->
+<hr>                     
+
+<a name="16F74"></a>
+<a name="16F871"></a>
+<a name="18F442"></a>
+
+<h3>
+16F74, 16F77<br>
+16F871, 16F874(A), 16F877<br>
+18F442, 18F448, 18F452, 18F458<br>
+18F4320
+</h3>
+
+<a target="_blank" href="http://www.voti.nl/blink/pics/b-877-150.gif"><img src="index_1_files/b-877-85.gif" border="1" height="265" width="426"></a>
+<!-- FILES ./pics/b-877-150.gif ./pics/b-877-85.gif -->
+
+<a target="_blank" href="http://www.voti.nl/blink/pics/bb-f877-big.jpg"><img src="index_1_files/bb-f877-200.jpg" border="1" height="133" width="200"></a>
+<!-- FILES ./pics/bb-f877-big.jpg ./pics/bb-f877-200.jpg -->
+
+
+&nbsp;<br>
+<table><tbody><tr><td width="120">
+for 16F7x
+</td><td width="200">
+source
+</td><td>
+<a target="_blank" href="http://www.voti.nl/blink/code/b77-1.jal">b77-1.jal</a>
+<a target="_blank" href="http://www.voti.nl/blink/code/b77-2.jal">b77-2.jal</a>
+</td></tr>
+<tr><td></td><td>
+xwisp command line
+</td><td>
+<b><code>python xwisp.py go <a target="_blank" href="http://www.voti.nl/blink/code/b77-1.hex">b77-1.hex</a></code></b>
+(or <b><code>go <a target="_blank" href="http://www.voti.nl/blink/code/b77-2.hex">b77-2.hex</a>)</code></b>
+</td></tr>
+
+<tr><td>
+for 16F87x(A)
+</td><td width="200">
+source
+</td><td>
+<a target="_blank" href="http://www.voti.nl/blink/code/b877-1.jal">b877-1.jal</a>
+<a target="_blank" href="http://www.voti.nl/blink/code/b877-2.jal">b877-2.jal</a>
+</td></tr>
+<tr><td></td><td>
+xwisp command line
+</td><td>
+<b><code>python xwisp.py go <a target="_blank" href="http://www.voti.nl/blink/code/b877-1.hex">b877-1.hex</a></code></b>
+(or <b><code>go <a target="_blank" href="http://www.voti.nl/blink/code/b877-2.hex">b877-2.hex</a>)</code></b>
+</td></tr>
+
+<tr><td>
+for 18Fxxx(x)
+</td><td width="200">
+source
+</td><td>
+<a target="_blank" href="http://www.voti.nl/blink/code/b452-1.jal">b452-1.jal</a>
+<a target="_blank" href="http://www.voti.nl/blink/code/b452-2.jal">b452-2.jal</a>
+</td></tr>
+<tr><td></td><td>
+xwisp command line
+</td><td>
+<b><code>python xwisp.py go <a target="_blank" href="http://www.voti.nl/blink/code/b452-1.hex">b452-1.hex</a></code></b>
+(or <b><code>go <a target="_blank" href="http://www.voti.nl/blink/code/b452-2.hex">b452-2.hex</a>)</code></b>
+</td></tr></tbody></table>
+
+<p>
+The blink program for the other 40-pin 16F87x chips (with or without the A) 
+is the same as for the 16F877 itself,
+for the 16F7x and the 18Fxxx(x) the program is slightly different.
+</p>
+
+<p>
+Note for 18Fxxx(x): the LVP wire (white) must be connected to RB5 instead
+of RB3 (for the breadboard: next to the purple (used to be green) wire).
+</p>
+
+<!-- -------------------------------------------------------------------- -->
+<hr>         
+
+<a name="16F877asynch"></a>            
+
+<h3>16F877 asynchronous serial communication</h3>
+
+<a target="_blank" href="http://www.voti.nl/blink/pics/b-877-150.gif"><img src="index_1_files/b-877-85.gif" border="1" height="265" width="426"></a>
+<!-- FILES ./pics/b-877-150.gif ./pics/b-877-85.gif -->
+
+<a target="_blank" href="http://www.voti.nl/blink/pics/bb-f877-s-big.jpg"><img src="index_1_files/bb-f877-s-200.jpg" border="1" height="140" width="200"></a>
+<!-- FILES ./pics/bb-f877-s-big.jpg ./pics/bb-f877-s-200.jpg -->
+  
+
+&nbsp;<br>
+<table><tbody><tr><td width="200">
+source
+</td><td>
+<a target="_blank" href="http://www.voti.nl/blink/code/a877.jal">a877.jal</a>
+</td></tr>
+<tr><td>
+xwisp command line
+</td><td>
+<b><code>python xwisp.py go <a target="_blank" href="http://www.voti.nl/blink/code/a877.hex">a877.hex</a> tty 1200</code></b>
+</td></tr></tbody></table>
+
+<p>
+This program repeatedly sends "hello world\n" using asynchronous
+serial communiacation at 1200 baud, 8 data bits, no parity, 1 stop bit.
+Pin B7 is used as output, (using true polarity)
+so Wisp628's passthrough feature can be used to show the message.
+</p>
+
+&nbsp;<br>
+<table><tbody><tr><td width="200">
+source
+</td><td>
+<a target="_blank" href="http://www.voti.nl/blink/code/a877-b6t.jal">a877-b6t.jal</a>
+</td></tr>
+<tr><td>
+xwisp command line
+</td><td>
+<b><code>python xwisp.py go <a target="_blank" href="http://www.voti.nl/blink/code/a877-b6t.hex">a877-b6t.hex</a> tty 1200</code></b>
+</td></tr></tbody></table>
+
+<p>
+This program waits for an asynchronous serial character,
+and the echoes the character, and the hexadecimal and binary value
+of the character. 
+Again Pin B7 is used as output, (using true polarity)
+so Wisp628's default passthrough feature can be used to show the message.
+For inverted polarity (for use with a max232) use 
+<a target="_blank" href="http://www.voti.nl/blink/code/a877-b6i.jal">a877-b6i.jal</a>
+or
+<a target="_blank" href="http://www.voti.nl/blink/code/a877-b6i.hex">a877-b6i.hex</a>
+</p>
+
+&nbsp;<br>
+<table><tbody><tr><td width="200">
+source
+</td><td>
+<a target="_blank" href="http://www.voti.nl/blink/code/a877-c6i.jal">a877-c6i.jal</a>
+</td></tr>
+<tr><td>
+xwisp command line
+</td><td>
+<b><code>python xwisp.py go <a target="_blank" href="http://www.voti.nl/blink/code/a877-c6i.hex">a877-c6i.hex</a> tty auxi 1200</code></b>
+</td></tr></tbody></table>
+
+<p>
+This program is like the previous one, but it uses the UART pin
+C6 as output, using inverted polarity 
+(like the UART does, for use with a MAX232 or another inverting driver).
+</p>                    
+
+
+<!-- -------------------------------------------------------------------- -->
+
+               
+<hr><font size="1"><p>
+<a href="http://www.voti.nl/blink">http://www.voti.nl/blink</a>
+<br>
+Copyright (c) 2003 Van Ooijen Technische Informatica / Wouter van Ooijen
+<br>
+
+</p><p>
+Permission is granted to copy, distribute and/or modify this
+document under the terms of the GNU Free Documentation License,
+Version 1.2 or any later version published by the Free Software
+Foundation; with no Invariant Sections, no Front-Cover Texts and
+no Back-Cover Texts.  A local copy of version 1.2 of the license can be found
+<a target="_blank" href="http://www.voti.nl/common/gfdl_1_2.html">here</a>.
+</p>
+<p></p></font>               
+
+</body></html>

@@ -1,0 +1,145 @@
+function GetCookie(){
+    var aCookie = document.cookie.split("; ");
+    for(var i=0; i < aCookie.length; i++){
+	var aCrumb = aCookie[i].split("=");
+	if("val" == aCrumb[0]){
+	    return unescape(aCrumb[1]);
+	}
+    }
+    return 0;
+}
+
+function PopWindowCookieFunc(w) {
+    w.document.writeln('<sc'+'ript type="text/javascript">');
+    w.document.writeln('function GetCookie(){');
+    w.document.writeln('var aCookie = document.cookie.split("; ");');
+    w.document.writeln('for(var i=0; i < aCookie.length; i++){')
+    w.document.writeln('var aCrumb = aCookie[i].split("=");');
+    w.document.writeln('if("val" == aCrumb[0]){return unescape(aCrumb[1]);}}return 0;}');
+    w.document.writeln('function SetCookie(sValue){');
+    w.document.writeln('var cnt=GetCookie();');
+    w.document.writeln('var now = new Date();now.setTime(now.getTime()+14400);');
+    w.document.writeln('var offset = now.getTimezoneOffset();');
+    w.document.writeln('var domain = "'+document.domain+'";');
+    w.document.writeln('document.cookie = "val = "+escape(cnt+1)+"; timeoffset="+offset+"; expires="+now.toGMTString()+"; domain="+domain+"; path=/";}');
+    w.document.writeln('function DelCookie(){}');
+    w.document.writeln('function hide(){setTimeout("window.close();",1);}');
+    w.document.writeln('</sc'+'ript>');
+}
+
+function Cookie_enabled() {
+var is_enabled = false;
+    if (!window.opera && !navigator.cookieEnabled)
+	return is_enabled;
+    if (typeof document.cookie == 'string')
+	if (document.cookie.length==0) {
+	    document.cookie = "test";
+	    is_enabled = document.cookie == 'test';
+	    document.cookie = '';
+	} else {
+	    is_enabled = true;
+	}
+    return is_enabled;
+}
+
+function show_pop(pop_window, str, width, height, positionString) { 
+    pop_window = window.open('', 'vapopup', 'toolbar="no",location="no",directories="no",status="no",menubar="no",scrollbars="no",resizable="no",width="' + width + '",height=' + height + positionString);
+    pop_window.resizeTo(width + 10, height + 28);
+    if (!((pop_window == null) || (typeof(pop_window) == "undefined"))) {
+	pop_window.document.writeln('<html><head>');
+	PopWindowCookieFunc(pop_window);
+	
+pop_window.document.writeln('</head><body style="margin:0px" scroll="no" onLoad="SetCookie();">');
+	pop_window.document.writeln(str);
+
+pop_window.document.writeln('</body></html>');
+	pop_window.document.close();
+	pop_window.blur();
+	window.focus();
+    }
+}
+
+var	positionString	= '',
+	width		= 500,
+	height		= 400,
+	TracingCode	= '<img src="http://engine.adland.ru/action?bid=1521&pid=33&rid=971984717&jlt=on" vspace="0" hspace="0" width="0" height="0">';
+
+if (width == -1) {
+	width		= screen.availWidth;
+}
+if (height == -1) {
+	height		= screen.availHeight;
+}
+
+var
+	left,
+	top,
+	pop_window	= null,	
+	GetURL		= 'http://content.medialand.ru/adland.medialand.ru/453/500x400_love_planet_love_radio.swf',
+	ImageURL	= 'http://content.medialand.ru/adland.medialand.ru/453/500x400.gif',
+	LinkURL		= 'http://engine.adland.ru/reference?gid=40&pid=33&bid=1521&rid=2119204287',
+	IsIE		= document.all ? true : false,
+	isNav,
+	ext		= GetURL.substring(GetURL.length-4,GetURL.length),
+	isFlash		= (ext=='.swf')?1:0
+	str		= '';
+
+if (document.all && screen) {
+    left= (screen.availWidth - width) / 2;
+    top	= (screen.availHeight - height) / 2;
+    positionString = ',left=' + left + ',top=' + top;
+} else {
+    positionString = '';
+}
+
+if (parseInt(navigator.appVersion) >= 4) {
+	if (navigator.appName == "Netscape") {
+		isNav	= true;
+	} else {
+		isIE	= true;
+	}
+}
+
+if(isFlash){
+    var	contentVersion = 6,
+	plugin = (navigator.mimeTypes && navigator.mimeTypes["application/x-shockwave-flash"]) ? navigator.mimeTypes["application/x-shockwave-flash"].enabledPlugin : 0,
+	flashCanPlay;
+		    
+    if (plugin) {
+	var words = navigator.plugins["Shockwave Flash"].description.split(" "),
+	    pluginVersion;
+
+	for (var i = 0; i < words.length; ++i) {
+	    if (isNaN(parseInt(words[i]))) {
+		continue;
+	    }
+	    pluginVersion = words[i];
+	}
+	flashCanPlay = pluginVersion >= contentVersion;
+    } else {
+	if (navigator.userAgent && navigator.userAgent.indexOf("MSIE") >=0 && (navigator.appVersion.indexOf("Win") != -1)) {
+	    document.writeln('<sc'+'ript language="VBScript">');
+	    document.writeln('  on error resume next');
+	    document.writeln('  flashCanPlay = (IsObject(CreateObject("ShockwaveFlash.ShockwaveFlash." & contentVersion)))');
+	    document.writeln('</sc'+'ript>');
+	}
+    }
+    if (flashCanPlay) {
+	LinkURL = escape(LinkURL);
+	str =  '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://active.macromedia.com/flash2/cabs/swflash.cab#version=4,0,0,0" width="'+width+'" height="'+height+'">';
+	str += '<param name="movie" value="' + GetURL + '?clickTAG=' + LinkURL + '">';
+	str += '<param name="quality" value="high">';
+	str += '<embed src="'+ GetURL +'?clickTAG=' + LinkURL + '" quality="high" width="'+width+'" height="'+height+'" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash">';
+	str += '</embed>';
+	str += '</object>';
+    } else {
+	str = '<a href="'+LinkURL+'" target="_blank" onClick="hide();"><img src="'+ImageURL+'" width="'+width+'" height="'+height+'" border=0></a>';
+    }
+} else {
+    str = '<a href="'+LinkURL+'" target="_blank" onClick="hide();"><img src="'+GetURL+'" width="'+width+'" height="'+height+'" border=0></a>';
+}
+str += '<div id="pxDiv" style="visibility:hidden;">'+TracingCode+'</div>';
+
+if(Cookie_enabled() && !GetCookie()){
+    show_pop(pop_window, str, width, height, positionString);
+}

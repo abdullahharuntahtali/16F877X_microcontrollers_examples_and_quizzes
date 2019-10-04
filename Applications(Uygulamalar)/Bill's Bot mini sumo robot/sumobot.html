@@ -1,0 +1,408 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html><head>
+
+
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="Author" content="Bill Sherman">
+  <meta name="GENERATOR" content="Mozilla/4.79 [en] (Win98; U) [Netscape]">
+  <meta name="Description" content="Mini sumo robot programmed in Pic Pro Basic and using a PIC 16F876 from Microchip, RSA Robolympics">
+  <meta name="KeyWords" content="Mini sumo, Robot, Pic, Pic Pro Basic,Bill Sherman, Bill Sherman's Robots, IR leds"><title>Bill's Bot Mini Sumo</title></head><body background="sumobot_files/Manhole.gif">
+&nbsp;
+<table style="width: 625px; height: 192px;" bgcolor="#ccffff" border="1" cols="1">
+  <tbody>
+    <tr>
+      <td>
+      <center><b><font face="Cuckoo"><font color="#ff0000"><font size="+4">Bill's
+Bot</font></font></font></b> <br>
+      <font face="Bazooka"><font color="#000000"><font size="+3">Mini
+Sumo
+Robot<br>
+      </font></font></font><img alt="" src="sumobot_files/botronicsyahoo1.jpg" style="width: 271px; height: 37px;"><br>
+      <br>
+      </center>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+&nbsp; <big><big><big><br>
+</big></big></big><br>
+&nbsp;&nbsp; <br>
+<center></center>
+&nbsp;
+<center>
+<table bgcolor="#c0c0c0" border="1" cols="1" width="74%">
+  <tbody>
+    <tr>
+      <td> <br>
+&nbsp;
+      <center>
+      <p><img src="sumobot_files/body1.JPG" height="432" width="576"></p>
+      <p><b><font color="#000000">Body of the robot without the front
+scoop.</font></b> <br>
+      <b><font color="#000000">9 volt battery not mounted yet</font></b></p>
+      </center>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</center>
+<br>
+&nbsp;
+<br>
+&nbsp;
+<center>
+<table bgcolor="#c0c0c0" border="1" cols="1" width="75%">
+  <tbody>
+    <tr>
+      <td> <br>
+&nbsp;
+      <center>
+      <p><img src="sumobot_files/body2.JPG" height="432" width="576"></p>
+      <p><b>Front scoop attached</b></p>
+      </center>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</center>
+<br>
+&nbsp;
+<br>
+&nbsp;
+<center>
+<table bgcolor="#c0c0c0" border="1" cols="1" width="75%">
+  <tbody>
+    <tr>
+      <td> <br>
+&nbsp;
+      <center>
+      <p><img src="sumobot_files/motor1.JPG" height="432" width="576"></p>
+      <p><b>Two GM8 motors to drive the robot.</b> <br>
+      <b>Donated by <a href="http://www.solarbotics.com/">Solarbotics</a>
+at the summer RSA robot games.&nbsp;</b> <br>
+      <b>Thank you Solarbotics!</b></p>
+      </center>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</center>
+<br>
+&nbsp;
+<br>
+&nbsp;
+<center>
+<table bgcolor="#c0c0c0" border="1" cols="1" width="74%">
+  <tbody>
+    <tr>
+      <td> <br>
+&nbsp;
+      <center>
+      <p><img src="sumobot_files/bottom2.JPG" height="432" width="576"></p>
+      <p><b>Batteries mounted on the bottom. 9V battery to be mounted
+on top</b></p>
+      </center>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</center>
+<br>
+&nbsp;
+<br>
+&nbsp;
+<center>
+<table bgcolor="#c0c0c0" border="1" cols="1" width="62%">
+  <tbody>
+    <tr>
+      <td> <br>
+&nbsp;
+      <center>
+      <p><img src="sumobot_files/batteryholder.jpg" border="0" height="524" width="504"></p>
+      <p><b>9 volt battery holder mounted on top, toward the front.</b></p>
+      </center>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</center>
+<br>
+&nbsp;
+<br>
+&nbsp;
+<center>
+<table bgcolor="#c0c0c0" border="1" cols="1" width="62%">
+  <tbody>
+    <tr>
+      <td>
+      <center><b>Power ON/OFF switch and <a href="http://home.earthlink.net/%7Ebotronics/index/pickey.html">PICKEY</a>
+program port added.</b>
+      <p><img src="sumobot_files/pickeyed.JPG" height="576" width="432"></p>
+      </center>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</center>
+<br>
+&nbsp;
+<br>
+&nbsp;
+<center>
+<table bgcolor="#c0c0c0" border="1" cols="1" width="89%">
+  <tbody>
+    <tr>
+      <td>
+      <center><b>A strip of phenolic plastic was made into a line
+sensor. The
+unit is placed inside the front scoop of the robot and later painted
+flat
+black on the surfaces. Side light shields were later added.</b>
+      <p><img src="sumobot_files/linesensor1.jpg" height="122" width="432"></p>
+      <p><b>Green LEDs illuminate the table top. Reflected light is
+detected
+by CDS photoconductive resistors.&nbsp;</b> <br>
+      <b>The CDS cells have a peak spectral sensitivity of 515
+nanometers,
+near the color green.</b></p>
+      </center>
+      </td>
+    </tr>
+    <tr>
+      <td>
+      <center><br>
+      <br>
+      <img src="sumobot_files/linesensorbak.jpg" height="119" width="432">
+      <p><b>Line sensor from the back. Ribbon wire connects the LEDs
+and CDS
+cells</b></p>
+      </center>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</center>
+<br>
+&nbsp;
+<br>
+&nbsp;
+<center>
+<table bgcolor="#c0c0c0" border="1" cols="1" width="59%">
+  <tbody>
+    <tr>
+      <td> <br>
+&nbsp;
+      <center>
+      <p><img src="sumobot_files/topview.jpg" height="401" width="432"></p>
+      <p><b>Top View</b> </p>
+      <p><b>Microcontroller is a PIC 16F876 20/SP from Microchip</b></p>
+      </center>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</center>
+<br>
+&nbsp;
+<br>
+&nbsp;
+<center>
+<table bgcolor="#c0c0c0" border="1" cols="1" width="59%">
+  <tbody>
+    <tr>
+      <td> <br>
+&nbsp;
+      <center>
+      <p><img src="sumobot_files/sideview.jpg" height="466" width="432"></p>
+      <p><b>Side View</b></p>
+      </center>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</center>
+<br>
+&nbsp;
+<br>
+&nbsp;
+<center>
+<table bgcolor="#c0c0c0" border="1" cols="1" width="60%">
+  <tbody>
+    <tr>
+      <td> <br>
+&nbsp;
+      <center>
+      <p><img src="sumobot_files/irsensors.jpg" height="257" width="432"></p>
+      <p><b>IR (EMF shielded) sensors mounted behind the front scoop</b></p>
+      </center>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</center>
+<br>
+&nbsp;
+<br>
+&nbsp;
+<center>
+<table bgcolor="#c0c0c0" border="1" cols="1" width="61%">
+  <tbody>
+    <tr>
+      <td> <br>
+&nbsp;
+      <center>
+      <p><img src="sumobot_files/frontview.jpg" height="392" width="432"></p>
+      <p><b>Front View of IR LED mounted in the center.</b> </p>
+      <p><b>IR object sensors to the right and left.</b></p>
+      </center>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</center>
+<br>
+&nbsp;
+<br>
+&nbsp;
+<center>
+<table bgcolor="#c0c0c0" border="1" cols="1" width="57%">
+  <tbody>
+    <tr>
+      <td> <br>
+&nbsp;
+      <center>
+      <p><img src="sumobot_files/black1.jpg" height="494" width="396"></p>
+      <p><b>View showing black felt attached for stealthiness.</b> <br>
+      <b>The felt prevents the opponent's IR from finding the robot.</b></p>
+      </center>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</center>
+<br>
+&nbsp;
+<br>
+&nbsp;
+<center>
+<table bgcolor="#c0c0c0" border="1" cols="1" width="78%">
+  <tbody>
+    <tr>
+      <td> <br>
+&nbsp;
+      <center>
+      <p><img src="sumobot_files/black2.jpg" height="574" width="630"></p>
+      <p><b>Robot with special dual battery charger to the right.</b></p>
+      </center>
+      <p>&nbsp;</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</center>
+<br>
+&nbsp;
+<center>
+<table bgcolor="#c0c0c0" border="1" cols="1" width="51%">
+  <tbody>
+    <tr>
+      <td><b><font color="#000000"><font size="+1">BillsBot2</font></font></b>
+      <center>
+      <p><img src="sumobot_files/bills_bot2.jpg" height="322" width="360"></p>
+      </center>
+      <p><b>Add the extra wide scoops and it becomes "billsbot2" an
+entry for
+the 3kg Autonomous Sumo class.</b> </p>
+      <p>&nbsp;</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</center>
+<br>
+&nbsp;
+<center>
+<table bgcolor="#c0c0c0" border="1" cols="1" width="61%">
+  <tbody>
+    <tr>
+      <td>
+      <center><b></b>
+      <p><img src="sumobot_files/readytorumble.jpg" height="345" width="432"></p>
+      <p><b>All by myself and no one to play with!</b></p>
+      </center>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</center>
+<br>
+&nbsp;
+<center>
+<table bgcolor="#c0c0c0" border="1" cols="1" width="100%">
+  <tbody>
+    <tr>
+      <td>Program highlights and features:
+      <p>1. Ability to calibrate for black surface and white line and
+save values
+in Data Rom. <br>
+2. Button to activate a five second countdown. <br>
+3. Makes sounds as it moves. <br>
+4. Debug output to PC for testing. <br>
+5. Red and Green test LEDs. <br>
+6. Uses EMF sheilded IRleds at 56kc to detect opponent. <br>
+7. Antirefective surfaces for stealth. <br>
+8. Recharge jack for both battery systems with total external power
+for the pic if needed. <br>
+9. Program PIC using the PIC-KEY programmer. <br>
+10. PIC has 8k of program space plus spare ADC's, I/O and DATA ROM. <br>
+11. Warns if a bad calibrate sequence is performed. <br>
+12. Regenerative braking with full H-bridge motor control. <br>
+&nbsp;</p>
+      </td>
+    </tr>
+    <tr>
+      <td>Download the Pic Pro Basic program files here (updated
+4-5-2004): <br>
+Program into a Microchip PIC 16F876 20/SP
+      <p><a href="http://home.comcast.net/%7Ebotronics/billsbot10.bas">Billsbot10.bas</a> </p>
+      <p><a href="http://home.comcast.net/%7Ebotronics/billsbot10.hex">Billsbot10.hex</a> <br>
+&nbsp; </p>
+      <p><b><font size="+1">Disclaimer:</font></b> <br>
+      <b><font size="+1">You are free to use any of the circuits on my
+webpages
+for personal or educational use and not for commercial use.</font></b> <br>
+      <b><font size="+1">These designs are experimental and may not
+fully work
+for you.&nbsp; I will not be responsible for any damages to any
+computer,
+equipment, mental or bodily injury, or for lost revenue due to the use
+of these designs.</font></b></p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</center>
+<br>
+&nbsp;
+<center>
+<table bgcolor="#ccffff" border="1" cols="1" width="74%">
+  <tbody>
+    <tr>
+      <td> <br>
+      <a href="http://home.comcast.net/%7Ebotronics/billsbot.pdf">Schematic Drawing of PIC Controller (PDF)
+updated
+2-21-04</a>
+      <p><a href="http://home.comcast.net/%7Ebotronics/instructions.pdf">Instructions on operating Billsbot
+(PDF)</a> </p>
+      </td>
+    </tr>
+    <tr>
+      <td> <br>
+      <blink><font color="#ff0000">You can E-mail me (Bill Sherman) at</font>
+      </blink><span style="text-decoration: underline;"> </span><img alt="" src="sumobot_files/botronicsyahoo1.jpg" style="width: 271px; height: 37px;"></td>
+    </tr>
+  </tbody>
+</table>
+</center>
+</body></html>

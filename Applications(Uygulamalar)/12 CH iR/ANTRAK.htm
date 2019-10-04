@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0057)http://www.antrak.org.tr/gazete/042006/mehmet-tastan.html -->
+<HTML xmlns="http://www.w3.org/TR/REC-html40" xmlns:v = 
+"urn:schemas-microsoft-com:vml" xmlns:o = 
+"urn:schemas-microsoft-com:office:office"><HEAD><TITLE>ANTRAK</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=iso-8859-9">
+<META content="MSHTML 6.00.2800.1106" name=GENERATOR></HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0 MARGINHEIGHT="0" MARGINWIDTH="0">
+<CENTER><!----------------SVStudios.com------------------->
+<TABLE cellSpacing=0 cellPadding=0 width=691 align=center border=0>
+  <TBODY>
+  <TR>
+    <TD align=left colSpan=5 height=110 ALT=""><EMBED name=ustust_bar 
+      pluginspage=http://www.macromedia.com/go/getflashplayer 
+      src=images/en-ust2.swf width=691 height=110 
+      type=application/x-shockwave-flash wmode="transparent" bgcolor="#FFFFFF" 
+      quality="high"></EMBED></TD></TR>
+  <TR>
+    <TD noWrap height=84><IMG src="ANTRAK_dosyalar/sablon_02.gif" width=47></TD>
+    <TD><IMG src="ANTRAK_dosyalar/sablon_03.gif" width=93></TD>
+    <TD width=437 background=ANTRAK_dosyalar/sablon_04.gif><EMBED name=ust-bar 
+      pluginspage=http://www.macromedia.com/go/getflashplayer 
+      src=images/ust-bar.swf width=437 height=84 
+      type=application/x-shockwave-flash wmode="transparent" bgcolor="#FFFFFF" 
+      quality="high"></EMBED></TD>
+    <TD><IMG src="ANTRAK_dosyalar/sablon_05.gif" width=114></TD></TR>
+  <TR>
+    <TD vAlign=top width=140 background=ANTRAK_dosyalar/sablon_07.gif 
+      colSpan=2><EMBED name=sol_bar 
+      pluginspage=http://www.macromedia.com/go/getflashplayer 
+      src=images/sol_bar.swf width=140 height=470 
+      type=application/x-shockwave-flash wmode="transparent" bgcolor="#FFFFFF" 
+      quality="high"></EMBED></TD>
+    <TD vAlign=top bgColor=#f4f4f4>
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD noWrap width=437 background=ANTRAK_dosyalar/sablon_08.gif 
+          colSpan=2 height=27><FONT face=tahoma,arial color=#222222 
+            size=2><B>&nbsp;&nbsp;Tuş Takımı ve 12 Kanal Sony 
+IR</B></FONT></TD></TR>
+        <TR>
+          <TD noWrap width=5></TD>
+          <TD>&nbsp;
+            <P class=MsoNormal style="TEXT-ALIGN: center" align=center><B><SPAN 
+            style="FONT-FAMILY: Tahoma"><FONT size=1>PIC16F628 ile Yapılmış 4x4 
+            Tuş Takımı (Keypad) ve 12 Kanal SONY IR </FONT></SPAN></B></P>
+            <P class=MsoNormal 
+            style="LINE-HEIGHT: 150%; TEXT-ALIGN: justify"><SPAN 
+            style="FONT-SIZE: 10pt; LINE-HEIGHT: 150%; FONT-FAMILY: Tahoma">Bu 
+            sayıda bir çok kişinin ihtiyacı olan 2 şema ve tek bir program 
+            vereceğim. PIC16F628 ile yapılmış bu uygulamada bir anahtarlama 
+            yardımı ile iki ayrı program kullanılabilecek. Bunlardan ilki 4x4 
+            (16 Tuşlu) bir tuş takımı uygulaması.&nbsp; Piyasada tuş okuma 
+            işlemini gerçekleştiren 74C922 entegresinin yaptığı işlemin aynısı 
+            yapmaktadır. Bu entegrenin fiyatı ve bulunabilirliği düşünüldüğünde 
+            (genelde bulunamaz&#8230;..) faydalı olacağını düşündüm. Tabi ki sadece 
+            tuş okuma işlemi için PIC16F628 israf etmeyelim diye buna birde 12 
+            Kanallı IR uygulamasını dahil etmeyi de unutmadım. Bu 12 kanalın 4 
+            tanesi toggle&nbsp; mod da çalışmaktadır. Yani bir çoğunuzun da 
+            tahmin ettiği üzere çıkış butona her basıldığında 0-1-0-1 olarak 
+            değişmektedir. Kalıcı çıkış isteyenler için ideal. Diğer 8 çıkış ise 
+            butona basıldığı zaman 0.5 sn süre ile çıkışı lojik 1 seviyesinde 
+            tutmaktadır. Alıcı devresini sony kumandaların 1,2,&#8230;..8 ve Prg +, 
+            Prg -, Vol +, Vol &#8211; butonları ile kontrol etmeniz mümkün. Üzerinde 
+            bu yazdığım tuşları olan tüm sony kumandaları kullanabilirsiniz. 
+            Uzun uzadıya açıklama yazmak istemiyorum şemada her şey açık ve net 
+            olarak verilmiştir. Yinede anlamadığınız noktalarda e-mail 
+            atabilirsiniz. Aşağıdaki şekilde her iki kullanım içinde gerekli 
+            bağlantı şemaları verilmiştir. </SPAN></P>
+            <P class=MsoNormal style="LINE-HEIGHT: 150%; TEXT-ALIGN: justify"><A 
+            href="http://www.antrak.org.tr/gazete/042006/cizimler/mehmet-tastan/Keypad&amp;IR.JPG"><IMG 
+            height=194 src="ANTRAK_dosyalar/image002.jpg" width=421 
+            border=0></A></P>
+            <P class=MsoNormal 
+            style="LINE-HEIGHT: 150%; TEXT-ALIGN: justify"><SPAN 
+            style="FONT-SIZE: 10pt; LINE-HEIGHT: 150%; FONT-FAMILY: Tahoma">Proteus 
+            simülasyonu için <B><I><A 
+            href="http://www.antrak.org.tr/gazete/042006/mehmet-tastan_files/Keypad&amp;IR.DSN">Keypad&amp;IR.dsn</A></I></B> 
+            ve program <B><I><A 
+            href="http://www.antrak.org.tr/gazete/042006/mehmet-tastan_files/Keypad&amp;IR.HEX">Keypad&amp;IR.HEX</A> 
+            .</I></B>Önümüzdeki ay görüşmek üzere şimdiden kolay gelsin. Bu 
+            arada son olarak şunu da eklemek istiyorum PIC&#8217;lere meraklı bir çok 
+            arkadaştan her gün bilgi istekleri için e-mail almaktayım. Bunların 
+            bir çoğuna vakit buldukça cevap yazmaktayım fakat lütfen çok basit 
+            bilgiler içinde e-mail atmayın. </SPAN></P>
+            <P class=MsoNormal><SPAN 
+            style="FONT-SIZE: 10pt; FONT-FAMILY: Tahoma"></SPAN>&nbsp;</P>
+            <P><FONT face=tahoma,arial size=2><BR></P>
+            <TABLE cellSpacing=3 cellPadding=3 width="100%" bgColor=#dedede 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD><IMG height=138 src="ANTRAK_dosyalar/mehmet-tastan.jpg" 
+                  width=117 border=0></TD>
+                <TD vAlign=top><FONT face=tahoma,arial size=2><B>Mehmet TAŞTAN 
+                  <BR><A 
+                  href="mailto:mehmettastan@hotmail.com">mehmettastan@hotmail.com</A> 
+                  </B></FONT></TD></TR></TBODY></TABLE><BR><BR>
+            <CENTER></CENTER></FONT></TD></TR></TBODY></TABLE><BR><BR>
+      <CENTER>
+      <P></P></CENTER></TD>
+    <TD vAlign=top width=114 
+      background=ANTRAK_dosyalar/sablon_09.gif>&nbsp;&nbsp;&nbsp;&nbsp;<A 
+      href="http://www.antrak.org.tr/gazete/042006/kitap.html"><IMG height=106 
+      src="ANTRAK_dosyalar/kitap.gif" width=72 border=0></A> <BR><BR><BR></TD></TR>
+  <TR>
+    <TD width=140 background=ANTRAK_dosyalar/sablon_07.gif colSpan=2></TD>
+    <TD align=middle bgColor=#b5b5b5 colSpan=3 height=28><FONT 
+      face=tahoma,arial size=1>ANTRAK Ankara Telsiz ve Radyo Amatörleri Kulübü 
+      Derneği <BR>Bakanlar Kurulunun 94/6367 Sayılı Kararıyla Kamu Yararına 
+      Çalışan Derneklerden Sayılmıştır. </FONT></TD></TR></TBODY></TABLE><A 
+href="http://www.svstudios.com/" target=_blank><IMG height=31 alt="Design By" 
+src="ANTRAK_dosyalar/svs-tr.gif" width=146 border=0></A></CENTER></BODY></HTML>

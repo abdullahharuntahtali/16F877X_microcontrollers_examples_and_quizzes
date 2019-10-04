@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><!-- InstanceBegin template="/Templates/Sub_Page.dwt" codeOutsideHTMLIsLocked="false" -->
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=shift_jis"><!-- InstanceBeginEditable name="doctitle" --><title>Backup Timer</title><!-- InstanceEndEditable --><!-- InstanceBeginEditable name="head" --><!-- InstanceEndEditable -->
+
+
+
+
+
+
+
+
+<link href="Backup_Timer_files/Style.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+<!--
+body {
+	background-color: #E9E9E9;
+}
+-->
+</style></head><body>
+<!-- InstanceBeginEditable name="EditRegion3" -->
+<table align="center" border="0" height="464" width="942">
+  <tbody><tr>
+    <td width="13">&nbsp;</td>
+    <td valign="top" width="912"><div align="center"><br>
+            <table border="5" width="273">
+              <tbody><tr>
+                <td class="link_table_j" bgcolor="#ffff66" height="22"><div align="center">充電器バックアップタイマー</div></td>
+              </tr>
+              <tr>
+                <td class="link_table_e" bgcolor="#66ff66"><div align="center">Battery Charger Backup Timer </div></td>
+              </tr>
+            </tbody></table>
+            <br>
+            <table align="center" border="1" cellpadding="5" cellspacing="3" height="268" width="911">
+              <tbody><tr valign="top">
+                <td width="441"><table border="5" width="435">
+                  <tbody><tr>
+                    <td class="link_table_e" bgcolor="#ffff80" height="26"><div align="center"><span class="General_J"><strong>回路の解説</strong></span></div></td>
+                  </tr>
+                </tbody></table>                
+                <p class="General_J" align="justify">以
+前にNiCad電池を充電しているのを忘れて何ヶ月もつなぎっぱなしに、だめにした経験があるのでバックアップタイマーを作りました。急速充電器のトリク
+ルモードって結構電流を流すのでつなぎっぱなしにするとバッテリーを痛めます。ロータリースイッチで設定した時間がきたらリレーをOFFにしブザーを鳴ら
+すだけの簡単なものですが、とても重宝しています。</p>
+                </td>
+                <td width="432"><div align="justify">
+                  <table border="5" width="435">
+                    <tbody><tr>
+                      <td class="link_table_e" bgcolor="#66ff66" height="26"><div align="center"><span class="General_J"><span class="General_E"><strong>Circuit Description </strong></span></span></div></td>
+                    </tr>
+                  </tbody></table>
+                  <p class="General_E">
+Onece I totally damaged a NiCad battery by forgetting it on quick
+charger for a couple of months. So I made a backup timer to prevent
+this. Charging current in trickle charging of quick chargers is usually
+high enough to damage the batteries if left. This circuit turns off the
+charger and sound a buzzer when the time set by rotary switches
+elapses. Very simple and effective. </p>
+                  <p>&nbsp;</p>
+                </div></td>
+              </tr>
+              <tr valign="top">
+                <td colspan="2"><div align="center">                  </div>                  
+                  <div align="center"><img src="Backup_Timer_files/Schematics.gif" height="512" width="870"></div></td>
+              </tr>
+              <tr valign="top">
+                <td><table border="5" width="435">
+                  <tbody><tr>
+                    <td class="link_table_e" bgcolor="#ffff80" height="26"><div align="center"><span class="General_J"><strong>動作の解説</strong></span></div></td>
+                  </tr>
+                </tbody></table>                  <p class="General_J" align="justify">実際のプログラムは<a href="http://home.iprimus.com.au/yoshioka_syd/AVR/Backup_Timer.files/Timer.asm">こちら</a>をご覧ください。 Include ファイルは<a href="http://home.iprimus.com.au/yoshioka_syd/AVR/Library.htm">ソフトライブラリ</a>からダウンロードできます。 </p>
+                  <ul>
+                    <li class="General_J">ロータリースイッチで動作時間を設定し「START」スイッチを押すと充電器への電源が活きます。</li>
+                    <li class="General_J">設定時間経過すると充電器への電源OFF、さらにブザーが鳴って充電完了を知らせます。</li>
+                    <li class="General_J">ブザーを止めるには「RESET」ボタンを押せばOK。</li>
+                </ul></td>
+                <td><div align="justify">
+                  <table border="5" width="435">
+                    <tbody><tr>
+                      <td class="link_table_e" bgcolor="#66ff66" height="30"><div align="center"><span class="General_J"><span class="General_E"><strong>Operation Description </strong></span></span></div></td>
+                    </tr>
+                  </tbody></table>
+                  <p class="General_E">Look at <a href="http://home.iprimus.com.au/yoshioka_syd/AVR/Backup_Timer.files/Timer.asm">here</a> for program source code. Included files can be downloaded from <a href="http://home.iprimus.com.au/yoshioka_syd/AVR/Library.htm">software library</a>. </p>
+                  <ul>
+                    <li class="General_E">Set the time by rotary switches, then press the “Start” switch to energise the battery charger. </li>
+                    <li class="General_E">When the time is up, the charger is ed-energised and the buzzer sounds. </li>
+                    <li class="General_E">To stop the buzzer press “Reset” switch. </li>
+                  </ul>
+                </div></td>
+              </tr>
+              <tr valign="top">
+                <td><div align="center"><img src="Backup_Timer_files/pP.jpg" height="191" width="400"></div></td>
+                <td><p class="General_E">Completed
+NiMH battery charger &amp; backup timer. Left half is the timer and
+right half is a battery charger made from a kit I found in Akihabara. </p>
+                <p class="General_J">完成したNiMHチャージャー＆バックアップタイマー。写真の左半分がこのタイマー、右半分は秋月電子通商のNiMHバッテリーチャージャーのキットから作りました。</p></td>
+              </tr>
+        </tbody></table>
+            <br>
+            <table align="center" bgcolor="#80ff00" border="5" bordercolor="#004000" height="27" width="200">
+              <tbody><tr>
+                <td class="link_table_j"><div class="link_table_e style2" align="center"><a href="http://home.iprimus.com.au/yoshioka_syd/AVR/index.htm">Return to Home </a></div></td>
+              </tr>
+            </tbody></table>
+            <p>&nbsp; </p>
+    </div></td>
+    <td width="10">&nbsp;</td>
+  </tr>
+</tbody></table>
+<!-- InstanceEndEditable -->
+<!-- InstanceEnd --></body></html>

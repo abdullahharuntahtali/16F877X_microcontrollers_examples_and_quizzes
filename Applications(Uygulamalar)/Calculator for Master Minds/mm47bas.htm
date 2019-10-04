@@ -1,0 +1,721 @@
+<html><head><title>mm47v38.bas</title>
+
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0"></head><body>
+
+<pre>'*****************************************************************************
+<big><strong>' </strong><font color="#741e05">Jotto aka Mastermind with four places and seven "colors" 3.8 - Strobl</font><strong>
+</strong></big>'*****************************************************************************
+' Copyright (C) 1998 by Wolfgang Strobl, all rights reserved</pre>
+
+<pre>' 			3.0 changed from RS232 to LED display 25.3.1998
+'			3.5 3.9.98 power saving implemented
+'			3.7 4.9.98 Cleanup. 
+'			3.8 4.9.98 keyb during "success". 
+'			3.81 30.10.98 documentation cleanup
+'
+' Programming notes
+' ------------------
+'
+' WDT must be disabled in order to enable powersaving mode.
+'
+' Source language is a mixture of PicBasic (compatible to Parallax
+' Basic Stamp I) and inline assembler. The relevant and time-critical
+' parts are coded in asssembler, some as macros.
+' 
+'
+' Part list
+' ---------
+' 1 PIC16F84/4
+' 1 8MHz ceramic resonator (or 2*22pF + 8MHz Quartz)
+' 4 HDSP 5503 seven segment LED display, common cathode
+' 1 Resistor, 4.7K
+' 2 buttons
+'
+'
+' Structure of the circuit:
+' ------------------------
+'
+' Display
+' -------
+'
+' 4 * 7-Segment LED type HDSP 5503 1,42mm, a surplus part bought from
+' Conrad/Germany.</pre>
+
+<pre>' 1. Anodes</pre>
+
+<pre>'    connected to port B, as follows:
+'  
+'   +--0--+	
+'   |     |
+'   5     1
+'   |     |
+'   +--6--+
+'   |     |
+'   4     2
+'   |     |
+'   +--3--+ (7)
+'
+' 
+' i.e. the upper segment of all four HDSP5503 connected to PB0, the decimal point
+' of all four displays connected to PB7, etc.
+'
+' 2. Cathodes
+'    connected to port A, Bit A0, A1, A2 and A3.   A4 is still free,
+'    but connected to ground for lowest power consumption during SLEEP.
+'
+'
+' There are no external pullup or pulldown resistors, current 
+' adjustment/limitation is done by software (PWM), as a side effect of
+' multiplexing.
+'
+' For the encoding, see function "convert".
+'
+'
+' Buttons
+' -------
+'
+' First switch between PB7 (pin 13) and ground, second switch between PB6 (pin 12) 
+' and ground. Internal weak pullups are used, so no external pullup are necessary.
+'
+'
+' IMPORTANT
+' Never drive a segement continuously, it might destroy both the display and
+' your processor.
+' Immediately stop driving a segment when a key is pressed, because PB7/6 are
+' shared between display and keys.</pre>
+
+<pre>' Operation
+'
+' All four displays are multiplexed round robin, by pulling PA0 .. PA3 low
+' in turn, and then pulling some of the segments up for a short time, two
+' of the segments at a time, at max, because of the current limitation 
+' of a single PIC pin.</pre>
+
+<pre>' During every display multiplexing cycle, the buttons get checked by 
+' first changing both port A and port B to input (== three-state),
+' enabling the weak pullup, and then checking PB7 and PB6. When a 
+' connection is detected (by reading a low level), the program waits
+' until the key is released, in order to avoid having an output
+' shortcircuited to ground.
+'
+' Using about 5 V from a 4 cell, 110Ah Nicad battery pack, I measure between
+' 25 and 30 mA during operation, and about 2 µA in sleep mode. It was
+' necessary to ground PA4, in order to archive this.  That power consumption
+' amounts to about three hours continous operation, or many years of SLEEP
+' mode. For that reason, I didn't consider a power switch necessary. The
+' device goes into power saving mode immediately after the display is
+' darkened. When the left button is pressed, it wakes up again.
+'
+ 
+</pre>
+
+<pre>	asm
+	lall
+	endasm</pre>
+
+<pre>'**************************************************************
+' Data, ordered by memory layout. 
+'**************************************************************</pre>
+
+<pre>' There are four places for storing an uncompressed combination:
+' a, b, c and d. Utility subroutines are available for copying,
+' see below.</pre>
+
+<pre>' a und c are temporary combinations, to be compared
+' b is for counting. 
+	symbol	a0=b4
+	symbol	a1=b5
+	symbol	a2=b6
+	symbol	a3=b7
+	symbol	c0=b14
+	symbol	c1=b15
+	symbol	c2=b16
+	symbol	c3=b17</pre>
+
+<pre>' stored answer and actual answer ' "schwarz" == "black", "weiss" == white</pre>
+
+<pre>	symbol	antw_schwarz=b8		' no of correct positions
+	symbol	antw_weiss=b9		' no of correct "colors"
+	symbol	schwarz=b10
+	symbol	weiss=b11</pre>
+
+<pre>' Answers get stored in an array starting with w11, using n as 
+' high water mark (B22 ... B38 == 18 Bytes = 18/3 = space for 6 tries )</pre>
+
+<pre>	symbol	n=b12			' Number of answers so far
+					' w11[0] to w11[n] are defined
+	symbol	i=b13			' running index</pre>
+
+<pre>	symbol	answer=b20		' packed answer</pre>
+
+<pre>	symbol	temp=b21		' temporary storage, byte</pre>
+
+<pre>	symbol	count=w9 		' b18 b19</pre>
+
+<pre>	symbol  rdm=w20 		' well ..
+	</pre>
+
+<pre>	symbol	tempw=w21		' temporary storage, word</pre>
+
+<pre>	symbol	d0=b46			' w23
+	symbol	d1=b47
+	symbol	d2=b48			' w24
+	symbol	d3=b49
+</pre>
+
+<pre>	symbol	gcount=w25		' b50, b51</pre>
+
+<pre>Symbol  PortA = 5                       ' PortA address
+Symbol  TrisA = $85                     ' PortA data direction register
+symbol	zaehler=b1
+symbol	wert=b0</pre>
+
+<pre>'*********************************************************************************************	
+' Code starts here
+'
+' we need to jump across the interrupt handler
+' The interrupt handler isn't really necessary (wakeup from sleep through
+' interrupt on change works with interrupts disabled, too!), but we might need
+' it during further development, so I just let it there ...</pre>
+
+<pre>	asm
+	goto _start			; not to be confused with "start" !
+;*********************************************************************************************	
+inthandler	movwf	i0		; save w
+		swapf	status,w	; save status
+		movwf	i1
+		movf	fsr,0
+		movwf	i2		; save fsr
+</pre>
+
+<pre>; now the real work
+		bcf 	rbif		; clear interrupt on change bit
+		movf 	portb,1		; clear portb mismatch</pre>
+
+<pre>; end of real work</pre>
+
+<pre>returnfromint	movf	i2,0		; restore fsr
+		movwf	fsr
+		swapf	i1,0
+		movwf	status		; and restore
+		swapf	i0,1		; restore w
+		swapf	i0,0
+		bcf	t0if
+		retfie</pre>
+
+<pre>;-end of inthandler</pre>
+
+<pre>;***********************************************************************************************
+; convert a digit in _wert to a LED pattern.
+; Implements digits 0 to 7, only, high order bit controls the decimal point.
+; (There is obviously room for improvement, here).
+convert				
+	movf	_wert,0		; load _wert to W
+	andlw	0fh
+	addwf	pcl,1
+	;	d6543210
+	retlw	00111111b	; 0
+	retlw	00000110b	; 1
+	retlw	01011011b	; 2
+	retlw	01001111b	; 3
+	retlw	01100110b	; 4
+	retlw	01101101b	; 5
+	retlw	01111101b	; 6
+	retlw	00000111b	; 7</pre>
+
+<pre>	retlw	10111111b	; 0
+	retlw	10000110b	; 1
+	retlw	11011011b	; 2
+	retlw	11001111b	; 3
+	retlw	11100110b	; 4
+	retlw	11101101b	; 5
+	retlw	11111101b	; 6
+	retlw	10000111b	; 7
+	endasm
+'--------------------------------------------------------
+' utility subroutines
+b2c:					' copy b to c
+	w7=w0
+	w8=w1
+	return
+b2d:					' copy b to d
+	w23=w0
+	w24=w1
+	return
+d2a:					' copy d to a
+	w2=w23
+	w3=w24
+	return</pre>
+
+<pre>'--------------------------------------------------------
+	asm
+compare	macro a,b,color</pre>
+
+<pre>; compares a and b, when both are equal and nonzero, both
+; get zeroed and color gets incremented</pre>
+
+<pre>	local	fl
+	movf	a,0		; 1 load to w, 0?
+	btfsc	z		; 2 (1) skip goto, when zeroflag not set
+	goto	fl		; 2	goto, when zeroflag set
+	subwf	b,0		; 1 =b?
+	btfss 	z		; 2 (1) skip goto, when zeroflag set
+	goto	fl		; 2 goto, when zeroflag not set gesetzt (!=)
+	incf	color		; 1 count
+	clrf	a		; 1 and zero both candidates
+	clrf	b		; 1 
+;                                 9 / 8 / 5
+fl
+	endm
+	endasm
+'--------------------------------------------------------
+compare:			' compare a with c (destroys a and c)
+'				  (2401 x 145 µs = 0.34 s)
+	asm
+				; 16*9+2 cycles = 146 µS
+	clrf	_schwarz
+	clrf	_weiss 
+	compare	_a0,_c0,_schwarz
+	compare	_a1,_c1,_schwarz
+	compare	_a2,_c2,_schwarz
+	compare	_a3,_c3,_schwarz
+	compare	_a0,_c1,_weiss
+	compare	_a0,_c2,_weiss
+	compare	_a0,_c3,_weiss
+	compare	_a1,_c0,_weiss
+	compare	_a1,_c2,_weiss
+	compare	_a1,_c3,_weiss
+	compare	_a2,_c0,_weiss
+	compare	_a2,_c1,_weiss
+	compare	_a2,_c3,_weiss
+	compare	_a3,_c0,_weiss
+	compare	_a3,_c1,_weiss
+	compare	_a3,_c2,_weiss
+	endasm
+	return
+	</pre>
+
+<pre>	asm
+NextColor macro ok,overflow			; ca. 16
+	decfsz	_b3,1
+	jmp	ok
+	movlw	7
+	movwf	_b3
+	decfsz	_b2,1
+	jmp	ok
+	movlw	7
+	movwf	_b2
+	decfsz	_b1,1
+	jmp	ok
+	movlw	7
+	movwf	_b1
+	decfsz	_b0,1
+	jmp	ok
+	movlw	7
+	movwf	_b0
+	jmp	overflow
+	endm</pre>
+
+<pre>	endasm</pre>
+
+<pre>'***************************************************************
+display:	' already converted pattern in wert, to pins</pre>
+
+<pre>	zaehler=200
+	asm
+	call convert		; from _wert to W
+	movwf	_wert 		; from W to _wert
+dl
+	movf	_wert,0
+	andlw	11000000b
+	movwf	portb
+	movf	_wert,0
+	andlw	00110000b
+	movwf	portb
+	movf	_wert,0
+	andlw	00001100b
+	movwf	portb
+	movf	_wert,0
+	andlw	00000011b
+	movwf	portb
+	decfsz	_zaehler,1
+	jmp	dl
+	movlw	0
+	movwf	portb</pre>
+
+<pre>	endasm
+	return
+	asm
+;------------------------------------------------------------------------
+; W11 is the first adress behind the block of internal variables</pre>
+
+<pre>; cstore var und cload var macros</pre>
+
+<pre>; pack four nibbles from a0...a4, and answer into a triple of bytes,
+; and store (load) them to (from) w11[var]. Changes W and FSR.</pre>
+
+<pre>; --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+; Store combination a0...a3 and answer to w11[i].
+; Three bytes, 2 x combi, 1 x answer
+ </pre>
+
+<pre>; answer ist already packed</pre>
+
+<pre>; 0000 1111   2222 3333   ssss wwww</pre>
+
+<pre>cstore	macro	i			; i is a variable! Must!
+	movlw	_w11			; load adress of w11
+	addwf	i,0			; add index
+	addwf	i,0			;  |
+	addwf	i,0			;  |
+	movwf	fsr			; and access indirectly
+	movf	_a0,0			; load value
+	andlw	00001111b
+	movwf	indf			; store to w11
+	swapf	indf,1	; 0000 xxxx  	;  and to LSN of w11/b22
+	movf	_a1,0
+	andlw	00001111b
+	iorwf	indf,1	; 0000 1111</pre>
+
+<pre>	incf	fsr,1
+	movf	_a2,0
+	andlw	00001111b
+	movwf	indf
+	swapf	indf,1	; 2222 xxxx
+	movf	_a3,0
+	andlw	00001111b
+	iorwf	indf,1	; 2222 3333
+	incf	fsr,1
+	movf	_answer,0		; store answer, too
+	movwf	indf
+	endm</pre>
+
+<pre>; --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+;  Load combination a0..a3 from w11[i]
+; 0000 1111   2222 3333
+cload 	macro	i
+	movlw  	_w11
+	addwf	i,0
+	addwf	i,0
+	addwf	i,0
+	movwf	fsr
+	movf	indf,0			; load first byte
+	andlw	00001111b
+	movwf	_a1
+	swapf	indf,0
+	andlw	00001111b
+	movwf	_a0
+	incf	fsr,1
+	movf	indf,0			; load second Byte
+	andlw	00001111b
+	movwf	_a3
+	swapf	indf,0
+	andlw	00001111b
+	movwf	_a2
+	incf	fsr,1
+	movf	indf,0			; load stored answer
+	movwf	_answer			; back into original var
+	endm</pre>
+
+<pre>pack	macro	x,y,nach		; x:0000xxxx y:0000yyyy -&gt; nach: yyyyxxxx
+	movf	x,0			; load one half
+	andlw	00001111b
+	movwf	nach			; 
+	swapf	y,0			; second half
+	andlw	11110000b
+	iorwf	nach,1			; or in
+	endm</pre>
+
+<pre>unpack	macro	von,x,y			; from: yyyyxxxx -&gt; x:0000xxxx y:0000yyyy
+	movf	von,0			; load
+	andlw	00001111b		
+	movwf	x
+	swapf	von,0
+	andlw	00001111b
+	movwf	y
+	endm</pre>
+
+<pre>	endasm
+'--------------------------------------------------------------------</pre>
+
+<pre>getrandom:
+	random rdm
+	temp = rdm  &amp; %111
+	if temp&gt;0 then okreturn
+	temp=1
+okreturn:
+	return</pre>
+
+<pre>displaykombi:
+	poke TrisA, 0                   ' Set PortA to all output
+	poke	portA,$7
+	wert=d0
+	gosub display</pre>
+
+<pre>	poke	portA,$b
+	wert=d1
+	gosub display</pre>
+
+<pre>	poke	portA,$d
+	wert=d2
+	gosub display</pre>
+
+<pre>	poke	portA,$e
+	wert=d3
+	gosub display
+	return	</pre>
+
+<pre>displayweiss:
+	poke TrisA, 0                   ' Set PortA to all output
+	poke	portA,$7
+	wert=antw_weiss
+	gosub display
+' falltru
+displayschwarz:
+	poke TrisA, 0                   ' Set PortA to all output
+	poke	portA,$b
+	wert=antw_schwarz
+	gosub display</pre>
+
+<pre>	return</pre>
+
+<pre>keyb:
+	poke	TrisA,255		' port A to all input
+	pins=0				' latches auf 0
+	dirs=%00111111			' port B auf input auf 7/6
+	asm
+	bsf	rp0			; option register
+	bcf	rbpu			; pull up enable 0=an
+	bcf	rp0
+	endasm
+	pause 1				' little bit of charging time
+	temp=pins			' read port B
+'	temp = temp | %00111111</pre>
+
+<pre>	if temp=$c0 then keybok
+' wait for keyup
+waitk:
+	pause 100
+	if pins=$c0 then keybok
+	goto waitk
+keybok:
+	dirs=255			' port B output
+	pins=0				' latches auf 0
+	poke TrisA,0			' port A to all output
+	return
+'----------------------------------------------------
+' Power saving mode
+schlafe: 
+	dirs=%01111111			' port B auf input auf 7
+	poke TrisA,0			' Port A to all output
+	poke portA,%00001111		' Port A low == no current through LED possible
+					' and powersaving
+	pins=%10000000			' hmmm
+	asm
+; enable Interrupts
+	movf portb,1			; clear portb mismatch
+	bsf	rbie			; enable port chg interr
+	bsf	gie			; global interrupts on
+	bsf	rp0			; option register
+	bcf	rbpu			; pull up enable 0=on
+	bcf	rp0			; back to first bank
+	sleep				; as it says
+	endasm
+	goto restart
+'--------------------------------------------------------
+' First wait for a keypress, then generate a random question
+start:	
+restart:
+	dirs=255
+	asm
+	bcf	rbie			; disable port B change on interrupt
+	bsf	rp0			; option register
+	bcf	rbpu			; pull up enable 0=on
+	bcf	rp0
+	endasm
+	</pre>
+
+<pre>startl:	pause 9				' wait 10 ms (incl keyb)
+	gosub 	keyb			' is a key pressed?
+	rdm = rdm + 1			' increment random seed
+	if temp=$c0 then schlafe	' no key -&gt; sleep</pre>
+
+<pre>	random	rdm			' seed random number generator</pre>
+
+<pre>	gcount=0
+	count=0</pre>
+
+<pre>	n=0</pre>
+
+<pre>' compute a random question (four digits)</pre>
+
+<pre>	gosub	getrandom
+	d0=temp
+	gosub	getrandom
+	d1=temp
+	gosub	getrandom
+	d2=temp
+	gosub	getrandom
+	d3=temp</pre>
+
+<pre>outerloop:
+	</pre>
+
+<pre>'------------
+</pre>
+
+<pre>il:	
+	gosub 	displaykombi		' display the actual question
+	gosub	keyb			' check keys
+	if temp = $c0 then il		' no key? try again
+	</pre>
+
+<pre>	antw_schwarz=0			' left digit (== black, correct position) initialized with 0
+	antw_weiss=0			' and so the right digit (== white, correct color)
+il1:
+	gosub	displayschwarz		' first display the left digit, only
+	gosub	keyb			' and wait for a key
+	if temp=$40 then incschwarz	' left key? cycle "black"
+	if temp=$80 then il2		' right key? store "black" and process "white"
+	goto il1			' no key? try again
+</pre>
+
+<pre>incschwarz: 				' cycle black
+	antw_schwarz=antw_schwarz+1
+	if antw_schwarz&lt;5 then il1	' 0-4 allowed
+	antw_schwarz=0
+il1a:	goto il1</pre>
+
+<pre>il2:					' process right digit ("white", correct color)
+	gosub	displayweiss		' displays both digits
+	gosub	keyb			' check keys
+	if temp=$40 then incweiss	' left key= cycle "white"
+	if temp=$80 then il9		' right key? store "white" and continue
+	goto il2
+incweiss: 
+	antw_weiss=antw_weiss+1
+	if antw_weiss&lt;5 then il2	' we could take "black" into account, but we don't do that
+	antw_weiss=0
+il2a:	goto il2
+il9:	
+	</pre>
+
+<pre>'------------
+'	Now pack the question and its answer into the array</pre>
+
+<pre>	gosub	d2a</pre>
+
+<pre>	asm
+	pack	_antw_schwarz,_antw_weiss,_answer
+	cstore	_n
+	endasm</pre>
+
+<pre>	n = n + 1</pre>
+
+<pre>	count=0</pre>
+
+<pre>' we are counting backwards.
+	b0=7
+	b1=7
+	b2=7
+	b3=7</pre>
+
+<pre>middleloop:</pre>
+
+<pre>	i=0
+innerloop:				' loops over all stored answers
+	if i=n then innerloop_succ
+	asm
+	cload	_i			; to a
+					; now we have a and answer.
+	endasm
+	gosub b2c</pre>
+
+<pre>' compare actual combination a with computed (counted) combination c(b)</pre>
+
+<pre>	gosub compare
+	asm</pre>
+
+<pre>	pack	_schwarz,_weiss,_temp	; temp is the answer to b</pre>
+
+<pre>	endasm
+	if answer=temp then innerloop_next
+	goto innerloop_fail
+innerloop_next:				' next stored answer
+	i=i+1
+	goto innerloop</pre>
+
+<pre>innerloop_succ:				' possible combination found, possible question</pre>
+
+<pre>	count = count + 1		' zählen</pre>
+
+<pre>' We want to make a random choice of 1/n, without knowing n beforehand, without
+' computing the set twice. 
+' DONT copy with a probability of 1/(count+1),   -- (count+1) before incrementing.
+' Nice trick, eh?</pre>
+
+<pre>	random	rdm
+'	0 to 65535
+	tempw= 65535/count</pre>
+
+<pre>	if tempw&lt;rdm then innerloop_fail
+	gosub b2d			' memorize
+	' fallthrough!!</pre>
+
+<pre>innerloop_fail:				' Die Kombi ist es nicht: Nächste Zählung
+	gcount=gcount+1	
+	asm
+	NextColor	_Middleloop,_Middleloop_out
+	endasm
+	' notreached
+Middleloop_out:				' Alles durchgezählt
+	if count=0 then Fehler
+	if count=1 then Erfolg
+'	serout	rout,N9600,(#n,". Noch ",#count," Moeglichkeiten")
+'	gosub	crlf
+	goto OuterLoop</pre>
+
+<pre>Erfolg: 
+	d0 = d0 ^ $08
+	for tempw=0 to 10
+		gosub displaykombi
+	next
+	gosub	keyb
+	if temp&lt;&gt;$c0 then start
+	d1 = d1 ^ $08
+	for tempw=0 to 10
+		gosub displaykombi
+	next
+	gosub	keyb
+	if temp&lt;&gt;$c0 then start
+	d2 = d2 ^ $08
+	for tempw=0 to 10
+		gosub displaykombi
+	next
+	gosub	keyb
+	if temp&lt;&gt;$c0 then start
+	d3 = d3 ^ $08
+	for tempw=0 to 10
+		gosub displaykombi
+	next
+	gosub	keyb
+	if temp&lt;&gt;$c0 then start
+	goto Erfolg
+</pre>
+
+<pre>Fehler:	
+	d0=0
+	d1=0
+	d2=0
+	d3=0
+	goto Erfolg		' ha</pre>
+
+<pre>Ende:
+	end</pre>
+
+<p>&nbsp;</p>
+
+</body></html>

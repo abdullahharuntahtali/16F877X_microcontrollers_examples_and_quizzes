@@ -1,0 +1,134 @@
+
+	NOLIST
+; PicBasic Pro Compiler 2.41, (c) 1998, 2002 microEngineering Labs, Inc. All Rights Reserved. 
+
+LABEL?L macro Label
+        RST?RP
+    ifdef PM_USED
+        LALL
+Label
+        XALL
+    else
+Label
+    endif
+    endm
+
+ADD?BCB macro Bin, Cin, Bout
+    if (Bout == Bin)
+      if (Cin == 1)
+        CHK?RP  Bout
+        incf    Bout, F
+      else
+        movlw   Cin
+        CHK?RP  Bin
+        addwf   Bin, F
+      endif
+    else
+      if (Cin == 1)
+        CHK?RP  Bin
+        incf    Bin, W
+        MOVE?AB Bout
+      else
+        movlw   Cin
+        CHK?RP  Bin
+        addwf   Bin, W
+        MOVE?AB Bout
+      endif
+    endif
+    endm
+
+CMPGE?BCL macro Bin, Cin, Label
+    if (Cin < 100h)
+        CLRWDT?
+        MOVE?CA Cin
+        CHK?RP  Bin
+        subwf   Bin, W
+        BIT?GOTO 1, STATUS, C, Label
+    endif
+    endm
+
+CMPLE?BCL macro Bin, Cin, Label
+    if (Cin < 0ffh)
+        CLRWDT?
+        MOVE?CA Cin + 1
+        CHK?RP  Bin
+        subwf   Bin, W
+        BIT?GOTO 0, STATUS, C, Label
+    else
+        L?GOTO  Label
+    endif
+    endm
+
+BRANCHL?BCL macro Bin, Cin, Label
+    local getval, valtbl
+        MOVE?BB Bin, R0 + 1
+        sublw   Cin - 1
+        BIT?GOTO 0, STATUS, C, Label
+        rlf     R0 + 1, F
+        L?CALL  getval
+        movwf   R0
+        bcf     R0 + 1, 0
+        L?CALL  getval
+        movwf   PCLATH
+        movf    R0, W
+        movwf   PCL
+getval  movlw   valtbl >> 8
+        movwf   PCLATH
+        movf    R0 + 1, W
+        TABLE?C ((Cin) * 2)
+valtbl
+    endm
+
+BRLGOTO?L macro Label
+        retlw   (Label) >> 8
+        retlw   low Label
+    endm
+
+END? macro
+    local loop
+loop    sleep
+        L?GOTO  loop
+    endm
+
+GOSUB?L macro Label
+    local dlabel
+    ifdef DEBUG_STACK
+        CHK?RP  DEBUG_STACK
+      ifdef DEBUG_STACK_ADDR
+        bcf     STATUS, C
+        rlf     DEBUG_STACK, W
+        addlw   DEBUG_STACK_ADDR
+        movwf   FSR
+        movlw   low dlabel
+        movwf   INDF
+        incf    FSR, F
+        movlw   dlabel >> 8
+        movwf   INDF
+      endif
+        incf    DEBUG_STACK, F
+    endif
+        L?CALL  Label
+dlabel
+    endm
+
+GOTO?L macro Label
+        L?GOTO  Label
+    endm
+
+PAUSE?W macro Win
+        MOVE?WWA Win, R1
+        L?CALL  PAUSEL
+    endm
+PAUSE_USED = 1
+
+RETURN? macro
+    ifdef DEBUG_STACK
+        CHK?RP  DEBUG_STACK
+        decf    DEBUG_STACK, F
+    endif
+        RST?RP
+        return
+    endm
+
+
+	LIST

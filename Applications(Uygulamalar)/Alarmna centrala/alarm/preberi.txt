@@ -1,0 +1,4 @@
+Datoteki *.sch in *.brd odpira le program Eagle verzija 4.01.
+V primeru, da vam program noèe odpreti datotek, sta tu še dve
+(ali tri) datoteki v PostScript formatu (*.ps). Za odpiranje
+teh datotek uporabite program GSview.

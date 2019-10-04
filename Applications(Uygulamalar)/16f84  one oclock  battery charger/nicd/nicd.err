@@ -1,0 +1,5 @@
+Message[302] D:\PROJECTS\BATTERY_CHARGER_WEB\NICD.ASM 234 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] D:\PROJECTS\BATTERY_CHARGER_WEB\NICD.ASM 235 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] D:\PROJECTS\BATTERY_CHARGER_WEB\NICD.ASM 261 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] D:\PROJECTS\BATTERY_CHARGER_WEB\NICD.ASM 299 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] D:\PROJECTS\BATTERY_CHARGER_WEB\NICD.ASM 313 : Register in operand not in bank 0.  Ensure that bank bits are correct.

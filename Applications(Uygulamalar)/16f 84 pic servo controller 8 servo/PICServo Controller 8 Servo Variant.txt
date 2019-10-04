@@ -1,0 +1,49 @@
+PICServo Controller 8 Servo VariantHome | Site Map 
+      Home
+      Products
+      RS232 Level Converter
+      Services
+      Free Projects & Info
+      PIC Servo
+      Embedded CRC16
+      GerberPlot
+       PIC Based Serial Port Servo Controller 8 Servo Variant
+      Author: Ashley Roll, March 2002. 
+      Many Thanks to Richard Gardiner for providing this program for everyone! 
+      Its a small PC program that allows you to control all the servo outputs 
+      for the 8 servo variant. You can download it here Servo.zip (12KB) 
+      I won't put Richard's email up on the site because of spam email, but 
+      there is a button in his program for you to contact him, I'm sure he would 
+      like to here from you if you use it. 
+      You can download the PIC program which contains a HEX file which most PIC 
+      programmers can read; and a PIC Assembler code (ASM) file if you would 
+      like to see how it works or modify it. 
+      I used the free PIC assembler from Microchip, the manufactures of the PIC 
+      range of Microcontrollers. 
+      Servo Controller Commands
+      The commands are the same as the 4 servo version, except that there are no 
+      longer any digital output control commands. See below for a quick listing. 
+
+      The software now recognises channels 0 to 7. These map to RB0 to RB7 on 
+      the PIC. Note: the servo pin numbers have changed! What was Digital 0 is 
+      now Servo 0, what was Servo 0 is now Servo 4. 
+            HexDecimalData ByteDescription
+            000YesReset the controller. All outputs off, all servos disabled and 
+            all servos position and offset values are set to 128 (midrange). The 
+            data byte following this command MUST be zero. To ensure that a 
+            reset command it actually executed, send three consecutive zero 
+            bytes.
+            1016YesSet the servo output 'Position' value for the servo specified 
+            in the channel nibble. The data byte contains the new position value 
+            between 0 and 255.
+            2032YesSet the servo output 'Offset' value for the servo specified 
+            in the channel nibble. The data byte contains the new offset value 
+            between 0 and 255.
+            3048NoEnable Servo Output. Start generating the servo control pulse 
+            for the servo specified in the channel nibble.
+            4064NoDisable Servo Output. Stop generating the servo control pulse 
+            for the servo specified in the channel nibble.
+
+ © Copyright 2006, Digital Nemesis Pty Ltd. All Rights Reserved. | privacy 
+statement | contact us 
+Last updated: Sun 18 Dec 2005 06:20 UTC 

@@ -1,0 +1,10 @@
+Warning[207] D:\OMER\MERDEV~1\CPUKAT~1\167ASM~1.TXT 5 : Found label after column 1. (PIC84)
+Message[305] D:\OMER\MERDEV~1\CPUKAT~1\167ASM~1.TXT 135 : Using default destination of 1 (file).
+Warning[203] D:\OMER\MERDEV~1\CPUKAT~1\167ASM~1.TXT 426 : Found opcode in column 1. (return)
+Warning[203] D:\OMER\MERDEV~1\CPUKAT~1\167ASM~1.TXT 449 : Found opcode in column 1. (RETURN)
+Message[305] D:\OMER\MERDEV~1\CPUKAT~1\167ASM~1.TXT 455 : Using default destination of 1 (file).
+Warning[203] D:\OMER\MERDEV~1\CPUKAT~1\167ASM~1.TXT 457 : Found opcode in column 1. (return)
+Message[302] D:\OMER\MERDEV~1\CPUKAT~1\167ASM~1.TXT 567 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] D:\OMER\MERDEV~1\CPUKAT~1\167ASM~1.TXT 569 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Warning[203] D:\OMER\MERDEV~1\CPUKAT~1\167ASM~1.TXT 574 : Found opcode in column 1. (RETURN)
+Warning[205] D:\OMER\MERDEV~1\CPUKAT~1\167ASM~1.TXT 609 : Found directive in column 1. (end)

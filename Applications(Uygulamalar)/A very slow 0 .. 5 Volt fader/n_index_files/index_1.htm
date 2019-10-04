@@ -1,0 +1,439 @@
+<html><head><title>0 .. 5 Volt fader</title>
+
+
+
+
+<meta name="Keywords" content="pic, 16f628, jal, fader">
+
+<meta name="Description" content="a circuit that produces voltage that fades from 0 to 5
+   Volt over a time of 1 second .. 60 minutes"></head><body onload="self.focus()" alink="#558888" bgcolor="#cccc99" link="#336666" vlink="#558888">  
+
+<h1>A very slow 0 .. 5 Volt fader</h1>
+
+<p>
+Wouter van Ooijen (<a href="mailto:wouter@voti.nl">wouter@voti.nl</a>)
+</p>
+
+
+<hr><!------------------------------------------------------------------------>
+
+<p>
+This little project was triggered by a request from Ruud Setteur 
+on the newsgroup <a target="_top" href="news:nl.hobby.electronica">nl.hobby.electronica</a>
+(dutch) for a circuit that generates a voltage that rises slowly from 0 to 10 Volt 
+and (when a switch is flipped) slowly back to 0. 
+The request did not pose much restriction on the wave form, 
+but a rise / fall time of 30 minutes should be possible. 
+If it were not for this quite long rise / fall time the
+standard one-opamp integrator would be a perfect solution.
+</p>
+
+<p>
+Being a PIC user my reply was of course: for a PIC this is a 
+<a target="_top" href="http://info.astrian.net/jargon/terms/o/one-banana_problem.html">one-banana problem</a>.
+That is of course correct, but only hardware wise. 
+Some software is also required, so my contribution was not very helpfull 
+for the requestor, who could build simple circuits from a description, 
+but certainly not program a PIC.
+</p>
+
+<p>
+After some discussion about counters and D/A converters on one side and
+charging capacitors on the other side I offered to design the PIC solution.
+Stef van Diest offered to try the discrete-logic approach 
+(oscillator, up/down counter, D/A converter), 
+as shown
+<a target="_top" href="http://www.svdiest.demon.nl/electronics/slope">here</a>.
+There was some discussion about the feasibility of a simple 
+charge-a-capacitor circuit but no volunteer for that approach.
+The main problem is that for large (electrolytic) condensators the current
+must be so low that the leakage of the capacitor poses a problem, 
+and for smaller condensators the current must be very small.
+</p>
+
+<p>
+While thinking about the PIC program I also considered using a 
+3.3F gold-cap capacitor, but as these capacitors are very 
+critical with respect to the maximum voltage (2.1 Volt)
+the circuit would not be very simple (4 or 5 opamps), 
+so I dropped that idea.
+</p>
+
+<p>
+By the time I had sort of finished my design Guus Mattaar posted a very simple 
+analog circuit, cleverly (mis) using the offset compensation of a CA3140 
+FET opamp to create a very small charge current. 
+I have my reservations about the
+stability and reproducability of this circuit, but it is certainly simpler,
+cheaper, easier to understand and probably closer to what Ruud wanted
+than my PIC solution. The (dutch) description Guus' solution is reproduced below.
+</p>
+
+<pre>   Na de discussie te hebben gevolgd kon ik het niet nalaten ook 
+   in het probleem te duiken en kwam tot de volgende oplossing:
+   Een opamp met mosfetingangen CA 3140 op 12 V. Verbind uitgang 
+   (6) met - ingang (2) en via 1M.Ohm met + ingang (3). Leg 3 met 
+   goede condensator 0,47 uF.aan -. Zet tussen nulcorrectie (1) en 
+   (5) 2 potmeters 10 k.Ohm (25 slags) parallel. Door de lopers 
+   beurtelings aan - te schakelen loopt de uitgang lineair van 
+   0 - 11,5 en 11,5 naar 0, uiteraard na zorgvuldige afregeling 
+   van de potmeters. De condensator wordt op en ontladen met een 
+   konstante stroom, bepaald door 1 M.Ohm en de ingestelde 
+   offsetspanningen. Tijden tot 50 minuten waren ruim haalbaar.</pre>
+
+<p>
+The PIC fader uses a 16f628 because that was at the moment the cheapest hobby PIC, 
+and it happens to have to two features that can be put to good use in this application.
+The first is the ER oscillator option, where an external resistor determines 
+the clock frequency, while the resistor carries only DC 
+(not AC as in the external RC clock option found in other PICs).
+The other feature is the PWM (Pulse Wide Modulation) hardware, used here
+as a slow 8-bit D/A.
+</p>                                       
+
+<p>
+Unfortunately Microchip does not mention in their datasheets how
+the clock frequency of in ER clock mode depends on the external
+resistor! But asked on the piclist where such information could be 
+found and got an answer very quickly:
+</p>
+
+<pre>   &gt; The oscillator configuration section in the datasheet states 
+   &gt; that the electrical specifications section documents the relation 
+   &gt; between the resistor and the frequency, but I find no such info. 
+   &gt; Does anyone know where I can find it?
+      
+   Right here ! Where else ?  ;-))
+   (original post 2/12/01)
+   These are practical measurements for 16F628-04
+      R        Clkout * 4
+     2k7    9.40 MHz
+     3k3    9.35
+     4k7    9.23
+    10k     8.44
+    22k     5.65
+    39k     3.50
+   100k     1.52
+   220k     0.75 MHz
+   470k     0.393
+     1M     0.192
+     1M5    0.124
+     2M2   85,600 Hz
+     5M6   36,400
+    12M    16,400
+</pre>
+
+<p>
+So if you ever have questions about PICs, you know where to go!
+</p>
+
+
+<!-- FILES image0.gif -->
+<img src="index_1_data/image0.gif" alt="circuit" border="0" height="437" hspace="0" vspace="0" width="670">
+
+<p>
+The minimum circuit is very simple. 
+A 2M2 log potmeter and 10k series resistor determine the clock frequency and
+hence the rise / fall time, which can be set over a 1:100 interval that
+includes the range 1 .. 60 minutes.
+A 100k / 0.1uF RC combination provides a crude low-pass filter for
+the PWM output. 
+The minimum frequency of the PWM signal is 336 Hz, so this
+simple filter with -3dB at 1 Hz is adequate.
+The output is 0 .. 5 Volt and does not tolerate much load
+(my multimeter loaded the circuit too much, I had
+to lower the resistor to 10k), so 
+to meet the original specification (0 .. 10 Volt) and provide a
+lower impedance an opamp with 2x aplification must be added.
+(An inexpensive 1/4x LM324 will do, as its input common mode
+includes ground. Note that a load resistor on the output 
+of the opamp might be
+needed to get an output close to 0 Volt.)
+The MCLR (reset) pin is tied to Vcc via a 33k resistor and the
+LVP input is likewise tied to Gnd.
+I use my Wisp HVP programmer for development, but because I did not need
+the pin for other purposes I left the LVP pin unused and
+enabled LVP in the PICs configuration, so the circuit can be build
+and programmed using LVP.
+With pin RB0 floating (pulled high by the internal weak pull-up) the PWM
+duty-cycle rises, with RB0 pulled low it falls.
+</p>
+
+<!-- FILES image1.gif -->
+<img src="index_1_data/image1.gif" alt="circuit" border="0" height="519" hspace="0" vspace="0" width="880">
+
+<p>
+The minimum circuit leaves eleven IO pins unused
+(and one more is available when LVP is disabled), 
+so I could not resist the temptation to add some frills. 
+These extra features can be ignored (and the pins left unconnected). 
+Four outputs give an indication of the current output value: minimum,
+larger than minimum but below half, above half but not maxmimum, and maximum.
+These outputs are active low and can be used to drive LEDs or (via
+a transistor) relais. 
+When LEDs of the same color are used these could share a single current 
+limiting resistor (LEDs of different colors might need different
+resistors to give the same perceived brightness).
+One more indicator LED blinks once for each step the output voltage makes.
+Two preset inputs allow the ouput to be forced immediately to the minimum 
+or maximum value.
+One input can be used to free the current output value.
+One input speeds the rise and fall times by a factor 60, so the range
+becomes 1 .. 60 seconds instead of 1 .. 60 minutes. This can save some
+time calibrating the scale of the potmeter.
+After adding these extra's there are still 2 IO pins left, but I was
+out of idea's.
+</p>
+
+<p>
+The software is (of course) written in Jal, my very own programming 
+language for PICs. It first initialises the IO.
+Note that on a 16f628 the port A analog functions must be disabled
+before the port can be used for digital IO.
+The port B internal weak pull-ups are enabled in the option register,
+so switches can be connected without the need for external pull-up resistors.
+</p>
+
+<p>
+Next the PWM module is initialised.
+The PIC can produce PWM with 10 bit resolution, 
+but I use only 8 bit because Jal has only byte (8 bit) integers, 
+and a higher resolution would result in a lower minimum PWM frequency.
+</p>
+
+<p>
+To get a 49 s rise / fall time (1 minute minus some 10% for margins) 
+each step must take 49 s / 256 = 190 ms. 
+For each step the main loop must loop 120 times (factor 2 to blink the step LED,
+factor 60 to make a 1:60 speedup possible), so the loop time must be 1.33 ms.
+The Jal libraries can not cope with a varying clock frequency, 
+hence a fixed 10 MHz frequency is specified.
+The expected clock frequency with the minimal (10k) resistance between
+ER and Gnd is 8.44 MHz.
+The amount of processing in the main loop is so small that it can be neglected 
+for the timing calculation, so the delay at the start of the loop is
+be ( 8.44 / 10 ) * 1.33 ms = 1.12 ms.
+</p>
+
+<p>
+The main loop first waits the calculated 1.12 ms. 
+When the loop count has wrapped around the step LED is toggled,
+and when it is now dark the output level is adjusted one step.
+Next the preset inputs are checked and if one is low the output
+level is set as requested.
+Next the hardware PWM duty-cycle registers are update and the 
+indicator LEDs are set according to the current output value.
+Finally the loop count is incremented and checked for wrap-around, 
+which happens at 120 in the default mode, and at 2 when the speedup 
+input is active (low).
+</p>
+   
+<!-- FILES proto1.jpg proto1-tn.jpg -->   
+<!-- PIC 400 384 proto1.jpg --> <a href="http://www.voti.nl/fader/proto1.jpg"><img src="index_1_data/proto1-tn.jpg" height="384" width="400"></a>
+<!-- FILES proto2.jpg proto2-tn.jpg -->   
+<!-- PIC 300 151 proto2.jpg --> <a href="http://www.voti.nl/fader/proto2.jpg"><img src="index_1_data/proto2-tn.jpg" height="151" width="300"></a>
+
+
+<p>
+I build the prototype on a solderless breadboard, 
+which is definitely my favourite method for building prototypes.
+I guess that proves that I am from the computer / digital world,
+not from the analog world, but it always served me well.
+The printout is a listing of the program.      
+There are no toggle switches: the two loose wires can
+be connected to the ground rail to make the relevant PIC pins low.
+There is no potmeter either: I just plugged in the appropriate resistors
+when needed.
+The PIC is programmed in-circuit using my Wisp proprogrammer.
+The second picture shows how a DIL clip is used to connect
+the programmer to the target chip.
+</p><p>
+
+<!-- FILES box1.jpg box1-tn.jpg -->   
+<!-- PIC 200 177 box1.jpg --> <a href="http://www.voti.nl/fader/box1.jpg"><img src="index_1_data/box1-tn.jpg" height="177" width="200"></a>
+<!-- FILES box2.jpg box2-tn.jpg -->   
+<!-- PIC 300 205 box2.jpg --> <a href="http://www.voti.nl/fader/box2.jpg"><img src="index_1_data/box2-tn.jpg" height="205" width="300"></a>
+
+
+</p>
+Next I build a more permanent version in a box. 
+The socket for the chip is on the outside of the box, 
+so I can use the blue clip to (re) program the chip.
+The inside of the box is almost ugly to show, but it works.
+<p></p> 
+
+<p>
+The table below shows that the application uses very little of the PICs 
+resources.
+There is ample room for extra features, 
+for instance an RS-232 interface to set or read the level.
+Note that when significantly more extra CPU time must be spent in the 
+main loop the interval library should be used instead of the fixed delay.
+</p>
+
+<table border="1" cellpadding="4">
+
+<tbody><tr>
+<td></td>
+<td>code</td>
+<td>data</td>
+<td>stack</td>
+<td>eeprom</td>
+<td>I/O pins</td>
+</tr>
+
+<tr>
+<td>available</td>
+<td>2048</td>
+<td>224</td>
+<td>8</td>
+<td>128</td>
+<td>16</td>
+</tr>
+
+<tr>
+<td>used</td>
+<td>228</td>
+<td>13</td>
+<td>2</td>
+<td>0</td>
+<td>2</td>
+</tr>
+
+</tbody></table>
+
+<p>
+To modify the Jal source you will need to download it first.
+Any text editor can be used to edit it, notepad will do,
+but I prefer PFE (free!) or UltraEdit.
+For compilation you must download the Jal compiler.
+The compiler produces a .hex file that you must program into the PIC. 
+The design and software for the programmer I use can be found
+on my website. 
+The ic-prog programmer software supports a wide range of PIC
+(and other target!) programming hardware, and the website
+has references to a wide range of programming hardware designs.
+When you just want to program a PIC with the fader software
+the best way is probably a parallel port LVP programmer,
+but I have not found a good description on the web of such
+a programmer.
+The circuits are drawn using Eagle. 
+Watch out when you want to make a PCB from the circuit:
+I just took the first resistor etc. that looked right in the circuit
+diagram, so you might end up with components of a surprising size.
+</p>
+
+<p>
+Note that this design uses a feature that is unique to the 16F628
+(the ER oscillator mode). No other PIC will work, not even a 16F628A.
+</p>
+
+
+<hr><!------------------------------------------------------------------------>
+
+<p>
+</p><h2>downloads</h2>
+
+<!-- BULLET --><table><tbody><tr><td>&nbsp;</td><td valign="top"><img +="" src="index_1_data/redball.gif" align="" border="0" height="11" width="11"> </td><td>
+<!-- FILES fader.jal -->
+<a target="_top" href="http://www.voti.nl/fader/fader.jal">Jal source</a> (Jal 04-40)
+<!-- /BULLET --></td></tr></tbody></table>
+
+<!-- BULLET --><table><tbody><tr><td>&nbsp;</td><td valign="top"><img +="" src="index_1_data/redball.gif" align="" border="0" height="11" width="11"> </td><td>
+<!-- FILES fader.hex -->
+<a target="_top" href="http://www.voti.nl/fader/fader.hex">hex file</a>
+<!-- /BULLET --></td></tr></tbody></table>
+
+<!-- BULLET --><table><tbody><tr><td>&nbsp;</td><td valign="top"><img +="" src="index_1_data/redball.gif" align="" border="0" height="11" width="11"> </td><td>
+<!-- FILES fader1.sch -->
+<a target="_top" href="http://www.voti.nl/fader/fader1.sch">circuit</a> (eagle 4.01)
+<!-- /BULLET --></td></tr></tbody></table>
+
+<p></p>
+
+    
+<hr><!------------------------------------------------------------------------>
+
+<p>    
+</p><h2>links</h2>
+
+<!-- BULLET --><table><tbody><tr><td>&nbsp;</td><td valign="top"><img +="" src="index_1_data/redball.gif" align="" border="0" height="11" width="11"> </td><td>
+<a target="_top" href="http://www.microchip.com/1010/pline/picmicro/families/16c62x/devices/16c628/656/index.htm">PIC 16f628 datasheet</a>
+<!-- /BULLET --></td></tr></tbody></table>
+
+<!-- BULLET --><table><tbody><tr><td>&nbsp;</td><td valign="top"><img +="" src="index_1_data/redball.gif" align="" border="0" height="11" width="11"> </td><td>
+<a target="_top" href="http://www.microchip.com/1010/suppdoc/refernce/midrange/786/index.htm">PIC midrange reference manual</a>
+<!-- /BULLET --></td></tr></tbody></table>
+
+<!-- BULLET --><table><tbody><tr><td>&nbsp;</td><td valign="top"><img +="" src="index_1_data/redball.gif" align="" border="0" height="11" width="11"> </td><td>
+<a target="_top" href="http://www.voti.nl/jal">Jal</a>: my own PIC language and compiler (free)
+<!-- /BULLET --></td></tr></tbody></table>
+
+<!-- BULLET --><table><tbody><tr><td>&nbsp;</td><td valign="top"><img +="" src="index_1_data/redball.gif" align="" border="0" height="11" width="11"> </td><td>
+<a target="_top" href="http://www.voti.nl/wisp">wisp</a>: my flash PIC programmer
+<!-- /BULLET --></td></tr></tbody></table>
+
+<!-- BULLET --><table><tbody><tr><td>&nbsp;</td><td valign="top"><img +="" src="index_1_data/redball.gif" align="" border="0" height="11" width="11"> </td><td>
+<a target="_top" href="http://www.piclist.com/">piclist</a>: THE forum for PIC users, heavy traffic (~ 100 posts/day)
+<!-- /BULLET --></td></tr></tbody></table>
+
+<!-- BULLET --><table><tbody><tr><td>&nbsp;</td><td valign="top"><img +="" src="index_1_data/redball.gif" align="" border="0" height="11" width="11"> </td><td>
+<a target="_top" href="http://www.lancs.ac.uk/people/cpaap/pfe">PFE</a> (Programmers
+File Editor) is a free text editor, often used by programmers (including me)
+<!-- /BULLET --></td></tr></tbody></table>
+
+<!-- BULLET --><table><tbody><tr><td>&nbsp;</td><td valign="top"><img +="" src="index_1_data/redball.gif" align="" border="0" height="11" width="11"> </td><td>
+<a target="_top" href="http://www.cadsoft.de/">CadSoft</a>'s Eagle circuit / PCB editor
+(free version with some limits)
+<!-- /BULLET --></td></tr></tbody></table>
+
+<!-- BULLET --><table><tbody><tr><td>&nbsp;</td><td valign="top"><img +="" src="index_1_data/redball.gif" align="" border="0" height="11" width="11"> </td><td>
+<a target="_top" href="http://www.ic-prog.com/">ic-prog</a>: software that drives lots of programmers, the site also provides lots of programmer schematics
+<!-- /BULLET --></td></tr></tbody></table>
+
+<!-- BULLET --><table><tbody><tr><td>&nbsp;</td><td valign="top"><img +="" src="index_1_data/redball.gif" align="" border="0" height="11" width="11"> </td><td>
+<a target="_top" href="http://www.national.com/pf/LM/LM324.html">LM324 datasheet</a>
+<!-- /BULLET --></td></tr></tbody></table>
+
+<!-- BULLET --><table><tbody><tr><td>&nbsp;</td><td valign="top"><img +="" src="index_1_data/redball.gif" align="" border="0" height="11" width="11"> </td><td>
+<a target="_top" href="http://www.intersil.com/data/fn/fn9/fn957/">CA3140 datasheet</a>
+<!-- /BULLET --></td></tr></tbody></table>
+
+<p></p>
+
+
+<hr><!------------------------------------------------------------------------>
+
+<p>    
+</p><h2>history</h2>
+
+<!-- BULLET --><table><tbody><tr><td>&nbsp;</td><td valign="top"><img +="" src="index_1_data/redball.gif" align="" border="0" height="11" width="11"> </td><td>
+25-jan-2004 the previous circuits had R2 connected to +5V, this was WRONG
+(thanks Sietze Kooistra for discovering this problem after 2 years), 'freeze' switch added
+<!-- /BULLET --></td></tr></tbody></table>
+
+<!-- BULLET --><table><tbody><tr><td>&nbsp;</td><td valign="top"><img +="" src="index_1_data/redball.gif" align="" border="0" height="11" width="11"> </td><td>
+26-jan-2002 pictures, cleanup
+<!-- /BULLET --></td></tr></tbody></table>
+
+<!-- BULLET --><table><tbody><tr><td>&nbsp;</td><td valign="top"><img +="" src="index_1_data/redball.gif" align="" border="0" height="11" width="11"> </td><td>
+18-jan-2002 first version
+<!-- /BULLET --></td></tr></tbody></table>
+
+<hr><!------------------------------------------------------------------------>
+
+<p>    
+</p><h2>legal</h2>
+
+<p>
+(c) 2000 .. 2004 Van Ooijen Technische Informatica / Wouter van Ooijen
+</p>
+<p>
+All rights for this text are reserved. 
+The design information however, is free for all use.
+This includes (as far as available on this page) 
+the code in source and executable (.hex) format, circuit diagrams, and PCB designs.
+There is no warranty of any kind, except as mandatory by law.
+</p>
+
+</body></html>

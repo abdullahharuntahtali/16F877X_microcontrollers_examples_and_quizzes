@@ -1,0 +1,1784 @@
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ;        TITLE "Dallas 1 wire bus comms MASTER"
+                      00002 
+                      00003 ;****************************************************************************
+                      00004 ;*
+                      00005 ;*   Send Reset Pulse to all on Dallas bus,
+                      00006 ;*   and monitor presence pulse
+                      00007 ;* TO DO -  best of three reads, to guard against noise
+                      00008 ;*
+                      00009 ;****************************************************************************
+                      00010 
+                      00011     include P16F628A.inc
+                      00001         LIST
+                      00002 ; P16F628A.INC  Standard Header File, Version 1.10    Microchip Technology, Inc.
+                      00265         LIST
+                      00012     include tempdemo.inc
+                      00001 ;****************************************************************************
+                      00002 ;*                                                                          *
+                      00003 ;*                   Dallas 1 Wire Bus Temperature demo                     *
+                      00004 ;*                                                                          *
+                      00005 ;****************************************************************************
+                      00006 
+  003D0900            00007 Clock_Freq      equ     d'4000000'      ;4MHz - for wait macro calculations
+                      00008 
+                      00009     udata_ovr   0x20                    ;0x0C 16F84
+0020                  00010 DScommbuff      res     1
+0021                  00011 DSCRC           res     1
+                      00012 
+0022                  00013 tempone         res     1
+0023                  00014 temptwo         res     1
+0024                  00015 count           res     1
+0025                  00016 count2          res     1               ; 2nd loop counter for nested loops
+0026                  00017 bits_byte       res     1
+                      00018 
+0027                  00019 CHARBUF         res     1
+0028                  00020 temp_hi         res     1
+0029                  00021 temp_lo         res     1
+002A                  00022 acc_lo          res     1
+002B                  00023 acc_hi          res     1
+                      00024 
+002C                  00025 vvshift         res     1
+                      00026 
+                      00027 #define PRESENCE_bit    bits_byte, 0
+                      00028 #define round00_bit     bits_byte, 1
+                      00029 #define DSNext_bit      bits_byte, 2
+                      00030 #define neg_temp_bit    bits_byte, 3
+                      00031 #define DALLAS_BUS      PORTA, 4
+                      00032 
+002D                  00033 ROM_no          res     8
+0035                  00034 id_bit_number   res     1
+0036                  00035 last_zero       res     1
+0037                  00036 LastDiscrepancy res     1
+0038                  00037 LastFamilyDiscr res     1
+0039                  00038 id_bits_byte    res     1
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+003A                  00039 rom_mask        res     1
+                      00040 
+                      00041 #define id_bit          id_bits_byte, 0 ; first bit read in a search ID sequence
+                      00042 #define cmp_id_bit      id_bits_byte, 1 ; complement of id_bit
+                      00043 #define test_bit        id_bits_byte, 2 ; test id_bit & cmp_id_bit
+                      00044 
+                      00045 #define last_device     id_bits_byte, 6
+                      00046 #define Direction       id_bits_byte, 7
+                      00013     include dal_bus.inc
+                      00032         list
+                      00014     include wait.inc
+                      00001 
+                      00002 #define         Nanosec         * D'1'
+                      00003 #define         Microsec        * D'1000'
+                      00004 #define         Millisec        * D'1000000'
+                      00005 #define         Seconds         * D'1000000000'
+                      00006        
+                      00007 
+                      00008 ;**************************************************************
+                      00009 ;*                       The WAIT macro                       *
+                      00010 ;*                      * VERSION 1.01 *                      *
+                      00011 ;*             called by Wait <time>, lesscycles              *
+                      00012 ;**************************************************************
+                      00013 ;History
+                      00014 ;1.00   - Original
+                      00015 ;1.01   - Fixed bug with small even numbers giving an error message
+                      00016 
+                      00017 
+                      00018 Wait    macro   time_ns, lesscycles         ;time_ns gives the wait time required, in ns
+                      00019  radix dec
+                      00020  variable instruct_time_ns =  (( 1 Seconds ) / (Clock_Freq / 4 ))
+                      00021  local cycles
+                      00022  variable cycles = ((time_ns) / instruct_time_ns)   ;required delay in 
+                      00023                                                          ;100ths of instructions
+                      00024 
+                      00025  if (cycles < (lesscycles) )
+                      00026         messg NOTE - negative delay time with lesscycles cycles (no code)
+                      00027                
+                      00028                 exitm
+                      00029  else
+                      00030  variable cycles = (cycles - (lesscycles))
+                      00031  endif
+                      00032 
+                      00033  if (cycles == 0) 
+                      00034         messg "WARNING - delay time less than 1 instructions"
+                      00035                
+                      00036                 nop
+                      00037                 exitm
+                      00038  endif
+                      00039 
+                      00040  if (cycles > (255*(256*3 + 6) + 2 + 3))
+                      00041         messg   "ERROR : Too long a wait for the WAIT macro at present!!"
+                      00042         exitm
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00043  endif
+                      00044         
+                      00045 ;        messg Info - calculated number of cycles = #v(cycles)
+                      00046 
+                      00047 
+                      00048  if (cycles > ((255*3)+5))
+                      00049                 
+                      00050                 movlw   ((cycles-5)/(256*3+6))
+                      00051                 call    longdelay
+                      00052  
+                      00053  ifndef INCLONGDELAY
+                      00054   #define INCLONGDELAY
+                      00055  endif
+                      00056 
+                      00057  exitm
+                      00058  endif
+                      00059 
+                      00060  if ((cycles > 8 ) && (cycles < (255*3 + 5)))
+                      00061                 
+                      00062                 movlw   ((cycles-5)/3)        
+                      00063                 call    shortdelay
+                      00064  
+                      00065  ifndef INCSHORTDELAY
+                      00066   #define INCSHORTDELAY
+                      00067  endif
+                      00068 
+                      00069  exitm
+                      00070  endif
+                      00071 
+                      00072  if (cycles < 8)
+                      00073  while  ( cycles > 1 )
+                      00074                 
+                      00075                 goto $+1  ;two cycle nop
+                      00076         
+                      00077 cycles -=2
+                      00078  endw
+                      00079  endif
+                      00080  
+                      00081  if (cycles > 0)
+                      00082                nop
+                      00083  
+                      00084  endif
+                      00085  exitm
+                      00086  
+                      00087  messg "ERROR - got to end of WAIT.MAC"
+                      00088 
+                      00089  radix hex
+                      00090  endm
+                      00015 
+  0000                00016     global DSReset_Pulse, DSWriteByteW, DSReadByte, DSReadBit
+  0000                00017     global OWSearch
+  0000                00018     extern longdelay, shortdelay    ;DELAY.ASM
+                      00019 
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00020 PROG CODE
+0000   1000           00021 DSReset_Pulse   bcf     PRESENCE_bit
+0001   1605           00022                 bsf     DALLAS_BUS      ;just in case it isn't
+                      00023                 Wait    1 Microsec,0    ; Trec
+                          M  radix dec
+  03E8                    M  variable instruct_time_ns =  (( 1 Seconds ) / (Clock_Freq / 4 ))
+  0000                    M  local cycles
+  0001                    M  variable cycles = ((1 * D'1000') / instruct_time_ns) ;required delay in 
+                          M                                                          ;100ths of instructions
+                          M 
+                          M  if (cycles < (0)          )
+                          M         messg NOTE - negative delay time with 0          cycles (no code)
+                          M                
+                          M                 exitm
+                          M  else
+  0001                    M  variable cycles = (cycles - (0))
+                          M  endif
+                          M 
+                          M  if (cycles == 0) 
+                          M         messg "WARNING - delay time less than 1 instructions"
+                          M                
+                          M                 nop
+                          M                 exitm
+                          M  endif
+                          M 
+                          M  if (cycles > (255*(256*3 + 6) + 2 + 3))
+                          M         messg   "ERROR : Too long a wait for the WAIT macro at present!!"
+                          M         exitm
+                          M  endif
+                          M         
+                          M ;        messg Info - calculated number of cycles = #v(cycles)
+                          M 
+                          M 
+                          M  if (cycles > ((255*3)+5))
+                          M                 
+                          M                 movlw   ((cycles-5)/(256*3+6))
+                          M                 call    longdelay
+                          M  
+                          M  ifndef INCLONGDELAY
+                          M   #define INCLONGDELAY
+                          M  endif
+                          M 
+                          M  exitm
+                          M  endif
+                          M 
+                          M  if ((cycles > 8 ) && (cycles < (255*3 + 5)))
+                          M                 
+                          M                 movlw   ((cycles-5)/3)        
+                          M                 call    shortdelay
+                          M  
+                          M  ifndef INCSHORTDELAY
+                          M   #define INCSHORTDELAY
+                          M  endif
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                          M 
+                          M  exitm
+                          M  endif
+                          M 
+                          M  if (cycles < 8)
+                          M  while  ( cycles > 1 )
+                          M                 
+                          M                 goto $+1  ;two cycle nop
+                          M         
+                          M cycles -=2
+                          M  endw
+                          M  endif
+                          M  
+                          M  if (cycles > 0)
+0002   0000               M                nop
+                          M  
+                          M  endif
+                          M  exitm
+0003   1205           00024                 bcf     DALLAS_BUS      ;start of reset pulse
+                      00025                 Wait    580 Microsec,0  ; Trstl
+                          M  radix dec
+  03E8                    M  variable instruct_time_ns =  (( 1 Seconds ) / (Clock_Freq / 4 ))
+  0000                    M  local cycles
+  0244                    M  variable cycles = ((580 * D'1000') / instruct_time_ns) ;required delay in 
+                          M                                                          ;100ths of instructions
+                          M 
+                          M  if (cycles < (0)          )
+                          M         messg NOTE - negative delay time with 0          cycles (no code)
+                          M                
+                          M                 exitm
+                          M  else
+  0244                    M  variable cycles = (cycles - (0))
+                          M  endif
+                          M 
+                          M  if (cycles == 0) 
+                          M         messg "WARNING - delay time less than 1 instructions"
+                          M                
+                          M                 nop
+                          M                 exitm
+                          M  endif
+                          M 
+                          M  if (cycles > (255*(256*3 + 6) + 2 + 3))
+                          M         messg   "ERROR : Too long a wait for the WAIT macro at present!!"
+                          M         exitm
+                          M  endif
+                          M         
+                          M ;        messg Info - calculated number of cycles = #v(cycles)
+                          M 
+                          M 
+                          M  if (cycles > ((255*3)+5))
+                          M                 
+                          M                 movlw   ((cycles-5)/(256*3+6))
+                          M                 call    longdelay
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                          M  
+                          M  ifndef INCLONGDELAY
+                          M   #define INCLONGDELAY
+                          M  endif
+                          M 
+                          M  exitm
+                          M  endif
+                          M 
+                          M  if ((cycles > 8 ) && (cycles < (255*3 + 5)))
+                          M                 
+0004   30BF               M                 movlw   ((cycles-5)/3)        
+0005   2???               M                 call    shortdelay
+                          M  
+                          M  ifndef INCSHORTDELAY
+                          M   #define INCSHORTDELAY
+                          M  endif
+                          M 
+                          M  exitm
+0006   1605           00026                 bsf     DALLAS_BUS      ;end of reset pulse
+                      00027                 Wait    60 Microsec,0   ; Tpdh
+                          M  radix dec
+  03E8                    M  variable instruct_time_ns =  (( 1 Seconds ) / (Clock_Freq / 4 ))
+  0000                    M  local cycles
+  003C                    M  variable cycles = ((60 * D'1000') / instruct_time_ns) ;required delay in 
+                          M                                                          ;100ths of instructions
+                          M 
+                          M  if (cycles < (0)          )
+                          M         messg NOTE - negative delay time with 0          cycles (no code)
+                          M                
+                          M                 exitm
+                          M  else
+  003C                    M  variable cycles = (cycles - (0))
+                          M  endif
+                          M 
+                          M  if (cycles == 0) 
+                          M         messg "WARNING - delay time less than 1 instructions"
+                          M                
+                          M                 nop
+                          M                 exitm
+                          M  endif
+                          M 
+                          M  if (cycles > (255*(256*3 + 6) + 2 + 3))
+                          M         messg   "ERROR : Too long a wait for the WAIT macro at present!!"
+                          M         exitm
+                          M  endif
+                          M         
+                          M ;        messg Info - calculated number of cycles = #v(cycles)
+                          M 
+                          M 
+                          M  if (cycles > ((255*3)+5))
+                          M                 
+                          M                 movlw   ((cycles-5)/(256*3+6))
+                          M                 call    longdelay
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                          M  
+                          M  ifndef INCLONGDELAY
+                          M   #define INCLONGDELAY
+                          M  endif
+                          M 
+                          M  exitm
+                          M  endif
+                          M 
+                          M  if ((cycles > 8 ) && (cycles < (255*3 + 5)))
+                          M                 
+0007   3012               M                 movlw   ((cycles-5)/3)        
+0008   2???               M                 call    shortdelay
+                          M  
+                          M  ifndef INCSHORTDELAY
+                          M   #define INCSHORTDELAY
+                          M  endif
+                          M 
+                          M  exitm
+0009   1E05           00028                 btfss   DALLAS_BUS      ;check for a presence pulse st:btfsC
+000A   1400           00029                 bsf     PRESENCE_bit    ;indicates presence
+                      00030                 Wait    420 Microsec,0  ; Trsth - Tpdh ( > Tpdl)
+                          M  radix dec
+  03E8                    M  variable instruct_time_ns =  (( 1 Seconds ) / (Clock_Freq / 4 ))
+  0000                    M  local cycles
+  01A4                    M  variable cycles = ((420 * D'1000') / instruct_time_ns) ;required delay in 
+                          M                                                          ;100ths of instructions
+                          M 
+                          M  if (cycles < (0)          )
+                          M         messg NOTE - negative delay time with 0          cycles (no code)
+                          M                
+                          M                 exitm
+                          M  else
+  01A4                    M  variable cycles = (cycles - (0))
+                          M  endif
+                          M 
+                          M  if (cycles == 0) 
+                          M         messg "WARNING - delay time less than 1 instructions"
+                          M                
+                          M                 nop
+                          M                 exitm
+                          M  endif
+                          M 
+                          M  if (cycles > (255*(256*3 + 6) + 2 + 3))
+                          M         messg   "ERROR : Too long a wait for the WAIT macro at present!!"
+                          M         exitm
+                          M  endif
+                          M         
+                          M ;        messg Info - calculated number of cycles = #v(cycles)
+                          M 
+                          M 
+                          M  if (cycles > ((255*3)+5))
+                          M                 
+                          M                 movlw   ((cycles-5)/(256*3+6))
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                          M                 call    longdelay
+                          M  
+                          M  ifndef INCLONGDELAY
+                          M   #define INCLONGDELAY
+                          M  endif
+                          M 
+                          M  exitm
+                          M  endif
+                          M 
+                          M  if ((cycles > 8 ) && (cycles < (255*3 + 5)))
+                          M                 
+000B   308A               M                 movlw   ((cycles-5)/3)        
+000C   2???               M                 call    shortdelay
+                          M  
+                          M  ifndef INCSHORTDELAY
+                          M   #define INCSHORTDELAY
+                          M  endif
+                          M 
+                          M  exitm
+000D   0008           00031                 return
+                      00032 
+                      00033 ;****************************************************************************
+                      00034 ;*
+                      00035 ;*   Write a ONE on the Dallas bus
+                      00036 ;*
+                      00037 ;****************************************************************************
+                      00038 
+000E   1605           00039 DSWriteaOne     bsf     DALLAS_BUS      ;just in case it isn't
+000F   0000           00040                 nop
+0010   1205           00041                 bcf     DALLAS_BUS      ;start/sync edge
+                      00042                 Wait    2 Microsec,0    ; Tlow1
+                          M  radix dec
+  03E8                    M  variable instruct_time_ns =  (( 1 Seconds ) / (Clock_Freq / 4 ))
+  0000                    M  local cycles
+  0002                    M  variable cycles = ((2 * D'1000') / instruct_time_ns) ;required delay in 
+                          M                                                          ;100ths of instructions
+                          M 
+                          M  if (cycles < (0)          )
+                          M         messg NOTE - negative delay time with 0          cycles (no code)
+                          M                
+                          M                 exitm
+                          M  else
+  0002                    M  variable cycles = (cycles - (0))
+                          M  endif
+                          M 
+                          M  if (cycles == 0) 
+                          M         messg "WARNING - delay time less than 1 instructions"
+                          M                
+                          M                 nop
+                          M                 exitm
+                          M  endif
+                          M 
+                          M  if (cycles > (255*(256*3 + 6) + 2 + 3))
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                          M         messg   "ERROR : Too long a wait for the WAIT macro at present!!"
+                          M         exitm
+                          M  endif
+                          M         
+                          M ;        messg Info - calculated number of cycles = #v(cycles)
+                          M 
+                          M 
+                          M  if (cycles > ((255*3)+5))
+                          M                 
+                          M                 movlw   ((cycles-5)/(256*3+6))
+                          M                 call    longdelay
+                          M  
+                          M  ifndef INCLONGDELAY
+                          M   #define INCLONGDELAY
+                          M  endif
+                          M 
+                          M  exitm
+                          M  endif
+                          M 
+                          M  if ((cycles > 8 ) && (cycles < (255*3 + 5)))
+                          M                 
+                          M                 movlw   ((cycles-5)/3)        
+                          M                 call    shortdelay
+                          M  
+                          M  ifndef INCSHORTDELAY
+                          M   #define INCSHORTDELAY
+                          M  endif
+                          M 
+                          M  exitm
+                          M  endif
+                          M 
+                          M  if (cycles < 8)
+                          M  while  ( cycles > 1 )
+                          M                 
+0011   2???               M                 goto $+1  ;two cycle nop
+                          M         
+  00000000                M cycles -=2
+                          M  endw
+                          M  endif
+                          M  
+                          M  if (cycles > 0)
+                          M                nop
+                          M  
+                          M  endif
+                          M  exitm
+0012   1605           00043                 bsf     DALLAS_BUS      ;end of low pulse
+                      00044                 Wait    59 Microsec,0   ; (Tslot + Trec) - Tlow1
+                          M  radix dec
+  03E8                    M  variable instruct_time_ns =  (( 1 Seconds ) / (Clock_Freq / 4 ))
+  0000                    M  local cycles
+  003B                    M  variable cycles = ((59 * D'1000') / instruct_time_ns) ;required delay in 
+                          M                                                          ;100ths of instructions
+                          M 
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                          M  if (cycles < (0)          )
+                          M         messg NOTE - negative delay time with 0          cycles (no code)
+                          M                
+                          M                 exitm
+                          M  else
+  003B                    M  variable cycles = (cycles - (0))
+                          M  endif
+                          M 
+                          M  if (cycles == 0) 
+                          M         messg "WARNING - delay time less than 1 instructions"
+                          M                
+                          M                 nop
+                          M                 exitm
+                          M  endif
+                          M 
+                          M  if (cycles > (255*(256*3 + 6) + 2 + 3))
+                          M         messg   "ERROR : Too long a wait for the WAIT macro at present!!"
+                          M         exitm
+                          M  endif
+                          M         
+                          M ;        messg Info - calculated number of cycles = #v(cycles)
+                          M 
+                          M 
+                          M  if (cycles > ((255*3)+5))
+                          M                 
+                          M                 movlw   ((cycles-5)/(256*3+6))
+                          M                 call    longdelay
+                          M  
+                          M  ifndef INCLONGDELAY
+                          M   #define INCLONGDELAY
+                          M  endif
+                          M 
+                          M  exitm
+                          M  endif
+                          M 
+                          M  if ((cycles > 8 ) && (cycles < (255*3 + 5)))
+                          M                 
+0013   3012               M                 movlw   ((cycles-5)/3)        
+0014   2???               M                 call    shortdelay
+                          M  
+                          M  ifndef INCSHORTDELAY
+                          M   #define INCSHORTDELAY
+                          M  endif
+                          M 
+                          M  exitm
+0015   0008           00045                 return
+                      00046 
+                      00047 ;****************************************************************************
+                      00048 ;*
+                      00049 ;*   Write a ZERO on the Dallas bus
+                      00050 ;*
+                      00051 ;****************************************************************************
+                      00052 
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE 11
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0016   1605           00053 DSWriteaZero    bsf     DALLAS_BUS      ;just in case it isn't
+0017   0000           00054                 nop
+0018   1205           00055                 bcf     DALLAS_BUS      ;start/sync edge
+                      00056                 Wait    60 Microsec,0   ; Tlow0
+                          M  radix dec
+  03E8                    M  variable instruct_time_ns =  (( 1 Seconds ) / (Clock_Freq / 4 ))
+  0000                    M  local cycles
+  003C                    M  variable cycles = ((60 * D'1000') / instruct_time_ns) ;required delay in 
+                          M                                                          ;100ths of instructions
+                          M 
+                          M  if (cycles < (0)          )
+                          M         messg NOTE - negative delay time with 0          cycles (no code)
+                          M                
+                          M                 exitm
+                          M  else
+  003C                    M  variable cycles = (cycles - (0))
+                          M  endif
+                          M 
+                          M  if (cycles == 0) 
+                          M         messg "WARNING - delay time less than 1 instructions"
+                          M                
+                          M                 nop
+                          M                 exitm
+                          M  endif
+                          M 
+                          M  if (cycles > (255*(256*3 + 6) + 2 + 3))
+                          M         messg   "ERROR : Too long a wait for the WAIT macro at present!!"
+                          M         exitm
+                          M  endif
+                          M         
+                          M ;        messg Info - calculated number of cycles = #v(cycles)
+                          M 
+                          M 
+                          M  if (cycles > ((255*3)+5))
+                          M                 
+                          M                 movlw   ((cycles-5)/(256*3+6))
+                          M                 call    longdelay
+                          M  
+                          M  ifndef INCLONGDELAY
+                          M   #define INCLONGDELAY
+                          M  endif
+                          M 
+                          M  exitm
+                          M  endif
+                          M 
+                          M  if ((cycles > 8 ) && (cycles < (255*3 + 5)))
+                          M                 
+0019   3012               M                 movlw   ((cycles-5)/3)        
+001A   2???               M                 call    shortdelay
+                          M  
+                          M  ifndef INCSHORTDELAY
+                          M   #define INCSHORTDELAY
+                          M  endif
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE 12
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                          M 
+                          M  exitm
+001B   1605           00057                 bsf     DALLAS_BUS      ;end of low pulse
+                      00058                 Wait    1 Microsec,0    ; Trec
+                          M  radix dec
+  03E8                    M  variable instruct_time_ns =  (( 1 Seconds ) / (Clock_Freq / 4 ))
+  0000                    M  local cycles
+  0001                    M  variable cycles = ((1 * D'1000') / instruct_time_ns) ;required delay in 
+                          M                                                          ;100ths of instructions
+                          M 
+                          M  if (cycles < (0)          )
+                          M         messg NOTE - negative delay time with 0          cycles (no code)
+                          M                
+                          M                 exitm
+                          M  else
+  0001                    M  variable cycles = (cycles - (0))
+                          M  endif
+                          M 
+                          M  if (cycles == 0) 
+                          M         messg "WARNING - delay time less than 1 instructions"
+                          M                
+                          M                 nop
+                          M                 exitm
+                          M  endif
+                          M 
+                          M  if (cycles > (255*(256*3 + 6) + 2 + 3))
+                          M         messg   "ERROR : Too long a wait for the WAIT macro at present!!"
+                          M         exitm
+                          M  endif
+                          M         
+                          M ;        messg Info - calculated number of cycles = #v(cycles)
+                          M 
+                          M 
+                          M  if (cycles > ((255*3)+5))
+                          M                 
+                          M                 movlw   ((cycles-5)/(256*3+6))
+                          M                 call    longdelay
+                          M  
+                          M  ifndef INCLONGDELAY
+                          M   #define INCLONGDELAY
+                          M  endif
+                          M 
+                          M  exitm
+                          M  endif
+                          M 
+                          M  if ((cycles > 8 ) && (cycles < (255*3 + 5)))
+                          M                 
+                          M                 movlw   ((cycles-5)/3)        
+                          M                 call    shortdelay
+                          M  
+                          M  ifndef INCSHORTDELAY
+                          M   #define INCSHORTDELAY
+                          M  endif
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE 13
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                          M 
+                          M  exitm
+                          M  endif
+                          M 
+                          M  if (cycles < 8)
+                          M  while  ( cycles > 1 )
+                          M                 
+                          M                 goto $+1  ;two cycle nop
+                          M         
+                          M cycles -=2
+                          M  endw
+                          M  endif
+                          M  
+                          M  if (cycles > 0)
+001C   0000               M                nop
+                          M  
+                          M  endif
+                          M  exitm
+001D   0008           00059                 return
+                      00060 
+                      00061 ;****************************************************************************
+                      00062 ;*
+                      00063 ;*   Write byte in DScommbuff or W to the Dallas bus
+                      00064 ;*
+                      00065 ;****************************************************************************
+                      00066 
+001E   00??           00067 DSWriteByteW    movwf   DScommbuff      ;store W
+001F   1605           00068 DSWriteByte     bsf     DALLAS_BUS      ;just in case it isn't
+0020   3008           00069                 movlw   0x08            ;byte is 8 bits
+0021   00??           00070                 movwf   count
+0022   1205           00071 DSWriteLoop     bcf     DALLAS_BUS      ;start/sync edge
+                      00072                 Wait    2 Microsec,1    ; Tlow1
+                          M  radix dec
+  03E8                    M  variable instruct_time_ns =  (( 1 Seconds ) / (Clock_Freq / 4 ))
+  0000                    M  local cycles
+  0002                    M  variable cycles = ((2 * D'1000') / instruct_time_ns) ;required delay in 
+                          M                                                          ;100ths of instructions
+                          M 
+                          M  if (cycles < (1)          )
+                          M         messg NOTE - negative delay time with 1          cycles (no code)
+                          M                
+                          M                 exitm
+                          M  else
+  0001                    M  variable cycles = (cycles - (1))
+                          M  endif
+                          M 
+                          M  if (cycles == 0) 
+                          M         messg "WARNING - delay time less than 1 instructions"
+                          M                
+                          M                 nop
+                          M                 exitm
+                          M  endif
+                          M 
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE 14
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                          M  if (cycles > (255*(256*3 + 6) + 2 + 3))
+                          M         messg   "ERROR : Too long a wait for the WAIT macro at present!!"
+                          M         exitm
+                          M  endif
+                          M         
+                          M ;        messg Info - calculated number of cycles = #v(cycles)
+                          M 
+                          M 
+                          M  if (cycles > ((255*3)+5))
+                          M                 
+                          M                 movlw   ((cycles-5)/(256*3+6))
+                          M                 call    longdelay
+                          M  
+                          M  ifndef INCLONGDELAY
+                          M   #define INCLONGDELAY
+                          M  endif
+                          M 
+                          M  exitm
+                          M  endif
+                          M 
+                          M  if ((cycles > 8 ) && (cycles < (255*3 + 5)))
+                          M                 
+                          M                 movlw   ((cycles-5)/3)        
+                          M                 call    shortdelay
+                          M  
+                          M  ifndef INCSHORTDELAY
+                          M   #define INCSHORTDELAY
+                          M  endif
+                          M 
+                          M  exitm
+                          M  endif
+                          M 
+                          M  if (cycles < 8)
+                          M  while  ( cycles > 1 )
+                          M                 
+                          M                 goto $+1  ;two cycle nop
+                          M         
+                          M cycles -=2
+                          M  endw
+                          M  endif
+                          M  
+                          M  if (cycles > 0)
+0023   0000               M                nop
+                          M  
+                          M  endif
+                          M  exitm
+0024   1800           00073                 btfsc   DScommbuff, 0
+0025   1605           00074                  bsf    DALLAS_BUS      ;end of low pulse if bit was a 1
+                      00075                 Wait    58 Microsec,0   ; (Tslot + Trec) - Tlow1
+                          M  radix dec
+  03E8                    M  variable instruct_time_ns =  (( 1 Seconds ) / (Clock_Freq / 4 ))
+  0000                    M  local cycles
+  003A                    M  variable cycles = ((58 * D'1000') / instruct_time_ns) ;required delay in 
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE 15
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                          M                                                          ;100ths of instructions
+                          M 
+                          M  if (cycles < (0)          )
+                          M         messg NOTE - negative delay time with 0          cycles (no code)
+                          M                
+                          M                 exitm
+                          M  else
+  003A                    M  variable cycles = (cycles - (0))
+                          M  endif
+                          M 
+                          M  if (cycles == 0) 
+                          M         messg "WARNING - delay time less than 1 instructions"
+                          M                
+                          M                 nop
+                          M                 exitm
+                          M  endif
+                          M 
+                          M  if (cycles > (255*(256*3 + 6) + 2 + 3))
+                          M         messg   "ERROR : Too long a wait for the WAIT macro at present!!"
+                          M         exitm
+                          M  endif
+                          M         
+                          M ;        messg Info - calculated number of cycles = #v(cycles)
+                          M 
+                          M 
+                          M  if (cycles > ((255*3)+5))
+                          M                 
+                          M                 movlw   ((cycles-5)/(256*3+6))
+                          M                 call    longdelay
+                          M  
+                          M  ifndef INCLONGDELAY
+                          M   #define INCLONGDELAY
+                          M  endif
+                          M 
+                          M  exitm
+                          M  endif
+                          M 
+                          M  if ((cycles > 8 ) && (cycles < (255*3 + 5)))
+                          M                 
+0026   3011               M                 movlw   ((cycles-5)/3)        
+0027   2???               M                 call    shortdelay
+                          M  
+                          M  ifndef INCSHORTDELAY
+                          M   #define INCSHORTDELAY
+                          M  endif
+                          M 
+                          M  exitm
+0028   1605           00076                 bsf     DALLAS_BUS      ;end of low pulse if 0 (1 no change)
+                      00077                 Wait    1 Microsec,4    ; Trec
+                          M  radix dec
+  03E8                    M  variable instruct_time_ns =  (( 1 Seconds ) / (Clock_Freq / 4 ))
+  0000                    M  local cycles
+  0001                    M  variable cycles = ((1 * D'1000') / instruct_time_ns) ;required delay in 
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE 16
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                          M                                                          ;100ths of instructions
+                          M 
+                          M  if (cycles < (4)          )
+Message[301]: MESSAGE: (NOTE - negative delay time with 4 cycles (no code))
+                          M         messg NOTE - negative delay time with 4          cycles (no code)
+                          M                
+                          M                 exitm
+0029   0C??           00078                 rrf     DScommbuff, F
+002A   0B??           00079                 decfsz  count, F
+002B   2???           00080                 goto    DSWriteLoop
+002C   0008           00081                 return
+                      00082 
+                      00083 ;****************************************************************************
+                      00084 ;*
+                      00085 ;*   Read bit from the Dallas bus - puts it is bit 0 of DScommbuff
+                      00086 ;* TO DO -  best of three reads, to guard against noise
+                      00087 ;*
+                      00088 ;****************************************************************************
+                      00089 
+002D   1605           00090 DSReadBit       bsf     DALLAS_BUS      ;just in case it isn't
+002E   0000           00091                 nop
+002F   1205           00092                 bcf     DALLAS_BUS      ;start/sync edge
+                      00093                 Wait    2 Microsec,0    ; Tlowr
+                          M  radix dec
+  03E8                    M  variable instruct_time_ns =  (( 1 Seconds ) / (Clock_Freq / 4 ))
+  0000                    M  local cycles
+  0002                    M  variable cycles = ((2 * D'1000') / instruct_time_ns) ;required delay in 
+                          M                                                          ;100ths of instructions
+                          M 
+                          M  if (cycles < (0)          )
+                          M         messg NOTE - negative delay time with 0          cycles (no code)
+                          M                
+                          M                 exitm
+                          M  else
+  0002                    M  variable cycles = (cycles - (0))
+                          M  endif
+                          M 
+                          M  if (cycles == 0) 
+                          M         messg "WARNING - delay time less than 1 instructions"
+                          M                
+                          M                 nop
+                          M                 exitm
+                          M  endif
+                          M 
+                          M  if (cycles > (255*(256*3 + 6) + 2 + 3))
+                          M         messg   "ERROR : Too long a wait for the WAIT macro at present!!"
+                          M         exitm
+                          M  endif
+                          M         
+                          M ;        messg Info - calculated number of cycles = #v(cycles)
+                          M 
+                          M 
+                          M  if (cycles > ((255*3)+5))
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE 17
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                          M                 
+                          M                 movlw   ((cycles-5)/(256*3+6))
+                          M                 call    longdelay
+                          M  
+                          M  ifndef INCLONGDELAY
+                          M   #define INCLONGDELAY
+                          M  endif
+                          M 
+                          M  exitm
+                          M  endif
+                          M 
+                          M  if ((cycles > 8 ) && (cycles < (255*3 + 5)))
+                          M                 
+                          M                 movlw   ((cycles-5)/3)        
+                          M                 call    shortdelay
+                          M  
+                          M  ifndef INCSHORTDELAY
+                          M   #define INCSHORTDELAY
+                          M  endif
+                          M 
+                          M  exitm
+                          M  endif
+                          M 
+                          M  if (cycles < 8)
+                          M  while  ( cycles > 1 )
+                          M                 
+0030   2???               M                 goto $+1  ;two cycle nop
+                          M         
+  00000000                M cycles -=2
+                          M  endw
+                          M  endif
+                          M  
+                          M  if (cycles > 0)
+                          M                nop
+                          M  
+                          M  endif
+                          M  exitm
+0031   1605           00094                 bsf     DALLAS_BUS      ;end of sync low pulse
+                      00095                 Wait    12 Microsec, 2  ; Trdv - 2 cycles
+                          M  radix dec
+  03E8                    M  variable instruct_time_ns =  (( 1 Seconds ) / (Clock_Freq / 4 ))
+  0000                    M  local cycles
+  000C                    M  variable cycles = ((12 * D'1000') / instruct_time_ns) ;required delay in 
+                          M                                                          ;100ths of instructions
+                          M 
+                          M  if (cycles < (2)          )
+                          M         messg NOTE - negative delay time with 2          cycles (no code)
+                          M                
+                          M                 exitm
+                          M  else
+  000A                    M  variable cycles = (cycles - (2))
+                          M  endif
+                          M 
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE 18
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                          M  if (cycles == 0) 
+                          M         messg "WARNING - delay time less than 1 instructions"
+                          M                
+                          M                 nop
+                          M                 exitm
+                          M  endif
+                          M 
+                          M  if (cycles > (255*(256*3 + 6) + 2 + 3))
+                          M         messg   "ERROR : Too long a wait for the WAIT macro at present!!"
+                          M         exitm
+                          M  endif
+                          M         
+                          M ;        messg Info - calculated number of cycles = #v(cycles)
+                          M 
+                          M 
+                          M  if (cycles > ((255*3)+5))
+                          M                 
+                          M                 movlw   ((cycles-5)/(256*3+6))
+                          M                 call    longdelay
+                          M  
+                          M  ifndef INCLONGDELAY
+                          M   #define INCLONGDELAY
+                          M  endif
+                          M 
+                          M  exitm
+                          M  endif
+                          M 
+                          M  if ((cycles > 8 ) && (cycles < (255*3 + 5)))
+                          M                 
+0032   3001               M                 movlw   ((cycles-5)/3)        
+0033   2???               M                 call    shortdelay
+                          M  
+                          M  ifndef INCSHORTDELAY
+                          M   #define INCSHORTDELAY
+                          M  endif
+                          M 
+                          M  exitm
+0034   1400           00096                 bsf     DScommbuff,0
+0035   1E05           00097                 btfss   DALLAS_BUS
+0036   1000           00098                 bcf     DScommbuff, 0
+                      00099                 Wait    47 Microsec, 0
+                          M  radix dec
+  03E8                    M  variable instruct_time_ns =  (( 1 Seconds ) / (Clock_Freq / 4 ))
+  0000                    M  local cycles
+  002F                    M  variable cycles = ((47 * D'1000') / instruct_time_ns) ;required delay in 
+                          M                                                          ;100ths of instructions
+                          M 
+                          M  if (cycles < (0)          )
+                          M         messg NOTE - negative delay time with 0          cycles (no code)
+                          M                
+                          M                 exitm
+                          M  else
+  002F                    M  variable cycles = (cycles - (0))
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE 19
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                          M  endif
+                          M 
+                          M  if (cycles == 0) 
+                          M         messg "WARNING - delay time less than 1 instructions"
+                          M                
+                          M                 nop
+                          M                 exitm
+                          M  endif
+                          M 
+                          M  if (cycles > (255*(256*3 + 6) + 2 + 3))
+                          M         messg   "ERROR : Too long a wait for the WAIT macro at present!!"
+                          M         exitm
+                          M  endif
+                          M         
+                          M ;        messg Info - calculated number of cycles = #v(cycles)
+                          M 
+                          M 
+                          M  if (cycles > ((255*3)+5))
+                          M                 
+                          M                 movlw   ((cycles-5)/(256*3+6))
+                          M                 call    longdelay
+                          M  
+                          M  ifndef INCLONGDELAY
+                          M   #define INCLONGDELAY
+                          M  endif
+                          M 
+                          M  exitm
+                          M  endif
+                          M 
+                          M  if ((cycles > 8 ) && (cycles < (255*3 + 5)))
+                          M                 
+0037   300E               M                 movlw   ((cycles-5)/3)        
+0038   2???               M                 call    shortdelay
+                          M  
+                          M  ifndef INCSHORTDELAY
+                          M   #define INCSHORTDELAY
+                          M  endif
+                          M 
+                          M  exitm
+0039   0008           00100                 return
+                      00101 
+                      00102 ;****************************************************************************
+                      00103 ;*
+                      00104 ;*   Read byte from the Dallas bus, and update CRC
+                      00105 ;* TO DO -  best of three reads, to guard against noise
+                      00106 ;*
+                      00107 ;****************************************************************************
+                      00108 
+003A   1605           00109 DSReadByte      bsf     DALLAS_BUS      ;just in case it isn't
+003B   3008           00110                 movlw   0x08            ;byte is 8 bits
+003C   00??           00111                 movwf   count
+                      00112 
+003D   1205           00113 DSReadLoop      bcf     DALLAS_BUS      ;start/sync edge
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE 20
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00114                 Wait    2 Microsec,0    ; Tlowr
+                          M  radix dec
+  03E8                    M  variable instruct_time_ns =  (( 1 Seconds ) / (Clock_Freq / 4 ))
+  0000                    M  local cycles
+  0002                    M  variable cycles = ((2 * D'1000') / instruct_time_ns) ;required delay in 
+                          M                                                          ;100ths of instructions
+                          M 
+                          M  if (cycles < (0)          )
+                          M         messg NOTE - negative delay time with 0          cycles (no code)
+                          M                
+                          M                 exitm
+                          M  else
+  0002                    M  variable cycles = (cycles - (0))
+                          M  endif
+                          M 
+                          M  if (cycles == 0) 
+                          M         messg "WARNING - delay time less than 1 instructions"
+                          M                
+                          M                 nop
+                          M                 exitm
+                          M  endif
+                          M 
+                          M  if (cycles > (255*(256*3 + 6) + 2 + 3))
+                          M         messg   "ERROR : Too long a wait for the WAIT macro at present!!"
+                          M         exitm
+                          M  endif
+                          M         
+                          M ;        messg Info - calculated number of cycles = #v(cycles)
+                          M 
+                          M 
+                          M  if (cycles > ((255*3)+5))
+                          M                 
+                          M                 movlw   ((cycles-5)/(256*3+6))
+                          M                 call    longdelay
+                          M  
+                          M  ifndef INCLONGDELAY
+                          M   #define INCLONGDELAY
+                          M  endif
+                          M 
+                          M  exitm
+                          M  endif
+                          M 
+                          M  if ((cycles > 8 ) && (cycles < (255*3 + 5)))
+                          M                 
+                          M                 movlw   ((cycles-5)/3)        
+                          M                 call    shortdelay
+                          M  
+                          M  ifndef INCSHORTDELAY
+                          M   #define INCSHORTDELAY
+                          M  endif
+                          M 
+                          M  exitm
+                          M  endif
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE 21
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                          M 
+                          M  if (cycles < 8)
+                          M  while  ( cycles > 1 )
+                          M                 
+003E   2???               M                 goto $+1  ;two cycle nop
+                          M         
+  00000000                M cycles -=2
+                          M  endw
+                          M  endif
+                          M  
+                          M  if (cycles > 0)
+                          M                nop
+                          M  
+                          M  endif
+                          M  exitm
+003F   1605           00115                 bsf     DALLAS_BUS      ;end of sync low pulse
+                      00116                 Wait    12 Microsec, 3  ; Trdv - 2 cycles
+                          M  radix dec
+  03E8                    M  variable instruct_time_ns =  (( 1 Seconds ) / (Clock_Freq / 4 ))
+  0000                    M  local cycles
+  000C                    M  variable cycles = ((12 * D'1000') / instruct_time_ns) ;required delay in 
+                          M                                                          ;100ths of instructions
+                          M 
+                          M  if (cycles < (3)          )
+                          M         messg NOTE - negative delay time with 3          cycles (no code)
+                          M                
+                          M                 exitm
+                          M  else
+  0009                    M  variable cycles = (cycles - (3))
+                          M  endif
+                          M 
+                          M  if (cycles == 0) 
+                          M         messg "WARNING - delay time less than 1 instructions"
+                          M                
+                          M                 nop
+                          M                 exitm
+                          M  endif
+                          M 
+                          M  if (cycles > (255*(256*3 + 6) + 2 + 3))
+                          M         messg   "ERROR : Too long a wait for the WAIT macro at present!!"
+                          M         exitm
+                          M  endif
+                          M         
+                          M ;        messg Info - calculated number of cycles = #v(cycles)
+                          M 
+                          M 
+                          M  if (cycles > ((255*3)+5))
+                          M                 
+                          M                 movlw   ((cycles-5)/(256*3+6))
+                          M                 call    longdelay
+                          M  
+                          M  ifndef INCLONGDELAY
+                          M   #define INCLONGDELAY
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE 22
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                          M  endif
+                          M 
+                          M  exitm
+                          M  endif
+                          M 
+                          M  if ((cycles > 8 ) && (cycles < (255*3 + 5)))
+                          M                 
+0040   3001               M                 movlw   ((cycles-5)/3)        
+0041   2???               M                 call    shortdelay
+                          M  
+                          M  ifndef INCSHORTDELAY
+                          M   #define INCSHORTDELAY
+                          M  endif
+                          M 
+                          M  exitm
+0042   1003           00117                 bcf     STATUS, C
+0043   0103           00118                 clrw
+0044   1E05           00119                 btfss   DALLAS_BUS
+0045   2???           00120                  goto   DSread0
+0046   3001           00121                 movlw   b'00000001'
+0047   1403           00122                 bsf     STATUS, C
+0048                  00123 DSread0
+0048   0C??           00124                 rrf     DScommbuff, F
+                      00125 ;now for the calculating the CRC
+0049   1003           00126                 bcf     STATUS, C
+004A   06??           00127                 xorwf   DSCRC, W
+004B   3901           00128                 andlw   b'00000001'
+004C   1903           00129                 btfsc   STATUS, Z   ;changed from btfss 080298****
+004D   2???           00130                  goto   DSCRCin0
+004E   3018           00131                 movlw   0x18
+004F   06??           00132                 xorwf   DSCRC, F
+0050   1403           00133                 bsf     STATUS, C   ;added here 080298*****
+                      00134 
+0051   0C??           00135 DSCRCin0        rrf     DSCRC, F
+                      00136                 Wait    47 Microsec, 12
+                          M  radix dec
+  03E8                    M  variable instruct_time_ns =  (( 1 Seconds ) / (Clock_Freq / 4 ))
+  0000                    M  local cycles
+  002F                    M  variable cycles = ((47 * D'1000') / instruct_time_ns) ;required delay in 
+                          M                                                          ;100ths of instructions
+                          M 
+                          M  if (cycles < (12)         )
+                          M         messg NOTE - negative delay time with 12         cycles (no code)
+                          M                
+                          M                 exitm
+                          M  else
+  0023                    M  variable cycles = (cycles - (12))
+                          M  endif
+                          M 
+                          M  if (cycles == 0) 
+                          M         messg "WARNING - delay time less than 1 instructions"
+                          M                
+                          M                 nop
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE 23
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                          M                 exitm
+                          M  endif
+                          M 
+                          M  if (cycles > (255*(256*3 + 6) + 2 + 3))
+                          M         messg   "ERROR : Too long a wait for the WAIT macro at present!!"
+                          M         exitm
+                          M  endif
+                          M         
+                          M ;        messg Info - calculated number of cycles = #v(cycles)
+                          M 
+                          M 
+                          M  if (cycles > ((255*3)+5))
+                          M                 
+                          M                 movlw   ((cycles-5)/(256*3+6))
+                          M                 call    longdelay
+                          M  
+                          M  ifndef INCLONGDELAY
+                          M   #define INCLONGDELAY
+                          M  endif
+                          M 
+                          M  exitm
+                          M  endif
+                          M 
+                          M  if ((cycles > 8 ) && (cycles < (255*3 + 5)))
+                          M                 
+0052   300A               M                 movlw   ((cycles-5)/3)        
+0053   2???               M                 call    shortdelay
+                          M  
+                          M  ifndef INCSHORTDELAY
+                          M   #define INCSHORTDELAY
+                          M  endif
+                          M 
+                          M  exitm
+0054   0B??           00137                 decfsz  count, F    ;end of byte?
+0055   2???           00138                  goto   DSReadLoop
+0056   0008           00139                 return
+                      00140 
+0057                  00141 OWSearch
+0057   01??           00142     clrf    id_bit_number   ; set id_bit_number = 1
+0058   0A??           00143     incf    id_bit_number, F
+0059   01??           00144     clrf    last_zero       ; set last_zero = 0
+005A   01??           00145     clrf    rom_mask        ; set rom_mask = 1
+005B   0A??           00146     incf    rom_mask, F
+005C   01??           00147     clrf    DSCRC           ; reset CRC check
+005D   30??           00148     movlw   ROM_no
+005E   0084           00149     movwf   FSR
+                      00150 
+                      00151 
+                      00152 
+005F   30F0           00153     movlw   DSSearchROM
+                      00154 ;    movlw   DSAlarmSearch
+0060   2???           00155     call    DSWriteByteW
+                      00156 
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE 24
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00157 
+                      00158 
+0061                  00159 ReadBit                     ; read id_bit & cmp_id_bit
+0061   2???           00160     call    DSReadBit
+0062   1000           00161     bcf     id_bit
+0063   1800           00162     btfsc   DScommbuff, 0
+0064   1400           00163      bsf    id_bit
+0065   2???           00164     call    DSReadBit
+0066   1080           00165     bcf     cmp_id_bit
+0067   1800           00166     btfsc   DScommbuff, 0
+0068   1480           00167      bsf    cmp_id_bit
+                      00168 ; check for no devices on 1-wire, id_bit = cmp_id_bit = 1?
+0069   1500           00169     bsf     test_bit
+006A   1C00           00170     btfss   id_bit
+006B   1100           00171      bcf    test_bit
+006C   1C80           00172     btfss   cmp_id_bit
+006D   1100           00173      bcf    test_bit
+                      00174 ; no devices on 1-wire bus, loop
+006E   1900           00175      btfsc  test_bit
+006F   2???           00176       goto  OWSearchErr
+                      00177 ; Discrepancy?, id_bit = cmp_id_bit = 0?
+0070   1100           00178     bcf     test_bit
+0071   1800           00179     btfsc   id_bit
+0072   1500           00180      bsf    test_bit        ; No discrepancy
+0073   1880           00181     btfsc   cmp_id_bit
+0074   1500           00182      bsf    test_bit        ; No discrepancy
+                      00183 
+0075   1D00           00184     btfss   test_bit
+0076   2???           00185      goto   discrepancy     ; Yes, discrepancy
+                      00186 ; No, no discrepancy -> Direction = id_bit
+0077   1380           00187     bcf     Direction
+0078   1800           00188     btfsc   id_bit
+0079   1780           00189      bsf    Direction
+007A   2???           00190     goto    EndDiscrepancy
+007B                  00191 discrepancy
+                      00192 ; id_bit_number = LastDiscrepancy?
+007B   08??           00193     movf    LastDiscrepancy, W
+007C   02??           00194     subwf   id_bit_number, W
+007D   1D03           00195     btfss   STATUS, Z
+007E   2???           00196      goto   $ + 3           ; No
+007F   1780           00197     bsf     Direction       ; Yes
+0080   2???           00198     goto    EndEqual
+                      00199 ; id_bit_number > LastDiscrepancy?
+0081   1C03           00200     btfss   STATUS, C
+0082   2???           00201      goto   $ + 3           ; No
+0083   1380           00202     bcf     Direction       ; Yes
+0084   2???           00203     goto    EndEqual
+                      00204 ; No, id_bit_number !> LastDiscrepancy
+                      00205 ; Direction = ROM_no, id_bit_number
+0085   1380           00206     bcf     Direction ; optimizable!
+0086   08??           00207     movf    rom_mask, W
+0087   0500           00208     andwf   INDF, W
+0088   1D03           00209     btfss   STATUS, Z
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE 25
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0089   1780           00210      bsf    Direction
+                      00211 
+008A                  00212 EndEqual
+                      00213 ; Direction = 0?
+008A   1B80           00214     btfsc   Direction
+008B   2???           00215      goto   EndDiscrepancy      ; No
+                      00216 ; Yes, last_zero = id_bit_number
+008C   08??           00217     movf    id_bit_number, W    ; Yes
+008D   00??           00218     movwf   last_zero
+                      00219 ; (9 - last_zero > 0)?, last_zero < 9?
+008E   3C09           00220     sublw   d'9'
+008F   1C03           00221     btfss   STATUS, C
+0090   2???           00222      goto   EndDiscrepancy  ; No
+                      00223 ; Yes, LastFamilyDiscr = last_zero
+0091   08??           00224     movf    last_zero, W    ; Yes
+0092   00??           00225     movwf   LastFamilyDiscr
+                      00226 
+0093                  00227 EndDiscrepancy
+                      00228 ; ROM_no, id_bit_number = Direction
+0093   1B80           00229     btfsc   Direction
+0094   2???           00230      goto   $ + 5
+                      00231 ; Direction = 0
+0095   09??           00232     comf    rom_mask, W
+0096   0580           00233     andwf   INDF, F
+0097   2???           00234     call    DSWriteaZero    ; send Direction bit over 1-wire bus
+0098   2???           00235     goto    $ + 4
+                      00236 ; Direction = 1
+0099   08??           00237     movf    rom_mask, W
+009A   0480           00238     iorwf   INDF, F
+009B   2???           00239     call    DSWriteaOne     ; send Direction bit over 1-wire bus
+                      00240 
+009C   0A??           00241     incf    id_bit_number, F
+009D   1003           00242     bcf     STATUS, C       ; needed!
+009E   0D??           00243     rlf     rom_mask, F
+                      00244 
+                      00245 ; End of byte?
+009F   08??           00246     movf    rom_mask, F
+00A0   1D03           00247     btfss   STATUS, Z
+00A1   2???           00248      goto   $ + 3           ; No
+00A2   0A84           00249     incf    FSR, F          ; Yes, end of byte
+00A3   0A??           00250     incf    rom_mask, F
+                      00251 
+                      00252 ; CRC update
+00A4   0103           00253     clrw
+00A5   1F80           00254     btfss   Direction
+00A6   2???           00255      goto   read0
+00A7   3001           00256     movlw   b'00000001'
+00A8                  00257 read0
+00A8   1003           00258     bcf     STATUS, C
+00A9   06??           00259     xorwf   DSCRC, W
+00AA   3901           00260     andlw   b'00000001'
+00AB   1903           00261     btfsc   STATUS, Z
+00AC   2???           00262      goto   in0
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE 26
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00AD   3018           00263     movlw   0x18
+00AE   06??           00264     xorwf   DSCRC, F
+00AF   1403           00265     bsf     STATUS, C
+00B0                  00266 in0
+00B0   0C??           00267     rrf     DSCRC, F
+                      00268 
+                      00269 ; id_bit_number = 65?
+00B1   08??           00270     movf    id_bit_number, W
+00B2   3EBF           00271     addlw   (0 - .65)
+00B3   1D03           00272     btfss   STATUS, Z
+00B4   2???           00273      goto   ReadBit
+                      00274 
+                      00275 ; LastDiscrepancy = last_zero
+00B5   08??           00276     movf    last_zero, W
+00B6   00??           00277     movwf   LastDiscrepancy
+                      00278 ; LastDiscrepancy = 0 - check for last device
+00B7   08??           00279     movf    LastDiscrepancy, F
+00B8   1903           00280     btfsc   STATUS, Z
+00B9   1700           00281      bsf    last_device     ; Yes, set last_device flag
+                      00282 ; check the CRC
+00BA   08??           00283     movf    DSCRC, F
+00BB   1D03           00284     btfss   STATUS, Z
+00BC   2???           00285      goto   OWSearchErr     ; Not successful search, reset search state
+00BD   3400           00286     retlw   00 ; EXIT_SUCCESS
+00BE                  00287 OWSearchErr
+00BE   3401           00288     retlw   01 ; EXIT_FAILURE
+                      00289                 end
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE 27
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ADEN                              00000003
+BRGH                              00000002
+C                                 00000000
+C1INV                             00000004
+C1OUT                             00000006
+C2INV                             00000005
+C2OUT                             00000007
+CCP1CON                           00000017
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP1X                             00000005
+CCP1Y                             00000004
+CCPR1H                            00000016
+CCPR1L                            00000015
+CHARBUF                           00000027
+CIS                               00000003
+CM0                               00000000
+CM1                               00000001
+CM2                               00000002
+CMCON                             0000001F
+CMIE                              00000006
+CMIF                              00000006
+CREN                              00000004
+CSRC                              00000007
+Clock_Freq                        003D0900
+DALLAS_BUS                        PORTA, 4
+DC                                00000001
+DSAlarmSearch                     000000EC
+DSCRC                             00000021
+DSCRCin0                          00000051
+DSConvertTemp                     00000044
+DSCopyScratch                     00000048
+DSMatchROM                        00000055
+DSNext_bit                        bits_byte, 2
+DSReadBit                         0000002D
+DSReadByte                        0000003A
+DSReadLoop                        0000003D
+DSReadPS                          000000B4
+DSReadROM                         00000033
+DSReadScratch                     000000BE
+DSRecallE2                        000000B8
+DSReset_Pulse                     00000000
+DSSearchROM                       000000F0
+DSSkipROM                         000000CC
+DSWriteByte                       0000001F
+DSWriteByteW                      0000001E
+DSWriteLoop                       00000022
+DSWriteScratch                    0000004E
+DSWriteaOne                       0000000E
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE 28
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+DSWriteaZero                      00000016
+DScommbuff                        00000020
+DSread0                           00000048
+Direction                         id_bits_byte, 7
+EEADR                             0000009B
+EECON1                            0000009C
+EECON2                            0000009D
+EEDATA                            0000009A
+EEIE                              00000007
+EEIF                              00000007
+EndDiscrepancy                    00000093
+EndEqual                          0000008A
+F                                 00000001
+FERR                              00000002
+FSR                               00000004
+GIE                               00000007
+INCSHORTDELAY                     
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+LastDiscrepancy                   00000037
+LastFamilyDiscr                   00000038
+Microsec                          * D'1000'
+Millisec                          * D'1000000'
+NOT_BO                            00000000
+NOT_BOD                           00000000
+NOT_BOR                           00000000
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+Nanosec                           * D'1'
+OERR                              00000001
+OPTION_REG                        00000081
+OSCF                              00000003
+OWSearch                          00000057
+OWSearchErr                       000000BE
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PIE1                              0000008C
+PIR1                              0000000C
+PORTA                             00000005
+PORTB                             00000006
+PR2                               00000092
+PRESENCE_bit                      bits_byte, 0
+PS0                               00000000
+PS1                               00000001
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE 29
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+PS2                               00000002
+PSA                               00000003
+RBIE                              00000003
+RBIF                              00000000
+RCIE                              00000005
+RCIF                              00000005
+RCREG                             0000001A
+RCSTA                             00000018
+RD                                00000000
+ROM_no                            0000002D
+RP0                               00000005
+RP1                               00000006
+RX9                               00000006
+RX9D                              00000000
+ReadBit                           00000061
+SPBRG                             00000099
+SPEN                              00000007
+SREN                              00000005
+STATUS                            00000003
+SYNC                              00000004
+Seconds                           * D'1000000000'
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1OSCEN                           00000003
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000012
+TMR0                              00000001
+TMR1CS                            00000001
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TMR2                              00000011
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+TOUTPS0                           00000003
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRISA                             00000085
+TRISB                             00000086
+TRMT                              00000001
+TX9                               00000006
+TX9D                              00000000
+TXEN                              00000005
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE 30
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TXIE                              00000004
+TXIF                              00000004
+TXREG                             00000019
+TXSTA                             00000098
+VR0                               00000000
+VR1                               00000001
+VR2                               00000002
+VR3                               00000003
+VRCON                             0000009F
+VREN                              00000007
+VROE                              00000006
+VRR                               00000005
+W                                 00000000
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+Wait                              
+Z                                 00000002
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_BOREN_OFF                        00003FBF
+_BOREN_ON                         00003FFF
+_CP_OFF                           00003FFF
+_CP_ON                            00001FFF
+_DATA_CP_OFF                      00003FFF
+_DATA_CP_ON                       00003EFF
+_ER_OSC_CLKOUT                    00003FFF
+_ER_OSC_NOCLKOUT                  00003FFE
+_EXTCLK_OSC                       00003FEF
+_HS_OSC                           00003FEE
+_INTOSC_OSC_CLKOUT                00003FFD
+_INTOSC_OSC_NOCLKOUT              00003FFC
+_INTRC_OSC_CLKOUT                 00003FFD
+_INTRC_OSC_NOCLKOUT               00003FFC
+_LP_OSC                           00003FEC
+_LVP_OFF                          00003F7F
+_LVP_ON                           00003FFF
+_MCLRE_OFF                        00003FDF
+_MCLRE_ON                         00003FFF
+_PROG_0011                        00000011
+_PROG_0030                        00000030
+_PROG_003E                        0000003E
+_PROG_007E                        0000007E
+_PROG_0082                        00000082
+_PROG_0094                        00000094
+_PROG_0098                        00000098
+_PROG_00A1                        000000A1
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC_CLKOUT                    00003FFF
+_RC_OSC_NOCLKOUT                  00003FFE
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+MPASM 03.80 Released                              DAL_BUS.ASM   11-20-2005  18:21:08         PAGE 31
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_XT_OSC                           00003FED
+__16F628A                         00000001
+acc_hi                            0000002B
+acc_lo                            0000002A
+bits_byte                         00000026
+cmp_id_bit                        id_bits_byte, 1
+count                             00000024
+count2                            00000025
+discrepancy                       0000007B
+id_bit                            id_bits_byte, 0
+id_bit_number                     00000035
+id_bits_byte                      00000039
+in0                               000000B0
+instruct_time_ns                  000003E8
+last_device                       id_bits_byte, 6
+last_zero                         00000036
+longdelay                         00000000
+neg_temp_bit                      bits_byte, 3
+read0                             000000A8
+rom_mask                          0000003A
+round00_bit                       bits_byte, 1
+shortdelay                        00000000
+temp_hi                           00000028
+temp_lo                           00000029
+tempone                           00000022
+temptwo                           00000023
+test_bit                          id_bits_byte, 2
+vvshift                           0000002C
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     1 reported,     0 suppressed
+
+

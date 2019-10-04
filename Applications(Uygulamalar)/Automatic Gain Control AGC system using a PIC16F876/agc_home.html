@@ -1,0 +1,233 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head>
+
+
+<meta name="description" content="Digital automatic gain control using a PIC MCU.">
+		<meta name="keywords" content="upconverter, downconverter, AGC, automatic gain control, AD8313, PIC16F876">
+		<meta name="Author" content="Steven Kosmerchock">
+		<meta name="Distribution" content="Global">
+		<meta name="Copyright" content="geocities.com/researchtriangle/lab/6584">
+		<meta name="Robots" content="All">
+		<meta name="keywords" content="upconverter, downconverter, AGC, automatic gain control, AD8313, PIC16F876"><title>Digital Automatic Gain Control (AGC).</title>
+		
+
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="ProgId" content="Word.Document">
+<meta name="Generator" content="Microsoft Word 9">
+<meta name="Originator" content="Microsoft Word 9">
+<link rel="File-List" href="http://www.geocities.com/researchtriangle/lab/6584/agc_home_files/filelist.xml">
+<link rel="Edit-Time-Data" href="http://www.geocities.com/researchtriangle/lab/6584/agc_home_files/editdata.mso"><!--[if !mso]>
+<style>
+v\:* {behavior:url(#default#VML);}
+o\:* {behavior:url(#default#VML);}
+w\:* {behavior:url(#default#VML);}
+.shape {behavior:url(#default#VML);}
+</style>
+<![endif]--><!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author>Steven Kosmerchock</o:Author>
+  <o:Template>Normal</o:Template>
+  <o:LastAuthor>Steven Kosmerchock</o:LastAuthor>
+  <o:Revision>2</o:Revision>
+  <o:TotalTime>66</o:TotalTime>
+  <o:Created>2001-06-01T13:43:00Z</o:Created>
+  <o:LastSaved>2001-06-01T13:43:00Z</o:LastSaved>
+  <o:Pages>3</o:Pages>
+  <o:Words>373</o:Words>
+  <o:Characters>2128</o:Characters>
+  <o:Company>XAVIEN</o:Company>
+  <o:Lines>17</o:Lines>
+  <o:Paragraphs>4</o:Paragraphs>
+  <o:CharactersWithSpaces>2613</o:CharactersWithSpaces>
+  <o:Version>9.2720</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:Zoom>75</w:Zoom>
+ </w:WordDocument>
+</xml><![endif]-->
+
+
+
+<style>
+<!--
+ /* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-parent:"";
+	margin:0in;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";
+	color:windowtext;}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;
+	text-underline:single;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;
+	text-underline:single;}
+p
+	{margin-right:0in;
+	mso-margin-top-alt:auto;
+	mso-margin-bottom-alt:auto;
+	margin-left:0in;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";
+	color:blue;}
+@page Section1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.25in 1.0in 1.25in;
+	mso-header-margin:.5in;
+	mso-footer-margin:.5in;
+	mso-paper-source:0;}
+div.Section1
+	{page:Section1;}
+-->
+</style><!--[if gte mso 9]><xml>
+ <o:shapedefaults v:ext="edit" spidmax="1031"/>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <o:shapelayout v:ext="edit">
+  <o:idmap v:ext="edit" data="1"/>
+ </o:shapelayout></xml><![endif]--></head><body style="" lang="EN-US" link="blue" vlink="purple">
+<!-- following code added by server. PLEASE REMOVE -->
+<!-- preceding code added by server. PLEASE REMOVE -->
+
+<div class="Section1">
+
+<p class="MsoNormal" style="text-align: center;" align="center"><!--[if !supportEmptyParas]-->&nbsp;<!--[endif]--><o:p></o:p></p>
+
+<p class="MsoNormal" style="text-align: center;" align="center"><!--[if !supportEmptyParas]-->&nbsp;<!--[endif]--><o:p></o:p></p>
+
+<p class="MsoNormal" style="text-align: center;" align="center"><!--[if gte vml 1]><v:shapetype
+ id="_x0000_t75" coordsize="21600,21600" o:spt="75" o:preferrelative="t"
+ path="m@4@5l@4@11@9@11@9@5xe" filled="f" stroked="f">
+ <v:stroke joinstyle="miter"/>
+ <v:formulas>
+  <v:f eqn="if lineDrawn pixelLineWidth 0"/>
+  <v:f eqn="sum @0 1 0"/>
+  <v:f eqn="sum 0 0 @1"/>
+  <v:f eqn="prod @2 1 2"/>
+  <v:f eqn="prod @3 21600 pixelWidth"/>
+  <v:f eqn="prod @3 21600 pixelHeight"/>
+  <v:f eqn="sum @0 0 1"/>
+  <v:f eqn="prod @6 1 2"/>
+  <v:f eqn="prod @7 21600 pixelWidth"/>
+  <v:f eqn="sum @8 21600 0"/>
+  <v:f eqn="prod @7 21600 pixelHeight"/>
+  <v:f eqn="sum @10 21600 0"/>
+ </v:formulas>
+ <v:path o:extrusionok="f" gradientshapeok="t" o:connecttype="rect"/>
+ <o:lock v:ext="edit" aspectratio="t"/>
+</v:shapetype><v:shape id="_x0000_i1025" type="#_x0000_t75" style='width:531pt;
+ height:78pt'>
+<v:imagedata src="agc_banner.jpg" o:title="agc_banner"/>
+</v:shape><![endif]--><!--[if !vml]--><img src="agc_home_files/agc_banner.jpg" v:shapes="_x0000_i1025" height="104" width="708"><!--[endif]--></p>
+
+<p class="MsoNormal" style="text-align: center;" align="center"><!--[if !supportEmptyParas]-->&nbsp;<!--[endif]--><o:p></o:p></p>
+
+<p class="MsoNormal" style="text-align: center;" align="center"><!--[if !supportEmptyParas]-->&nbsp;<!--[endif]--><o:p></o:p></p>
+
+<p class="MsoNormal" style="text-align: center;" align="center"><!--[if !supportEmptyParas]-->&nbsp;<!--[endif]--><o:p></o:p></p>
+
+<p class="MsoNormal" style="text-align: center;" align="center"><!--[if !supportEmptyParas]-->&nbsp;<!--[endif]--><o:p></o:p></p>
+
+<p class="MsoNormal"><span style="font-size: 12pt;"><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span style="font-size: 12pt; font-family: Arial;">This project is a digital <b>A</b>utomatic
+<b>G</b>ain <b>C</b>ontrol (“AGC”) system using a PIC16F876 MCU. The ability to
+set the gain level in a circuit and have it control itself is a very useful
+function. This circuit is a building block of another project I am working on.
+A 30W power amp for either the PCS, iDEN or CDMA frequency bands. I will settle
+on one of those frequencies sometime soon. <o:p></o:p></span></p>
+
+<p class="MsoNormal"><span style="font-size: 12pt; font-family: Arial;"><!--[if !supportEmptyParas]-->&nbsp;<!--[endif]--><o:p></o:p></span></p>
+
+<p class="MsoNormal"><b><u><span style="font-size: 12pt; font-family: Arial;">Theory of operation:</span></u></b><span style="font-size: 12pt; font-family: Arial;"> I needed to control the
+gain so the signals for a digital downconverter (DDC) and digital upconverter
+(DUC) would be in a specific range so the A/D that processes the IF of the
+mixers does not get over-driven by the amplitude of the input signals. Using a
+digital attenuator, logarithmic detector / controller, and a MCU with an A/D
+converter I was able to accomplish this task fairly easy with minimal
+components.<o:p></o:p></span></p>
+
+<p class="MsoNormal" style="text-align: center;" align="center"><!--[if !supportEmptyParas]-->&nbsp;<!--[endif]--><o:p></o:p></p>
+
+<p class="MsoNormal"><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></p>
+
+<p class="MsoNormal"><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span><b><i><span style="font-size: 12pt; font-family: Arial;">System
+Diagram<o:p></o:p></span></i></b></p>
+
+<p class="MsoNormal" style="text-align: center;" align="center"><!--[if gte vml 1]><v:shape
+ id="_x0000_i1026" type="#_x0000_t75" style='width:501pt;height:156.75pt'>
+<v:imagedata src="agc_flow.gif" o:title="flow"/>
+ </v:shape><![endif]--><!--[if !vml]--><img src="agc_home_files/flow.htm" v:shapes="_x0000_i1026" height="209" width="668"><!--[endif]--></p>
+
+<p class="MsoNormal" style="text-align: center;" align="center"><!--[if !supportEmptyParas]-->&nbsp;<!--[endif]--><o:p></o:p></p>
+
+<p class="MsoNormal" style="text-align: center;" align="center"><!--[if !supportEmptyParas]-->&nbsp;<!--[endif]--><o:p></o:p></p>
+
+<p class="MsoNormal"><b><u><span style="font-size: 12pt; font-family: Arial;">System Operation:</span></u></b><span style="font-size: 12pt; font-family: Arial;"> The heart of this AGC system is
+the <a href="http://www.analog.com/">AD8313</a><span style="">&nbsp; </span>logarithmic detector / controller. It is a demodulating
+logarithmic amplifier that converts an RF signal to an equivalent
+decibel-scaled value of DC at its output. The RF input is sampled by the AD8313 through a <a href="http://www.minicircuits.com/"> 20dB (TCD-20-4)</a> coupler. <a href="http://www.analog.com/">The AD8313</a>
+is connected to the <a href="http://www.microchip.com/">PIC16F876</a><span style="">&nbsp; </span> A/D via an op-amp configured as a voltage
+follower. I used a 4.096VDC as the reference voltage giving me a step size of
+4mV since the A/D is 10-bits. If the A/D reading is too high it starts turning
+on attenuators to decrease gain. If the signal is too high, the attenuators are
+turned off. I placed a red LED and a green LED in the circuit for when the
+signal is too low or too high (face it, everybody likes to see LEDs light up!).
+When the input signal is too low, the red LED is on. While the signal is too
+high, the green LED comes on. If the signal is within tolerance, both LEDs are
+off. The <a href="http://www.hittite.com/"> HMC273MS10G </a> digital attenuator has a max attenuation of 31dB with increments in
+steps of 1dB. The amplifier used was a <a href="http://www.sirenza.com/"> SGA-6389</a> SiGe HBT MMIC amplifier. The gain on this amplifier was roughly 14dB and provided a IP3 of +35dBm. <o:p></o:p></span></p>
+
+<p class="MsoNormal" style="text-align: center;" align="center"><span style="font-size: 16pt; font-family: Arial;"><!--[if !supportEmptyParas]-->&nbsp;<!--[endif]--><o:p></o:p></span></p>
+
+<p class="MsoNormal" style="text-align: center;" align="center"><span style="font-size: 16pt; font-family: Arial;"><!--[if !supportEmptyParas]-->&nbsp;<!--[endif]--><o:p></o:p></span></p>
+
+<center><img src="agc_home_files/ad8313_sch.jpg"></center>
+<br>
+<br>
+<p class="MsoNormal"><span style="font-size: 14pt; font-family: Arial;"><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><b>FIRMWARE: <span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><i><span style="background: yellow none repeat scroll 0%; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;"><a href="http://www.geocities.com/researchtriangle/lab/6584/web_agc.c">View .C (CCS PCW) file.</a></span><o:p></o:p></i></b></span></p>
+<p class="MsoNormal"><span style="font-size: 14pt; font-family: Arial;"><!--[if !supportEmptyParas]-->&nbsp;<!--[endif]--><o:p></o:p></span></p>
+
+<p class="MsoNormal"><span style="font-size: 14pt; font-family: Arial;"><!--[if !supportEmptyParas]-->&nbsp;<!--[endif]--><o:p></o:p></span></p>
+
+<p class="MsoNormal"><b><u><span style="font-size: 12pt; font-family: Arial;">Future Use:</span></u></b><span style="font-size: 12pt; font-family: Arial;"> The <a href="http://www.microchip.com/">PIC16F876</a> has 8K of FLASH as well a bunch
+of I/O and A/D channels left for other operations. I may even use the USART of
+the PIC to be able to control the gain of the system via RS232. Could attatch a
+temp sensor to control the temperature of the overall assembly. If the
+amplifier gets too hot, turn a fan on. Or even use the AD8313 as a power meter of sorts. There are so many ideas I don’t want to
+list them all!!! Special note: <b>Many THANKS goes out to Dale Botkin and Edson Brusque for suggestions with the CCS compiler!!</b>
+This code as well as the little bit of schematic provided can be used
+as you wish. If you find it useful don't hesitate to drop me a line, I
+would love to hear about the uses of the AD8313 or PIC in AGC systems
+that other people have done.</span><span style="font-size: 16pt; font-family: Arial;"> <o:p></o:p></span></p>
+
+<p class="MsoNormal"><span style="font-size: 16pt; font-family: Arial;"><!--[if !supportEmptyParas]-->&nbsp;<!--[endif]--><o:p></o:p></span></p>
+
+<p class="MsoNormal"><span style="font-size: 16pt; font-family: Arial;"><!--[if !supportEmptyParas]-->&nbsp;<!--[endif]--><o:p></o:p></span></p>
+
+<center>
+<img src="agc_home_files/a33.gif"><a href="http://www.geocities.com/researchtriangle/lab/6584/project_page.html"><font size="4"><b>Back to my Projects Page</b></font></a>
+<br>
+<center><p><font color="black" size="2">Web Site last updated:</font><font color="green" size="2">04/14/03</font>
+<br>
+<font color="black" size="2">Page operating since:</font><font color="green" size="2"> 06/01/01</font></p></center>
+<br>
+<font face="Arial" size="2"></font><p align="center"><font face="Arial" size="2">If you have any questions please contact me at:  </font><a href="mailto:steevn.geo@yahoo.com"><font color="red">steevn.geo@yahoo.com</font></a>
+</p></center>
+
+<p class="MsoNormal" style="text-align: center;" align="center"><span style="font-size: 16pt; font-family: Arial;"><!--[if !supportEmptyParas]-->&nbsp;<!--[endif]--><o:p></o:p></span></p>
+
+<p class="MsoNormal" style="text-align: center;" align="center"><!--[if !supportEmptyParas]-->&nbsp;<!--[endif]--><o:p></o:p></p>
+
+</div>
+
+<!-- text below generated by server. PLEASE REMOVE --><script language="JavaScript" src="agc_home_files/mc.js"></script><script language="JavaScript" src="agc_home_files/geov2.js"></script><script language="javascript">geovisit();</script><img src="agc_home_files/visit.gif" border="0">
+<noscript><img src="http://visit.geocities.yahoo.com/visit.gif?us1175676555" alt="setstats" border="0" width="1" height="1"></noscript>
+<img src="agc_home_files/serv.gif" alt="1" height="1" width="1">
+</body></html>

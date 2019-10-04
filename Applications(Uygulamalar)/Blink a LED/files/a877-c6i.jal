@@ -1,0 +1,69 @@
+-- --------------------------------------------------------------------------
+-- 
+-- for each received character, 
+-- echo a line containing the character (when printable) or "?",
+-- and the hexadecimal code of the character
+--
+-- read from eeprom and send asynchronously  
+-- 1200 baud; 8 data bits; no parity; 2 stop bits
+-- PICmicro C7 <== PC; C6 ==> PC; inverted polarity (for MAX232)
+-- use: wisp go a877-c6t tty auxi 1200     
+--
+-- see: http://www.voti.nl/wisp628
+--
+-- --------------------------------------------------------------------------
+--
+-- (c) Wouter van Ooijen / voti
+--
+-- Redistribution and use in source and binary forms, with or without 
+-- modification, are permitted.
+--
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER "AS IS" AND ANY EXPRESS 
+-- OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+-- WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+-- DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
+-- LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+-- CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+-- SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+-- INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+-- CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+-- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
+-- THE POSSIBILITY OF SUCH DAMAGE.
+--
+-- --------------------------------------------------------------------------
+
+include f877_20
+include jlib
+
+const asynch_baudrate = 1200
+const asynch_polarity = active_low
+const asynch_parity   = parity_none
+const asynch_stopbits = 2
+
+var volatile bit asynch_in_pin        is pin_c7
+var volatile bit asynch_in_direction  is pin_c7_direction
+
+var volatile bit asynch_out_pin       is pin_c6
+var volatile bit asynch_out_direction is pin_c6_direction
+
+include seriali
+
+var byte c, x
+forever loop
+   asynch_receive( c )
+   x = c
+   if x < " " then x = "?" end if
+   if x > 127 then x = "?" end if
+   asynch_send( x )
+   asynch_send( " " )
+   asynch_send( "0" )
+   asynch_send( "x" )
+   print_hexadecimal_2( asynch, c )
+   asynch_send( " " )
+   asynch_send( "0" )
+   asynch_send( "b" )
+   print_binary_8( asynch, c )
+   asynch_send( ASCII_CR )  
+   delay_100ms
+   asynch_send( ASCII_LF )
+end loop

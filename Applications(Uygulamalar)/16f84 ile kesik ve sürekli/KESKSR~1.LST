@@ -1,0 +1,173 @@
+MPASM 02.30 Released         KESKSR~1.ASM   6-21-2006  2:41:57         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                    00001 
+                    00002 ;kesik ve sürekli çalýþma
+                    00003 ;=====================================================================
+                    00004                 LIST        P=16F84A
+                    00005                 INCLUDE    "P16F84A.INC"
+                    00001         LIST
+                    00002 ; P16F84A.INC  Standard Header File, Version 2.00    Microchip Technology, Inc.
+                    00134         LIST
+                    00006 
+                    00007                 CBLOCK         h'0C'
+  0000000C          00008 SAYAC            
+  0000000D          00009 SAYAC_1
+  0000000E          00010 SAYI
+                    00011                 ENDC
+0000 1683           00012                 BSF         STATUS,5
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0001 0186           00013                 CLRF        TRISB
+0002 30FF           00014                 MOVLW       H'FF'
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0003 0085           00015                 MOVWF       TRISA
+0004 1283           00016                 BCF         STATUS,5
+0005 0186           00017                 CLRF        PORTB
+0006 0185           00018                 CLRF        PORTA
+0007                00019 TEST
+0007 0186           00020                 CLRF        PORTB
+0008 1805           00021                 BTFSC       PORTA,0   
+0009 2813           00022                 GOTO        SUREKLI
+000A 1885           00023                 BTFSC       PORTA,1
+000B 280D           00024                 GOTO        KESIK
+000C 2807           00025                 GOTO        TEST
+000D                00026 KESIK
+000D 30C9           00027                 MOVLW       B'11001001'
+000E 0086           00028                 MOVWF       PORTB
+000F 1885           00029                 BTFSC       PORTA,1
+0010 280D           00030                 GOTO        KESIK
+0011 1086           00031                 BCF         PORTB,1
+0012 2807           00032                 GOTO        TEST
+                    00033 
+0013                00034 SUREKLI
+0013 30ED           00035                 MOVLW       B'11101101'
+0014 0086           00036                 MOVWF       PORTB
+                    00037                 
+0015                00038 DUR 
+                    00039 
+                    00040 
+0015 1D05           00041                 BTFSS       PORTA,2
+0016 2815           00042                 GOTO        DUR
+0017 0186           00043                 CLRF        PORTB
+0018 2807           00044                 GOTO        TEST
+0019                00045 GECIKME         
+0019 30FF           00046                 MOVLW          H'FF'
+001A 008C           00047                 MOVWF          SAYAC
+Warning[207]: Found label after column 1. (DONGU1)
+MPASM 02.30 Released         KESKSR~1.ASM   6-21-2006  2:41:57         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+001B                00048        DONGU1            
+001B 30FF           00049                 MOVLW          H'FF'
+001C 008D           00050                              MOVWF          SAYAC_1
+Warning[207]: Found label after column 1. (DONGU2)
+001D                00051        DONGU2
+001D 0B8D           00052                 DECFSZ         SAYAC_1,F
+001E 281D           00053                 GOTO           DONGU2
+001F 0B8C           00054                 DECFSZ         SAYAC,F
+0020 281B           00055                 GOTO           DONGU1
+0021 0008           00056                 RETURN
+                    00057                 END 
+MPASM 02.30 Released         KESKSR~1.ASM   6-21-2006  2:41:57         PAGE  3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+C                                 00000000
+DC                                00000001
+DONGU1                            0000001B
+DONGU2                            0000001D
+DUR                               00000015
+EEADR                             00000009
+EECON1                            00000088
+EECON2                            00000089
+EEDATA                            00000008
+EEIE                              00000006
+EEIF                              00000004
+F                                 00000001
+FSR                               00000004
+GECIKME                           00000019
+GIE                               00000007
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+KESIK                             0000000D
+NOT_PD                            00000003
+NOT_RBPU                          00000007
+NOT_TO                            00000004
+OPTION_REG                        00000081
+PCL                               00000002
+PCLATH                            0000000A
+PORTA                             00000005
+PORTB                             00000006
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+RBIE                              00000003
+RBIF                              00000000
+RD                                00000000
+RP0                               00000005
+RP1                               00000006
+SAYAC                             0000000C
+SAYAC_1                           0000000D
+SAYI                              0000000E
+STATUS                            00000003
+SUREKLI                           00000013
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+TEST                              00000007
+TMR0                              00000001
+TRISA                             00000085
+TRISB                             00000086
+W                                 00000000
+MPASM 02.30 Released         KESKSR~1.ASM   6-21-2006  2:41:57         PAGE  4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+Z                                 00000002
+_CP_OFF                           00003FFF
+_CP_ON                            0000000F
+_HS_OSC                           00003FFE
+_LP_OSC                           00003FFC
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FFD
+__16F84A                          00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XX-------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    34
+Program Memory Words Free:   990
+
+
+Errors   :     0
+Warnings :     2 reported,     0 suppressed
+Messages :     2 reported,     0 suppressed
+
+

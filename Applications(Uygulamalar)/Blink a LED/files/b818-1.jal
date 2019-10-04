@@ -1,0 +1,48 @@
+-- --------------------------------------------------------------------------
+--
+-- blink LED in pin a0 of a 16f818 or 16f819
+-- with 20 MHz crystal, at 1 Hz
+-- see: http://www.voti.nl/wisp628
+-- 
+-- --------------------------------------------------------------------------
+--
+-- (c) Wouter van Ooijen / voti
+--
+-- Redistribution and use in source and binary forms, with or without 
+-- modification, are permitted.
+--
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER "AS IS" AND ANY EXPRESS 
+-- OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+-- WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+-- DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
+-- LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+-- CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+-- SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+-- INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+-- CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+-- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
+-- THE POSSIBILITY OF SUCH DAMAGE.
+--
+-- --------------------------------------------------------------------------
+
+pragma target chip  16f628 -- no 16f818 support yet
+pragma target fuses 0x3F22
+pragma target clock 20_000_000
+pragma target osc   hs
+
+include jpic
+include jlib      
+
+var bit LED is pin_a0
+pin_a0_direction = output
+
+asm bsf status, 5
+var volatile byte ADCON1 at 0x9F = 0x06 -- disable port a analog functions
+asm bcf status, 5
+
+forever loop
+  LED = low
+  delay_100ms( 5 )
+  LED = high
+  delay_100ms( 5 )
+end loop

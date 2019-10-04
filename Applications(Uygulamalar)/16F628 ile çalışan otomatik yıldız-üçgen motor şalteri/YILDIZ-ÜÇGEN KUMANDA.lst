@@ -1,0 +1,1863 @@
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 1
+
+     1					
+     2					; PicBasic Pro Compiler 2.46, (c) 1998, 2005 microEngineering Labs, Inc. A
+     3	=0001				PM_USED			EQU	1
+     4					
+     5						INCLUDE	"16F628A.INC"
+*    1					;****************************************************************
+*    2					;*  16F628A.INC                                                 *
+*    3					;*                                                              *
+*    4					;*  By        : Leonard Zerman, Jeff Schmoyer                   *
+*    5					;*  Notice    : Copyright (c) 2003 microEngineering Labs, Inc.  *
+*    6					;*              All Rights Reserved                             *
+*    7					;*  Date      : 11/06/03                                        *
+*    8					;*  Version   : 2.45                                            *
+*    9					;*  Notes     :                                                 *
+*   10					;****************************************************************
+*   13					        LIST
+*   14					        include 'M16F62xA.INC'  ; PM header
+*    1					;*************************************************************************
+*    2					; PIC16F62xA Family Header
+*    3					;       Copyright 1995, 2003 microEngineering Labs, Inc.
+*    4					;*************************************************************************
+*  202					        LIST
+*   15					        device  pic16F628A, xt_osc, wdt_on, mclr_on, lvp_off, protect_off
+*   16					        XALL
+*   25					        LIST
+     6					
+     7					
+     8					; Define statements.
+     9					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00012	define MCS_STEP      73H '
+    10					#define		MCS_STEP		      73H 
+    11					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00013	define MCS_DUMP      64H '
+    12					#define		MCS_DUMP		      64H 
+    13					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00014	define MCS_HANDSHAKE 68H '
+    14					#define		MCS_HANDSHAKE		 68H 
+    15					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00015	define MCS_RESET     72H '
+    16					#define		MCS_RESET		     72H 
+    17					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00016	define MCS_WRITE     77H '
+    18					#define		MCS_WRITE		     77H 
+    19					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00019	DEFINE HSER_TXSTA 36 
+    20					#define		HSER_TXSTA		 36 
+    21					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00020	DEFINE HSER_SPBRG 12 
+    22					#define		HSER_SPBRG		 12 
+    23					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00011	Define LCD_DREG PORTB     
+    24					#define		LCD_DREG		 PORTB      
+    25					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00012	Define LCD_DBIT 4         
+    26					#define		LCD_DBIT		 4          
+    27					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00013	Define LCD_RSREG PORTB    
+    28					#define		LCD_RSREG		 PORTB     
+    29					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00014	Define LCD_RSBIT 2        
+    30					#define		LCD_RSBIT		 2         
+    31					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00015	Define LCD_EREG PORTB     
+    32					#define		LCD_EREG		 PORTB      
+    33					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00016	Define LCD_EBIT 3         
+    34					#define		LCD_EBIT		 3          
+    35					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00017	DEFINE LCD_LINES 2        
+    36					#define		LCD_LINES		 2         
+    37					
+    38	=0020				RAM_START       		EQU	00020h
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 2
+
+    39	=014F				RAM_END         		EQU	0014Fh
+    40	=0003				RAM_BANKS       		EQU	00003h
+    41	=0020				BANK0_START     		EQU	00020h
+    42	=007F				BANK0_END       		EQU	0007Fh
+    43	=00A0				BANK1_START     		EQU	000A0h
+    44	=00EF				BANK1_END       		EQU	000EFh
+    45	=0120				BANK2_START     		EQU	00120h
+    46	=014F				BANK2_END       		EQU	0014Fh
+    47	=2100				EEPROM_START    		EQU	02100h
+    48	=217F				EEPROM_END      		EQU	0217Fh
+    49					
+    50					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00023	DEBUG_ADDRESS   var     wo
+    51	=0020				DEBUG_ADDRESS   		EQU	RAM_START + 000h
+    52					; D:\INTERN~1\PCBASC~1.46\PBP2~1.46\PBPPIC14.RAM	00012	R0      VA
+    53	=0022				R0              		EQU	RAM_START + 002h
+    54					; D:\INTERN~1\PCBASC~1.46\PBP2~1.46\PBPPIC14.RAM	00013	R1      VA
+    55	=0024				R1              		EQU	RAM_START + 004h
+    56					; D:\INTERN~1\PCBASC~1.46\PBP2~1.46\PBPPIC14.RAM	00014	R2      VA
+    57	=0026				R2              		EQU	RAM_START + 006h
+    58					; D:\INTERN~1\PCBASC~1.46\PBP2~1.46\PBPPIC14.RAM	00015	R3      VA
+    59	=0028				R3              		EQU	RAM_START + 008h
+    60					; D:\INTERN~1\PCBASC~1.46\PBP2~1.46\PBPPIC14.RAM	00016	R4      VA
+    61	=002A				R4              		EQU	RAM_START + 00Ah
+    62					; D:\INTERN~1\PCBASC~1.46\PBP2~1.46\PBPPIC14.RAM	00017	R5      VA
+    63	=002C				R5              		EQU	RAM_START + 00Ch
+    64					; D:\INTERN~1\PCBASC~1.46\PBP2~1.46\PBPPIC14.RAM	00018	R6      VA
+    65	=002E				R6              		EQU	RAM_START + 00Eh
+    66					; D:\INTERN~1\PCBASC~1.46\PBP2~1.46\PBPPIC14.RAM	00019	R7      VA
+    67	=0030				R7              		EQU	RAM_START + 010h
+    68					; D:\INTERN~1\PCBASC~1.46\PBP2~1.46\PBPPIC14.RAM	00020	R8      VA
+    69	=0032				R8              		EQU	RAM_START + 012h
+    70					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00001	include "MCSMonitor.bas":'
+    71	=0034				T1              		EQU	RAM_START + 014h
+    72					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00001	include "MCSMonitor.bas":'
+    73	=0036				T2              		EQU	RAM_START + 016h
+    74					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00001	include "MCSMonitor.bas":'
+    75	=0038				T3              		EQU	RAM_START + 018h
+    76					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00024	DEBUG_ADDRESSU  var     by
+    77	=003A				DEBUG_ADDRESSU  		EQU	RAM_START + 01Ah
+    78					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00022	DEBUG_STACK     var     by
+    79	=003B				DEBUG_STACK     		EQU	RAM_START + 01Bh
+    80					; D:\INTERN~1\PCBASC~1.46\PBP2~1.46\PBPPIC14.RAM	00026	FLAGS   VA
+    81	=003C				FLAGS           		EQU	RAM_START + 01Ch
+    82					; D:\INTERN~1\PCBASC~1.46\PBP2~1.46\PBPPIC14.RAM	00025	GOP     VA
+    83	=003D				GOP             		EQU	RAM_START + 01Dh
+    84					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00027	MCSByte1        var     by
+    85	=003E				MCSByte1        		EQU	RAM_START + 01Eh
+    86					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00028	MCSByte2        var     by
+    87	=003F				MCSByte2        		EQU	RAM_START + 01Fh
+    88					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00029	MCSByte3        var     by
+    89	=0040				MCSByte3        		EQU	RAM_START + 020h
+    90					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00030	MCSByte4        var     by
+    91	=0041				MCSByte4        		EQU	RAM_START + 021h
+    92					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00031	MCSByte5        var     by
+    93	=0042				MCSByte5        		EQU	RAM_START + 022h
+    94					; D:\INTERN~1\PCBASC~1.46\PBP2~1.46\PBPPIC14.RAM	00022	RM1     VA
+    95	=0043				RM1             		EQU	RAM_START + 023h
+    96					; D:\INTERN~1\PCBASC~1.46\PBP2~1.46\PBPPIC14.RAM	00024	RM2     VA
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 3
+
+    97	=0044				RM2             		EQU	RAM_START + 024h
+    98					; D:\INTERN~1\PCBASC~1.46\PBP2~1.46\PBPPIC14.RAM	00021	RR1     VA
+    99	=0045				RR1             		EQU	RAM_START + 025h
+   100					; D:\INTERN~1\PCBASC~1.46\PBP2~1.46\PBPPIC14.RAM	00023	RR2     VA
+   101	=0046				RR2             		EQU	RAM_START + 026h
+   102					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00001	include "MCSMonitor.bas":'
+   103	=0047				PB01            		EQU	RAM_START + 027h
+   104					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00020	SANIYE VAR BYTE           
+   105	=0048				_SANIYE          		EQU	RAM_START + 028h
+   106					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00019	SAYAC VAR BYTE            
+   107	=0049				_SAYAC           		EQU	RAM_START + 029h
+   108					; D:\INTERN~1\PCBASC~1.46\PBP2~1.46\16F628A.BAS	00020	PORTL   VA
+   109	=0006				_PORTL           		EQU	 PORTB
+   110					; D:\INTERN~1\PCBASC~1.46\PBP2~1.46\16F628A.BAS	00021	PORTH   VA
+   111	=0005				_PORTH           		EQU	 PORTA
+   112					; D:\INTERN~1\PCBASC~1.46\PBP2~1.46\16F628A.BAS	00022	TRISL   VA
+   113	=0086				_TRISL           		EQU	 TRISB
+   114					; D:\INTERN~1\PCBASC~1.46\PBP2~1.46\16F628A.BAS	00023	TRISH   VA
+   115	=0085				_TRISH           		EQU	 TRISA
+   116					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00034	MCSCommand      var     MC
+   117	=003E				_MCSCommand      		EQU	 MCSByte1
+   118					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00035	MCSValue        var     MC
+   119	=003E				_MCSValue        		EQU	 MCSByte1
+   120					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00036	MCSAddrH        var     MC
+   121	=003F				_MCSAddrH        		EQU	 MCSByte2
+   122					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00037	MCSAddrL        var     MC
+   123	=0040				_MCSAddrL        		EQU	 MCSByte3
+   124					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00038	MCSBankStart    var     MC
+   125	=0041				_MCSBankStart    		EQU	 MCSByte4
+   126					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00039	MCSBankEnd      var     MC
+   127	=0042				_MCSBankEnd      		EQU	 MCSByte5
+   128					#define _KUMANDA         	 PB01, 000h
+   129					#define _UCGENEGEC1      	 PB01, 001h
+   130					#define _PORTA_0         	 PORTA, 000h
+   131					#define _PORTA_1         	 PORTA, 001h
+   132					#define _PORTA_2         	 PORTA, 002h
+   133					#define _PORTA_4         	 PORTA, 004h
+   134					#define _PORTA_3         	 PORTA, 003h
+   135					#define _INTCON_2        	 INTCON, 002h
+   136						INCLUDE	"YILDIZ~1.MAC"
+*    1					
+*  313						LIST
+   137						INCLUDE	"PBPPIC14.LIB"
+*    1					;******************************************************************
+*    2					;*  PBPPIC14.LIB                                                  *
+*    3					;*                                                                *
+*    4					;*  By        : Leonard Zerman, Jeff Schmoyer                     *
+*    5					;*  Notice    : Copyright (c) 2004 microEngineering Labs, Inc.    *
+*    6					;*              All Rights Reserved                               *
+*    7					;*  Date      : 12/20/04                                          *
+*    8					;*  Version   : 2.46                                              *
+*    9					;*  Notes     :                                                   *
+*   10					;******************************************************************
+*   45					  LIST
+*   46					; Oscillator is 4MHz
+* 1110					  LIST
+* 1111					    ORG 0                       ; Reset vector at 0
+* 1120					  LIST
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 4
+
+* 1121	0000- 01BC			        clrf    FLAGS           ; Clear all flags on reset
+* 1125					  LIST
+* 1126	0001- 28E9			        goto    INIT            ; Finish initialization
+* 1165					  LIST
+* 1166					    ORG 4                       ; Interrupt vector at 4
+* 1167	0004- 0008			        return                  ; Return from interrupt without setting GI
+* 2139					  LIST
+* 2140	0005-				HSERIN
+* 2141					      ifdef HSER_CLROERR
+* 2142						btfsc	RCSTA, OERR	; Check for overflow error
+* 2143						bcf	RCSTA, CREN	; Toggle continuous receive to clear error
+* 2144						bsf	RCSTA, CREN
+* 2145					      endif
+* 2146	0005-				hserinloop CLRWDT?		; Keep Watchdog timer clear
+     +	0005- 0064			        clrwdt
+* 2147	0006- 1E8C			        btfss   PIR1, RCIF      ; Check for char
+* 2148	0007- 2805			        goto    hserinloop	; Loop till char
+* 2154					  LIST
+* 2155	0008-				HSERINX
+* 2156					      ifdef HSERPARITY_USED
+* 2157						  if (HSER_BITS == 9)
+* 2158						rrf	RCSTA, W	; Shuffle 9th bit to R4.0
+* 2159						rlf	R4, F		; (Ends up in R4.1)
+* 2160						  endif
+* 2161					      endif
+* 2162					
+* 2163	0008- 081A				movf    RCREG, W        ; Get the char
+* 2164					
+* 2165					      ifdef HSERPARITY_USED
+* 2166					        call    HSERPARITY      ; Calculate the parity
+* 2167						rrf	GOP, F		; Shuffle parity bit from GOP.0 to R4.0
+* 2168						rlf	R4, F
+* 2169						  if (HSER_BITS != 9)
+* 2170					        andlw   7fh             ; Get rid of the parity bit
+* 2171						  else
+* 2172						btfsc	R4, 1		; Add in 9th bit, saved earlier
+* 2173						incf	R4, F
+* 2174						  endif
+* 2175					          ifdef HSER_ODD
+* 2176					        incf    R4, F
+* 2177					          endif
+* 2178					      endif
+* 2179					
+* 2180	0009- 1403			        bsf     STATUS, C       ; Indicate not timed out (C set)
+* 2181	000A- 28E4			        goto    DONE            ; That's it
+* 2263					  LIST
+* 2264	000B-				HSEROUT
+* 2265						CLRWDT?		; Keep Watchdog clear
+     +	000B- 0064			        clrwdt
+* 2266	000C- 1E0C			        btfss   PIR1, TXIF      ; Wait till ready
+* 2267	000D- 280B			        goto    HSEROUT
+* 2268					
+* 2269					      ifdef HSERPARITY_USED
+* 2270						  if (HSER_BITS != 9)
+* 2271					        andlw   7fh             ; Clear top bit
+* 2272					        call    HSERPARITY      ; Calculate the parity
+* 2273					            ifdef HSER_ODD
+* 2274					        btfss   GOP, 0
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 5
+
+* 2275					            else
+* 2276					        btfsc   GOP, 0
+* 2277					            endif
+* 2278					        iorlw   80h             ; Set parity
+* 2279						  else
+* 2280					        call    HSERPARITY      ; Calculate the parity
+* 2281						rrf	GOP, F		; Move the parity bit to C
+* 2282					        bsf     STATUS, RP0     ; Switch to bank 1
+* 2283						bcf	TXSTA, TX9D	; Start parity at 0
+* 2284					            ifdef HSER_ODD
+* 2285					        btfss   STATUS, C
+* 2286					            else
+* 2287					        btfsc   STATUS, C
+* 2288					            endif
+* 2289					        bsf	TXSTA, TX9D	; Set parity in 9th bit
+* 2290					        bcf     STATUS, RP0     ; Switch back to bank 0
+* 2291						  endif
+* 2292					      endif
+* 2293					
+* 2294	000E- 0099			        movwf   TXREG           ; Send the char
+* 2295	000F- 1403			        bsf     STATUS, C       ; Set no timeout for Serout2mod
+* 2296	0010- 28E4			        goto    DONE            ; That's it
+* 2711					  LIST
+* 2712	0011- 01A7			LCDOUTDEC clrf  R2 + 1          ; Zero high value
+* 2718					  LIST
+* 2719	0012- 00A6			LCDOUTDECL movwf R2             ; Save low value
+* 2720	0013- 17BD			        bsf     GOP, 7          ; Set blanking on
+* 2721	0014- 3027			        movlw   high 10000      ; Find 10,000s
+* 2722	0015- 00A5			        movwf   R1 + 1
+* 2723	0016- 3010			        movlw   low 10000
+* 2724	0017- 2024			        call    lcdoutdig       ; Do the work
+* 2725	0018- 3003			        movlw   high 1000       ; Find 1,000s
+* 2726	0019- 00A5			        movwf   R1 + 1
+* 2727	001A- 30E8			        movlw   low 1000
+* 2728	001B- 2024			        call    lcdoutdig       ; Do the work
+* 2729	001C- 01A5			        clrf    R1 + 1          ; Find 100s
+* 2730	001D- 3064			        movlw   100
+* 2731	001E- 2024			        call    lcdoutdig       ; Do the work
+* 2732	001F- 01A5			        clrf    R1 + 1          ; Find 10s
+* 2733	0020- 300A			        movlw   10
+* 2734	0021- 2024			        call    lcdoutdig       ; Do the work
+* 2735	0022- 0826			        movf    R2, W           ; Get the 1s
+* 2736	0023- 282F			        goto    lcdouta         ; Send the 1s
+* 2737					
+* 2738	0024- 00A4			lcdoutdig movwf R1              ; Save last piece
+* 2739	0025- 0827			        movf    R2 + 1, W       ; Move remainder to dividend
+* 2740	0026- 00A3			        movwf   R0 + 1
+* 2741	0027- 0826			        movf    R2, W
+* 2742	0028- 00A2			        movwf   R0
+* 2743	0029- 20C8			        call    DIV             ; Do the math
+* 2744	002A- 0822			        movf    R0, W           ; Get the result
+* 2745	002B- 1D03			        btfss   STATUS, Z       ; If zero, goto blank check
+* 2746	002C- 13BD			        bcf     GOP, 7          ; Not zero so clear blank
+* 2747	002D- 1BBD			        btfsc   GOP, 7          ; If blanking on, don't send
+* 2748	002E- 0008			        return
+* 2749	002F- 3E30			lcdouta addlw   '0'             ; Add ASCII offset
+* 2777					  LIST
+* 2778	0030- 00A9			LCDOUT  movwf   R3 + 1          ; Save char
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 6
+
+* 2779					
+* 2780	0031- 1186			        bcf     LCD_EREG, LCD_EBIT      ; Set E low
+* 2781	0032- 1106			        bcf     LCD_RSREG, LCD_RSBIT    ; Set command register select
+* 2782	0033- 1106				bcf     LCD_RWREG, LCD_RWBIT    ; Set RW low (write)
+* 2783					
+* 2784	0034- 1683			        bsf     STATUS, RP0	; Point to trises
+* 2785	0035- 1186			        bcf     LCD_EREG, LCD_EBIT      ; Set E to output
+* 2786	0036- 1106			        bcf     LCD_RSREG, LCD_RSBIT    ; Set RS to output
+* 2787	0037- 1106			        bcf     LCD_RWREG, LCD_RWBIT    ; Set RW to output
+* 2788	=0000				    if (LCD_BITS == 8)
+* 2789					        clrf    LCD_DREG        ; Set port to all output
+* 2790					    else
+* 2791	=0000				      if (LCD_DBIT == 0)
+* 2792					        movlw   0f0h
+* 2793					      else
+* 2794	0038- 300F			        movlw   0fh
+* 2795					      endif
+* 2796	0039- 0586			        andwf   LCD_DREG, F     ; Set proper half of port to output
+* 2797					    endif
+* 2798	003A- 1283			        bcf     STATUS, RP0	; Point back to ports
+* 2799					
+* 2800	003B- 0829				movf	R3 + 1, W	; Get back char
+* 2801					
+* 2802	003C- 18BC				btfsc   LCDINITFLAG     ; Has lcd been inititalized?
+* 2803	003D- 285C			        goto    lcdout1         ; Yes
+* 2804					
+* 2805	003E- 303A			        movlw   high 15000      ; Wait at least 15ms
+* 2806	003F- 00A3			        movwf   R0 + 1
+* 2807	0040- 3098			        movlw   low 15000
+* 2808	0041- 2094			        call    PAUSEUSL
+* 2809					
+* 2810	0042- 3033			        movlw   33h             ; Init lcd
+* 2811	0043- 00A8			        movwf   R3              ; Save char
+* 2812	0044- 2070			        call    lcdloop         ; Send init
+* 2813					
+* 2814	0045- 3013			        movlw   high 5000       ; Wait at least 5ms
+* 2815	0046- 00A3			        movwf   R0 + 1
+* 2816	0047- 3088			        movlw   low 5000
+* 2817	0048- 2094			        call    PAUSEUSL
+* 2818					
+* 2819	0049- 2070			        call    lcdloop         ; Send init again
+* 2820					
+* 2821	004A- 3064			        movlw   100             ; Wait at least 100us
+* 2822	004B- 2093			        call    PAUSEUS
+* 2823					
+* 2824	004C- 2070			        call    lcdloop         ; Send init one more time
+* 2825					
+* 2826	004D- 3064			        movlw   100             ; Wait at least 100us
+* 2827	004E- 2093			        call    PAUSEUS
+* 2828					
+* 2829	=0001				    if (LCD_BITS != 8)
+* 2830	004F- 3022			        movlw   22h             ; Set 4-bit mode
+* 2831	0050- 00A8			        movwf   R3              ; Save character
+* 2832	0051- 2070			        call    lcdloop         ; Set interface to 4-bit mode
+* 2833					    endif
+* 2834					
+* 2835	=0000				    if (LCD_BITS == 8)
+* 2836					      if (LCD_LINES == 1)
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 7
+
+* 2837					        movlw   30h             ; 8-bit mode, 1 line, 5x7 font
+* 2838					      else
+* 2839					        movlw   38h             ; 8-bit mode, 2+ lines, 5x7 font
+* 2840					      endif
+* 2841					    else
+* 2842	=0000				      if (LCD_LINES == 1)
+* 2843					        movlw   20h             ; 4-bit mode, 1 line, 5x7 font
+* 2844					      else
+* 2845	0052- 3028			        movlw   28h             ; 4-bit mode, 2+ lines, 5x7 font
+* 2846					      endif
+* 2847					    endif
+* 2848	0053- 205B			        call    lcdoutcom       ; Send function set
+* 2849					
+* 2850	0054- 300C			        movlw   0ch             ; Display on, no cursor, no blink
+* 2851	0055- 205B			        call    lcdoutcom
+* 2852					
+* 2853	0056- 3006			        movlw   06h             ; Lcd entry mode set, increment, no shift
+* 2854	0057- 205B			        call    lcdoutcom
+* 2855					
+* 2856	0058- 14BC			        bsf     LCDINITFLAG     ; Set to initialized
+* 2857					
+* 2858	0059- 0829			        movf    R3 + 1, W       ; Get saved char back
+* 2859	005A- 285C			        goto    lcdout1
+* 2860					
+* 2861	005B- 143C			lcdoutcom bsf   LCDCDFLAG       ; Set command
+* 2862					
+* 2863	005C- 00A8			lcdout1	movwf   R3              ; Save char
+* 2864	005D- 1C3C			        btfss   LCDCDFLAG       ; Command this time?
+* 2865	005E- 286A			        goto    lcdchkcd        ; No
+* 2866					
+* 2867	005F- 1106			        bcf     LCD_RSREG, LCD_RSBIT    ; Set command register select
+* 2868	0060- 3C03			        sublw   3
+* 2869	0061- 1C03			        btfss   STATUS, C       ; Long or short delay?
+* 2870	0062- 286F			        goto    lcdsend         ; Short delay
+* 2871					
+* 2872	0063- 206F			        call    lcdsend         ; Long delay
+* 2873	0064- 3007			        movlw   high LCD_COMMANDUS	; Wait for command to complete
+* 2874	0065- 00A3			        movwf   R0 + 1
+* 2875	0066- 30D0			        movlw   low LCD_COMMANDUS
+* 2876	0067- 2094			        call    PAUSEUSL
+* 2877	0068- 1403			        bsf     STATUS, C       ; Set no timeout for Serout2mod
+* 2878	0069- 0008			        return
+* 2879					
+* 2880	006A- 143C			lcdchkcd bsf    LCDCDFLAG       ; Indicate first nibble (or command next t
+* 2881	006B- 3CFE			        sublw   0feh            ; Command next time? (char still in W)
+* 2882	006C- 1903			        btfsc   STATUS, Z
+* 2883	006D- 28E4			        goto    DONE            ; Yes - nothing to do this time (C set)
+* 2884					
+* 2885	006E- 1506			        bsf     LCD_RSREG, LCD_RSBIT    ; Set data register select
+* 2886					
+* 2887	006F-				lcdsend
+* 2888	=0000				    if (LCD_BITS == 8)
+* 2889					lcdloop	bsf     LCD_EREG, LCD_EBIT      ; Enabled
+* 2890						movf	R3, W		; Get char back
+* 2891					        movwf   LCD_DREG        ; Write char to the port
+* 2892					      if (OSC > 16)
+* 2893					        nop                     ; Minimum 1us enable time
+* 2894					      endif
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 8
+
+* 2895					      if (OSC > 20)
+* 2896					        goto	$ + 1
+* 2897					      endif
+* 2898					        bcf     LCDCDFLAG       ; Indicate data next time
+* 2899					        bcf     LCD_EREG, LCD_EBIT      ; Not enabled
+* 2900					    else
+* 2901					
+* 2902	=0000				      if (LCD_DBIT == 0)
+* 2903					        swapf   R3, F           ; Swap top and bottom nibbles
+* 2904					      endif
+* 2905					
+* 2906	006F- 1C3C			        btfss   LCDCDFLAG       ; First time through only
+* 2907	0070- 103C			lcdloop bcf     LCDCDFLAG       ; Indicate second nibble (and data next ti
+* 2908					
+* 2909	0071- 1586			        bsf     LCD_EREG, LCD_EBIT      ; Enabled
+* 2910					
+* 2911	=0000				      if (LCD_DBIT == 0)
+* 2912					        movlw   0f0h            ; Clear lcd data port
+* 2913					      else
+* 2914	0072- 300F			        movlw   0fh             ; Clear lcd data port
+* 2915					      endif
+* 2916	0073- 0586			        andwf   LCD_DREG, F
+* 2917					
+* 2918	0074- 0828			        movf    R3, W           ; Isolate proper nibble of char
+* 2919	=0000				      if (LCD_DBIT == 0)
+* 2920					        andlw   0fh
+* 2921					      else
+* 2922	0075- 39F0			        andlw   0f0h
+* 2923					      endif
+* 2924	0076- 0486			        iorwf   LCD_DREG, F     ; Write char to port
+* 2925					
+* 2926	=0000				      if (OSC > 20)
+* 2927					        nop			; Minimum 1us enable time
+* 2928					      endif
+* 2929					
+* 2930	0077- 1186			        bcf     LCD_EREG, LCD_EBIT      ; Not enabled - that's four
+* 2931	0078- 0EA8			        swapf   R3, F           ; Get to other nibble
+* 2932					
+* 2933	=0000				      if (OSC > 20)
+* 2934					        nop			; Minimum 1us not-enabled time
+* 2935					      endif
+* 2936					
+* 2937	0079- 183C			        btfsc   LCDCDFLAG	; Need to send 4 more?
+* 2938	007A- 2870			        goto    lcdloop         ; Send lower 4 to lcd
+* 2939					    endif
+* 2940					
+* 2941	007B- 3032			        movlw   LCD_DATAUS	; Wait for data operation to complete
+* 2942	007C- 2093			        call    PAUSEUS
+* 2943	007D- 1403			        bsf     STATUS, C       ; Set no timeout for Serout2mod
+* 2944	007E- 0008			        return
+* 5838					  LIST
+* 5839	=0001				      if (RAM_BANKS > 2)
+* 5840	007F- 1783			CLEARH  bsf     STATUS, IRP     ; Point FSR to high banks
+* 5841					      endif
+* 5842	0080- 0180			CLEAR   clrf    INDF            ; Zero location
+* 5843	0081- 0A84			        incf    FSR, F          ; Point to next location
+* 5844	0082- 3EFF			        addlw   -1              ; Counter -= 1
+* 5845	0083- 1D03			        btfss   STATUS, Z
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 9
+
+* 5846	0084- 2880			        goto    CLEAR           ; Keep going till done
+* 5847	0085- 28E4			        goto    DONE
+* 6136					  LIST
+* 6137	0086- 01A5			PAUSE   clrf    R1 + 1
+* 6138	0087- 00A4			PAUSEL  movwf   R1
+* 6139	0088- 30FF			pauseloop movlw -1              ; 1 (9)
+* 6140	0089- 07A4			        addwf   R1, F           ; 1
+* 6141	008A- 1C03			        btfss   STATUS, C       ; 1 / 2
+* 6142	008B- 07A5			        addwf   R1 + 1, F       ; 1 / 0
+* 6143	008C- 1C03			        btfss   STATUS, C       ; 2
+* 6144	008D- 28E4			        goto    DONE
+* 6145	008E- 3003			        movlw   (PAUSE_DELAY) >> 8      ; 1
+* 6146	008F- 00A3			        movwf   R0 + 1          ; 1
+* 6147	0090- 30DF			        movlw   low (PAUSE_DELAY)       ; 1
+* 6148	0091- 2094			        call    PAUSEUSL        ; -2 (PAUSEUSL gives you 2 less than you a
+* 6149	0092- 2888			        goto    pauseloop       ; 2
+* 6193					  LIST
+* 6194	0093- 01A3			PAUSEUS clrf    R0 + 1          ; 1
+* 6195	0094- 3EE8			PAUSEUSL addlw  -24             ; 1 Subtract overhead
+* 6196	0095- 00A2			        movwf   R0              ; 1
+* 6197	0096- 09A3			        comf    R0 + 1, F       ; 1
+* 6198	0097- 30FC			        movlw   -4              ; 1
+* 6199	0098- 1C03			        btfss   STATUS, C       ; 1 / 2
+* 6200	0099- 289D			        goto    pauseush        ; 2 / 0
+* 6201	009A- 07A2			pauseusloop addwf R0, F         ; 1
+* 6202	009B- 1803			        btfsc   STATUS, C       ; 1 / 2
+* 6203	009C- 289A			        goto    pauseusloop     ; 2 / 0
+* 6204	009D- 07A2			pauseush addwf  R0, F           ; 1 Do an extra countdown
+* 6205					        CLRWDT?NOP		; 1 Keep Watchdog clear
+     +	009E- 0064			        clrwdt
+* 6206	009F- 0FA3			        incfsz  R0 + 1, F       ; 1 / 2
+* 6207	00A0- 289A			        goto    pauseusloop     ; 2 / 0
+* 6208	00A1- 1822			        btfsc   R0, 0           ; 1 / 2
+* 6209	00A2- 28A3			        goto    $ + 1           ; 2 / 0 Burn an extra cycle
+* 6210	00A3- 1CA2			        btfss   R0, 1           ; 1 / 2
+* 6211	00A4- 28A7			        goto    pauseusdone     ; 2 / 0
+* 6212	00A5- 0000			        nop                     ; 1
+* 6213	00A6- 28A7			        goto    $ + 1           ; 2 Burn an extra 2 cycles
+* 6214	00A7- 0008			pauseusdone return              ; 2 + 3 (call + setup)
+* 6825					  LIST
+* 6826	00A8- 01A3			CMPEQB  clrf    R0 + 1
+* 6832					  LIST
+* 6833	00A9- 01A5			CMPEQW  clrf    R1 + 1
+* 6839					  LIST
+* 6840	00AA- 00A4			CMPEQ   movwf   R1
+* 6841	00AB- 3002			        movlw   2               ; Mask for =
+* 6842	00AC- 28AD			        goto    CMP
+* 7023					  LIST
+* 7024	00AD- 00AA			CMP     movwf   R4              ; Save compare state
+* 7025	00AE- 0825			        movf    R1 + 1, W	; Flags = MSB(R0) - MSB(R1)
+* 7026	00AF- 0223			        subwf   R0 + 1, W
+* 7027	00B0- 1D03			        btfss   STATUS, Z       ; If unequal then done
+* 7028	00B1- 28B4			        goto    cmpnoteq
+* 7029	00B2- 0824			        movf    R1, W           ; Flags = LSB(R0) - LSB(R1)
+* 7030	00B3- 0222			        subwf   R0, W
+* 7031	00B4- 3004			cmpnoteq movlw  4               ; W = 4 if R0 < R1
+* 7032	00B5- 1803			        btfsc   STATUS, C
+* 7033	00B6- 3001			        movlw   1               ; W = 1 if R0 > R1
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 10
+
+* 7034	00B7- 1903			        btfsc   STATUS, Z
+* 7035	00B8- 3002			        movlw   2               ; W = 2 if R0 == R1
+* 7036	00B9- 052A			        andwf   R4, W           ; Mask for compare state
+* 7037	00BA- 1D03			        btfss   STATUS, Z
+* 7038	00BB- 30FF			        movlw   -1
+* 7039	00BC- 28E4			        goto    DONE
+* 7059					  LIST
+* 7060	00BD- 3800			LAND    iorlw   0
+* 7061	00BE- 1D03			        btfss   STATUS, Z
+* 7062	00BF- 30FF			        movlw   -1
+* 7063	00C0- 0504			        andwf   FSR, W
+* 7064	00C1- 1D03			        btfss   STATUS, Z
+* 7065	00C2- 30FF			        movlw   -1
+* 7066	00C3- 28E4			        goto    DONE
+* 7082					  LIST
+* 7083	00C4- 0404			LOR     iorwf   FSR, W
+* 7084	00C5- 1D03			        btfss   STATUS, Z
+* 7085	00C6- 30FF			        movlw   -1
+* 7086	00C7- 28E4			        goto    DONE
+* 7256					  LIST
+* 7257	00C8- 01A7			DIV     clrf    R2 + 1
+* 7258	00C9- 01A6			        clrf    R2
+* 7259					
+* 7260	00CA- 3010			DIV32DIV movlw   16
+* 7261	00CB- 00A8			        movwf   R3
+* 7262					
+* 7263	00CC- 0D23			divloop rlf     R0 + 1, W
+* 7264	00CD- 0DA6			        rlf     R2, F
+* 7265	00CE- 0DA7			        rlf     R2 + 1, F
+* 7266	00CF- 0824			        movf    R1, W
+* 7267	00D0- 02A6			        subwf   R2, F
+* 7268	00D1- 0825			        movf    R1 + 1, W
+* 7269	00D2- 1C03			        btfss   STATUS, C
+* 7270	00D3- 0F25			        incfsz  R1 + 1, W
+* 7271	00D4- 02A7			        subwf   R2 + 1, F
+* 7272					
+* 7273	00D5- 1803			        btfsc   STATUS, C
+* 7274	00D6- 28DE			        goto    divok
+* 7275	00D7- 0824			        movf    R1, W
+* 7276	00D8- 07A6			        addwf   R2, F
+* 7277	00D9- 0825			        movf    R1 + 1, W
+* 7278	00DA- 1803			        btfsc   STATUS, C
+* 7279	00DB- 0F25			        incfsz  R1 + 1, W
+* 7280	00DC- 07A7			        addwf   R2 + 1, F
+* 7281					
+* 7282	00DD- 1003			        bcf     STATUS, C
+* 7283					
+* 7284	00DE- 0DA2			divok   rlf     R0, F
+* 7285	00DF- 0DA3			        rlf     R0 + 1, F
+* 7286					
+* 7287	00E0- 0BA8			        decfsz  R3, F
+* 7288	00E1- 28CC			        goto    divloop
+* 7289	00E2- 0822			        movf    R0, W           ; Get low byte to W
+* 7290	00E3- 28E4			        goto    DONE
+* 7401					  LIST
+* 7402	00E4- 1383			DONE    bcf     STATUS, IRP     ; 1 Set FSR to bank 0/1
+* 7403	00E5- 1303			        bcf     STATUS, RP1     ; 1 Show direct bank 0
+* 7404	00E6- 1283			        bcf     STATUS, RP0     ; 1
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 11
+
+* 7405					        CLRWDT?NOP		; 1 Hit Watchdog timer
+     +	00E7- 0064			        clrwdt
+* 7406	00E8- 0008			DONERET return                  ; 2 Done
+* 7430					  LIST
+* 7431	00E9-				INIT
+* 7434					  LIST
+* 7435	00E9- 1683			        bsf     STATUS, RP0     ; Switch to bank 1
+* 7436	00EA- 300C			        movlw   HSER_SPBRG
+* 7437	00EB- 0099			        movwf   SPBRG		; Set baud rate generator reg
+* 7438	00EC- 3024			        movlw   HSER_TXSTA
+* 7439	00ED- 0098			        movwf   TXSTA		; Set transmit control reg
+* 7440	00EE- 1283			        bcf     STATUS, RP0     ; Switch back to bank 0
+* 7441	00EF- 3090			        movlw   HSER_RCSTA
+* 7442	00F0- 0098			        movwf   RCSTA           ; Set receive control reg
+* 7469					  LIST
+* 7470	00F1-				main
+   138					
+   139					
+   140					; D:\INTERN~1\PCBASC~1.46\PBP2~1.46\16F628A.BAS	00012	BANK0   $0
+   141					; D:\INTERN~1\PCBASC~1.46\PBP2~1.46\16F628A.BAS	00013	BANK1   $0
+   142					; D:\INTERN~1\PCBASC~1.46\PBP2~1.46\16F628A.BAS	00014	BANK2   $0
+   143					; D:\INTERN~1\PCBASC~1.46\PBP2~1.46\16F628A.BAS	00015	EEPROM  $2
+   144					; D:\INTERN~1\PCBASC~1.46\PBP2~1.46\16F628A.BAS	00016	LIBRARY "P
+   145					
+   146					; D:\INTERN~1\PCBASC~1.46\PBP2~1.46\16F628A.BAS	00018	        in
+   147					
+   148					; D:\INTERN~1\PCBASC~1.46\PBP2~1.46\16F628A.BAS	00025	        in
+   149					
+   150					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00001	include "MCSMonitor.bas":'
+   151					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00012	define MCS_STEP      73H '
+   152					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00013	define MCS_DUMP      64H '
+   153					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00014	define MCS_HANDSHAKE 68H '
+   154					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00015	define MCS_RESET     72H '
+   155					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00016	define MCS_WRITE     77H '
+   156					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00019	DEFINE HSER_TXSTA 36 
+   157					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00020	DEFINE HSER_SPBRG 12 
+   158					
+   159					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00041	DEBUG_STACK = 0     ' Star
+   160						MOVE?CB	000h, DEBUG_STACK
+     +	00F1- 01BB			        clrf    DEBUG_STACK
+   161					
+   162					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00042	Goto MCSSkipMonitor  ' Ski
+   163						GOTO?L	_MCSSkipMonitor
+     +	00F2- 2971			        goto    _MCSSkipMonitor
+   164					
+   165					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00044	MCSMonitor: 
+   166					
+   167						LABEL?L	_MCSMonitor	
+     +					        LALL
+     +	00F3-				_MCSMonitor
+   168					
+   169					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00047	   asm
+   170					
+   171						ASM?
+   172					
+   173	00F3- 0821			      movf  DEBUG_ADDRESS + 1, W 
+   174	00F4- 00BF			      movwf _MCSAddrH            
+   175	00F5- 0820			      movf  DEBUG_ADDRESS, W   
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 12
+
+   176	00F6- 00C0			      movwf _MCSAddrL   
+   177					   
+   178					
+   179						ENDASM?
+   180					
+   181					
+   182					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00053	   hserout [MCSAddrH, MCSA
+   183						HSEROUT?B	_MCSAddrH
+     +	00F7- 083F			        movf    _MCSAddrH, W
+     +	00F8- 200B			        call    HSEROUT
+   184						HSEROUT?B	_MCSAddrL
+     +	00F9- 0840			        movf    _MCSAddrL, W
+     +	00FA- 200B			        call    HSEROUT
+   185					
+   186					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00056	MCSMonitorLoop:
+   187					
+   188						LABEL?L	_MCSMonitorLoop	
+     +					        LALL
+     +	00FB-				_MCSMonitorLoop
+   189					
+   190					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00059	   hserin [MCSCommand] 
+   191						HSERIN?B	_MCSCommand
+     +	00FB- 2005			        call    HSERIN
+     +	00FC- 00BE			        movwf   _MCSCommand
+   192					
+   193					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00060	   asm
+   194					
+   195						ASM?
+   196					
+   197					      ; step
+   198	00FD- 1283			      bcf   STATUS, 5         
+   199	00FE- 083E			      movf  _MCSCommand, W
+   200	00FF- 3A73			      xorlw MCS_STEP
+   201	0100- 1903			      btfsc STATUS, Z
+   202	0101- 296D			      goto  _MCSMonitorStep           
+   203					           
+   204					      ; dump
+   205	0102- 083E			      movf  _MCSCommand, W
+   206	0103- 3A64			      xorlw MCS_DUMP
+   207	0104- 1903			      btfsc STATUS, Z
+   208	0105- 2939			      goto  _MCSMonitorDump           
+   209					      
+   210					      ; write
+   211	0106- 083E			      movf  _MCSCommand, W
+   212	0107- 3A77			      xorlw MCS_WRITE
+   213	0108- 1903			      btfsc STATUS, Z
+   214	0109- 2913			      goto  _MCSMonitorWrite           
+   215					
+   216					      ; handshake
+   217	010A- 083E			      movf  _MCSCommand, W
+   218	010B- 3A68			      xorlw MCS_HANDSHAKE
+   219	010C- 1903			      btfsc STATUS, Z
+   220	010D- 295E			      goto  _MCSMonitorHandshake           
+   221					
+   222					      ; reset
+   223	010E- 083E			      movf  _MCSCommand, W
+   224	010F- 3A72			      xorlw MCS_RESET
+   225	0110- 1903			      btfsc STATUS, Z
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 13
+
+   226	0111- 296B			      goto  _MCSMonitorReset          
+   227					   
+   228					
+   229						ENDASM?
+   230					
+   231					
+   232					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00092	   goto MCSMonitorLoop
+   233						GOTO?L	_MCSMonitorLoop
+     +	0112- 28FB			        goto    _MCSMonitorLoop
+   234					
+   235					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00094	MCSMonitorWrite:
+   236					
+   237						LABEL?L	_MCSMonitorWrite	
+     +					        LALL
+     +	0113-				_MCSMonitorWrite
+   238					
+   239					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00095	   hserin [MCSAddrH, MCSAd
+   240						HSERIN?B	_MCSAddrH
+     +	0113- 2005			        call    HSERIN
+     +	0114- 00BF			        movwf   _MCSAddrH
+   241						HSERIN?B	_MCSAddrL
+     +	0115- 2005			        call    HSERIN
+     +	0116- 00C0			        movwf   _MCSAddrL
+   242						HSERIN?B	_MCSValue
+     +	0117- 2005			        call    HSERIN
+     +	0118- 00BE			        movwf   _MCSValue
+   243					
+   244					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00096	asm  
+   245					
+   246						ASM?
+   247					  
+   248					   ; write to EEPROM? 
+   249	0119- 1BBF			   btfsc _MCSAddrH, 7   
+   250	011A- 2925			   goto  MCSWriteEEPROM 
+   251					
+   252					   ; no, write to register
+   253	011B- 0840			   movf  _MCSAddrL, W
+   254	011C- 183F			   btfsc _MCSAddrH, 0      
+   255	011D- 1783			   bsf   STATUS, IRP    
+   256	011E- 0084			   movwf FSR    
+   257	011F- 083E			   movf  _MCSValue, W 
+   258	0120- 0080			   movwf INDF            
+   259	0121- 1383			   bcf   STATUS, IRP 
+   260					
+   261					
+   262						ENDASM?
+   263					
+   264					
+   265					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00111	   hserout [$FF]
+   266						HSEROUT?C	0FFh
+     +	0122- 30FF			        movlw   low (0FFh)
+     +	0123- 200B			        call    HSEROUT
+   267					
+   268					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00112	   goto MCSMonitorLoop
+   269						GOTO?L	_MCSMonitorLoop
+     +	0124- 28FB			        goto    _MCSMonitorLoop
+   270					
+   271					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00113	asm
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 14
+
+   272					
+   273						ASM?
+   274					
+   275	0125-				MCSWriteEEPROM
+   276					   ; do a data write 
+   277	0125- 0840			   movf  _MCSAddrL, W  
+   278	0126- 1683			   bsf	 STATUS,RP0  
+   279	0127- 009B			   movwf EEADR   
+   280					   
+   281					   ; data memory value to write
+   282	0128- 1283			   bcf	 STATUS,RP0    
+   283	0129- 083E			   movf  _MCSValue, W 
+   284	012A- 1683			   bsf	 STATUS,RP0  
+   285	012B- 009A			   movwf EEDATA 
+   286	012C- 151C			   bsf   EECON1, WREN 
+   287					   
+   288					   ; required sequence
+   289	012D- 3055			   movlw 0x55         
+   290	012E- 009D			   movwf EECON2 
+   291	012F- 30AA			   movlw 0xAA  
+   292	0130- 009D			   movwf EECON2 
+   293	0131- 149C			   bsf   EECON1, WR 
+   294					  
+   295					   ; wait for write completion
+   296	0132-				MCSEEPromWriteWait 
+   297	0132- 189C			   btfsc EECON1,WR  
+   298	0133- 2932			   goto  MCSEEPromWriteWait 
+   299					
+   300					   ; disable writes and restore bank0
+   301	0134- 111C			   bcf   EECON1, WREN    
+   302	0135- 1283			   bcf   STATUS,RP0    
+   303					
+   304					
+   305						ENDASM?
+   306					
+   307					
+   308					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00144	   hserout [$FF]
+   309						HSEROUT?C	0FFh
+     +	0136- 30FF			        movlw   low (0FFh)
+     +	0137- 200B			        call    HSEROUT
+   310					
+   311					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00145	   goto MCSMonitorLoop
+   312						GOTO?L	_MCSMonitorLoop
+     +	0138- 28FB			        goto    _MCSMonitorLoop
+   313					
+   314					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00147	MCSMonitorDump:  
+   315					
+   316						LABEL?L	_MCSMonitorDump	
+     +					        LALL
+     +	0139-				_MCSMonitorDump
+   317					
+   318					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00149	   hserin [MCSBankStart, M
+   319						HSERIN?B	_MCSBankStart
+     +	0139- 2005			        call    HSERIN
+     +	013A- 00C1			        movwf   _MCSBankStart
+   320						HSERIN?B	_MCSBankEnd
+     +	013B- 2005			        call    HSERIN
+     +	013C- 00C2			        movwf   _MCSBankEnd
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 15
+
+   321						HSERIN?B	_MCSAddrH
+     +	013D- 2005			        call    HSERIN
+     +	013E- 00BF			        movwf   _MCSAddrH
+   322					
+   323					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00150	   For MCSAddrL = MCSBankS
+   324						MOVE?BB	_MCSBankStart, _MCSAddrL
+     +	013F- 0841			        movf    _MCSBankStart, W
+     +	0140- 00C0			        movwf   _MCSAddrL
+   325						LABEL?L	L00002	
+     +					        LALL
+     +	0141-				L00002
+   326						CMPGT?BBL	_MCSAddrL, _MCSBankEnd, L00003
+     +	0141- 0064			        clrwdt
+     +	0142- 0840			        movf    _MCSAddrL, W
+     +	0143- 0242			        subwf   _MCSBankEnd, W
+     +	0144- 1C03			        btfss   STATUS, C
+     +	0145- 295D			        goto    L00003
+   327					
+   328					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00151	   asm
+   329					
+   330						ASM?
+   331					
+   332					      ; read EEPROM?
+   333	0146- 1BBF			      btfsc _MCSAddrH, 7       
+   334	0147- 2950			      goto  MCSReadEEPROM 
+   335					     
+   336					      ; no, read register 
+   337	0148- 0840			      movf  _MCSAddrL, W    
+   338	0149- 183F			      btfsc _MCSAddrH, 0  
+   339	014A- 1783			      bsf   STATUS, IRP  
+   340	014B- 0084			      movwf FSR   
+   341	014C- 0800			      movf  INDF, W  
+   342	014D- 1383			      bcf   STATUS, IRP  
+   343	014E- 00BE			      movwf _MCSValue  
+   344	014F- 2959			      goto  _MCSNext  
+   345					            
+   346	0150-				MCSReadEEPROM
+   347	0150- 13BF			      bcf   _MCSAddrH,7   ; clear EEPROM flag
+   348	0151- 0840			      movf  _MCSAddrL, W 
+   349	0152- 1683			      bsf   STATUS, RP0 
+   350	0153- 009B			      movwf EEADR   
+   351					 
+   352					      ; read data  
+   353	0154- 141C			      bsf   EECON1, RD 
+   354	0155- 081A			      movf  EEDATA, W  
+   355					
+   356					      ; restore bank 0 
+   357	0156- 1283			      bcf	 STATUS,RP0 
+   358	0157- 00BE			      movwf _MCSValue  
+   359	0158- 17BF			      bsf   _MCSAddrH, 7   ; reset EEPROM flag
+   360					
+   361					
+   362						ENDASM?
+   363					
+   364					
+   365					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00181	MCSNext
+   366					
+   367						LABEL?L	_MCSNext	
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 16
+
+     +					        LALL
+     +	0159-				_MCSNext
+   368					
+   369					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00182	   hserout [MCSValue]
+   370						HSEROUT?B	_MCSValue
+     +	0159- 083E			        movf    _MCSValue, W
+     +	015A- 200B			        call    HSEROUT
+   371					
+   372					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00183	   Next MCSAddrL
+   373						NEXT?BCL	_MCSAddrL, 001h, L00002
+     +	015B- 0FC0			        incfsz  _MCSAddrL, F
+     +	015C- 2941			        goto    L00002
+   374						LABEL?L	L00003	
+     +					        LALL
+     +	015D-				L00003
+   375					
+   376					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00184	   Goto MCSMonitorLoop
+   377						GOTO?L	_MCSMonitorLoop
+     +	015D- 28FB			        goto    _MCSMonitorLoop
+   378					
+   379					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00187	MCSMonitorHandshake:
+   380					
+   381						LABEL?L	_MCSMonitorHandshake	
+     +					        LALL
+     +	015E-				_MCSMonitorHandshake
+   382					
+   383					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00188	   hserout ["3C0C37"]
+   384						HSEROUT?C	033h
+     +	015E- 3033			        movlw   low (033h)
+     +	015F- 200B			        call    HSEROUT
+   385						HSEROUT?C	043h
+     +	0160- 3043			        movlw   low (043h)
+     +	0161- 200B			        call    HSEROUT
+   386						HSEROUT?C	030h
+     +	0162- 3030			        movlw   low (030h)
+     +	0163- 200B			        call    HSEROUT
+   387						HSEROUT?C	043h
+     +	0164- 3043			        movlw   low (043h)
+     +	0165- 200B			        call    HSEROUT
+   388						HSEROUT?C	033h
+     +	0166- 3033			        movlw   low (033h)
+     +	0167- 200B			        call    HSEROUT
+   389						HSEROUT?C	037h
+     +	0168- 3037			        movlw   low (037h)
+     +	0169- 200B			        call    HSEROUT
+   390					
+   391					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00189	   Goto MCSMonitorLoop
+   392						GOTO?L	_MCSMonitorLoop
+     +	016A- 28FB			        goto    _MCSMonitorLoop
+   393					
+   394					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00192	MCSMonitorReset:
+   395					
+   396						LABEL?L	_MCSMonitorReset	
+     +					        LALL
+     +	016B-				_MCSMonitorReset
+   397					
+   398					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00193	   asm
+   399					
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 17
+
+   400						ASM?
+   401					
+   402	016B- 018A			      clrf    PCLATH
+   403	016C- 2800			      goto    0
+   404					   
+   405					
+   406						ENDASM?
+   407					
+   408					
+   409					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00200	MCSMonitorStep:
+   410					
+   411						LABEL?L	_MCSMonitorStep	
+     +					        LALL
+     +	016D-				_MCSMonitorStep
+   412					
+   413					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00201	   asm
+   414					
+   415						ASM?
+   416					
+   417	016D- 0821			      movf    DEBUG_ADDRESS + 1, W    ; Set PCLATH with top byte of return
+   418	016E- 008A			      movwf   PCLATH
+   419	016F- 0820			      movf    DEBUG_ADDRESS, W        ; Go back to main program
+   420	0170- 0082			      movwf   PCL
+   421					   
+   422					
+   423						ENDASM?
+   424					
+   425					
+   426					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00208	MCSSkipMonitor:
+   427					
+   428						LABEL?L	_MCSSkipMonitor	
+     +					        LALL
+     +	0171-				_MCSSkipMonitor
+   429					
+   430					; D:\ZELDOS~1\16F628~1\MCSMONITOR.BAS	00209	   On Debug Goto MCSMonito
+   431						ONDEBUG?L	_MCSMonitor
+   432					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00011	Define LCD_DREG PORTB     
+   433					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00012	Define LCD_DBIT 4         
+   434					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00013	Define LCD_RSREG PORTB    
+   435					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00014	Define LCD_RSBIT 2        
+   436					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00015	Define LCD_EREG PORTB     
+   437					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00016	Define LCD_EBIT 3         
+   438					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00017	DEFINE LCD_LINES 2        
+   439					
+   440					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00024	ON INTERRUPT GoTo KESME   
+   441						ONINT?LL	_KESME, L00001
+     +	0171- 178B			        bsf     INTCON, GIE
+     +	0172- 2976			        goto    @@0000
+     +	0173- 1B8B			L00001  btfsc   INTCON, GIE
+     +	0174- 0008			        return
+     +	0175- 2B49			        goto    _KESME
+   442					
+   443					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00025	OPTION_REG=%10000101      
+   444						ICALL?L	L00001
+     +	0176- 2173			        call    L00001
+   445						DCALL?L	_MCSMonitor
+     +	0177- 307C			        movlw   low (@@0001)
+     +	0178- 00A0			        movwf   DEBUG_ADDRESS
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 18
+
+     +	0179- 3001			        movlw   (@@0001) >> 8
+     +	017A- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	017B- 28F3			        goto    _MCSMonitor
+   446						MOVE?CB	085h, OPTION_REG
+     +	017C- 1683			        bsf     STATUS, RP0
+     +	017D- 3085			        movlw   low (085h)
+     +	017E- 0081			        movwf   OPTION_REG
+   447					
+   448					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00026	INTCON=%10100000          
+   449						ICALL?L	L00001
+     +	017F- 1283			        bcf     STATUS, RP0
+     +	0180- 2173			        call    L00001
+   450						DCALL?L	_MCSMonitor
+     +	0181- 3086			        movlw   low (@@0002)
+     +	0182- 00A0			        movwf   DEBUG_ADDRESS
+     +	0183- 3001			        movlw   (@@0002) >> 8
+     +	0184- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	0185- 28F3			        goto    _MCSMonitor
+   451						MOVE?CB	0A0h, INTCON
+     +	0186- 30A0			        movlw   low (0A0h)
+     +	0187- 008B			        movwf   INTCON
+   452					
+   453					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00027	TMR0=0
+   454						ICALL?L	L00001
+     +	0188- 2173			        call    L00001
+   455						DCALL?L	_MCSMonitor
+     +	0189- 308E			        movlw   low (@@0003)
+     +	018A- 00A0			        movwf   DEBUG_ADDRESS
+     +	018B- 3001			        movlw   (@@0003) >> 8
+     +	018C- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	018D- 28F3			        goto    _MCSMonitor
+   456						MOVE?CB	000h, TMR0
+     +	018E- 0181			        clrf    TMR0
+   457					
+   458					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00028	CMCON=7 
+   459						ICALL?L	L00001
+     +	018F- 2173			        call    L00001
+   460						DCALL?L	_MCSMonitor
+     +	0190- 3095			        movlw   low (@@0004)
+     +	0191- 00A0			        movwf   DEBUG_ADDRESS
+     +	0192- 3001			        movlw   (@@0004) >> 8
+     +	0193- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	0194- 28F3			        goto    _MCSMonitor
+   461						MOVE?CB	007h, CMCON
+     +	0195- 3007			        movlw   low (007h)
+     +	0196- 009F			        movwf   CMCON
+   462					
+   463					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00029	clear                   'B
+   464						ICALL?L	L00001
+     +	0197- 2173			        call    L00001
+   465						DCALL?L	_MCSMonitor
+     +	0198- 309D			        movlw   low (@@0005)
+     +	0199- 00A0			        movwf   DEBUG_ADDRESS
+     +	019A- 3001			        movlw   (@@0005) >> 8
+     +	019B- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	019C- 28F3			        goto    _MCSMonitor
+   466						CLEAR?	
+     +	019D- 3020			        movlw   BANK0_START
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 19
+
+     +	019E- 0084			        movwf   FSR
+     +	019F- 3060			        movlw   BANK0_END - BANK0_START + 1
+     +	01A0- 2080			        call    CLEAR
+     +	01A1- 30A0			        movlw   BANK1_START
+     +	01A2- 0084			        movwf   FSR
+     +	01A3- 3050			        movlw   BANK1_END - BANK1_START + 1
+     +	01A4- 2080			        call    CLEAR
+     +	01A5- 3020			        movlw   low (BANK2_START)
+     +	01A6- 0084			        movwf   FSR
+     +	01A7- 3030			        movlw   BANK2_END - BANK2_START + 1
+     +	01A8- 207F			        call    CLEARH
+   467					
+   468					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00030	LCDOUT $FE,1            'L
+   469						ICALL?L	L00001
+     +	01A9- 2173			        call    L00001
+   470						DCALL?L	_MCSMonitor
+     +	01AA- 30AF			        movlw   low (@@0006)
+     +	01AB- 00A0			        movwf   DEBUG_ADDRESS
+     +	01AC- 3001			        movlw   (@@0006) >> 8
+     +	01AD- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	01AE- 28F3			        goto    _MCSMonitor
+   471						LCDOUT?C	0FEh
+     +	01AF- 30FE			        movlw   low (0FEh)
+     +	01B0- 2030			        call    LCDOUT
+   472						LCDOUT?C	001h
+     +	01B1- 3001			        movlw   low (001h)
+     +	01B2- 2030			        call    LCDOUT
+   473					
+   474					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00031	PAUSE 500               'L
+   475						ICALL?L	L00001
+     +	01B3- 2173			        call    L00001
+   476						DCALL?L	_MCSMonitor
+     +	01B4- 30B9			        movlw   low (@@0007)
+     +	01B5- 00A0			        movwf   DEBUG_ADDRESS
+     +	01B6- 3001			        movlw   (@@0007) >> 8
+     +	01B7- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	01B8- 28F3			        goto    _MCSMonitor
+   477						PAUSE?C	001F4h
+     +	01B9- 3001			        movlw   low (high (001F4h))
+     +	01BA- 00A5			        movwf   R1 + 1
+     +	01BB- 30F4			        movlw   low (low (001F4h))
+     +	01BC- 2087			        call    PAUSEL
+   478					
+   479					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00033	TRISB=0         'PORTB ÇIK
+   480						ICALL?L	L00001
+     +	01BD- 2173			        call    L00001
+   481						DCALL?L	_MCSMonitor
+     +	01BE- 30C3			        movlw   low (@@0008)
+     +	01BF- 00A0			        movwf   DEBUG_ADDRESS
+     +	01C0- 3001			        movlw   (@@0008) >> 8
+     +	01C1- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	01C2- 28F3			        goto    _MCSMonitor
+   482						MOVE?CB	000h, TRISB
+     +	01C3- 1683			        bsf     STATUS, RP0
+     +	01C4- 0186			        clrf    TRISB
+   483					
+   484					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00035	anaprogram:
+   485					
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 20
+
+   486						LABEL?L	_anaprogram	
+     +	01C5- 1283			        bcf     STATUS, RP0
+     +					        LALL
+     +	01C6-				_anaprogram
+   487					
+   488					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00036	  gosub calismaekrani
+   489						ICALL?L	L00001
+     +	01C6- 2173			        call    L00001
+   490						DCALL?L	_MCSMonitor
+     +	01C7- 30CC			        movlw   low (@@0009)
+     +	01C8- 00A0			        movwf   DEBUG_ADDRESS
+     +	01C9- 3001			        movlw   (@@0009) >> 8
+     +	01CA- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	01CB- 28F3			        goto    _MCSMonitor
+   491						GOSUB?L	_calismaekrani
+     +	01CC- 0ABB			        incf    DEBUG_STACK, F
+     +	01CD- 21DD			        call    _calismaekrani
+   492					
+   493					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00037	  GOSUB motorkontrol
+   494						ICALL?L	L00001
+     +	01CE- 2173			        call    L00001
+   495						DCALL?L	_MCSMonitor
+     +	01CF- 30D4			        movlw   low (@@0011)
+     +	01D0- 00A0			        movwf   DEBUG_ADDRESS
+     +	01D1- 3001			        movlw   (@@0011) >> 8
+     +	01D2- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	01D3- 28F3			        goto    _MCSMonitor
+   496						GOSUB?L	_motorkontrol
+     +	01D4- 0ABB			        incf    DEBUG_STACK, F
+     +	01D5- 2233			        call    _motorkontrol
+   497					
+   498					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00038	  GOTO ANAPROGRAM
+   499						ICALL?L	L00001
+     +	01D6- 2173			        call    L00001
+   500						DCALL?L	_MCSMonitor
+     +	01D7- 30DC			        movlw   low (@@0013)
+     +	01D8- 00A0			        movwf   DEBUG_ADDRESS
+     +	01D9- 3001			        movlw   (@@0013) >> 8
+     +	01DA- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	01DB- 28F3			        goto    _MCSMonitor
+   501						GOTO?L	_anaprogram
+     +	01DC- 29C6			        goto    _anaprogram
+   502					
+   503					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00040	calismaekrani:
+   504					
+   505						LABEL?L	_calismaekrani	
+     +					        LALL
+     +	01DD-				_calismaekrani
+   506					
+   507					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00041	  lcdout $fe,$80
+   508						ICALL?L	L00001
+     +	01DD- 2173			        call    L00001
+   509						DCALL?L	_MCSMonitor
+     +	01DE- 30E3			        movlw   low (@@0014)
+     +	01DF- 00A0			        movwf   DEBUG_ADDRESS
+     +	01E0- 3001			        movlw   (@@0014) >> 8
+     +	01E1- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	01E2- 28F3			        goto    _MCSMonitor
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 21
+
+   510						LCDOUT?C	0FEh
+     +	01E3- 30FE			        movlw   low (0FEh)
+     +	01E4- 2030			        call    LCDOUT
+   511						LCDOUT?C	080h
+     +	01E5- 3080			        movlw   low (080h)
+     +	01E6- 2030			        call    LCDOUT
+   512					
+   513					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00042	  lcdout "MOTOR DURUMU:"
+   514						ICALL?L	L00001
+     +	01E7- 2173			        call    L00001
+   515						DCALL?L	_MCSMonitor
+     +	01E8- 30ED			        movlw   low (@@0015)
+     +	01E9- 00A0			        movwf   DEBUG_ADDRESS
+     +	01EA- 3001			        movlw   (@@0015) >> 8
+     +	01EB- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	01EC- 28F3			        goto    _MCSMonitor
+   516						LCDOUT?C	04Dh
+     +	01ED- 304D			        movlw   low (04Dh)
+     +	01EE- 2030			        call    LCDOUT
+   517						LCDOUT?C	04Fh
+     +	01EF- 304F			        movlw   low (04Fh)
+     +	01F0- 2030			        call    LCDOUT
+   518						LCDOUT?C	054h
+     +	01F1- 3054			        movlw   low (054h)
+     +	01F2- 2030			        call    LCDOUT
+   519						LCDOUT?C	04Fh
+     +	01F3- 304F			        movlw   low (04Fh)
+     +	01F4- 2030			        call    LCDOUT
+   520						LCDOUT?C	052h
+     +	01F5- 3052			        movlw   low (052h)
+     +	01F6- 2030			        call    LCDOUT
+   521						LCDOUT?C	020h
+     +	01F7- 3020			        movlw   low (020h)
+     +	01F8- 2030			        call    LCDOUT
+   522						LCDOUT?C	044h
+     +	01F9- 3044			        movlw   low (044h)
+     +	01FA- 2030			        call    LCDOUT
+   523						LCDOUT?C	055h
+     +	01FB- 3055			        movlw   low (055h)
+     +	01FC- 2030			        call    LCDOUT
+   524						LCDOUT?C	052h
+     +	01FD- 3052			        movlw   low (052h)
+     +	01FE- 2030			        call    LCDOUT
+   525						LCDOUT?C	055h
+     +	01FF- 3055			        movlw   low (055h)
+     +	0200- 2030			        call    LCDOUT
+   526						LCDOUT?C	04Dh
+     +	0201- 304D			        movlw   low (04Dh)
+     +	0202- 2030			        call    LCDOUT
+   527						LCDOUT?C	055h
+     +	0203- 3055			        movlw   low (055h)
+     +	0204- 2030			        call    LCDOUT
+   528						LCDOUT?C	03Ah
+     +	0205- 303A			        movlw   low (03Ah)
+     +	0206- 2030			        call    LCDOUT
+   529					
+   530					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00043	  LCDOUT $FE,$C0,#SANIYE,"
+   531						ICALL?L	L00001
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 22
+
+     +	0207- 2173			        call    L00001
+   532						DCALL?L	_MCSMonitor
+     +	0208- 300D			        movlw   low (@@0016)
+     +	0209- 00A0			        movwf   DEBUG_ADDRESS
+     +	020A- 3002			        movlw   (@@0016) >> 8
+     +	020B- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	020C- 28F3			        goto    _MCSMonitor
+   533						LCDOUT?C	0FEh
+     +	020D- 30FE			        movlw   low (0FEh)
+     +	020E- 2030			        call    LCDOUT
+   534						LCDOUT?C	0C0h
+     +	020F- 30C0			        movlw   low (0C0h)
+     +	0210- 2030			        call    LCDOUT
+   535						LCDOUTD?B	_SANIYE
+     +	0211- 0848			        movf    _SANIYE, W
+     +	0212- 2011			        call    LCDOUTDEC
+   536						LCDOUT?C	020h
+     +	0213- 3020			        movlw   low (020h)
+     +	0214- 2030			        call    LCDOUT
+   537						LCDOUTD?T	_PORTA_0
+     +	0215- 3000			        movlw   0
+     +	0216- 1805			        btfsc   PORTA, 000h
+     +	0217- 3001			        movlw   1
+     +	0218- 2011			        call    LCDOUTDEC
+   538						LCDOUT?C	020h
+     +	0219- 3020			        movlw   low (020h)
+     +	021A- 2030			        call    LCDOUT
+   539						LCDOUTD?T	_PORTA_1
+     +	021B- 3000			        movlw   0
+     +	021C- 1885			        btfsc   PORTA, 001h
+     +	021D- 3001			        movlw   1
+     +	021E- 2011			        call    LCDOUTDEC
+   540						LCDOUT?C	020h
+     +	021F- 3020			        movlw   low (020h)
+     +	0220- 2030			        call    LCDOUT
+   541						LCDOUTD?T	_KUMANDA
+     +	0221- 3000			        movlw   0
+     +	0222- 1847			        btfsc   PB01, 000h
+     +	0223- 3001			        movlw   1
+     +	0224- 2011			        call    LCDOUTDEC
+   542						LCDOUT?C	020h
+     +	0225- 3020			        movlw   low (020h)
+     +	0226- 2030			        call    LCDOUT
+   543						LCDOUTD?T	_UCGENEGEC1
+     +	0227- 3000			        movlw   0
+     +	0228- 18C7			        btfsc   PB01, 001h
+     +	0229- 3001			        movlw   1
+     +	022A- 2011			        call    LCDOUTDEC
+   544					
+   545					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00044	return 
+   546						ICALL?L	L00001
+     +	022B- 2173			        call    L00001
+   547						DCALL?L	_MCSMonitor
+     +	022C- 3031			        movlw   low (@@0017)
+     +	022D- 00A0			        movwf   DEBUG_ADDRESS
+     +	022E- 3002			        movlw   (@@0017) >> 8
+     +	022F- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	0230- 28F3			        goto    _MCSMonitor
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 23
+
+   548						RETURN?	
+     +	0231- 03BB			        decf    DEBUG_STACK, F
+     +	0232- 0008			        return
+   549					
+   550					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00045	motorkontrol:
+   551					
+   552						LABEL?L	_motorkontrol	
+     +					        LALL
+     +	0233-				_motorkontrol
+   553					
+   554					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00046	IF (PORTA.1=1) and (PORTA.
+   555						ICALL?L	L00001
+     +	0233- 2173			        call    L00001
+   556						DCALL?L	_MCSMonitor
+     +	0234- 3039			        movlw   low (@@0018)
+     +	0235- 00A0			        movwf   DEBUG_ADDRESS
+     +	0236- 3002			        movlw   (@@0018) >> 8
+     +	0237- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	0238- 28F3			        goto    _MCSMonitor
+   557						CMPEQ?TCB	_PORTA_1, 001h, T1
+     +	0239- 3000			        movlw   0
+     +	023A- 1885			        btfsc   PORTA, 001h
+     +	023B- 3001			        movlw   1
+     +	023C- 00A2			        movwf   R0
+     +	023D- 3001			        movlw   low (001h)
+     +	023E- 20A8			        call    CMPEQB
+     +	023F- 00B4			        movwf   T1
+   558						CMPEQ?TCB	_PORTA_0, 000h, T2
+     +	0240- 3000			        movlw   0
+     +	0241- 1805			        btfsc   PORTA, 000h
+     +	0242- 3001			        movlw   1
+     +	0243- 00A2			        movwf   R0
+     +	0244- 3000			        movlw   low (000h)
+     +	0245- 20A8			        call    CMPEQB
+     +	0246- 00B6			        movwf   T2
+   559						LAND?BBW	T1, T2, T2
+     +	0247- 0834			        movf    T1, W
+     +	0248- 0084			        movwf   FSR
+     +	0249- 0836			        movf    T2, W
+     +	024A- 20BD			        call    LAND
+     +	024B- 00B6			        movwf   T2
+     +	024C- 00B7			        movwf   T2 + 1
+   560						CMPF?WL	T2, L00004
+     +	024D- 0064			        clrwdt
+     +	024E- 0836			        movf    T2, W
+     +	024F- 0437			        iorwf   T2 + 1, W
+     +	0250- 1903			        btfsc   STATUS, Z
+     +	0251- 2A53			        goto    L00004
+   561						GOTO?L	_motorstop
+     +	0252- 2B0F			        goto    _motorstop
+   562						LABEL?L	L00004	
+     +					        LALL
+     +	0253-				L00004
+   563					
+   564					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00047	IF (PORTA.0=1) AND (PORTA.
+   565						ICALL?L	L00001
+     +	0253- 2173			        call    L00001
+   566						DCALL?L	_MCSMonitor
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 24
+
+     +	0254- 3059			        movlw   low (@@0019)
+     +	0255- 00A0			        movwf   DEBUG_ADDRESS
+     +	0256- 3002			        movlw   (@@0019) >> 8
+     +	0257- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	0258- 28F3			        goto    _MCSMonitor
+   567						CMPEQ?TCB	_PORTA_0, 001h, T1
+     +	0259- 3000			        movlw   0
+     +	025A- 1805			        btfsc   PORTA, 000h
+     +	025B- 3001			        movlw   1
+     +	025C- 00A2			        movwf   R0
+     +	025D- 3001			        movlw   low (001h)
+     +	025E- 20A8			        call    CMPEQB
+     +	025F- 00B4			        movwf   T1
+   568						CMPEQ?TCB	_PORTA_1, 000h, T2
+     +	0260- 3000			        movlw   0
+     +	0261- 1885			        btfsc   PORTA, 001h
+     +	0262- 3001			        movlw   1
+     +	0263- 00A2			        movwf   R0
+     +	0264- 3000			        movlw   low (000h)
+     +	0265- 20A8			        call    CMPEQB
+     +	0266- 00B6			        movwf   T2
+   569						LAND?BBW	T1, T2, T2
+     +	0267- 0834			        movf    T1, W
+     +	0268- 0084			        movwf   FSR
+     +	0269- 0836			        movf    T2, W
+     +	026A- 20BD			        call    LAND
+     +	026B- 00B6			        movwf   T2
+     +	026C- 00B7			        movwf   T2 + 1
+   570						CMPEQ?TCB	_PORTA_2, 001h, T3
+     +	026D- 3000			        movlw   0
+     +	026E- 1905			        btfsc   PORTA, 002h
+     +	026F- 3001			        movlw   1
+     +	0270- 00A2			        movwf   R0
+     +	0271- 3001			        movlw   low (001h)
+     +	0272- 20A8			        call    CMPEQB
+     +	0273- 00B8			        movwf   T3
+   571						LOR?WBW	T2, T3, T3
+     +	0274- 0836			        movf    T2, W
+     +	0275- 0437			        iorwf   T2 + 1, W
+     +	0276- 0084			        movwf   FSR
+     +	0277- 0838			        movf    T3, W
+     +	0278- 20C4			        call    LOR
+     +	0279- 00B8			        movwf   T3
+     +	027A- 00B9			        movwf   T3 + 1
+   572						CMPF?WL	T3, L00006
+     +	027B- 0064			        clrwdt
+     +	027C- 0838			        movf    T3, W
+     +	027D- 0439			        iorwf   T3 + 1, W
+     +	027E- 1903			        btfsc   STATUS, Z
+     +	027F- 2A8E			        goto    L00006
+   573					
+   574					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00048	   GOTO motorstart
+   575						ICALL?L	L00001
+     +	0280- 2173			        call    L00001
+   576						DCALL?L	_MCSMonitor
+     +	0281- 3086			        movlw   low (@@0020)
+     +	0282- 00A0			        movwf   DEBUG_ADDRESS
+     +	0283- 3002			        movlw   (@@0020) >> 8
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 25
+
+     +	0284- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	0285- 28F3			        goto    _MCSMonitor
+   577						GOTO?L	_motorstart
+     +	0286- 2A9B			        goto    _motorstart
+   578					
+   579					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00049	     ELSE
+   580						ICALL?L	L00001
+     +	0287- 2173			        call    L00001
+   581						DCALL?L	_MCSMonitor
+     +	0288- 308D			        movlw   low (@@0021)
+     +	0289- 00A0			        movwf   DEBUG_ADDRESS
+     +	028A- 3002			        movlw   (@@0021) >> 8
+     +	028B- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	028C- 28F3			        goto    _MCSMonitor
+   582						GOTO?L	L00007
+     +	028D- 2A9B			        goto    L00007
+   583						LABEL?L	L00006	
+     +					        LALL
+     +	028E-				L00006
+   584					
+   585					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00050	      GOTO DEVAM
+   586						ICALL?L	L00001
+     +	028E- 2173			        call    L00001
+   587						DCALL?L	_MCSMonitor
+     +	028F- 3094			        movlw   low (@@0022)
+     +	0290- 00A0			        movwf   DEBUG_ADDRESS
+     +	0291- 3002			        movlw   (@@0022) >> 8
+     +	0292- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	0293- 28F3			        goto    _MCSMonitor
+   588						GOTO?L	_DEVAM
+     +	0294- 2B42			        goto    _DEVAM
+   589					
+   590					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00051	       endif
+   591						ICALL?L	L00001
+     +	0295- 2173			        call    L00001
+   592						DCALL?L	_MCSMonitor
+     +	0296- 309B			        movlw   low (@@0023)
+     +	0297- 00A0			        movwf   DEBUG_ADDRESS
+     +	0298- 3002			        movlw   (@@0023) >> 8
+     +	0299- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	029A- 28F3			        goto    _MCSMonitor
+   593						LABEL?L	L00007	
+     +					        LALL
+     +	029B-				L00007
+   594					
+   595					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00052	motorstart:
+   596					
+   597						LABEL?L	_motorstart	
+     +					        LALL
+     +	029B-				_motorstart
+   598					
+   599					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00053	IF SANIYE>=15 THEN ucgeneg
+   600						ICALL?L	L00001
+     +	029B- 2173			        call    L00001
+   601						DCALL?L	_MCSMonitor
+     +	029C- 30A1			        movlw   low (@@0024)
+     +	029D- 00A0			        movwf   DEBUG_ADDRESS
+     +	029E- 3002			        movlw   (@@0024) >> 8
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 26
+
+     +	029F- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	02A0- 28F3			        goto    _MCSMonitor
+   602						CMPLT?BCL	_SANIYE, 00Fh, L00008
+     +	02A1- 0064			        clrwdt
+     +	02A2- 300F			        movlw   low (00Fh)
+     +	02A3- 0248			        subwf   _SANIYE, W
+     +	02A4- 1C03			        btfss   STATUS, C
+     +	02A5- 2AA7			        goto    L00008
+   603						MOVE?CT	001h, _UCGENEGEC1
+     +	02A6- 14C7			        bsf     PB01, 001h
+   604						LABEL?L	L00008	
+     +					        LALL
+     +	02A7-				L00008
+   605					
+   606					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00054	 if ucgenegec1=1 then GOTO
+   607						ICALL?L	L00001
+     +	02A7- 2173			        call    L00001
+   608						DCALL?L	_MCSMonitor
+     +	02A8- 30AD			        movlw   low (@@0025)
+     +	02A9- 00A0			        movwf   DEBUG_ADDRESS
+     +	02AA- 3002			        movlw   (@@0025) >> 8
+     +	02AB- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	02AC- 28F3			        goto    _MCSMonitor
+   609						CMPNE?TCL	_UCGENEGEC1, 001h, L00010
+     +	02AD- 0064			        clrwdt
+     +	02AE- 1CC7			        btfss   PB01, 001h
+     +	02AF- 2AB1			        goto    L00010
+   610						GOTO?L	_ucgenegec
+     +	02B0- 2AEC			        goto    _ucgenegec
+   611						LABEL?L	L00010	
+     +					        LALL
+     +	02B1-				L00010
+   612					
+   613					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00055	KUMANDA=1
+   614						ICALL?L	L00001
+     +	02B1- 2173			        call    L00001
+   615						DCALL?L	_MCSMonitor
+     +	02B2- 30B7			        movlw   low (@@0026)
+     +	02B3- 00A0			        movwf   DEBUG_ADDRESS
+     +	02B4- 3002			        movlw   (@@0026) >> 8
+     +	02B5- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	02B6- 28F3			        goto    _MCSMonitor
+   616						MOVE?CT	001h, _KUMANDA
+     +	02B7- 1447			        bsf     PB01, 000h
+   617					
+   618					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00056	low porta.4
+   619						ICALL?L	L00001
+     +	02B8- 2173			        call    L00001
+   620						DCALL?L	_MCSMonitor
+     +	02B9- 30BE			        movlw   low (@@0027)
+     +	02BA- 00A0			        movwf   DEBUG_ADDRESS
+     +	02BB- 3002			        movlw   (@@0027) >> 8
+     +	02BC- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	02BD- 28F3			        goto    _MCSMonitor
+   621						LOW?T	_PORTA_4
+     +	02BE- 1205			        bcf     PORTA, 004h
+     +	02BF- 1683			        bsf     STATUS, RP0
+     +	02C0- 1205			        bcf     ((PORTA) + 80h), 004h
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 27
+
+   622					
+   623					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00057	 high porta.3
+   624						ICALL?L	L00001
+     +	02C1- 1283			        bcf     STATUS, RP0
+     +	02C2- 2173			        call    L00001
+   625						DCALL?L	_MCSMonitor
+     +	02C3- 30C8			        movlw   low (@@0028)
+     +	02C4- 00A0			        movwf   DEBUG_ADDRESS
+     +	02C5- 3002			        movlw   (@@0028) >> 8
+     +	02C6- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	02C7- 28F3			        goto    _MCSMonitor
+   626						HIGH?T	_PORTA_3
+     +	02C8- 1585			        bsf     PORTA, 003h
+     +	02C9- 1683			        bsf     STATUS, RP0
+     +	02CA- 1185			        bcf     ((PORTA) + 80h), 003h
+   627					
+   628					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00058	 high porta.2
+   629						ICALL?L	L00001
+     +	02CB- 1283			        bcf     STATUS, RP0
+     +	02CC- 2173			        call    L00001
+   630						DCALL?L	_MCSMonitor
+     +	02CD- 30D2			        movlw   low (@@0029)
+     +	02CE- 00A0			        movwf   DEBUG_ADDRESS
+     +	02CF- 3002			        movlw   (@@0029) >> 8
+     +	02D0- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	02D1- 28F3			        goto    _MCSMonitor
+   631						HIGH?T	_PORTA_2
+     +	02D2- 1505			        bsf     PORTA, 002h
+     +	02D3- 1683			        bsf     STATUS, RP0
+     +	02D4- 1105			        bcf     ((PORTA) + 80h), 002h
+   632					
+   633					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00059	 IF SANIYE>=15 THEN ucgene
+   634						ICALL?L	L00001
+     +	02D5- 1283			        bcf     STATUS, RP0
+     +	02D6- 2173			        call    L00001
+   635						DCALL?L	_MCSMonitor
+     +	02D7- 30DC			        movlw   low (@@0030)
+     +	02D8- 00A0			        movwf   DEBUG_ADDRESS
+     +	02D9- 3002			        movlw   (@@0030) >> 8
+     +	02DA- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	02DB- 28F3			        goto    _MCSMonitor
+   636						CMPLT?BCL	_SANIYE, 00Fh, L00012
+     +	02DC- 0064			        clrwdt
+     +	02DD- 300F			        movlw   low (00Fh)
+     +	02DE- 0248			        subwf   _SANIYE, W
+     +	02DF- 1C03			        btfss   STATUS, C
+     +	02E0- 2AE2			        goto    L00012
+   637						MOVE?CT	001h, _UCGENEGEC1
+     +	02E1- 14C7			        bsf     PB01, 001h
+   638						LABEL?L	L00012	
+     +					        LALL
+     +	02E2-				L00012
+   639					
+   640					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00060	 if ucgenegec1=1 then GOTO
+   641						ICALL?L	L00001
+     +	02E2- 2173			        call    L00001
+   642						DCALL?L	_MCSMonitor
+     +	02E3- 30E8			        movlw   low (@@0031)
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 28
+
+     +	02E4- 00A0			        movwf   DEBUG_ADDRESS
+     +	02E5- 3002			        movlw   (@@0031) >> 8
+     +	02E6- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	02E7- 28F3			        goto    _MCSMonitor
+   643						CMPNE?TCL	_UCGENEGEC1, 001h, L00014
+     +	02E8- 0064			        clrwdt
+     +	02E9- 1CC7			        btfss   PB01, 001h
+     +	02EA- 2AEC			        goto    L00014
+   644						GOTO?L	_ucgenegec
+     +	02EB- 2AEC			        goto    _ucgenegec
+   645						LABEL?L	L00014	
+     +					        LALL
+     +	02EC-				L00014
+   646					
+   647					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00062	ucgenegec:
+   648					
+   649						LABEL?L	_ucgenegec	
+     +					        LALL
+     +	02EC-				_ucgenegec
+   650					
+   651					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00063	low porta.3
+   652						ICALL?L	L00001
+     +	02EC- 2173			        call    L00001
+   653						DCALL?L	_MCSMonitor
+     +	02ED- 30F2			        movlw   low (@@0032)
+     +	02EE- 00A0			        movwf   DEBUG_ADDRESS
+     +	02EF- 3002			        movlw   (@@0032) >> 8
+     +	02F0- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	02F1- 28F3			        goto    _MCSMonitor
+   654						LOW?T	_PORTA_3
+     +	02F2- 1185			        bcf     PORTA, 003h
+     +	02F3- 1683			        bsf     STATUS, RP0
+     +	02F4- 1185			        bcf     ((PORTA) + 80h), 003h
+   655					
+   656					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00064	pause 50
+   657						ICALL?L	L00001
+     +	02F5- 1283			        bcf     STATUS, RP0
+     +	02F6- 2173			        call    L00001
+   658						DCALL?L	_MCSMonitor
+     +	02F7- 30FC			        movlw   low (@@0033)
+     +	02F8- 00A0			        movwf   DEBUG_ADDRESS
+     +	02F9- 3002			        movlw   (@@0033) >> 8
+     +	02FA- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	02FB- 28F3			        goto    _MCSMonitor
+   659						PAUSE?C	032h
+     +	02FC- 3032			        movlw   low (032h)
+     +	02FD- 2086			        call    PAUSE
+   660					
+   661					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00065	high porta.4      
+   662						ICALL?L	L00001
+     +	02FE- 2173			        call    L00001
+   663						DCALL?L	_MCSMonitor
+     +	02FF- 3004			        movlw   low (@@0034)
+     +	0300- 00A0			        movwf   DEBUG_ADDRESS
+     +	0301- 3003			        movlw   (@@0034) >> 8
+     +	0302- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	0303- 28F3			        goto    _MCSMonitor
+   664						HIGH?T	_PORTA_4
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 29
+
+     +	0304- 1605			        bsf     PORTA, 004h
+     +	0305- 1683			        bsf     STATUS, RP0
+     +	0306- 1205			        bcf     ((PORTA) + 80h), 004h
+   665					
+   666					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00066	 goto devam
+   667						ICALL?L	L00001
+     +	0307- 1283			        bcf     STATUS, RP0
+     +	0308- 2173			        call    L00001
+   668						DCALL?L	_MCSMonitor
+     +	0309- 300E			        movlw   low (@@0035)
+     +	030A- 00A0			        movwf   DEBUG_ADDRESS
+     +	030B- 3003			        movlw   (@@0035) >> 8
+     +	030C- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	030D- 28F3			        goto    _MCSMonitor
+   669						GOTO?L	_DEVAM
+     +	030E- 2B42			        goto    _DEVAM
+   670					
+   671					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00068	motorstop:
+   672					
+   673						LABEL?L	_motorstop	
+     +					        LALL
+     +	030F-				_motorstop
+   674					
+   675					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00069	kumanda=0
+   676						ICALL?L	L00001
+     +	030F- 2173			        call    L00001
+   677						DCALL?L	_MCSMonitor
+     +	0310- 3015			        movlw   low (@@0036)
+     +	0311- 00A0			        movwf   DEBUG_ADDRESS
+     +	0312- 3003			        movlw   (@@0036) >> 8
+     +	0313- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	0314- 28F3			        goto    _MCSMonitor
+   678						MOVE?CT	000h, _KUMANDA
+     +	0315- 1047			        bcf     PB01, 000h
+   679					
+   680					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00070	saniye=0
+   681						ICALL?L	L00001
+     +	0316- 2173			        call    L00001
+   682						DCALL?L	_MCSMonitor
+     +	0317- 301C			        movlw   low (@@0037)
+     +	0318- 00A0			        movwf   DEBUG_ADDRESS
+     +	0319- 3003			        movlw   (@@0037) >> 8
+     +	031A- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	031B- 28F3			        goto    _MCSMonitor
+   683						MOVE?CB	000h, _SANIYE
+     +	031C- 01C8			        clrf    _SANIYE
+   684					
+   685					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00071	ucgenegec1=0
+   686						ICALL?L	L00001
+     +	031D- 2173			        call    L00001
+   687						DCALL?L	_MCSMonitor
+     +	031E- 3023			        movlw   low (@@0038)
+     +	031F- 00A0			        movwf   DEBUG_ADDRESS
+     +	0320- 3003			        movlw   (@@0038) >> 8
+     +	0321- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	0322- 28F3			        goto    _MCSMonitor
+   688						MOVE?CT	000h, _UCGENEGEC1
+     +	0323- 10C7			        bcf     PB01, 001h
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 30
+
+   689					
+   690					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00072	low porta.4:low porta.3:lo
+   691						ICALL?L	L00001
+     +	0324- 2173			        call    L00001
+   692						DCALL?L	_MCSMonitor
+     +	0325- 302A			        movlw   low (@@0039)
+     +	0326- 00A0			        movwf   DEBUG_ADDRESS
+     +	0327- 3003			        movlw   (@@0039) >> 8
+     +	0328- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	0329- 28F3			        goto    _MCSMonitor
+   693						LOW?T	_PORTA_4
+     +	032A- 1205			        bcf     PORTA, 004h
+     +	032B- 1683			        bsf     STATUS, RP0
+     +	032C- 1205			        bcf     ((PORTA) + 80h), 004h
+   694					
+   695					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00072	low porta.4:low porta.3:lo
+   696						ICALL?L	L00001
+     +	032D- 1283			        bcf     STATUS, RP0
+     +	032E- 2173			        call    L00001
+   697						DCALL?L	_MCSMonitor
+     +	032F- 3034			        movlw   low (@@0040)
+     +	0330- 00A0			        movwf   DEBUG_ADDRESS
+     +	0331- 3003			        movlw   (@@0040) >> 8
+     +	0332- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	0333- 28F3			        goto    _MCSMonitor
+   698						LOW?T	_PORTA_3
+     +	0334- 1185			        bcf     PORTA, 003h
+     +	0335- 1683			        bsf     STATUS, RP0
+     +	0336- 1185			        bcf     ((PORTA) + 80h), 003h
+   699					
+   700					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00072	low porta.4:low porta.3:lo
+   701						ICALL?L	L00001
+     +	0337- 1283			        bcf     STATUS, RP0
+     +	0338- 2173			        call    L00001
+   702						DCALL?L	_MCSMonitor
+     +	0339- 303E			        movlw   low (@@0041)
+     +	033A- 00A0			        movwf   DEBUG_ADDRESS
+     +	033B- 3003			        movlw   (@@0041) >> 8
+     +	033C- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	033D- 28F3			        goto    _MCSMonitor
+   703						LOW?T	_PORTA_2
+     +	033E- 1105			        bcf     PORTA, 002h
+     +	033F- 1683			        bsf     STATUS, RP0
+     +	0340- 1105			        bcf     ((PORTA) + 80h), 002h
+   704					
+   705					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00073	DEVAM:
+   706					
+   707						LABEL?L	_DEVAM	
+     +	0341- 1283			        bcf     STATUS, RP0
+     +					        LALL
+     +	0342-				_DEVAM
+   708					
+   709					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00075	GOTO anaprogram
+   710						ICALL?L	L00001
+     +	0342- 2173			        call    L00001
+   711						DCALL?L	_MCSMonitor
+     +	0343- 3048			        movlw   low (@@0042)
+     +	0344- 00A0			        movwf   DEBUG_ADDRESS
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 31
+
+     +	0345- 3003			        movlw   (@@0042) >> 8
+     +	0346- 00A1			        movwf   DEBUG_ADDRESS + 1
+     +	0347- 28F3			        goto    _MCSMonitor
+   712						GOTO?L	_anaprogram
+     +	0348- 29C6			        goto    _anaprogram
+   713					
+   714					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00080	DISABLE
+   715						DISABLE?	
+   716					
+   717					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00081	KESME:
+   718					
+   719						LABEL?L	_KESME	
+     +					        LALL
+     +	0349-				_KESME
+   720					
+   721					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00082	        SAYAC=SAYAC+1     
+   722						ADD?BCB	_SAYAC, 001h, _SAYAC
+     +	0349- 0AC9			        incf    _SAYAC, F
+   723					
+   724					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00083	         IF SAYAC=61 then 
+   725						CMPNE?BCL	_SAYAC, 03Dh, L00016
+     +	034A- 0064			        clrwdt
+     +	034B- 0849			        movf    _SAYAC, W
+     +	034C- 3C3D			        sublw   03Dh
+     +	034D- 1D03			        btfss   STATUS, Z
+     +	034E- 2B54			        goto    L00016
+   726					
+   727					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00084	            SAYAC=0       
+   728						MOVE?CB	000h, _SAYAC
+     +	034F- 01C9			        clrf    _SAYAC
+   729					
+   730					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00086	            if kumanda=1 t
+   731						CMPNE?TCL	_KUMANDA, 001h, L00018
+     +	0350- 0064			        clrwdt
+     +	0351- 1C47			        btfss   PB01, 000h
+     +	0352- 2B54			        goto    L00018
+   732						ADD?BCB	_SANIYE, 001h, _SANIYE
+     +	0353- 0AC8			        incf    _SANIYE, F
+   733						LABEL?L	L00018	
+     +					        LALL
+     +	0354-				L00018
+   734					
+   735					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00089	       ENDIF
+   736						LABEL?L	L00016	
+     +					        LALL
+     +	0354-				L00016
+   737					
+   738					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00090	        INTCON.2=0  'TMR0 
+   739						MOVE?CT	000h, _INTCON_2
+     +	0354- 110B			        bcf     INTCON, 002h
+   740					
+   741					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00091	         RESUME
+   742						RESUME?	
+     +	0355- 0009			        retfie
+   743					
+   744					; D:\ZELDOS~1\16F628~1\YILDIZ~1.PBP	00092	         ENABLE 
+   745						ENABLE?	
+   746					
+PM Assembler 4.07, Copyright (c) 1995, 2004 microEngineering Labs, Inc.					Page 32
+
+   747						END

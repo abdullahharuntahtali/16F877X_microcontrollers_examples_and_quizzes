@@ -1,0 +1,61 @@
+<html><head>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-2">
+<meta name="AUTHOR" content="Peter Jakab, http://jap.hu/">
+<meta name="KEYWORDS" content="LCD,Hitachi,44780,HD44780,lcd,lcd interface,serial"><title>Serial 3-wire interface for the PIC</title>
+
+<link rel="stylesheet" href="lcdif_files/subSilver.css" type="text/css"></head><body bgcolor="#e5e5e5" link="#006699" text="#000000" vlink="#5493b4">
+
+<h2><a href="http://jap.hu/electronic/"><img src="lcdif_files/ic0.gif" border="0" height="43" hspace="15" width="52"> Peter's electronic projects</a></h2>
+
+<h1>3-wire serial LCD interface for the PIC</h1>
+
+<p>version 2<br>
+based on the idea of Myke Predko</p>
+
+<h2><img src="lcdif_files/lcdif.jpg" align="top" height="509" width="600"></h2>
+
+<h2>description</h2>
+
+<p>If you are developing applications for the PIC, and miss the
+costly debugging tools, or can't afford a parallel LCD interface
+in your design, this serial interface can help printing debug
+messages and/or reduce the pin count. This version uses a Hitachi
+HD44780 compatible LCD module in 4-bit mode. The interface is
+based on the idea of Myke Predko. See <a href="http://www.rentron.com/Myke1.htm">this link</a> for more
+details.</p>
+
+<h2>software</h2>
+
+<p>My default PIC pins for the interface connection are RB4 (EN),
+RB5 (CK), RB6 (DA). I choose these pins due to PCB layout
+simplicity on the 18 pin devices. It is the task of your
+application to correctly initialize the TRIS bits of the used
+port pins!</p>
+
+<table border="1" cellpadding="3" cellspacing="0">
+    <tbody><tr>
+        <td>LCD library (001) source for the PIC16F84</td>
+        <td><a href="http://jap.hu/electronic/lcdlib.asm">lcdlib.asm</a></td>
+    </tr>
+    <tr>
+        <td>LCD library header file for linked projects</td>
+        <td><a href="http://jap.hu/electronic/lcdlib.inc">lcdlib.inc</a></td>
+    </tr>
+    <tr>
+        <td>example program</td>
+        <td><a href="http://jap.hu/electronic/lcdtest.asm">lcdtest.asm</a></td>
+    </tr>
+    <tr>
+        <td>HD44780 LCD controller datasheet</td>
+        <td><a href="http://jap.hu/electronic/hd44780.pdf">hd44780.pdf</a></td>
+    </tr>
+</tbody></table>
+
+<h2>schematic diagram</h2>
+
+<p><img src="lcdif_files/lcdif.gif" height="416" width="596"> <img src="lcdif_files/lcdif2.gif" height="286" width="261"></p>
+
+<br><br>
+</body></html>

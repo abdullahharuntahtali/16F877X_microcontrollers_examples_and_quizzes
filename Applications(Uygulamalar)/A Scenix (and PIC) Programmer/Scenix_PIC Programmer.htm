@@ -1,0 +1,301 @@
+<html><head><title>Scenix/PIC Programmer</title></head><body alink="#ff0000" bgcolor="#000040" text="#ffffff" vlink="#808080">
+
+<br>
+<center>
+<script type="text/javascript"><!--
+google_ad_client = "pub-4799432503948119";
+google_ad_width = 728;
+google_ad_height = 90;
+google_ad_format = "728x90_as";
+google_ad_type = "text";
+google_ad_channel = "";
+//--></script>
+<script type="text/javascript" src="Scenix_PIC%20Programmer_files/show_ads.js">
+</script><iframe name="google_ads_frame" src="Scenix_PIC%20Programmer_files/ads.htm" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" frameborder="0" height="90" scrolling="no" width="728"></iframe>
+</center>
+
+<font face="arial" size="2">
+<br><br>
+<font size="+2"><b><u></u></b><center><b><u>"Fluffy" - A Scenix (and PIC) Programmer</u></b></center></font>
+<br><br>
+<br><br>
+I was trying to think of a suitable name for this project, and after literally
+seconds of careful deliberation, I gave up and decided to call it <b><i>Fluffy</i></b>.
+Sorry.
+<br><br>
+Anyway, Fluffy is a SX programmer for people who have already experimented
+with PIC chips, and want to try out the Scenix SX family.
+I built Fluffy because I wanted to experiment with the SX's, but didn't
+want to spend $300 or so bucks on the official development system.
+To build it, you will need a PIC16F84 (a 16C84 will probably also work,
+but I don't have any to test!). Note that this implies you should already
+have a working PIC programmer. If you don't, you might want to check out
+<b>COM84</b>, or any of the multitude of free, cheap PIC programmers available
+on the web.
+<br><br>
+As usual, the standard disclaimers apply. I accept absolutely no
+responsibility for any damage caused by the use of this system. It seems to
+work just fine for me, but if it happens to blow up your chips, melt your
+computer or exterminate your family and friends, etc... etc... then don't come
+crying to me. Fluffy is completely free - please go ahead and use/distribute
+as you wish, provided that it's used only for noncommercial purposes, and the
+above disclaimer is also distributed with it.
+<br><br>
+<b>21st May 2001</b><br>
+<br>
+Steven Willis has been working on a new version of Fluffy, with improved
+serial port speed, and a number of bug fixes. Since I'm no longer actively
+maintaining this project, you may want to head over to
+<a href="http://www.semis.demon.co.uk/">his page</a> and get the latest
+code from there. Thanks also to Bonny Gijzen for adding Fluffy support
+to his excellent <a href="http://www.ic-prog.com/">IC-Prog</a> PC software.
+<br>
+<br><br>
+<b><u>Version Information</u></b><br>
+<i>fluffy</i> is currently undergoing a few changes, mainly brought about
+by Scenix's recent silicon revision. Therefore, there are currently a few
+different version available...
+<br><br>
+<b><a href="http://www.codepuppies.com/%7Eben/sens/pic/sx/0928fluf.zip">0928fluf.zip</a></b> - Sept 28th 1999
+<br>
+This is the latest code, which uses a completely rewritten <b>fluffy.exe</b>.
+The firmware code has also been upgraded to support the 16C6X class of PICs.
+The main things to be aware of with this
+version are that the <b>-test</b> option has been removed, as has the support
+for the <b>fluffy.ini</b> config file. Everything is now on the command line,
+and some of the command-line options have changed. The code has been changed
+in such a way as to make adding more chips easier. At present, support for
+SX (old and new revs), 16F84, 16C84, and 16C64 is included. In theory a much
+larger range of PICs <i>should</i> be supported, simply by adding the relevant
+lines in the <b>chips[]</b> array, but I just haven't had time.
+<br><b>STOP PRESS</b>I just received some samples of the new revision SX18/28's
+from Scenix. The really quick test that I just did suggests that the code is
+working. I've just added <b>simplel.sxh</b> to the ZIP file, which is the
+equivalent of <b>simple.sxh</b>, but for the new revision.
+<br><br>
+<font size="+2">DOH!</font> It seems some of you are experiencing problems
+with the new code, when using the parallel port interface. I've just tried
+to track down the problem, but my programmer doesn't seem to work with my
+new PC! (I haven't touched SX chips for quite a while). If you do
+experience this problem, can you please first try the older version of the
+code, and then let me know what works, and what doesn't. Thanks!
+<br><br>
+<b><a href="http://www.codepuppies.com/%7Eben/sens/pic/sx/0216fluf.zip">0216fluf.zip</a></b> - Feb 16th 1999
+<br>
+This is the <i>original</i>, much older code. It has a very different interface,
+and only supports the older SX revision. It does, however, have a semi-useful
+<b>-test</b> command-line option, which runs through some simple diagnostics,
+enabling you to hopefully verify that your programmer is built correctly.
+<br><br>
+I apologise for the somewhat disorganised nature of these releases, but
+I am <i>unfeasibly</i> busy at the moment, and thus unable to spend the
+time I'd like to on this...
+<br><br>
+The ZIPs contain the following files:
+<br><br>
+</font><center>
+<table border="1">
+<tbody><tr>
+<td width="200"><b>fluffy.exe</b></td><td>Main programmer software.</td>
+</tr>
+<tr>
+<td><b>fluffy.c</b></td><td>Source for FLUFFY.EXE</td>
+</tr>
+<tr>
+<td><b>fluffy.txt</b></td><td>Brief description of how to use fluffy</td>
+</tr>
+<tr>
+<td><b>sxprog.hex</b></td><td>PIC16F84 hex file</td>
+</tr>
+<tr>
+<td><b>sxprog.asm</b></td><td>Source for SXPROG.HEX</td>
+</tr>
+<tr>
+<td><b>simple.sxh</b></td><td>A simple test SX program that counts upwards on PORTB really fast.</td>
+</tr>
+</tbody></table>
+</center>
+<font face="arial" size="2"><br><br>
+Anyway, here's the schematic - I hope I've drawn everything right. Basically
+A0 and A1 control the SX OSC1 voltage level - both low implies 0V, A0 high
+(and A1 low) implies 5V, and A1 high (and A0 low) gives 12.5Vish. If
+you want to implement your own power supply circuit, it shouldn't be too hard.
+<br><br>
+</font><center><font face="arial" size="2"><img src="Scenix_PIC%20Programmer_files/power.gif"></font></center>
+<font face="arial" size="2"><br><br>
+<u><b>2nd Sep 2000</b></u><br>
+Just a quick update - "Ling SM" has sent me a few pictures of a nice
+portable implementation of Fluffy. As you can see, there are some spare
+components available - email
+<a href="mailto:decoder@bigfoot.com">decoder@bigfoot.com</a> for details.
+</font><center>
+<font face="arial" size="2"><br><img src="Scenix_PIC%20Programmer_files/fback.jpg">
+<br><img src="Scenix_PIC%20Programmer_files/ffront.jpg">
+<br><img src="Scenix_PIC%20Programmer_files/fluffy200lx.jpg">
+</font></center>
+<font face="arial" size="2"><br><br>
+<u><b>2nd Mar 1999</b></u><br>
+A number of people have written to me, offering to write a W95/NT version
+of the PC software. Since it's unlikely that I'll have time to do this
+myself, anyone who wants to is more than welcome! I realise that <b>fluffy.c</b>
+and <b>sxprog.asm</b>, although commented in places, aren't necessarily the
+most legible or intuitive pieces of code in the world. So, in the spirit of
+open protocols, (and in a thinly disguised attempt to get other people to
+do this stuff for me), my attempt at documenting Fluffy's protocol is
+<a href="http://www.codepuppies.com/%7Eben/sens/pic/sx/protocol.zip">here</a>, in MS Word format.
+<br><br>
+<u><b>1st Mar 1999</b></u><br>
+Just a quick note - there has been some discussion of late regarding
+SX chips' propensity for suddenly deciding to draw a large amount of
+current, in some cases resulting in a hot, unpleasant smelling chip death.
+This appears to be a problem with SX chips in general - people using
+programmers other than Fluffy have experienced it, as have I. One suggested
+safeguard is to put a 100 ohm resistor between the programmer's OSC1 output, and the
+SX's OSC1 pin. I haven't cooked a chip for a while, but hey, best to be safe.
+<br><br>
+<u><b>23rd Feb 1999</b></u><br>
+Apparently not all diodes are created equal, and a 1N914 or 1N4148 is more
+suitable for the voltage adjustment on the 7812 (Thanks Al). Schematic updated
+accordingly.
+<br><br>
+<u><b>16th Feb 1999</b></u><br>
+Got rid of <b>sxtest1.exe</b> and <b>sxtest2.exe</b>. They have been replaced
+by a <b>-test</b> command line option in <b>fluffy.exe</b>. This enables both
+serial and parallel port programmers to be tested using the same software that
+you actually use for programming. Much more sensible.
+<br><br>
+<u><b>15th Feb 1999</b></u><br>
+Okay... the schematic now contains the serial interface modifications, and
+the zip file has been updated. Simply specify <b>-com1</b>, <b>-com2</b>, etc...
+to specify a serial port to be used. If you don't specify a serial port, the
+parallel port will be used by default. Note that if you want to build a
+programmer that can attach to either port, you'll need to use jumper <b>J1</b>.
+This is simply to stop the MAX232 driving the A2 line when using the parallel
+interface. The serial communications run at 38400 baud, and all handshaking
+is done in software. Also, <b>sxtest1.zip</b> and <b>sxtest2.zip</b> are
+for the parallel port interface only... haven't got around to updating them.
+A word of warning - the serial stuff is fairly untested... it seems to work
+for me, (although I did fry a few SX chips, seemingly due to a dodgy programming
+voltage level on my new board - SX's seem to be much less robust than PICs) -
+so use it at your own risk!!!
+<br><br>
+<u><b>14th Feb 1999</b></u><br>
+I haven't updated this page for a couple of weeks, because I've been
+a bit busy with <a href="http://www.left.com/">my real job</a>.
+The serial interface seems to be working fine, but I haven't put it into the
+full circuit yet. As I type, a new PCB is etching away slowly, and if this
+board works, I'll post the schematic/software mods over the next day or two.
+The only extra components are a MAX232 (plus 4 caps), a jumper and a
+pullup resistor on MCLR. The jumper is only required if you want to be
+able to use the programmer with both parallel <i>and</i> serial interfaces.
+The same software is used on both the 16F84 and the PC, regardless of interface.
+<br><br>
+<u><b>1st Feb 1999</b></u><br>
+Oops! Apologies... fixed a small bug in the PC software, that didn't raise the
+MCLR line to 5V after programming PICs. <b>allnew.zip</b> has been updated
+accordingly. I've also re-ordered things a little bit. Also, for the sake of
+completeness, here's a picture of my implementation of Fluffy...<br><br>
+</font><center><font face="arial" size="2"><a href="http://www.codepuppies.com/%7Eben/sens/pic/sx/myfluffy.jpg"><img src="Scenix_PIC%20Programmer_files/myfluffyth.jpg"></a>.
+</font></center><font face="arial" size="2"><br>
+Yes, I know it's just a black box, but I'm not going to show the insides,
+otherwise people will make fun of my complete lack of electrical expertise!
+(As I've repeatedly stated, I'm a programmer, not an engineer!!!). I've
+probably ignored all the important rules about ground planes, heatsinks,
+blobs of solder everywhere, blah blah blah... All I know is it seems to
+work, so I'm happy.
+<br><br>
+<u><b>30th Jan 1999</b></u><br>
+Got the programmer to successfully program a 16F84. There is an updated
+<b>fluffy.exe</b> in the all new <a href="http://www.codepuppies.com/%7Eben/sens/pic/sx/allnew.zip">allnew.zip</a>. This
+is a direct replacement for the older version of <b>all.zip</b> - it
+contains updated PC and PIC code. Note that the schematic now also shows
+the alternate connections to the target PIC. Don't forget to check
+<b>fluffy.txt</b> for the new PIC-related syntax. Now, since I don't have
+any PICs other than 16F84's, I have no idea if it'll work on other PICs.
+Your mileage may well vary. I'm currently also considering adding RS232
+support to the programmer. This will probably entail a few extra components,
+but should allow the programmer to be truly platform independant. Which is
+nice.
+<br><br>
+<u><b>28th Jan 1999</b></u><br>
+I've been a bit busy doing real-work-related things over the past week, and
+consequently haven't had as much time as I'd have liked to work on Fluffy.
+However, I've started modifying the 16F84 code, to allow PIC programming as
+well. It's looking good so far, and the only modification to the circuit is
+the addition of a 4.7K pullup on A4. (The astute observers among you will
+have noticed its sudden appearance on the schematic). Once I've made the
+necessary mods to the PC software, I'll post the lot.
+<br><br>
+<u><b>23rd Jan 1999</b></u><br>
+The assembler, <b>flufasm</b> is <a href="http://www.codepuppies.com/%7Eben/sens/pic/sx/flufasm.zip">here</a>. It's probably
+still full of bugs, and it doesn't do macros, but hey. It uses a Microchip-style
+syntax, not Scenix. I'm including <b>demo.asm</b>, which is a <i>really</i>
+annoying demo program. Attach a piezo speaker to B0, and you'll see what I
+mean. Anyway, <b>demo.asm</b> should give you an idea of the syntax. Please
+don't write to me telling me about ways to improve the assembler - I'm going
+to do a full rewrite at some stage anyway. It's built as an NT executable, so
+you'll have to run it from the command line under NT or 95. Also, make sure
+<b>inst.dat</b> is either in the current directory, or the same directory as the
+executable.
+<br><br>
+<u><b>20th Jan 1999</b></u><br>
+Doh! My laptop broke, so I've sent it back to be repaired. Sadly, I forgot
+to grab the assembler code off it. I have a backup, but it's at work, and
+I'm at home with the flu! No asm today, folks.<br>
+Thanks to Luis Correia
+(<a href="mailto:lfcorreia@hotmail.com">lfcorreia@hotmail.com</a>),
+there are some pictures of his implementation of Fluffy.
+Luis has offered to produce a Protel circuit/PCB, so keep checking this page!
+Click a thumbnail for a bigger image.
+<br>
+</font><center>
+<font face="arial" size="2"><a href="http://www.codepuppies.com/%7Eben/sens/pic/sx/image1.jpg"><img src="Scenix_PIC%20Programmer_files/imth1.jpg"></a>
+<a href="http://www.codepuppies.com/%7Eben/sens/pic/sx/image2.jpg"><img src="Scenix_PIC%20Programmer_files/imth2.jpg"></a>
+<a href="http://www.codepuppies.com/%7Eben/sens/pic/sx/image3.jpg"><img src="Scenix_PIC%20Programmer_files/imth3.jpg"></a>
+</font></center>
+<font face="arial" size="2"><br><br>
+<u><b>19th Jan 1999</b></u><br>
+Fixed minor stupid bug in the programmer software, that required a fuse
+configuration to be specified, even when reading the chip. Duh.
+The assembler, <b>flufasm</b> is kind of working, and hopefully I should
+be able to post something soon.
+<br><br>
+<u><b>18th Jan 1999</b></u><br>
+<b>fluffy.c</b> had a minor update to allow it to accept fuse configurations
+from a <b>fluffy.ini</b> file and the command line. This means that any
+assembler capable of producing Intel Hex format files can be used with the
+system. I've also added <b>fluffy.txt</b> which explains things in a little
+more detail. In a surprising fit of activity, I've also started writing an
+assembler for the SX chips. Whether it'll ever get finished or not is anybody's
+guess. Watch this space...
+<br><br>
+<u><b>17th Jan 1999</b></u><br>
+I've been messing with the PC code, and I think it's stable enough to be
+released. I haven't tested it <i>that</i> extensively, but it's looking good
+so far. The only input format it supports at present is <a href="http://www.parallaxinc.com/">
+Parallax Inc's</a> <b>.SXH</b> format, which is actually just Intel Hex format
+with the FUSE and FUSEX words mapped at 0x1010 and 0x1011.
+<br><br>
+</font><center>
+<font face="arial" size="2"><a href="http://www.codepuppies.com/%7Eben/sens/pic/index.htm">Back to the PIC Projects page</a>
+</font></center>
+<font face="arial" size="2"><br>
+<!-- SZmaster WebRing HTMLfragment -->
+
+</font><p><font face="arial" size="2"> 
+</font></p><center><font face="arial" size="2"><a href="http://www.webring.org/cgi-bin/webring?ring=sxmaster;home" target="_top"><img src="Scenix_PIC%20Programmer_files/sxring.gif" border="0" height="80" width="200"></a></font></center>
+
+<center><font face="arial" size="2"><b><font size="-1">[<a href="http://www.webring.org/cgi-bin/webring?ring=sxmaster;id=4;sprev" target="_top">Skip
+Prev</a>] [<a href="http://www.webring.org/cgi-bin/webring?ring=sxmaster;id=4;prev" target="_top">Prev</a>]
+[<a href="http://www.webring.org/cgi-bin/webring?ring=sxmaster;id=4;next" target="_top">Next</a>]
+[<a href="http://www.webring.org/cgi-bin/webring?ring=sxmaster;id=4;skip" target="_top">Skip
+Next</a>]</font></b></font></center>
+
+<center><font face="arial" size="2"><b><font size="-1">[<a href="http://www.webring.org/cgi-bin/webring?ring=sxmaster;random" target="_top">Random</a>]
+[<a href="http://www.webring.org/cgi-bin/webring?ring=sxmaster;list" target="_top">List
+Sites</a>] [<a href="http://www.webring.org/cgi-bin/webring?ring=sxmaster;home" target="_top">Join
+Ring</a>]</font></b> <b> </b> </font></center>
+<p>
+
+
+</p></body></html>

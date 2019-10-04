@@ -1,0 +1,776 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (X11; I; Linux 2.0.32 i586) [Netscape]">
+   <TITLE>nBot, a two wheel balancing robot</TITLE>
+<!--<meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1">-->
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<HR WIDTH="100%">
+<CENTER><FONT COLOR="#008000"><FONT SIZE=+4>nBot Balancing Robot</FONT></FONT></CENTER>
+
+<CENTER>
+<A HREF="http://www.geology.smu.edu/~dpa-www/dpa.html">David P. Anderson</A></CENTER>
+&nbsp;
+<HR WIDTH="100%">
+<CENTER></CENTER>
+
+<BR><BR>
+<CENTER>
+<A HREF="nbot_3.html">
+<IMG SRC="../balance/b08_x.jpg" ALT="b08.jpg" HSPACE=10 ></A>
+<BR>
+</CENTER>
+<BR><BR>
+<BR>
+
+I've been working on a two-wheeled balancing robot, 
+<A HREF="nbot_4.html">
+<B>nBot</B></a>
+.  
+<BR><BR>
+This robot was featured as <B>NASA</B>'s
+<A HREF="http://ranier.hq.nasa.gov/telerobotics_page/coolrobots.html">Cool Robot of the Week</A> for 19 May 2003.
+Thereafter Scientific American's online website,
+<A HREF="http://www.sciam.com/article.cfm?articleID=000BB085-599A-1ECA-8E1C809EC588EF21">
+SCI/Tech Web Awards</a>, honored the NASA page as one of the top 10 engineering and technical web sites for 2003,
+referencing nBot in its text.  nBot is also featured in a new O'Reilly book spun off from Make Magazine in 2006,
+called 
+<I><A HREF="http://www.oreilly.com/catalog/makers">The Makers</a></I>.
+
+<BR> 
+<BR>
+The basic idea for a two-wheeled dynamically balancing robot is
+pretty simple: drive the wheels in the direction that the 
+upper part of the robot is falling.  If the wheels can be driven in such a way as to
+stay under the robot's center of gravity, the robot remains balanced.  In practice
+this requires two feedback sensors: a tilt or angle sensor to measure the
+tilt of the robot with respect to gravity, and wheel encoders to measure the position
+of the base of the robot.  Four terms are sufficient to define the motion and
+position of this "inverted pendulum"  and thereby balance the robot.  These are 1) the
+tilt angle and 2) its first
+derivative, the angle velocity, and 3) the platform position and 4) its first derivative,
+ the platform velocity.  These four measurements are summed and fed back to the
+platform as a motor voltage, which is
+proportional to torque, to balance and drive the robot.  
+<A HREF="bal2.txt">Here is a diagram </a>
+of the algoithm with some code and implementation notes.
+<BR CLEAR=LEFT><BR>
+
+<A HREF="../trux/index.html"> 
+<IMG SRC="../trux/n04xx.jpg" ALIGN=LEFT HSPACE=10></A>
+
+The robot hardware was built in my home machine shop.  Here as some
+<A HREF="../trux/index.html">exploded
+views</A> of the motor platform and drive components, as well as the
+castering tailwheel, now removed, which was used for testing
+and calibrating the motors and encoders before <b>nBot</b> was able to balance on two wheels.  
+The robot uses the
+<A HREF="../Encoder/pitt_html/Image14.jpg">
+HC11 robot controller </A> developed for the 
+<A HREF="http://fredm.www.media.mit.edu/people/fredm/projects/6270/">
+M.I.T. 6.270 Robotics Course</a>, the
+same robot controller
+used on the
+<A HREF="../lego/">
+LegoBot</A>
+and
+<A HREF="../../robots/sr04/">
+SR04</a>.
+
+
+<BR CLEAR=LEFT><BR>
+
+<BR><p>
+<A HREF="polebot.mpg"><IMG SRC="pendulum.jpg" HSPACE=10 ALIGN=LEFT></A>
+
+<B>Rev 1.</B>  This began as an experiment to learn to control an <A HREF="me_and_pole.jpg">inverted pendulum</A>.
+I began with a <A HREF="b01.jpg">three wheeled robot</A> 
+with a <A HREF="b04.jpg">ball-bearing pivot</A> used to
+attach a 3 foot wooden pole topped with an orange Nerf Ball.  The pivot has a low-friction 5k potentiometer
+used for measuring the tilt angle of the pole.  I moved the 
+<A HREF="b05.jpg">battery pack over the rear wheel</A> to give
+more stability.  Here is an <A HREF="balance3.mpg">mpeg movie (10 Meg)</A> 
+of the robot balancing the pole in my office.  
+<A HREF="polebot.mpg">Here (3.3 Meg)</A> is a shorter version, and
+<A HREF="balance5.mpg">here (3.7)</A> is another.
+<BR><BR>
+
+<A HREF="01-00000.jpg">
+<IMG SRC="01-00000_xx.jpg" VSPACE=10 HSPACE=20></A>
+
+<A HREF="02-00000.jpg">
+<IMG SRC="02-00000_xx.jpg" VSPACE=10 HSPACE=20></A><BR><BR>
+
+<B> Rev 2.</B> After learning to balance the pole, the robot was re-built as a
+<A HREF="01-00000.jpg">two-wheel</A> version, with the
+battery mounted directly above the wheels.  The ball-bearing  pivot was attached to the 
+bottom of the robot with
+a <A HREF="02-00000.jpg">short aluminium feeler</A> touching the floor.  In this way the robot can sense it's angle to the
+floor and, assuming the floor is level, to gravity as well.  The aluminium feeler has a teflon pad
+on the end to help it ride over cracks and joints in the floor.
+<BR CLEAR=LEFT><BR>
+<BR>
+
+
+<A HREF="b02.jpg">
+<IMG SRC="b02_xx.jpg" ALIGN=LEFT HSPACE=20></A>
+
+<B>Rev 3.</B> 
+For the third version a third deck was added and the batteries moved to the
+<A HREF="b02.jpg">top deck</A>. This allows
+the robot to generate more torque without having to tilt over as far.
+The <A HREF="../balance/b08.jpg">side view</A> of the
+platform shows the battery and user interface on the top deck, the microcontroller and
+h-bridge on the middle deck, and the motors and axles on the lowest deck.
+<BR CLEAR=LEFT> <BR>
+
+<A HREF="../balance/b10.jpg">
+<IMG SRC="../balance/b10_xx.jpg" ALIGN=LEFT HSPACE=20></A>
+
+The ball-bearing pivot and angle sensor were replaced by a piezo-electric gyroscope and
+ADXL202 accelerometer mounted just above the motor deck.  Those sensors were eventually
+replaced by a commerical inclinometer, the 
+<A HREF="http://www.microstrain.com/FAS-G.htm">FAS-G</A> from MicroStrain, also consisting
+of an ADXL202 accelerometer and a rate gyro, similar to the boards and kits available from
+<A Href="http://rotomotion.com">rotomotion</a>.  This
+<A HREF="../balance/b10.jpg">rear view</A> shows the
+complete stack.  
+<BR CLEAR=LEFT> <BR><BR>
+
+<A HREF="nbot2/nb12.jpg">
+<IMG SRC="nbot2/nb12x.jpg" ALIGN=LEFT HSPACE=10 ></A>
+
+<B>Rev 4.</B>
+New base and motors for nBot, using the
+<A HREF="../Encoder/pitt_html/encoders.html">
+Pittman GM8712 DC gearhead motors</a> with home-brew shaft encoders.  These are
+powered by 18 NiMH 1800 mAh rechargeable AA cells, at about 24 volts.  They have a lot
+more torque at very low rpm than the previous 12 volt motors, as well as higher maximum
+rpm.  The result is that the robot is more stable and can respond more quickly.
+<BR><BR>
+
+<A HREF="rev4.html">
+<IMG SRC="nbot2/nb13xx.jpg" ALIGN=LEFT HSPACE=10 ></A>
+
+Additional detail pictures of the Rev4 modifications are 
+<A HREF="rev4.html"> available here</a>.
+
+<BR CLEAR=LEFT><BR>
+<BR CLEAR=LEFT><BR>
+
+
+<BR>
+<HR WIDTH="100%">
+<BR>
+
+<B> Balancing.</B> <BR><BR>
+
+The gyroscope and accelerometer are combined with 
+<A HREF="../balance/inertial.pdf">complementary filters</A>
+to provide an inertial reference sensor.  The ADXL202 accelerometer provides accurate static
+tilt information, when the robot is not accelerating.  The gyroscope can be integrated to
+provide accurate dynamic tilt information, but the integration tends to 
+<A HREF="../balance/log122.plot00.gif">drift over time</A>.
+
+
+
+Combining the two sensors provides a robust inertial measurement.  The 
+<A HREF="http://www.microstrain.com/FAS-G.htm">FAS-G</A> IMU implements 
+a "Weiner" filter to combine the two sensors into a single measurement.  The
+<A HREF="http://autopilot.sourceforge.net/">sourceforge autopilot project.</A> and the boards available from
+<A HREF="http://rotomotion.com/">rotomotion.com</A> use a "Kalman" filter. Some really good information on
+inertial measurement units is available from the 
+<A HREF="http://autopilot.sourceforge.net/">
+sourceforge autopilot project</a>.
+
+<BR><BR>
+<A HREF="nbot2/nbot2_push.mpg"> 
+<IMG SRC="nbot2/nbot_shovex.jpg" ALIGN=LEFT HSPACE=20></a>
+
+Here is a video
+ of the robot balancing. 
+<A HREF="nbot2/nbot2_push.mpg"> 
+(2.2M .mpg)</A>,
+<A HREF="nbot2/nbot2_push.wmv">(2.3M .wmv)</a>,
+<A HREF="nbot2/nbot2_push.rm">(1.4M .rm)</a>
+ It shows nBot being shoved 
+and regaining its balance, and being pushed off center and resisting.    
+
+<BR>
+<BR>
+<B> Steering.</B> 
+  If a constant offset voltage is added to one wheel and subtracted from the other wheel,
+the robot balance is not altered.  
+In this way the robot can be steered while maintaining its balance.  <BR><BR>
+
+<A HREF="nbot_spin_big.mpg">
+<IMG SRC="nbot_spin_xx.jpg" Align=LEFT HSPACE=20></A>
+
+Here is a video  
+<A HREF="nbot_spin_big.mpg">(2.1M .mpg)</A>,
+<A HREF="nbot_spin.wmv">(1M .wmv)</a>,
+<A HREF="nbot_spin.rm">(280K .rm)</a>.
+of the robot spinning in place while balancing. 
+ I'm using a knob on the robot to add a voltage offset to
+one motor and subtract it from the other. <BR><BR>
+<BR CLEAR=LEFT>
+<BR CLEAR=LEFT> 
+
+
+<BR>
+<HR WIDTH="100%">
+<BR>
+
+<B>Driving. </B><BR><BR>
+
+If a small offset is added to the tilt angle the robot must remain in motion to stay balanced.
+This combined with a voltage offset added to one wheel and subtracted from the other will cause
+the robot to drive in a circle.  
+<BR><BR>
+<A HREF="nbot_circle.mpg">
+<IMG SRC="nbot002xx.jpg" Align=LEFT WIDTH=120 HEIGHT=80 HSPACE=10></A>
+<A HREF="nbot_circle.mpg">This dark mpeg (2.9 Meg)</A> shows the robot circling smoothly on a tile floor,
+until it runs into my foot.  Because of the PWM wheel offsets, it pivots away from the collsion
+and continues; sort of a built in "bumper" behavior without an actual physical bumper.  (It's
+really too dark to see what's going on.  I'll try to make a better one soon.) <BR><BR>
+<BR CLEAR=LEFT><BR>
+
+<A HREF="nbot2/nbot2_circle_lowres2.mpg">
+<IMG SRC="nbot2/nbot2_007xx.jpg" WIDTH=200 HEIGHT=140 HSPACE=10 ALIGN=LEFT ></A>
+
+Here's a better video
+<A HREF="nbot2/nbot2_circle_lowres2.mpg">(5.2M .mpg)</a>,
+<A HREF="nbot2/nbot2_circle_lowres.wmv">(2.7M .wmv)</a>,
+<A HREF="nbot2/nbot2_circle.rm">(1.2M .rm)</a>,
+of the robot circling smoothly and bouncing off my leg, the walls and
+the furniture. 
+
+<BR><BR>
+
+
+<A HREF="nbot_gravel_1.mpg">
+<IMG SRC="nbot_gravelxx.jpg" Align=LEFT WIDTH=120 HEIGHT=80  HSPACE=10></A>
+<A HREF="nbot_gravel_1.mpg">nbot on gravel (1.3 Meg) </A> shows the robot circling on a gravel driverway.
+You can see the platform rock fore and aft as it tries to get enough torque to climb over rocks and maintain
+its balance on the uneven surface.
+
+<BR CLEAR=LEFT><BR>
+<BR CLEAR=LEFT>
+
+<BR>
+<HR WIDTH="100%">
+<BR>
+
+<B>Navigating </b><BR><BR>
+Like my
+<A HREF="http://www.geology.smu.edu/~dpa-www/myrobots.html">
+other robots </a> (except the
+<A HREF="http://www.geology.smu.edu/~dpa-www/robo/camcar/index.html">
+camera car</a>), this is an autonomous robot.  That is, it is not radio
+controlled by a human and there is no R/C link.  Instead it has an onboard computer
+<A HREF="http://fredm.www.media.mit.edu/people/fredm/projects/6270/">
+(MIT 6.270)</A> that makes all of
+its behavior decisions, in addition to balancing the robot.  <BR><BR>
+In the following mpeg videos,
+the robot is running a simple navigation
+program that uses <A HREF="../../robots/doc/odometry.txt">wheel odometry </A>
+to go forward 24 feet (or some arbitrary distance) and turn around and come back, looping endlessly. 
+<BR><BR>
+
+<A HREF="nbot2/nbot3_24ft.mpg">
+<IMG SRC="nbot_parking_big.jpg" ALIGN=LEFT HSPACE=10></A>
+Here is a video 
+<A HREF="nbot2/nbot3_24ft.mpg">(5.0M .mpg)</A>,
+<A HREF="nbot2/nbot3_24ft.wmv">(2.5M .wmv)</A>,
+<A HREF="nbot2/nbot3_24ft.rm">(1.1M .rm)</A>,
+of the robot running that program in a parking lot. <BR> <BR>
+Most of the following videos are of the robot running this odometry program in different environments,
+indoors and outdoors, etc.
+<BR><BR>
+<A HREF="mpeg2/driveway_cicada_2.mpg">
+<IMG SRC="mpeg2/driveway_cicada_xx.jpg" ALIGN=LEFT HSPACE=10></A>
+Here is a video 
+<A HREF="mpeg2/driveway_cicada_2.mpg">(7.8M .mpg)</A>, 
+<A HREF="mpeg2/driveway_cicada_1.wmv">(3.4M .wmv)</a>,
+<A HREF="mpeg2/driveway_cicada.rm">(1.4M .rm)</a>,
+ of the robot running the same program
+on an inclined driveway.  Note the "pirouette" required to keep its balance while turning around
+on the incline.  The cicadas singing in nearby trees provide the soundtrack for a hot Texas
+afternoon.  <BR>
+
+<BR CLEAR=LEFT><BR>
+<BR CLEAR=LEFT><BR>
+<BR>
+<A HREF="nbot_outdoor_big.mpg">
+<IMG SRC="outdoors.jpg" HSPACE=10 ALIGN=LEFT></A>
+
+For outdoors perfomance in general, the robot's balance seems to be unaffected by uneven and irregular
+surfaces, as this
+<A HREF="nbot_outdoor_big.mpg">outdoor mpeg (2.7 Meg)</A>
+demonstrates.  
+
+<A name="Ilse_DuBois"></a>
+
+<BR><BR>
+<A HREF="ilse_dubois_lowres3.mpg">
+<IMG SRC="ilse_dubois_cpk2_xx.jpg" HSPACE=10 ALIGN=LEFT></A>
+Here
+ is the Rev4 robot running 
+on uneven and rocky ground at Ilse DuBois State Park:
+<A HREF="ilse_dubois_lowres3.mpg">(4.4M .mpg)</a>,
+<A HREF="ilse_dubois.wmv">(2.3M .wmv)</a>,
+<A HREF="ilse_dubois.rm">(1.0M .rm)</a>
+
+<BR CLEAR=LEFT> <BR>
+<BR CLEAR=LEFT> <BR>
+
+<BR><BR>
+
+I think the two-wheel balancing robot will turn out to be <A HREF="advantages.html">more stable</A> than my other three-wheeled robots.
+Here is an <A HREF="nbot_ramp1.mpg">mpeg movie </A>
+(3.3 Meg) of the balancing robot going up and down a loading ramp.  Notice how it leans
+backward as it goes down the ramp, and forward is it goes back up.  
+<BR> <BR>
+
+Notice also that it takes several trys to overcome the bump at the start
+of the ramp.  The robot initially bounces away, leaning further forward to get enough
+torque to climb over the bump and start up the ramp.   
+
+<A HREF="nbot_ramp1.mpg">
+<IMG SRC="ramp1ax.jpg" HSPACE=10 VSPACE=10 ALIGN=LEFT></A>
+
+At the top of the ramp the robot
+touches the left wall.  At this stage in development it has no sensors to detect collisions.
+The balance algorithm bounces it along the wall until it is finally free at the corner. In
+its final version it will have sensors and behaviors to avoid running into things, but note
+that the robot does not lose its balance and fall over when it does collide.
+<BR><BR>
+
+
+<A HREF="nbot2/nbot3_ramp2.mpg"> 
+<IMG SRC="nbot2/nbot3_rampxx.jpg" ALIGN=LEFT HSPACE=10 ></A>
+<A HREF="nbot2/nbot3_ramp2.mpg"> 
+Here is a video (5.2 Meg)</a> that shows what happens when you try to run down-hill too fast without
+wearing your helmet. In order to slow down the robot must first speed up, to get the wheels
+underneath and eventually out ahead of the center of gravity.  If the robot is going too fast, it
+is unable to speed up, and hence unable to slow down.  Also includes some successful attempts. 
+
+<BR CLEAR=LEFT>
+<BR CLEAR=LEFT>
+<BR><BR>
+
+So I started the robot at the bottom of the ramp further away from the wall, hoping that
+the odometery errors would be small enough that the 'bot could made several runs up and
+down.  Instead, it climbed the ramp smoothly and then 
+<A HREF="nbot_ramp2_big.mpg">fell off the side (2.8 Meg mpeg)</A>
+coming back down.  Ouch!  Time to think about installing those sensors...
+<BR><BR>
+
+
+<HR WIDTH="100%">
+<BR>
+<B>Adventuring</B><BR><BR>
+
+
+<BR>
+<A HREF="hill_bounce_cpk2.mpg">
+<IMG SRC="hill_bouncexx.jpg" HSPACE=10 ALIGN=LEFT></A>
+Update Rev 4:  The two-wheel robot is indeed able to handle much more agressive slopes than my other robots.
+ Here
+<A HREF="hill_bounce_cpk2.mpg">(3.6 Mb mpeg)</a> ,
+<A HREF="hill_bounce.wmv">(800K .wmv)</a> ,
+<A HREF="hill_bounce.rm">(400K .rm)</a> ,
+is the Rev 4 robot descending a very steep uneven grassy slope on
+the campus of UNT.  Note the bounce and recovery as it hits the concrete at the bottom. 
+<A HREF="hill_loop_cpk.mpg">Here (3.2 Mb mpeg)</a> is another, with a more graceful dismount.
+<A HREF="hill_tumble_cpk.mpg">This one (2.7 Mb mpeg)</a> got going too fast and took a tumble.  
+<BR CLEAR=LEFT> <BR>
+
+
+<BR>
+<A HREF="nbot2/first_step5.mpg">
+<IMG SRC="nbot2/first_step2_xx.jpg" HSPACE=10 ALIGN=LEFT ></A>
+<b>nBot's first step</b>.  I think it's possible that the two-wheel balancing robot may eventually
+be able to descend stairs, even if it can never go up them.  
+<A HREF="nbot2/first_step5.mpg">Here (1.5 Meg) </a> is nBot successfully negotiating a step.  One
+small step for a robot, one giant leap...
+<A HREF="nbot2/first_step2.mpg">Here (1.6 Meg) </a> is another attempt.
+
+<BR><BR>
+
+<A HREF="mpeg2/steps_cpk.mpg">
+<IMG SRC="mpeg2/steps_cpk_xx.jpg" HSPACE=10 WIDTH=90 HEIGHT=60 ALIGN=LEFT></A>
+<A HREF="mpeg2/steps_cpk.mpg">Here is an mpeg (5.3 M)</A> of the robot obliquely descending a set of
+canted stairs.  Leaning left and right does not affect the robot's balance, unless the tilt angle is great
+enough for the center of gravity to be outside of the base.  Watch that last step! 
+
+<CLEAR=LEFT> <BR><BR>
+<CLEAR=LEFT> <BR><BR>
+
+<A HREF="mpeg2/path_cpk.mpg">
+<IMG SRC="mpeg2/path_xx.jpg" HSPACE=10 ALIGN=LEFT></A>
+Here is a video 
+<A HREF="mpeg2/path_cpk.mpg">(5.9M .mpg)</a>,
+<A HREF="mpeg2/path.wmv">(3.0M .wmv)</a>,
+<A HREF="mpeg2/path.rm">(1.2M .rm)</a>,
+ of the robot set to go in a straight line
+cross country, traversing the campus of UNT and more-or-less following a footpath.
+
+<BR><BR>
+
+<A HREF="mpeg2/courtyard1_cpk.mpg">
+<IMG SRC="mpeg2/courtyard1_cpk_xx.jpg" HSPACE=10 WIDTH=90 HEIGHT=60 ALIGN=LEFT></A>
+<A HREF="mpeg2/courtyard1_cpk.mpg">This mpeg (5.3 M)</a> is of the robot doing a 24 foot looping 
+pattern in a sloping couryard over a drain and some broken concrete.
+
+<CLEAR=LEFT><BR><BR> 
+<CLEAR=LEFT> <BR><BR><BR>
+
+<A HREF="ptar/ptar_01.mpg">
+<IMG SRC="ptar/ptar01axx.jpg" HSPACE=10 ALIGN=LEFT><B>Rocky Mountains:</B></A> Here is video
+<A HREF="ptar/ptar_01.mpg">(7.6M .mpg)</a> 
+<A HREF="ptar/ptar_01.wmv">(3.6M .wmv)</a> 
+<A HREF="ptar/ptar_01.rm">(2.1M .rm)</a> 
+of the robot navigating down a steep 4wheel drive access road in Ptarmigan Meadows in the
+Colorado Rocky Mountains.
+
+<BR><BR>
+<A HREF="ptar/ptar_02.mpg">
+<IMG SRC="ptar/ptar02xxx.jpg" HSPACE=10 ALIGN=LEFT></A> Here is another video
+<A HREF="ptar/ptar_02.mpg">(2.4M .mpg)</a> 
+of the same descent from another angle which may give a better sense of the steepness of the slope.
+
+
+<BR CLEAR=LEFT> <BR>
+<BR CLEAR=LEFT> <BR>
+
+
+<A HREF="ptar/ptar_04.mpg">
+<IMG SRC="ptar/ptar03xx.jpg" HSPACE=10 ALIGN=LEFT> <b>Limit of the Envelope!</B></A>. <BR><BR>
+Here is a video
+<A HREF="ptar/ptar_04.mpg">(1.4M .mpg)</a> 
+<A HREF="ptar/ptar_04.wmv">(730K .wmv)</a> 
+<A HREF="ptar/ptar_04.rm">(340K .rm)</a> 
+of the robot attempting to 
+to descend a gravel road that is too steep/rough for it to handle.  That's my mother in the background
+talking encouragingly to the robot like she does to all small creatures. 
+
+<BR CLEAR=LEFT> <BR><BR>
+
+
+<A HREF="http://www.geology.smu.edu/~dpa-www/robo/srs2003">
+<IMG SRC="../srs2003/mini-challenge_2003_axx.jpg"  HSPACE=10 ALIGN=LEFT>nBot in Seattle</a>
+<BR><BR>
+A tour of the Seattle Fairgrounds with nBot during the Seattle Robotics Society Robothon 2003.
+<BR CLEAR=LEFT>
+<BR><BR>
+<HR WIDTH="100%">
+<BR>
+
+<B>Other two-wheel inverted pendulum balancing robots: </B><BR><BR>
+
+Here is
+<A HREF="http://leiwww.epfl.ch/joe/">Joe le pendule</a>, a radio-controlled 2 wheel robot that seems to work very well.  Included are
+some cool mpeg movies and documentation.  They have a
+<A HREF="http://leiwww.epfl.ch/publications/grasser_darrigo_colombi_rufer_mic_01.pdf">
+pdf document in English</a> which describes their project.  They seem to be getting
+all their sensor data from only 2 wheel encoders and a rate gyro.  
+<A HREF="grasser_darrigo_colombi_rufer_mic_01.pdf">Here is a local copy</A> I've downloaded.
+<BR><BR>
+
+<A HREF="http://www.geocities.com/stevehassenplug/">
+Steve Hassenplug</A> has built a two-wheeled balancing robot from Legos he calls
+<A HREF="http://www.teamhassenplug.org/robots/legway/">LegWay</a> that uses
+IR proximity detectors to balance and also do line following.  Pretty cool. <BR><BR>
+
+<A HREF="http://www.tedlarson.com/robots/balancingbot.htm">
+Ted Larson</A> is working on a two-wheel balancer with Bob Allen.  The web page includes some
+videos of their robot in action (always the best!) as well as a link to their recent appearance
+on TechTV.
+<BR><BR>
+
+<A HREF="http://www.stolk.org/robotics/balance.html">Bram Stolk</A> is working on
+a two-wheel robot using the 
+<A HREF="http://autopilot.sourceforge.net">
+sourceforge autopilot</a>
+IMU sensor. <BR><BR>
+
+<A HREF="http://home.earthlink.net/~botronics/index/balibot.html">
+BaliBot</a> is a two-wheel inverted pendulum robot built by Bill and Mark Sherman. <BR><BR>
+
+<A HREF="http://www.dragonflyhollow.org/matt/robots/firemarshalbill/">
+Matt Cross</A> is working on a 
+two-wheeled firefighting robot</a> for the 
+<A HREF="http://www.trincoll.edu/events/robot/">
+Trinty College Firefighting Contest</a>.  Matt uses the 68332 Mini Robo Minds controller board
+running the RTEMS realtime multitasking operating system.  
+<BR><BR>
+
+<A HREF="http://www.barello.net/">Larry Barello</A> of the Seattle Robotics Society has done some excellent work on 
+<A HREF="http://www.barello.net/Robots/gyrobot/index.htm">GyroBot</A>, a gyroscopically
+stablized robot.<BR><BR>
+
+<A HREF="http://www.geology.smu.edu/~dlg/robot/">
+Duane Gustavus</a> is working on a balancing robot with the weight distribuition arranged so
+that it can drive on three wheels or tip forward and balance on two.  Very cool.  Duane uses the
+MRM board running RTEMS
+<BR><BR>
+
+<A HREF="http://homepage.mac.com/sigfpe/Robotics/equibot.html">
+Dan Piponi</a> has a clever balancing robot 
+<A HREF="http://homepage.mac.com/sigfpe/Robotics/equibot2.jpg">
+Equibot</a>
+that uses a Sharp infrared sensor to measure
+the distance to the floor and uses that information to deduce tilt angle.  
+<BR><BR>
+
+Juan Pablo Angulo has developed a similar balancing robot using IR to measure
+floor angle.  There is a nice writeup of his work on the
+<A HREF="http://www.parallax.com/html_pages/resources/custapps/app_bway.asp">
+Parallax</a> website.
+<BR><BR>
+
+<A HREF="http://www.deltagr.com/">
+Ron Grant</a> of the 
+<A HREF="http://www.dprg.org">
+Dallas Personal Robotics Group</a>
+is working on a nifty balancing robot.  He is currently using a "floor feeler" to determine tilt angle,
+a potentiometer driven by a lever and ping pong ball that rests on the floor.  Ron uses a home-brew
+CPU board with an ATMEL controller and on-board H-bridge. [Ron, where did your site go?]
+<BR><BR>
+
+Jack Wu and Jim Bal at Carnegie Mellon University have constructed
+<A HREF="http://www.wulabs.org/bbot.html">BBot</a> as a semester design project for the Fall of 2003, 
+"a self-balancing two-wheeled robot."  Based on their 68 Meg mpeg video, it doesn't appear to actually
+be balancing yet...  (Note: link no longer working as of 07 July 04.  I guess school's out)
+<BR><BR>
+
+Lee Magnusson at MIT is working on a 
+<A HREF="http://zebrahead.mit.edu/">
+self-balancing unicycle</a>. His page has links to some videos and a pdf report.  From the videos
+it looks like the human rider still has to do the side-to-side balancing.  Cool nonetheless!
+(This link also not working as of 07 July 04.  The college sites must go down at the end of the semester.)
+<BR><BR>
+
+The Technology Department of the Bolton School in Manchester, England, has built this nifty single
+wheel cycling robot which they call the
+<A HREF="http://www.boltontech.org.uk/loony_cycle.htm">Loony-Cycle</a>.   I believe this design has to
+stay in motion in order to maintain balance.  It is steered with propellers that are arranged at 90 degrees
+to the direction of travel.
+<BR><BR>
+
+
+<A HREF="http://jormungand.net">
+Jormungand.net</a> has a very nice two-wheel balancing robot design called
+<A HREF="http://jormungand.net/projects/crunch">crunch</a> along with a
+<A HREF="http://jormungand.net/projects">few other</a> robot projects.  
+<BR><BR>
+
+Francisco Lobo de la Garza has an on-going development project for a two-wheel balancing robot
+named
+<A HREF="http://www.fusionglobal.net/">Spider</a>.  Web page includes photos, video, and some
+software. 
+<BR><BR>
+
+
+<A HREF="http://roderickmann.org">
+Roderick Lee Mann</a> is working on
+<A HREF="http://roderickmann.org/embedded/ichibot/">ichibot</a>, a two wheel balancer inspired,
+I believe, by the nBot project.  Way to go Roderick!
+<BR><BR>
+
+<A HREF="http://web.mit.edu/sanghyuk/www">
+Sanghyuk Park</a>, a recent graduate of M.I.T., has a fascinating group of robot control/navigation/guidance
+projects including a two-wheel balancing robot named
+<A HREF="http://web.mit.edu/sanghyuk/www/balance_bot.html">Balance-bot I</a>.  Sanghyuk writes that he was
+"deeply impressed" with the nBot website, which pleases me greatly!  Be sure and check out his
+<A HREF="http://web.mit.edu/sanghyuk/www/pcuav.html">unmanned air vehicles</a> projects as well.  Very intriquing.
+[But, as of 04 Feb 2005, Mr. Park and all his nifty robots seemed to have vanished from the Internet.]
+<BR><BR>
+
+Four members of the The University of West Florida's <B>Institute for Human and Machine Cognition</B> have
+built a self-described Joe le Pendule look-alike  as a testing platform for autonomous agent software.
+Real-time Linux and wireless ehternet!  Some video and lots of links.
+Their robot and a several others (including nBot) have been gathered together as
+<A HREF="http://leiwww.epfl.ch/joe/joerelatives.html">Joe's Relatives</a> on the
+<A HREF="http://leiwww.epfl.ch/joe/">Joe le Pendule</a> website.
+<BR><BR>
+
+Joris Maervoet and friends have built a
+<A HREF="http://ingenieur.kahosl.be/projecten/Advies/legobot/">
+Balancing LEGO Robot</a> using Java and standard LEGO parts, including the LEGO light sensor,
+that can balance while
+standing on a mirror.  Very nice web page: graphics, charts, graphs, and code.
+<BR><BR>
+
+Alistair Sutherland and Thomas Bräunl are working on a couple of two wheel balancing robots they call
+<A HREF="http://robotics.ee.uwa.edu.au/eyebot/doc/robots/ballybot.html">ballybots</a>
+based around the excellent
+<A HREF="http://robotics.ee.uwa.edu.au/eyebot/">eyebot</a> robot controller.
+<BR><BR>
+
+<A HREF="http://www.dertien.dds.nl">
+Edwin Dertien</a> has among his many other robots a design for a 
+<A HREF="http://www.dertien.dds.nl/index.html">LEGO two-wheel balancer</a> using a home-brew light sensor.
+<BR><BR>
+
+<A HREF="http://www.ece.ualberta.ca/~dlaing/">
+Blind Man</a> is a fuzzy logic-based two wheel balancer that appears to be a class project of the
+University of Alberta.  The robot uses a floor feeler to sense it's angle, like a blind man's cane,
+hence the name.  
+<BR><BR>
+
+<A HREF="http://www-robotics.cs.umass.edu/Research/Distributed_Control/uBot/uBot.html">
+uBot</a> from UMASS, Amherst, by Patrick Deegan and Robert Grupen, appears to be
+an R/C controlled 2-wheel balancing platform using a
+Rotomotion IMU and custom software.  Nice site with descriptions and mpeg videos.  Check out uBot standing up on its own from leaning on its kick stand in the 3rd movie.
+<I>Update: 03 March 2007:</I> Patrick sends a new web page with more work completed on 
+<A HREF="http://www-robotics.cs.umass.edu/Robots/UBot-4">
+several new two-wheel balancers</a> including some with grippers and manipulators. Includes videos of various
+lifting and pushing tasks while balancing.
+<BR><BR>
+
+<A HREF="http://www.msl.ri.cmu.edu/projects/ballbot/">
+Ballbot</a> from the Microdynamic Systems Laboratory at Carnegie Mellon University balances on a single wheel, actually a ball.
+Press release includes links to videos of the robot recovering from a disturbance and navigating across a room.
+<BR><BR>
+
+<A HREF="http://homepages.ihug.co.nz/~pradford/bbot1_0.htm">
+BBot</a>, a balancing robot by Brody Radford, uses ADXL202 accelerometers and ENC-03J gyroscopes from Murata to create a nice
+platform, inspired by nBot and Joe le Pendule.  Nice work.
+<BR><BR>
+
+<A HREF="http://www.nutsvolts.com/toc_Pages/dec06toc.htm">
+Nuts&volts</a> Magazine for November and December 2006 have a two-part 
+Personal Robotics article
+by Phil Davis and Brandon Heller, titled "Building a Balancing Bot on a Budget."
+Their design is based around a
+<A HREF="http://www.sparkfun.com/commerce/product_info.php?products_id=741">
+SparkFun 5DOF IMU</a> and modified R/C servos, and the article includes a link
+to their Kalman filter
+and balancing code on the Nuts&Volts ftp server.
+<BR><BR>
+
+<A HREF="http://www.bkinnovation.com/bkbot/">Brian Kuschak</a> has a very nicely implemented
+home-brew balancing robot based around an ARM7 processor and custom inertial measurement sensor.
+Lots of good information and details, very nice webpage.  
+<BR><BR>
+
+<A HREF="http://home.arcor.de/uffmann/ARTIST.htm">
+Dirk Uffmann</a> from Munich, Germany, has developed a two-wheel balancing robot based on fischertechnik components, named ARTIST, with home-brew electonics and tilt sensor.  Nice web-page with lots of links and videos.
+<BR><BR>
+
+Kazuo Yamafuji, Professor Emeritus at the University of Electro-Communications in Tokyo, built the first 
+<A HREF="yamafuji.jpg">
+two-wheel inverted pendulum robot</a>
+in 1986, according to this article in the
+<A HREF="http://www.japantimes.co.jp/cgi-bin/getarticle.pl5?nn20011231a9.htm">
+Japan Times</a>.
+<BR><BR>
+
+<HR WIDTH="100%">
+<BR>
+
+<B>Here are some related links:</B><BR><BR>
+
+The <A HREF="http://sourceforge.net/projects/autopilot/">source forge autopilot</A> group
+is working on
+a home-brew three axis inertial measurement unit for an autonomous helicopter. They have
+a single axis version suitable for a two-wheel balancing robot.<BR><BR>
+
+Carnegie Mellon University has some 
+<A HREF="http://www.ee.usyd.edu.au/tutorials_online/matlab/examples/pend/invpen.html">
+online documentation and matlab code</A> for balancing an inverted pendulum.<BR><BR>
+
+Some researchers at the
+<A HREF="http://wwwa.mpi-magdeburg.mpg.de/research/pendel/index_e.html">Max Planck Institute</a>
+in Germany can balance three inverted pendulums, one on top of another.  Amazing!<BR><BR>
+
+Fuzzy logic tutorials seem to like inverted pendulum problems.  
+<A HREF="http://www.aptronix.com/fuzzynet/applnote/twostage.htm">Here's one for a two stage
+inverted pendulum</a> and the fuzzy code used to solve it.<BR><BR>
+
+Here is an appnote (pdf) from Microchip on
+<A HREF="http://www.microchip.com/stellent/idcplg?IdcService=SS_GET_PAGE&nodeId=1824&appnote=en021807">
+using a pic chip to balance an inverted pendulum.<a/>
+<BR><BR>
+
+Dean Kamen's
+<A HREF="http://www.segway.com">Segway</a> Human Transport Vehicle 
+patent application describes the algorithm he is using for a 
+of <A HREF="http://www.delphion.com/cgi-bin/viewpat.cmd/WO00075001A1">similar inverted 
+pendulum</a> type of platform.<BR><BR>
+
+<A HREF="http://www.tlb.org/">
+Trevor Blackwell</a> has built a
+<A HREF="http://www.tlb.org/scooter.html">home-brew balancing scooter</A> out of the Rotomotion single axis IMU and
+other off-the-shelf-parts.  Nice webpage with pictures and videos.  He has also built an very nice
+<A HREF="http://tlb.org/eunicycle.html">unicycle version</A> of the inverted pendulum.
+<BR><BR>
+
+The
+<A HREF="http://www.ebikes.ca/">
+UBC Electric Bike Club</a> have designed and built a very cool senior project, 
+a <A HREF="http://www.ebikes.ca/Projects/Emanual/Index.html">two-wheel balancing skateboard</A> using
+sonar and IR sensors to measure angle.  Website includes text, illustrations, photos, and videos of
+the platform in action.
+<BR><BR>
+
+<A HREF="http://www.ridgesoft.com">
+This company</A> has a nice 
+<A HREF="http://www.ridgesoft.com/articles/balancebot/BuildingABalancingRobot.pdf">
+pdf document</a>
+ on building a two wheel balancing robot like Steve's "Legway" using LEGO parts and
+a couple of photo reflector sensors for measuring the angle to the floor.
+<BR><BR>
+
+<A HREF="http://www.balbots.com">
+These people</a>  from a company called "Balbots" offer a kit for a photo-reflective type balancer.  Looks pretty nifty, lots of good documentation and a nice design. 
+<BR><BR>
+
+<A HREF="http://www.tedlarson.com/robots/balancingbot.htm">
+Ted Larson</a> has also developed some nice balancing robot components listed on his
+<A HREF="http://www.ctgnet.com">CTG robotics website</a>.  I don't see any prices listed yet.
+He show a very nice looking 3-axis inertial measurement unit, somewhat like the ones offered by
+<A HREF="http://www.rotomotion.com">Rotomotion</a>.
+<BR><BR>
+
+<A HREF="http://www.ifi.unizh.ch/groups/ailab/people/chandana/stumpy.html">
+Stumpy</A> is an inverted pendulum walker, or more accurately an inverted pendulum hopper.
+<BR><BR>
+
+
+The 1932 
+<A HREF="../../jpeg/dynasphere1932_x.jpg">Dynasphere</a> 
+was a two-person
+single wheel vehicle that could cruise at speeds of 30 mph.  Ok, it's not really the
+same thing as a two-wheel dynamic balancer, but it's a very cool picture!   I especially
+like the 1930's geek driver, complete with suit and tie.
+<BR><BR>
+<HR WIDTH="100%">
+<BR>
+
+<A HREF="nbot_and_friend.jpg">
+<IMG SRC="nbot_and_friendxx.jpg" Align = LEFT HSPACE=10></A> 
+<A HREF="mgi2.mpg">
+<IMG SRC="go_for_a_spin.jpg" Align = RIGHT HSPACE = 10></A>
+
+<A HREF="nbot_and_friend.jpg">nBot and a friend</A> hanging out together in the hallway of the SMU Heroy Building.  
+<BR><BR>
+<A HREF="mgi2.mpg">
+nBot tries to convince the Segway</A> to go for a spin without its clumsy human occupant (2M mpeg).
+<BR CLEAR=RIGHT>
+<BR CLEAR=LEFT>
+
+<HR WIDTH="100%">
+<BR>
+<CENTER>Back to my <A HREF="http://www.geology.smu.edu/~dpa-www/myrobots.html">robots homepage.</A></CENTER>
+<BR><BR>
+Last update 27 March 2007 dpa
+<BR>
+(c) 2001-2007 dpa
+<BR><BR>
+</BODY>
+</HTML>

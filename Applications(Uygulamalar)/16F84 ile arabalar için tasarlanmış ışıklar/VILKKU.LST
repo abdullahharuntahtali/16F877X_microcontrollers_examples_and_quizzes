@@ -1,0 +1,437 @@
+MPASM 02.30 Released           VILKKU.TXT   7-5-2006  0:47:45         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                    00001 
+                    00002         LIST     p=16f84
+                    00003         #include <p16f84.inc>
+                    00001         LIST
+                    00002 ; P16F84.INC  Standard Header File, Version 2.00    Microchip Technology, Inc.
+                    00136         LIST
+                    00004 
+  00000001          00005 tmr0            equ     01h     ;AJASTIMEN LASKIJA
+  00000003          00006 status          equ     03h     ;STATUS REKISTERI
+  00000005          00007 porta           equ     05h     ;PORTTI A OSOITE
+  00000006          00008 portb           equ     06h     ;PORTTI B OSOITE
+  00000085          00009 trisa           equ     85h     ;KOLMITILAREKISTERI PORTTI A
+  00000086          00010 trisb           equ     86h     ;KOLMITILAREKISTERI PORTTI B
+  00000081          00011 optreg          equ     81h     ;OPTION REKISTERI
+                    00012 
+                    00013 #define swvv    porta,0         ;KYTKIN PORTISSA A BIT 0 (VASEN)
+                    00014 #define swvo    porta,1         ;KYTKIN PORTISSA A BIT 1 (OIKEA)
+                    00015 #define swjv    porta,2         ;KYTKIN PORTISSA A BIT 2 (JARRUVALO)
+                    00016 #define swmd    porta,3         ;KYTKIN PORTISSA A BIT 3 (MOODI)
+                    00017 
+                    00018 #define leda    porta,4         ;LED PORTISSA A BIT 4 (VALO A)
+                    00019 #define ledb    portb,0         ;LED PORTISSA B BIT 0 (VALO B)
+                    00020 #define ledc    portb,1         ;LED PORTISSA B BIT 1 (VALO C)
+                    00021 #define ledd    portb,2         ;LED PORTISSA B BIT 2 (VALO D)
+                    00022 #define lede    portb,3         ;LED PORTISSA B BIT 3 (VALO E)
+                    00023 #define ledf    portb,4         ;LED PORTISSA B BIT 4 (VALO F)
+                    00024 #define ledg    portb,5         ;LED PORTISSA B BIT 5 (VALO G)
+                    00025 #define ledh    portb,6         ;LED PORTISSA B BIT 6 (VALO H)
+                    00026 #define ledi    portb,7         ;LED PORTISSA B BIT 7 (VALO I)
+                    00027 
+                    00028 #define pa0     status,5        ;SIVUN VALINTA BITTI
+                    00029 
+  0000000C          00030 count1          equ     0ch     ;AJAN LASKENTA REKISTERI 1 
+  0000000D          00031 count2          equ     0dh     ;AJAN LASKENTA REKISTERI 2
+                    00032 
+0000                00033         org     0               ;NOLLAA OSOITINREKISTERI
+0000 2801           00034         goto    init
+                    00035 
+                    00036 ;****** OHJELMA ALKAA TÄSTÄ ***********************************************
+                    00037 
+0001                00038 init
+0001 0186           00039         clrf            portb           ;NOLLAA PORTTI B KÄYNNISTYKSESSÄ
+0002 0185           00040         clrf            porta           ;NOLLAA PORTTI A KÄYNNISTYKSESSÄ
+0003 1683           00041         bsf             pa0             ;SIIRRY SIVULLE 1 (MEMORY BANK)
+0004 300F           00042         movlw           0fh             ;SISÄÄNMENOPORTIIN MÄÄRITTELY (0-3 IN 4 OUT)
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0005 0085           00043         movwf           trisa           ;MÄÄRITTELE SISÄÄNMENO PORTN NASTAT
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0006 0186           00044         clrf            trisb           ;MÄÄRITTELE LÄHTÖ PORTIN NASTAT (0-7 OUT)
+0007 3007           00045         movlw           b'00000111'     ;OPTION REKISTERIIN SISÄLTÖ
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0008 0081           00046         movwf           optreg          ;ASETA RTCC JAKAJAKSI 256
+0009 1283           00047         bcf             pa0             ;PALAA SIVULLE 0 (MEMORY BANK)
+MPASM 02.30 Released           VILKKU.TXT   7-5-2006  0:47:45         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000A                00048 main
+000A 1905           00049         btfsc           swjv            ;TESTAA JARRUVALOKYTKINTÄ 
+000B 2073           00050         call            brake           ;ALIOHJELMA brake
+000C 1805           00051         btfsc           swvv            ;TESTAA KYTKINTÄ VASEMMALLE
+000D 2029           00052         call            vasvil          ;ALIOHJELMA vasvil
+000E 1885           00053         btfsc           swvo            ;TESTAA KYTKINTÄ OIKEALLE
+000F 204E           00054         call            oivil           ;ALIOHJELMA oivil
+0010 280A           00055         goto            main            ;ALOITA ALUSTA
+                    00056 
+                    00057 ;****** OHELMA PÄÄTTYY TÄHÄN **********************************************
+                    00058 
+                    00059 ;****** ALIOHJELMAT *******************************************************
+                    00060 ;
+                    00061 ;...... JAKSON AJAT .......................................................
+                    00062 ;
+                    00063 ;------ LYHYT JAKSOTUS ----------------------------------------------------
+                    00064 
+0011                00065 viive2
+0011 3001           00066         movlw           .001            ;001 x 49,152mS = 49,152mS
+0012 008D           00067         movwf           count2
+0013                00068 skip6
+0013 3003           00069         movlw           .003            ;003 x 16,384ms = 49,152mS 
+0014 008C           00070         movwf           count1
+0015                00071 skip5
+0015 0181           00072         clrf            tmr0            ;AJASTIMEN NOLLAUS
+0016                00073 skip4
+0016 1F01           00074         btfss           tmr0,6          ;TESTAA BITTIÄ 6=1 => 16,384mS 
+0017 2816           00075         goto            skip4           ;
+                    00076 
+0018 0B8C           00077         decfsz          count1,f        ;VÄHENNÄ AJASTINTA
+0019 2815           00078         goto            skip5           ;
+                    00079 
+001A 0B8D           00080         decfsz          count2,f        ;VÄHENNÄ AJASTINTA
+001B 2813           00081         goto            skip6           ;
+                    00082 
+001C 0008           00083         return  
+                    00084         
+                    00085 ;------ PITKÄ JAKSOTUS --------------------------------------------------
+001D                00086 viive1
+001D 3002           00087         movlw           .002            ;002 x 98,304mS = 196,608mS
+001E 008D           00088         movwf           count2
+001F                00089 time1
+001F 3003           00090         movlw           .003            ;003 x 32,768ms = 98,304mS
+0020 008C           00091         movwf           count1
+0021                00092 skip2
+0021 0181           00093         clrf            tmr0            ;AJASTIMEN NOLLAUS
+0022                00094 skip1
+0022 1F81           00095         btfss           tmr0,7          ;TESTAA BITTIÄ 7=1 => 32,768mS
+0023 2822           00096         goto            skip1           ;
+                    00097 
+0024 0B8C           00098         decfsz          count1,f        ;VÄHENNÄ AJASTINTA
+0025 2821           00099         goto            skip2           ;
+                    00100 
+MPASM 02.30 Released           VILKKU.TXT   7-5-2006  0:47:45         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0026 0B8D           00101         decfsz          count2,f        ;VÄHENNÄ AJASTINTA
+0027 281F           00102         goto            time1           ;
+0028 0008           00103         return
+                    00104 
+                    00105 ;...... VASEN VILKKU ......................................................
+0029                00106 vasvil
+0029 1985           00107         btfsc           swmd            ;TESTAA KYTKINTÄ MOODI
+002A 2830           00108         goto            vasvis          ;HYPPY vasvis
+002B                00109 vasvi
+002B 1786           00110         bsf             ledi            ;SYTYTÄ VASEMMAT VALOT
+002C 201D           00111         call            viive1          ;KUTSU VIIVE
+002D 1386           00112         bcf             ledi            ;SAMMUTA VASEMMAT VALOT
+002E 201D           00113         call            viive1          ;KUTSU VIIVE
+002F 0008           00114         return                          ;PALAA PÄÄOHJELMAAN
+                    00115 
+                    00116 ;------ VASEMMALLE JUOKSEVA VALO ------------------------------------------
+0030                00117 vasvis
+0030 1605           00118         bsf             leda            ;SYTYTÄ A VALO
+0031 2011           00119         call            viive2          ;KUTSU VIIVE
+0032 1406           00120         bsf             ledb            ;SYTYTÄ B VALO
+0033 2011           00121         call            viive2          ;KUTSU VIIVE
+0034 1205           00122         bcf             leda            ;SAMMUTA A VALO
+0035 1486           00123         bsf             ledc            ;SYTYTÄ C VALO
+0036 2011           00124         call            viive2          ;KUTSU VIIVE
+0037 1006           00125         bcf             ledb            ;SAMMUTA B VALO
+0038 1506           00126         bsf             ledd            ;SYTYTÄ D VALO
+0039 2011           00127         call            viive2          ;KUTSU VIIVE
+003A 1086           00128         bcf             ledc            ;SAMMUTA C VALO
+003B 1586           00129         bsf             lede            ;SYTYTÄ E VALO
+003C 2011           00130         call            viive2          ;KUTSU VIIVE
+003D 1106           00131         bcf             ledd            ;SAMMUTA D VALO
+003E 1606           00132         bsf             ledf            ;SYTYTÄ F VALO
+003F 2011           00133         call            viive2          ;KUTSU VIIVE
+0040 1186           00134         bcf             lede            ;SAMMUTA E VALO
+0041 1686           00135         bsf             ledg            ;SYTYTÄ G VALO
+0042 2011           00136         call            viive2          ;KUTSU VIIVE
+0043 1206           00137         bcf             ledf            ;SAMMUTA F VALO
+0044 1706           00138         bsf             ledh            ;SYTYTÄ H VALO
+0045 2011           00139         call            viive2          ;KUTSU VIIVE
+0046 1286           00140         bcf             ledg            ;SAMMUTA G VALO
+0047 1786           00141         bsf             ledi            ;SYTYTÄ I VALO
+0048 2011           00142         call            viive2          ;KUTSU VIIVE
+0049 1306           00143         bcf             ledh            ;SAMMUTA H VALO
+004A 201D           00144         call            viive1          ;KUTSU VIIVE
+004B 1386           00145         bcf             ledi            ;SAMMUTA I VALO
+004C 201D           00146         call            viive1          ;KUTSU VIIVE
+004D 0008           00147         return                          ;PALAA PÄÄOHJELMAAN
+                    00148 
+                    00149 ;...... OIKEA VILKKU ......................................................
+004E                00150 oivil
+004E 1985           00151         btfsc           swmd            ;TESTAA KYTKINTÄ MOODI
+004F 2855           00152         goto            oivis           ;HYPPY oivis
+0050                00153 oivi
+MPASM 02.30 Released           VILKKU.TXT   7-5-2006  0:47:45         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0050 1605           00154         bsf             leda            ;SYTYTÄ OIKEAT VALOT
+0051 201D           00155         call            viive1          ;KUTSU VIIVE
+0052 1205           00156         bcf             leda            ;SAMMUTA OIKEAT VALOT
+0053 201D           00157         call            viive1          ;KUTSU VIIVE
+0054 0008           00158         return                          ;PALAA PÄÄOHJELMAAN
+                    00159 
+                    00160 ;------- OIKEALLE JUOKSEVA VALO -------------------------------------------
+0055                00161 oivis
+0055 1786           00162         bsf             ledi            ;SYTYTÄ I VALO
+0056 2011           00163         call            viive2          ;KUTSU VIIVE
+0057 1706           00164         bsf             ledh            ;SYTYTÄ H VALO
+0058 2011           00165         call            viive2          ;KUTSU VIIVE
+0059 1386           00166         bcf             ledi            ;SAMMUTA I VALO
+005A 1686           00167         bsf             ledg            ;SYTYTÄ G VALO
+005B 2011           00168         call            viive2          ;KUTSU VIIVE
+005C 1306           00169         bcf             ledh            ;SAMMUTA H VALO
+005D 1606           00170         bsf             ledf            ;SYTYTÄ F VALO
+005E 2011           00171         call            viive2          ;KUTSU VIIVE
+005F 1286           00172         bcf             ledg            ;SAMMUTA G VALO
+0060 1586           00173         bsf             lede            ;SYTYTÄ E VALO
+0061 2011           00174         call            viive2          ;KUTSU VIIVE
+0062 1206           00175         bcf             ledf            ;SAMMUTA F VALO
+0063 1506           00176         bsf             ledd            ;SYTYTÄ D VALO
+0064 2011           00177         call            viive2          ;KUTSU VIIVE
+0065 1186           00178         bcf             lede            ;SAMMUTA E VALO
+0066 1486           00179         bsf             ledc            ;SYTYTÄ C VALO
+0067 2011           00180         call            viive2          ;KUTSU VIIVE
+0068 1106           00181         bcf             ledd            ;SAMMUTA D VALO
+0069 1406           00182         bsf             ledb            ;SYTYTÄ B VALO
+006A 2011           00183         call            viive2          ;KUTSU VIIVE
+006B 1086           00184         bcf             ledc            ;SAMMUTA C VALO
+006C 1605           00185         bsf             leda            ;SYTYTÄ A VALO
+006D 2011           00186         call            viive2          ;KUTSU VIIVE
+006E 1006           00187         bcf             ledb            ;SAMMUTA B VALO
+006F 201D           00188         call            viive1          ;KUTSU VIIVE
+0070 1205           00189         bcf             leda            ;SAMMUTA A VALO
+0071 201D           00190         call            viive1          ;KUTSU VIIVE
+0072 0008           00191         return                          ;PALAA PÄÄOHJELMAAN
+                    00192 
+                    00193 ;...... JARRUVALO .........................................................
+0073                00194 brake
+0073 1985           00195         btfsc           swmd            ;TESTAA KYTKINTÄ MOODI
+0074 287E           00196         goto            brakejv         ;ALIOHJELMA brakejv
+0075                00197 skp10   
+0075 1905           00198         btfsc           swjv            ;TESTAA JARRUVALOKYTKINTÄ 
+0076 287A           00199         goto            jarru
+0077 0186           00200         clrf            portb           ;sammuta portin b kaikki valot
+0078 1205           00201         bcf             leda            ;sammuta led a
+0079 0008           00202         return                          ;PALUU PÄÄOHJELMAAN
+007A                00203 jarru
+007A 30FF           00204         movlw           b'11111111'     
+007B 0086           00205         movwf           portb           ;sytytä portin b kaikki valot
+007C 1605           00206         bsf             leda            ;sytytä led a
+MPASM 02.30 Released           VILKKU.TXT   7-5-2006  0:47:45         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+007D 2875           00207         goto            skp10
+                    00208         
+                    00209 ;------ JUOKSEVA JARRUVALO -----------------------------------------------
+007E                00210 brakejv
+007E 1605           00211         bsf             leda            ;SYTYTÄ a VALO
+007F 1786           00212         bsf             ledi            ;SYTYTÄ i VALO
+0080 2011           00213         call            viive2          ;KUTSU VIIVE
+0081 1406           00214         bsf             ledb            ;SYTYTÄ b VALO
+0082 1706           00215         bsf             ledh            ;SYTYTÄ h VALO
+0083 2011           00216         call            viive2          ;KUTSU VIIVE
+0084 1205           00217         bcf             leda            ;SAMMUTA a VALO
+0085 1386           00218         bcf             ledi            ;SAMMUTA i VALO
+0086 1486           00219         bsf             ledc            ;SYTYTÄ c VALO
+0087 1686           00220         bsf             ledg            ;SYTYTÄ g VALO
+0088 2011           00221         call            viive2          ;KUTSU VIIVE
+0089 1006           00222         bcf             ledb            ;SAMMUTA b VALO
+008A 1306           00223         bcf             ledh            ;SAMMUTA h VALO
+008B 1506           00224         bsf             ledd            ;SYTYTÄ d VALO
+008C 1606           00225         bsf             ledf            ;SYTYTÄ f VALO
+008D 2011           00226         call            viive2          ;KUTSU VIIVE
+008E 1586           00227         bsf             lede            ;SYTYTÄ e VALO
+008F 1086           00228         bcf             ledc            ;SAMMUTA c VALO
+0090 1286           00229         bcf             ledg            ;SAMMUTA g VALO
+0091 2011           00230         call            viive2          ;KUTSU VIIVE
+0092 1206           00231         bcf             ledf            ;SAMMUTA f VALO
+0093 1106           00232         bcf             ledd            ;SAMMUTA d VALO
+0094 2011           00233         call            viive2          ;KUTSU VIIVE
+0095 2011           00234         call            viive2          ;KUTSU VIIVE
+0096 1606           00235         bsf             ledf            ;SYTYTÄ f VALO
+0097 1506           00236         bsf             ledd            ;SYTYTÄ d VALO
+0098 2011           00237         call            viive2          ;KUTSU VIIVE
+0099 1186           00238         bcf             lede            ;SAMMUTA e VALO
+009A 1686           00239         bsf             ledg            ;SYTYTÄ g VALO
+009B 1486           00240         bsf             ledc            ;SYTYTÄ c VALO
+009C 2011           00241         call            viive2          ;KUTSU VIIVE
+009D 1706           00242         bsf             ledh            ;SYTYTÄ h VALO
+009E 1406           00243         bsf             ledb            ;SYTYTÄ b VALO
+009F 1206           00244         bcf             ledf            ;SAMMUTA f VALO
+00A0 1106           00245         bcf             ledd            ;SAMMUTA d VALO
+00A1 2011           00246         call            viive2          ;KUTSU VIIVE
+00A2 1786           00247         bsf             ledi            ;SYTYTÄ i VALO
+00A3 1605           00248         bsf             leda            ;SYTYTÄ a VALO
+00A4 1086           00249         bcf             ledc            ;SAMMUTA c VALO
+00A5 1286           00250         bcf             ledg            ;SAMMUTA g VALO
+00A6 2011           00251         call            viive2          ;KUTSU VIIVE
+00A7 1306           00252         bcf             ledh            ;SAMMUTA h VALO
+00A8 1006           00253         bcf             ledb            ;SAMMUTA b VALO
+00A9 2011           00254         call            viive2          ;KUTSU VIIVE
+00AA 1386           00255         bcf             ledi            ;SAMMUTA i VALO
+00AB 1205           00256         bcf             leda            ;SAMMUTA a VALO
+00AC 0008           00257         return                          ;PALUU PÄÄOHJELMAAN
+                    00258 
+                    00259 ;****** ALIOHJELMIEN JA OHJELMAN LOPETUS **********************************
+MPASM 02.30 Released           VILKKU.TXT   7-5-2006  0:47:45         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                    00260 
+                    00261         end                             ;OHJELMARIVIEN LOPETUS
+MPASM 02.30 Released           VILKKU.TXT   7-5-2006  0:47:45         PAGE  7
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+C                                 00000000
+DC                                00000001
+EEADR                             00000009
+EECON1                            00000088
+EECON2                            00000089
+EEDATA                            00000008
+EEIE                              00000006
+EEIF                              00000004
+F                                 00000001
+FSR                               00000004
+GIE                               00000007
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+NOT_PD                            00000003
+NOT_RBPU                          00000007
+NOT_TO                            00000004
+OPTION_REG                        00000081
+PCL                               00000002
+PCLATH                            0000000A
+PORTA                             00000005
+PORTB                             00000006
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+RBIE                              00000003
+RBIF                              00000000
+RD                                00000000
+RP0                               00000005
+RP1                               00000006
+STATUS                            00000003
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+TMR0                              00000001
+TRISA                             00000085
+TRISB                             00000086
+W                                 00000000
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+Z                                 00000002
+_CP_OFF                           00003FFF
+_CP_ON                            0000000F
+_HS_OSC                           00003FFE
+_LP_OSC                           00003FFC
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+MPASM 02.30 Released           VILKKU.TXT   7-5-2006  0:47:45         PAGE  8
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_RC_OSC                           00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FFD
+__16F84                           00000001
+brake                             00000073
+brakejv                           0000007E
+count1                            0000000C
+count2                            0000000D
+init                              00000001
+jarru                             0000007A
+leda                              porta,4
+ledb                              portb,0
+ledc                              portb,1
+ledd                              portb,2
+lede                              portb,3
+ledf                              portb,4
+ledg                              portb,5
+ledh                              portb,6
+ledi                              portb,7
+main                              0000000A
+oivi                              00000050
+oivil                             0000004E
+oivis                             00000055
+optreg                            00000081
+pa0                               status,5
+porta                             00000005
+portb                             00000006
+skip1                             00000022
+skip2                             00000021
+skip4                             00000016
+skip5                             00000015
+skip6                             00000013
+skp10                             00000075
+status                            00000003
+swjv                              porta,2
+swmd                              porta,3
+swvo                              porta,1
+swvv                              porta,0
+time1                             0000001F
+tmr0                              00000001
+trisa                             00000085
+trisb                             00000086
+vasvi                             0000002B
+vasvil                            00000029
+vasvis                            00000030
+viive1                            0000001D
+viive2                            00000011
+MPASM 02.30 Released           VILKKU.TXT   7-5-2006  0:47:45         PAGE  9
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXX--- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:   173
+Program Memory Words Free:   851
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     3 reported,     0 suppressed
+
+

@@ -1,0 +1,282 @@
+
+include "modedefs.bas"
+
+trisa=0
+trisb=0
+trisc=0
+trisd=0
+
+porta=0
+portb=0
+portc=0
+portd=0
+
+pause 300
+
+'dat var portc.3
+'clk var portc.2
+'stb var portc.1
+'oe  var portc.0
+
+kay var byte
+kay=%00000001
+
+'kayb var byte
+'kayb=%00000001
+'kayc var byte
+'kayc=%11111111
+'kayd var byte
+'kayd=%11111111
+'kaya var byte
+'kaya=%001111
+
+p var byte 'pause için
+p=100
+i var byte 'for next için
+i=0
+
+'s var byte[8]
+'s[0]=%11111110
+'s[1]=%11111101
+'s[2]=%11111011
+'s[3]=%11110111
+'s[4]=%11101111
+'s[5]=%11011111
+'s[6]=%10111111
+'s[7]=%01111111
+
+
+
+
+'s var byte[10]
+'s[0]=%01111111
+'s[1]=%00001000
+'s[2]=%00010100
+'s[3]=%00100010
+'s[4]=%01000001
+
+'s[5]=%01111111
+'s[6]=%01001001
+'s[7]=%01001001
+'s[8]=%01001001
+'s[9]=%01000001
+''s[11]=%00000000
+
+basla:
+
+'kay=kay << 1
+''pause 200
+'if kay=%10000000 then kay=%00000001
+
+portb=00000001'kay
+
+portc=%00000001
+pause p
+portc=%00000010
+pause p
+portc=%00000100
+pause p
+portc=%00001000
+pause p
+portc=%00010000
+pause p
+portc=%00100000
+pause p
+portc=%01000000
+pause p
+portc=%10000000
+pause p
+
+portd=%00000001
+pause p
+portd=%00000010
+pause p
+portd=%00000100
+pause p
+portd=%00001000
+pause p
+portd=%00010000
+pause p
+portd=%00100000
+pause p
+portd=%01000000
+pause p
+portd=%10000000
+pause p
+
+porta=%0001
+pause p
+porta=%0010
+pause p
+porta=%0100
+pause p
+porta=%1000
+
+'portc=%11111110
+'pause p
+'portc=%11111101
+'pause p
+'portc=%11111011
+'pause p
+'portc=%11110111
+'pause p
+'portc=%11101111
+'pause p
+'portc=%11011111
+'pause p
+'portc=%10111111
+'pause p
+'portc=%01111111
+'pause p
+'portd=%11111110
+'pause p
+'portd=%11111101
+'pause p
+'portd=%11111011
+'pause p
+'portd=%11110111
+'pause p
+'portd=%11101111
+'pause p
+'portd=%11011111
+'pause p
+'portd=%10111111
+'pause p
+'portd=%01111111
+'pause p
+'porta=%1110
+'pause p
+'porta=%1101
+'pause p
+'porta=%1011
+'pause p
+'porta=%0111
+'pause p
+
+
+
+'endif
+'pause 100
+
+'if kay=%00000001 then
+'kay=kay << 1
+'endif
+
+'portb=00000001'kay
+
+'for i=0 to 8
+'low stb   'stop bit sıfırla
+'shiftout dat,clk,0,[s[i]]
+'high stb  'stop bit set yap
+'pause 10
+'next i
+
+'gosub sagdan
+'pause 2000
+'gosub SOLDAN
+'pause 2000
+goto basla
+
+'kaydir:
+'p=500
+'high OE  'stop bit set yap
+'for i=0 to 9
+'low stb   'stop bit sıfırla
+'shiftout dat,clk,1,[s[i]]
+'high stb  'stop bit set yap
+'pause p
+'next i
+'return
+
+
+
+
+'sagdan:
+'p=500
+'high OE  'stop bit set yap
+'for i=0 to 9
+'low stb   'stop bit sıfırla
+'shiftout dat,clk,1,[s[i]]
+'high stb  'stop bit set yap
+'pause p
+'next i
+'return
+
+'SOLDAN:
+'p=500
+'high OE  'stop bit set yap
+'LOW STB
+'shiftout dat,clk,1,[%01000001]
+'FOR i=0 To 8
+'GOSUB TEMIZLE
+'NEXT I
+'HIGH STB
+'PAUSE P
+'LOW STB
+'shiftout dat,clk,1,[%01001001]
+'shiftout dat,clk,1,[%01000001]
+'FOR I=0 To 7
+'GOSUB TEMIZLE
+'NEXT I
+'HIGH STB
+'PAUSE P
+'LOW STB
+'shiftout dat,clk,1,[%01001001]
+'shiftout dat,clk,1,[%01001001]
+'shiftout dat,clk,1,[%01000001]
+'FOR I=0 To 6
+'GOSUB TEMIZLE
+'NEXT I
+'HIGH STB
+'PAUSE P
+'LOW STB
+'shiftout dat,clk,1,[%01001001]
+'shiftout dat,clk,1,[%01001001]
+'shiftout dat,clk,1,[%01001001]
+'shiftout dat,clk,1,[%01000001]
+'FOR I=0 To 5
+'GOSUB TEMIZLE
+'NEXT I
+'HIGH STB
+'PAUSE P
+
+'LOW STB
+'shiftout dat,clk,1,[%01111111]
+'shiftout dat,clk,1,[%01001001]
+'shiftout dat,clk,1,[%01001001]
+'shiftout dat,clk,1,[%01001001]
+'shiftout dat,clk,1,[%01000001]
+'FOR I=0 To 4
+'GOSUB TEMIZLE
+'NEXT I
+'HIGH STB
+'PAUSE P
+
+'LOW STB
+'shiftout dat,clk,1,[%01000001]
+'shiftout dat,clk,1,[%01111111]
+'shiftout dat,clk,1,[%01001001]
+'shiftout dat,clk,1,[%01001001]
+'shiftout dat,clk,1,[%01001001]
+'shiftout dat,clk,1,[%01000001]
+'FOR I=0 To 3
+'GOSUB TEMIZLE
+'NEXT I
+'HIGH STB
+'PAUSE P
+
+
+'LOW STB
+'FOR I=0 To 9
+'GOSUB TEMIZLE
+'NEXT I
+'HIGH STB
+'PAUSE 1000
+'return
+
+'TEMIZLE:
+'shiftout dat,clk,1,[%00000000]
+'return 
+
+end
+

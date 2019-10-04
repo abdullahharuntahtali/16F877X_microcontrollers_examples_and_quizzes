@@ -1,0 +1,4 @@
+Message[302] D:\OMER\MERDEV~1\OKULUY~1\KESKVE~1\KESKSR~1.ASM 13 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] D:\OMER\MERDEV~1\OKULUY~1\KESKVE~1\KESKSR~1.ASM 15 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Warning[207] D:\OMER\MERDEV~1\OKULUY~1\KESKVE~1\KESKSR~1.ASM 48 : Found label after column 1. (DONGU1)
+Warning[207] D:\OMER\MERDEV~1\OKULUY~1\KESKVE~1\KESKSR~1.ASM 51 : Found label after column 1. (DONGU2)

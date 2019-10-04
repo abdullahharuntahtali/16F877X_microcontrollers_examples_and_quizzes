@@ -1,0 +1,205 @@
+procedure intrh is
+    -- this is the interrupt handler
+    pragma interrupt            
+
+    assembler
+        local checkb4clr
+        local checkb4
+        local dominute
+        local dohour
+        local b4clrcounter
+        local docounter
+        local sincr
+        local dodisplay
+        local notblank
+        local almostready
+        local dataready
+        local writedata
+        local theend
+        
+        bcf status_rp1          -- in bank 0
+        bcf status_rp0          -- ...
+
+    -- on an interrupt, check the status of rb7 and rb4
+    -- to debounce, require 12 successive clicks on either
+    -- pin to flip over to the next time.
+    -- note: rb4 and rb7 are active low
+        btfsc pin_b7            -- if rb7 is not being pushed
+        goto checkb4clr         -- check rb4 and clear rb7cnt
+        incf rb7cnt,f           -- otherwise, increment rb7cnt
+        movlw 0x04              -- xor 4 with...
+        xorwf rb7cnt,w          -- ...rb7cnt
+        btfsc status_z          -- if rb7cnt == 0x04
+        goto dominute           -- increment the minutes
+        goto checkb4            -- else check on rb4
+
+    checkb4clr:
+        clrf rb7cnt             -- rb7 is not active; clear rb7cnt
+    checkb4:
+        btfsc pin_b4            -- if rb4 is not being pushed
+        goto b4clrcounter       -- do counter and clear rb4cnt
+        incf rb4cnt,f           -- otherwise, increment rb4cnt
+        movlw 0x04              -- xor 4 with...
+        xorwf rb4cnt,w          -- ...rb4cnt
+        btfsc status_z          -- if rb4cnt == 0x04
+        goto dohour             -- increment the hour   
+        goto docounter          -- else do the counter
+
+    dominute:
+                                -- don't clear rb7cnt until
+                                -- it goes inactive again
+                                -- one push == one minute
+
+                                -- start the display cycle over
+        movlw 0x30              -- put 48 in...
+        movwf sixtieths         -- ...sixtieths
+        clrf baz                -- and clear baz
+
+                                -- now update minutes
+        clrf seconds            -- clear seconds
+        incf minutes,f          -- increment minutes
+        movlw 0x3C              -- xor 60 with...
+        xorwf minutes,w         -- minutes
+        btfss status_z          -- if minutes != 60
+        goto docounter          -- go to the counter stuff
+        clrf minutes            -- clear the minutes
+
+    dohour:
+                                -- start the display cycle over
+        movlw 0x30              -- put 48 in...
+        movwf sixtieths         -- ...sixtieths
+        clrf baz                -- and clear baz
+
+        incf hours,f            -- now increment hours
+        movlw 0x0C              -- xor 12 with...
+        xorwf hours,w           -- hours
+        btfsc status_z          -- if hours == 12
+        clrf hours              -- clear hours
+        goto docounter          -- don't clear rb4cnt
+                                -- one button push increments
+                                -- by exactly one hour
+
+    b4clrcounter:
+        clrf rb4cnt             -- inactive r4b or fallthrough
+                                -- clear rb4cnt
+    docounter:
+        btfss intcon_t0if       -- if the t0if isn't set
+        goto theend             -- we're done
+
+        bcf intcon_t0if         -- otherwise...
+        movlw 0xFF              -- reset clkset value
+        movwf tmr0              -- put it in tmr0
+
+        incf sixtieths,f        -- increment sixtieths
+        movlw 0x3C              -- xor 60 with...
+        xorwf sixtieths,w       -- ...sixtieths
+        btfss status_z          -- if sixtieths != 60
+        goto dodisplay          -- just update the display
+                                -- else fall through into seconds
+
+        movlw 0x01              -- if 1...
+        subwf baz,f             -- ...subtracted from baz
+        btfsc status_c          -- ...is not less than 0...
+        goto sincr              -- just increment seconds
+        movlw 0x02              -- otherwise
+        movwf baz               -- baz = 2
+
+    sincr:
+        clrf sixtieths          -- clear sixtieths
+        incf seconds,f          -- increment seconds
+        movlw 0x3C              -- xor 60 with...
+        xorwf seconds,w         -- ...seconds
+        btfss status_z          -- if seconds != 60
+        goto dodisplay          -- just update the display
+                                -- else fall through into minutes
+
+        clrf seconds            -- clear seconds
+        incf minutes,f          -- increment minutes
+        movlw 0x3C              -- xor 60 with...
+        xorwf minutes,w         -- ...minutes
+        btfss status_z          -- if seconds != 60
+        goto dodisplay          -- just update the display
+                                -- else fall through into hours
+
+        clrf minutes            -- clear minutes
+        incf hours,f            -- increment minutes
+        movlw 0x0C              -- xor 12 with...
+        xorwf hours,w           -- ...hours
+        btfsc status_z          -- if hours == 12
+        clrf hours              -- clear hours
+
+    dodisplay:
+        movf baz,f              -- if baz...
+        btfss status_z          -- != 0
+        goto notblank           -- we're writing something
+        movlw 0x0F              -- otherwise
+        movwf port_a            -- blank the display
+        movf hours,w            -- when we're blanking
+        movwf tmphours          -- update tmphours
+        movf minutes,w          -- and
+        movwf tmpminutes        -- tmpminutes
+        goto theend             -- and we're done
+
+    notblank:
+        movf tmphours,w         -- load hours
+        btfsc dispmin           -- if dispmin
+        movf tmpminutes,w       -- load minutes instead
+        bsf status_rp0          -- bank 1
+        movwf f628_eeaddr       -- write address into eeaddr
+        bsf f628_eecon1_rd      -- read the data
+        btfsc dispmin           -- if dispmin
+        goto dataready          -- goto dataready
+        movf tmphours,f         -- check if tmphours == 0
+        btfss status_z          -- if tmphours != 0
+        goto almostready        -- data's almost ready
+        movlw 0x12              -- otherwise, write 0x12...
+        movwf f628_eedata       -- to the eedata register
+        goto dataready          -- _now_ we're ready
+
+    almostready:
+        movlw 0x0a              -- subtract 0x0a...
+        subwf f628_eedata,w     -- ...from f628_eedata
+        btfsc status_c          -- if c=1, we didn't borrow, so...
+        goto dataready          -- ...just go on
+        movlw 0xf0              -- otherwise, OR 0xf0...
+        iorwf f628_eedata,f     -- ...with the data, turning off
+                                -- the first digit (7:40, not 07:40)
+    dataready:
+        movlw 0x80              -- 0x80 into...
+        movwf foo               -- ...foo
+        movlw 0x00              -- 0x00 into...
+        movwf bar               -- ...bar
+        movlw 0x1E              -- subtract 30 from
+        subwf sixtieths,w       -- sixtieths
+        btfsc status_c          -- if c=1, we didn't borrow, so
+        goto writedata          -- we're ready to write
+        swapf f628_eedata,f     -- otherwise swap nibbles
+        movlw 0x00              -- mov 0x00 into...
+        movwf foo               -- ...foo
+        movlw 0x40              -- mov 0x40 into...
+        movwf bar               -- ...bar
+
+    writedata:
+        movlw 0x0F              -- 0x0F into w
+        andwf f628_eedata,f     -- cut off high nibble in eedata
+        movf foo,w              -- load decimal point
+        btfsc dispmin           -- if dispmin
+        movf bar,w              -- load this one instead
+        iorwf f628_eedata,w     -- now we have the byte to write
+        bcf status_rp0          -- bank 0
+        movwf port_a            -- write to port_a
+
+    -- do PWM stuff
+        movlw 0x40              -- load 64 into w
+        addwf sixtieths,w       -- add the sixtieths value
+        bsf status_rp0          -- bank 1
+        movwf f628_eeaddr       -- write this to the eeaddr
+        bsf f628_eecon1_rd      -- read the data
+        movf f628_eedata,w      -- load the data into w
+        bcf status_rp0          -- bank 0
+        movwf ccpr1l            -- this is the PWM value
+
+    theend:
+        bsf intcon_t0ie         -- enable timer interrupt
+    end assembler
+end procedure

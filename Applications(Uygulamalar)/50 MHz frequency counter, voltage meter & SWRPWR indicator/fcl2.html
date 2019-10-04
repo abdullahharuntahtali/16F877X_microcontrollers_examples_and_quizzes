@@ -1,0 +1,170 @@
+<html><head>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1250">
+<meta name="Template" content="C:\PROGRAM FILES\MICROSOFT OFFICE\OFFICE\html.dot">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0"><title>50MHz frequency counter, V-meter &amp; SWR/PWR indicator</title></head><body background="fcl2_files/ozadje.jpg" link="#0000ff" vlink="#800080">
+
+<table border="0" cellspacing="0" width="630">
+    <tbody><tr>
+        <td valign="top"><font color="#000080" face="Arial" size="4"><b>50 MHz frequency counter, voltage meter
+        &amp; SWR/PWR indicator</b></font></td>
+    </tr>
+</tbody></table>
+
+<p>&nbsp;</p>
+
+<table border="0" cellspacing="0" width="800">
+    <tbody><tr>
+        <td valign="top" width="160"><a href="http://lea.hamradio.si/%7Es57nan/ham_radio/fc_led_2/fcl2_sch.gif"><font face="Arial" size="2"><b>Circuit schematic</b></font></a>
+        </td>
+        <td valign="top" width="100"><a href="http://lea.hamradio.si/%7Es57nan/ham_radio/fc_led_2/fcl2_pcb.gif"><font face="Arial" size="2"><b>PCB</b></font></a> </td>
+        <td valign="top" width="170"><a href="http://lea.hamradio.si/%7Es57nan/ham_radio/fc_led_2/fc_led_2_v111.hex"><font face="Arial" size="2"><strong>HEX code, V1.11 (operates
+        with 4,000 MHz quartz)</strong></font></a></td>
+        <td valign="top" width="20">&nbsp;</td>
+        <td valign="top" width="170"><a href="http://lea.hamradio.si/%7Es57nan/ham_radio/fc_led_2/fc_led_2_v112.hex"><font face="Arial" size="2"><strong>Hex code, V1.12 (operates
+        with 4,1943 MHz quartz)</strong></font></a></td>
+        <td valign="top" width="20">&nbsp;</td>
+        <td valign="top" width="160"><a href="http://lea.hamradio.si/%7Es57nan/ham_radio/fc_led_2/fc_led_2_prg_set.jpg"><font face="Arial" size="2"><strong>PIC
+        config bits</strong></font></a></td>
+    </tr>
+</tbody></table>
+
+<p><font color="#800000" face="Arial" size="1"><b></b></font>&nbsp;</p>
+
+<table border="0" cellspacing="0" width="800">
+    <tbody><tr>
+        <td width="150"><a href="http://lea.hamradio.si/%7Es57nan/ham_radio/fc_led_2/fcl_2_tv.jpg"><font face="Arial" size="2"><b>Photo - Top view</b></font></a></td>
+        <td width="150"><a href="http://lea.hamradio.si/%7Es57nan/ham_radio/fc_led_2/fcl_2_bv.jpg"><font face="Arial" size="2"><b>Photo - Bottom view</b></font></a></td>
+        <td width="220"><a href="http://lea.hamradio.si/%7Es57nan/ham_radio/fc_led_2/fcl_2_tv_92.jpg"><font face="Arial" size="2"><b>Photo - Latest PCB version with TO-92
+        style 78L05 housing - Top view (132 kbyte)</b></font></a><font face="Arial" size="2"><b> </b></font></td>
+        <td width="20">&nbsp;</td>
+        <td width="240"><a href="http://lea.hamradio.si/%7Es57nan/ham_radio/fc_led_2/fcl_2_bv_92.jpg"><font face="Arial" size="2"><b>Photo - Latest PCB version with TO-92
+        style 78L05 housing - Bottom view (138 kbyte)</b></font></a></td>
+    </tr>
+</tbody></table>
+
+<p><font color="#800000" face="Arial" size="2"><b></b></font>&nbsp;</p>
+
+<p><font color="#800000" face="Arial" size="2"><b>This is a
+successor of the PIC16C71 4-digit LED f-counter &amp; V-meter.
+Some hard to find parts used in the previous version, which are
+out of production for some time, has been omitted. A rather early
+PIC16C71 has also been replaced by 28-pin device PIC16F876. The
+later is capable of driving 4 digit LED display in multiplexed
+mode while measuring frequency, power supply voltage as well as
+handle two analog inputs to display SWR/PWR signal strength in a
+bargraph manner. There is no need for external LED display driver
+chip as well as external data EEPROM since it is already
+implemented in PIC16F876. Reduction in the number of used chips
+also results in smaller dimensions of the counter compared to its
+predecessor.</b></font></p>
+
+<p><font color="#800000" face="Arial" size="2"><b>The latest
+software version (V1.1) supports following functionality:</b></font></p>
+
+<table border="0" cellpadding="7" cellspacing="0" width="635">
+    <tbody><tr>
+        <td valign="top" width="4%"><img src="fcl2_files/bullet1.gif" height="12" width="12"></td>
+        <td valign="top" width="96%"><font color="#800000" face="Arial" size="2"><b>Measurement of the frequency up
+        to 50MHz </b></font></td>
+    </tr>
+    <tr>
+        <td valign="top" width="4%"><img src="fcl2_files/bullet1.gif" height="11" width="11"></td>
+        <td valign="top" width="96%"><font color="#800000" face="Arial" size="2"><b>Measurement of power supply
+        voltage in the range of 0.0 V … 25.5 V </b></font></td>
+    </tr>
+    <tr>
+        <td valign="top" width="4%"><img src="fcl2_files/bullet1.gif" height="11" width="11"></td>
+        <td valign="top" width="96%"><font color="#800000" face="Arial" size="2"><b>Measurement of the input voltage
+        at two analog inputs, simultaneously displayed as
+        bargraph (PWR/SWR or S) indicator. The input sensitivity
+        could be chosen between 0.25V, 0.5V, 1.0V and 2.0V for
+        maximum bargraph indication.</b></font></td>
+    </tr>
+    <tr>
+        <td valign="top" width="4%"><img src="fcl2_files/bullet1.gif" height="11" width="11"></td>
+        <td valign="top" width="96%"><font color="#800000" face="Arial" size="2"><b>Power save mode: Automatic
+        display shut-down in case the push-button action or
+        frequency change does not occur for a certain time.
+        Display switches on againt after frequency change or
+        push-button action. The available shut-down time periods
+        are 3s, 10s, 30s, 60s, 120s, 180s and 240s. This function
+        can be disabled in set-up menu.</b></font></td>
+    </tr>
+    <tr>
+        <td valign="top" width="4%"><img src="fcl2_files/bullet1.gif" height="12" width="12"></td>
+        <td valign="top" width="96%"><font color="#800000" face="Arial" size="2"><b>Programmable frequency offset
+        added or subtracted from measured frequency, settable in
+        the range of 0 to 99,999.9 kHz. This is convenient for
+        use with heterodyne type of RX/TX</b></font></td>
+    </tr>
+    <tr>
+        <td valign="top" width="4%"><img src="fcl2_files/bullet1.gif" height="12" width="12"></td>
+        <td valign="top" width="96%"><font color="#800000" face="Arial" size="2"><b>Different display modes: XX.XX
+        MHz, X.XXX MHz, XXX.X kHz</b></font></td>
+    </tr>
+    <tr>
+        <td valign="top" width="4%"><img src="fcl2_files/bullet1.gif" height="12" width="12"></td>
+        <td valign="top" width="96%"><font color="#800000" face="Arial" size="2"><b>Display resolution 100 Hz </b></font></td>
+    </tr>
+    <tr>
+        <td valign="top" width="4%"><img src="fcl2_files/bullet1.gif" height="12" width="12"></td>
+        <td valign="top" width="96%"><font color="#800000" face="Arial" size="2"><b>Measurement resolution 12,5 Hz </b></font></td>
+    </tr>
+    <tr>
+        <td valign="top" width="4%"><img src="fcl2_files/bullet1.gif" height="12" width="12"></td>
+        <td valign="top" width="96%"><font color="#800000" face="Arial" size="2"><b>Hysteresis of displayed value 25
+        Hz </b></font></td>
+    </tr>
+</tbody></table>
+
+<p><font color="#800000" face="Arial" size="2"><b>In operating
+mode a push-button allows the user to choose between the
+frequency, bargraph or supply voltage to be displayed. The
+frequency display mode can also be changed with longer (&gt;1s)
+push-button pressing. For example if the frequency to be
+displayed is 14.065.9 MHz the user will see on the four digit
+display either "065.9", "4.065" or
+"14.06". The default display mode after power-up can be
+changed in the set-up menu. The set-up menu is entered at
+power-up while holding the push-button pressed.</b></font></p>
+
+<p><font color="#800000" face="Arial" size="2"><b>The production
+of Siemens's (now Infineon's) miniature 7 seg. LED HDN1077
+displays in low current version (suffix O) was abandoned
+recently. Therefore I've designed another display PCBoard which
+suits the same f-counter base board but uses newer Agilent's
+HDSP-U103 miniature 7 seg. LED displays. Their current
+consumption is even smaller. They need no more than 0,5mA per
+segment for acceptable brightness. Assuming that during normal
+operation in average only one half of the segments lights, the
+average current consumption of the counter is about 20mA. In
+power-save mode the consumption reduces to less than 10mA which
+is important in case of battery powered equipment.</b></font></p>
+
+<p><font color="#800000" face="Arial" size="2"><b>The latest
+software version of the frequency counter is for radio-amateur
+and non-commercial use downloadable from this page for free. The
+PIC controller is in-circuit programmable if the MC34064 reset
+circuit is not soldered to the PCB. The instalation of this IC is
+strongly recommended after the frequency counter has been built
+and tested. </b></font></p>
+
+<p><font color="#800000" face="Arial" size="2"><b></b></font>&nbsp;</p>
+
+<table border="0" cellspacing="0" width="623">
+    <tbody><tr>
+        <td valign="top"><a href="http://lea.hamradio.si/%7Es57nan/ham_radio/index.html"><font color="#800000" face="Arial" size="2"><b>Back to S56AL
+        page!</b></font></a><font color="#800000" face="Arial" size="2"> </font></td>
+    </tr>
+</tbody></table>
+
+<p><font color="#800000" face="Arial" size="2"></font>&nbsp;</p>
+
+<p><font color="#800000" face="Arial" size="2"></font>&nbsp;</p>
+
+<p><font color="#800000" face="Arial" size="2"></font>&nbsp;</p>
+
+<p><font color="#800000" face="Arial" size="2"></font>&nbsp;</p>
+</body></html>

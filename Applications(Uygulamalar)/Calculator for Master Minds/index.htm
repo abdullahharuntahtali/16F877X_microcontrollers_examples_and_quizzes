@@ -1,0 +1,346 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Master Mind Calculator, based on a Microchip PIC 16F84</title></head><body bgcolor="#f5eae2">
+
+<h1 align="left">How To Build a Calculator for Master Minds</h1>
+<div align="left">
+
+<table border="1" width="691">
+  <tbody><tr>
+    <td width="199"><h4><big>based on a Microchip PIC 16F84</big> processor<br>
+    ... and some additional parts</h4>
+    </td>
+    <td bgcolor="#f4e3df" width="484"><p align="center"><big><big>Parts</big></big></p></td>
+  </tr>
+  <tr>
+    <td width="199"><p align="center">
+    <applet code="index_files/MasterMindApplet.class" archive="index_files/MM.jar" height="181" width="121">
+      <param name="R" value="243">
+      <param name="G" value="234">
+      <param name="B" value="226">
+      <param name="resizeable" value="true"><img src="index_files/mm47-7a.gif" alt="A calculator for master minds -- Java Applet written by my son Jan Strobl, age 14" height="181" width="121">
+    </applet>
+    </p></td>
+    <td align="center" valign="middle" width="484"><ul>
+      <li><p align="left">PIC16F84-04/P</p>
+      </li>
+      <li><p align="left">8 MHz ceramic resonator (or 2*22pF + 8MHz Quartz)</p>
+      </li>
+      <li><p align="left">4 HDSP 5503 seven segment LED displays, common cathode</p>
+      </li>
+      <li><p align="left">2 Keys</p>
+      </li>
+      <li><p align="left">Resistor, 4.7K (optional)</p>
+      </li>
+      <li><p align="left">Battery or Accu, 4.5-6V</p>
+      </li>
+    </ul>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" width="683"><font color="#008080" face="Comic Sans MS"><strong>Java Applet
+    written by <a href="http://www.mystrobl.de/jan/index.htm">Jan Strobl</a>, Bonn<br>
+    To start, click into calculator picture, read and then cancel help window.</strong></font></td>
+  </tr>
+</tbody></table>
+</div><div align="left"></div>
+
+<h2>Description</h2>
+
+<p>This piece of equipment (a kind of toy, a gadget, so to speak) is the result of a
+weekend/late night project I recently carried out at home, in order to tinker with PICs
+and learn how to program these little gems. The calculator sized device shown above <a href="http://www.mystrobl.de/ws/pic/mm47/index.htm#plays">plays</a> a variant of the game called Bulls and Cows (or, in a
+variant, Jotto), a guessing game popularized by Invicta Plastics under the name Master
+Mind. Being based on a computer, my variant doesn't use colors and pegs, or cards, but
+numbers, naturally.</p>
+
+<p>So what does it do? Well, the user thinks up a hidden code (an arbitrary 4 digit number
+composed of digits from 1 to 7), then the computer tries to guess it, by offering a
+combination. This combination is displayed on the 4 digit LED display. For example, in the
+picture above, it shows the combination 1425. &nbsp; </p>
+
+<p>These guesses are in turn rated by the user by using two buttons, telling the computer
+how many places are having the correct digit displayed, and how many of the rest are
+correct, but misplaced. The computer uses this to select then next try, and so on, until
+either the hidden code is known to the computer - or the user is known to have made a
+mistake :-). In the former case the computer displays the correct combination and flashes
+the decimal points in form of a running light. I the latter case, it displays four zeros
+0000, indicating an error.</p>
+
+<h2>Sources and Binaries (download)</h2>
+
+<p>The <a href="http://www.mystrobl.de/ws/pic/mm47/mm47bas.htm">program</a> is written in a a PicBasic / Assembler mixture. </p>
+
+<p>If anybody would like to build this gadget, and perhaps tinker a bit with the code,
+without having access to a Picbasic compiler, please have a look at the very same <a href="http://www.mystrobl.de/ws/pic/mm47/MM47V38.asm">program</a>, but translated into Standard Microchip Assembler language.
+It contains no Picbasic statements, no macros anymore, but pure plain Microchip Assembler
+code only. This source differs from a straight disassembly by the fact that all program
+labels are still there.</p>
+
+<p>For just building the toy, and using my program as a black box, here is the <a href="http://www.mystrobl.de/ws/pic/mm47/MM47V38.HEX">binary</a>, in Intel hex format as produced by the assembler, and as it
+is used by most of the PIC programmers. Use a programmer to put the binary into a PIC16F84
+(WDT off!), and wire it as described below.</p>
+
+<h2><a name="plays">User interface and instructions for using the calculator</a></h2>
+
+<p>The calculator has two buttons and a four digit display. The left button cycles through
+the numbers 0..4, the right key has the role of an enter key.</p>
+
+<p>Initially, the calculator is switched off.&nbsp; Think up a combination (say: 1234).
+&nbsp; Remember: use digits between 1 and 7. Neither 0 nor 8 or 9 are allowed.</p>
+
+<p>Now press the left key once.</p>
+
+<p>When the left key is pressed, the processor wakes up and displays the first question,
+immediately. For example, it displays the combination 1467. </p>
+
+<p>Here, in this example, it got one position right (the first one), and one additional
+digit (4, which is in the wrong position) right. So we have to enter "11", the
+first one for a correct position, the second one for a correct number.</p>
+
+<p>We do that by pressing the left button once. Now it displays a "0" in the
+position next to the rightmost position, i.e. "<font face="Courier">__0_</font>".
+We press the left key again "<font face="Courier">__1_</font>" and enter it by
+pressing the right key once. Now we see "<font face="Courier">__10</font>" in
+the display. Pressing the left key this time increments the rightmost digit ("<font face="Courier">__11</font>"). Fine, we press the right button (the "enter"
+key) again, and after less than half a second, the calculator displays its next guess,
+1236 in this example. Now this is almost right, so we enter "<font face="Courier">__30</font>"
+by pressing &lt;left&gt; &lt;left&gt; &lt;left&gt;&lt;left&gt; &lt;right&gt;
+&lt;right&gt;. The next guess is "<font face="Courier">1136</font>", we enter
+"<font face="Courier">__20</font>", then <font face="Courier">1256</font>
+("<font face="Courier">__20</font>"). Bingo: the display shows <font face="Courier">1234</font>, and blinks the decimal points as a running light in order to
+indicated success.&nbsp; We enjoy it, press one of the buttons for one last time, which
+puts the device to sleep, where it consumes less than 2 µA. </p>
+
+<h4>In summary:</h4>
+
+<p>We choose the hidden Code 1234</p>
+<div align="left">
+
+<table bgcolor="#000080" border="1" cellpadding="2" width="173">
+  <tbody><tr>
+    <td align="center" height="19" width="105"><big><font color="#ffffff">Computer displays</font></big></td>
+    <td align="center" height="19" width="60"><big><font color="#ffffff">User enters...</font></big></td>
+  </tr>
+  <tr>
+    <td align="center" height="18" width="105"><big><font color="#ff0000">1 4 6 7</font></big></td>
+    <td align="center" height="18" width="60"><big><font color="#ff0000">1 1</font></big></td>
+  </tr>
+  <tr>
+    <td align="center" height="19" width="105"><big><font color="#ff0000">1 2 3 6</font></big></td>
+    <td align="center" height="19" width="60"><big><font color="#ff0000">3 0</font></big></td>
+  </tr>
+  <tr>
+    <td align="center" height="19" width="105"><big><font color="#ff0000">1 1 3 6</font></big></td>
+    <td align="center" height="19" width="60"><big><font color="#ff0000">2 0</font></big></td>
+  </tr>
+  <tr>
+    <td align="center" height="19" width="105"><big><font color="#ff0000">1.2.3.4</font></big></td>
+    <td align="center" height="19" width="60"><big><font color="#ffffff">bingo</font></big></td>
+  </tr>
+</tbody></table>
+</div>
+
+<hr>
+
+<h2>History and theory of operation</h2>
+
+<p>This is about the fifth or sixth implementation of that problem I did over the years.
+The first implementation was done on a 4 MHz single board computer called Nascom II,
+written in Z80 assembler language, a few years after the game was popularized as
+Mastermind. The second one was an port of the same algorithm to the same machine, but with
+the machine converted into a CP/M computer in the meantime. Then I wrote a version in
+G-Level PLI, still on my home-brew CP/M machine. That PLI version got ported to a large
+IBM mainframe, later. Etc. </p>
+
+<p>The code breaking strategy is a nice little algorithmic problem to explore new
+languages or new architectures with, not as trite as the ubiquitous prime number
+generator, but not too complicated either.&nbsp; The computerized game itself isn't very
+interesting anymore - Knuth <a href="http://www.mystrobl.de/ws/pic/mm47/index.htm#%5B1%5D">[1]</a> found the optimal strategy for
+a specific game (i.e. 4x6) by doing an exhaustive search, one year after the game was
+brought to marked by Invicta Plastics, and published it in an article - , but the various
+algorithms for different space and time constraints are still interesting, IMHO. </p>
+
+<p>In the case of the PIC, which has barely enough memory for storing the answers,
+implementing the generic variant of my algorithm (which finds a good question for an
+arbitrary <em>n</em> x<em> m</em> game, by using a variant of the classical
+Branch-and-Bound strategy), is completely out of question. So is storing Knuths decision
+tables. (Well, perhaps ... hmmm). Anyway, on a mid-range PIC even the solution to the
+problem of selecting one element from a set of currently unknown size with equal
+probability is not completely obvious. </p>
+
+<p>So for this variant, I had to use the simple minded random strategy, which is
+practically almost as good as the optimal strategy (according to Mike Wiener, see <a href="http://www.mystrobl.de/ws/pic/mm47/index.htm#%5B3%5D">[3]</a>).&nbsp; It should find the hidden code in about five tries,
+too. I allocated 18 bytes of the 68 Bytes available on the 16F84, giving room for six
+answers at most. This leaves a little bit of room for trying different strategies without
+having to change the memory layout. Another 16 bytes are necessary for storying four
+combinations, while doing the search, uncompressed, for simplicity and speed. </p>
+
+<p>One comparison needs about 150 instructions, or 150µs, on a nominal 4 MHz clock. That
+amounts to 150µs*2401 = 1/3 seconds looking at every possible combination after the first
+question. When using a 8 MHz resonator, as I did (a 16F84-04 runs quite well even with a
+10 MHz quartz or resonator, if one doesn't need the full temperature/Vdd range, no need to
+buy the expensive -10 version), the questions usually get computed in less than half a
+second. That's fast enough.</p>
+
+<p>A few remarks about the <a href="http://www.mystrobl.de/ws/pic/mm47/algorithm.htm">Algorithm</a>s used will be added on a
+separate page.</p>
+
+<h2>References</h2>
+
+<p><a name="[1]">[1]</a> Donald E. Knuth, The Computer as Master Mind. J. Recreational
+Mathematics, Vol. 9(1) (1976-77), 1-6. </p>
+
+<p><a name="[2]">[2]</a> Kenji Koyama, Tony W. Lai. An Optimal Mastermind Strategy, J.
+Recreational Mathematics, VOl. 25(4), 251-256,1993 <em>(my copy says 1993, not 1994)</em></p>
+
+<p><a name="[3]">[3]</a> <a href="http://www.math.niu.edu/%7Erusin/uses-math/games/mastermind/mastermind">http://www.math.niu.edu/~rusin/uses-math/games/mastermind/mastermind</a></p>
+
+<hr>
+
+<h2>Construction and instructions for building the calculator.</h2>
+<div align="left">
+
+<table border="0">
+  <tbody><tr>
+    <td><img src="index_files/mm47-4.jpg" alt="Under the hood, it's almost empty ..." height="215" width="172"></td>
+    <td>The whole thing needs only a few parts, as shown in the part list above. It doesn't
+    even have a power switch. Everything, including the 7-segment encoding and multiplexing,
+    and switching off power (utilizing the processors sleep mode and wake up on port change)
+    is done by the processor and in software. So building the circuit boils down to solder in
+    four seven-segments-displays (a 40 pin socket will do, too), a socket for the processor,
+    and to wire all the many pins of the HDSPs correctly to the processors socket.</td>
+  </tr>
+</tbody></table>
+</div>
+
+<h2>Circuit diagram</h2>
+
+<p>This diagram has been drawn after building the device (using random wiring on a spare
+pcb), in order to document it.</p>
+
+<p><img src="index_files/mm47c.gif" alt="Circuit diagram for the Master Mind Calculator" height="583" width="522"></p>
+
+<p>All anodes of all digits are driven by port B (seven segments plus a single decimal
+point), by connecting identical pins (i.e. pin 1 of the first display with pin 1 of the
+second, third and forth, and so on. Segment <strong>a</strong> to <strong>g</strong>
+correspond to PB0 to PB6, <strong>DP</strong>, the decimal point, is connected to PB7.</p>
+
+<p>Four lines of port A are used for multiplexing the four digits, PA0 is connected to the
+common kathode of the first (leftmost) digit, and so on.</p>
+
+<p>One port A pin (PA4) is still free and unused. It has to be connected to ground, in
+order to reduce power consumption in power-down mode. In addition, two of the port B pins
+are connected to a switch (push button), which is connected to ground. There are no
+pull-up resistors necessary, because some of the port B pins have weak internal pull-up
+resistors, optionally. Multiplexing and sharing a single pin between driving various leds
+and sensing the button is done by carefully switching the port B pins between input and
+output. For example, during the multiplexing, those two port B pins which are connected to
+the switches too, are made input frequently, in order to enable the pull-ups and to check
+the switch state. As soon and as long as a closed switch is detected, all pins are held in
+input state, in order to avoid short-circuiting a driving pin for more than a few ms. This
+method worked remarkably well. There is one drawback - the display is dark as long as a
+button is pressed. </p>
+<div align="left">
+
+<table border="1" cellpadding="3" cellspacing="3" width="257">
+  <tbody><tr>
+    <td align="center" valign="middle" width="145"><font face="Comic Sans MS"><big>HDSP 5503 </big></font></td>
+    <td width="145"><p align="center"><font face="Comic Sans MS"><big>Bits on Port B</big></font></p></td>
+    <td width="145">1,65 V, 30 mA (L x B x H): 17,2 x 12,6 x 8 mm <br>
+    14,2mm</td>
+  </tr>
+  <tr>
+    <td width="145"><img src="index_files/488801M2.JPG" alt="HDSP 5503 Internal Circuit Diagram" height="166" width="83"></td>
+    <td width="145"><pre>'   Anodes
+'  
+'   +--0--+	
+'   |     |
+'   5     1
+'   |     |
+'   +--6--+
+'   |     |
+'   4     2
+'   |     |
+'   +--3--+ (7)
+</pre>
+    </td>
+    <td width="145"><img src="index_files/488801M1.JPG" alt="HDSP 5503 picture" height="153" width="166"></td>
+  </tr>
+</tbody></table>
+</div>
+
+<h2>Remarks</h2>
+
+<p>Using about 5 V from a 4 cell, 110Ah Nicad battery pack (from a surplus sale), I
+measure between 25 and 30 mA during operation, and about 2 µA in sleep mode. It was
+necessary to ground PA4, in order to archive this. (A floating PA4 drives Ipd up to 100
+µA and more).&nbsp; That power consumption amounts to about three hours of continous
+operation on that battery, or many years of power down mode (theoretically, because it
+gets empty because self-discharge, <em>much</em> earlier). </p>
+
+<p>For that reason, I didn't consider a power switch necessary. The device goes into power
+saving mode immediately after the display is darkened. When the left button is pressed, it
+wakes up again.</p>
+
+<p>Getting the display right required quite a bit of tinkering with the times and the
+method. Finally, I used a two-level multiplex, where&nbsp; no more than two segments are
+lit at the same time.</p>
+
+<h3>Cost</h3>
+<div align="left">
+
+<table border="1" width="700">
+  <tbody><tr>
+    <td width="152">PIC 16F84-04/P</td>
+    <td align="right" width="83"><font face="Courier">DM 13,--</font></td>
+    <td rowspan="6" align="left" valign="top" width="465"><blockquote>
+      <p align="left">&nbsp;</p>
+      <p align="left">About like that. Parts where bought at Conrad Electronic, Germany, single
+      quantity price. One $ is approximately DM&nbsp;1.70, so that's about $15 for the parts.
+      Additionally, you need a circuit board, some wires and a battery.</p>
+    </blockquote>
+    </td>
+  </tr>
+  <tr>
+    <td width="152">Resonator, 8MHz</td>
+    <td align="right" width="83"><font face="Courier">DM&nbsp; 2,--</font></td>
+  </tr>
+  <tr>
+    <td width="152">4 HDSP5503 á 1,50</td>
+    <td align="right" width="83"><font face="Courier">DM&nbsp; 6,--</font></td>
+  </tr>
+  <tr>
+    <td width="152">2 Buttons, 2 á 1,--</td>
+    <td align="right" width="83"><font face="Courier">DM&nbsp; 2,--</font></td>
+  </tr>
+  <tr>
+    <td width="152">Box</td>
+    <td align="right" width="83"><font face="Courier">DM&nbsp; 3,--</font></td>
+  </tr>
+  <tr>
+    <td width="152">&nbsp;</td>
+    <td align="right" width="83"><font face="Courier">DM 26,--</font></td>
+  </tr>
+</tbody></table>
+</div>
+
+<h2>Future enhancements</h2>
+
+<ul>
+  <li>Automatic power-off after idling for a few minutes. </li>
+  <li>Competition mode, where computer and user can change role. Results could be easily
+    stored in the non-volatile EEPROM of the 16F84, which is currently unused. Unfortunately,
+    the 1 K program space is already almost filled up, so the program would have to be
+    reorganized.</li>
+</ul>
+
+<p>Copyright © 1998 by Wolfgang Strobl, all rights reserved. <br>
+Personal and educational use granted. Use at your own risk. </p>
+
+<hr>
+
+<address>
+  <a href="http://validator.w3.org/check/referer"><img src="index_files/vh40.gif" alt="Valid HTML 4.0!" align="right" border="0" height="31" width="88"></a> 98-11-22 Strobl x 
+</address>
+
+</body></html>

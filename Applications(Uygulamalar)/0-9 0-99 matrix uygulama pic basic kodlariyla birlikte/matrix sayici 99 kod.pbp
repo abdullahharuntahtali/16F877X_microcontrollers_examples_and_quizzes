@@ -1,0 +1,47 @@
+include "modedefs.bas"
+'cmcon=7
+trisa=0
+trisb=0
+'trisc=0
+'trisd=0
+
+ekran var byte[30]
+porta=%11111111
+
+b0 var byte
+b0=1
+
+ekran[0]=%11111111
+ekran[1]=%10001111
+ekran[2]=%11111111
+
+ekran[3]=%01001111
+ekran[4]=%11111111
+ekran[5]=%00001111
+
+ekran[6]=%10111111
+ekran[7]=%10101111
+ekran[8]=%11101111
+
+basla:
+gosub ekran1
+goto basla
+
+ekran1:
+        portb=ekran[6]:low portb.2:pause 25: high portb.2
+        portb=ekran[7]:low portb.1:pause 25: high portb.1
+        portb=ekran[8]:low portb.0:pause 25: high portb.0
+
+        portb=0 : low porta.3 : pause 25 : high porta.3
+        
+        portb=ekran[3]:low porta.2:pause 25: high porta.2
+        portb=ekran[4]:low porta.1:pause 25: high porta.1
+        portb=ekran[5]:low porta.0:pause 25: high porta.0
+
+        return
+
+end
+
+
+
+

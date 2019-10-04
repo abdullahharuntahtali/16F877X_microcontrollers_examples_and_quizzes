@@ -1,0 +1,1213 @@
+MPASM 03.80 Released                             TEMPDEMO.ASM   11-20-2005  18:21:10         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001     list    p=16F628A
+                      00002     include P16F628A.inc
+                      00001         LIST
+                      00002 ; P16F628A.INC  Standard Header File, Version 1.10    Microchip Technology, Inc.
+                      00265         LIST
+                      00003     include tempdemo.inc
+                      00001 ;****************************************************************************
+                      00002 ;*                                                                          *
+                      00003 ;*                   Dallas 1 Wire Bus Temperature demo                     *
+                      00004 ;*                                                                          *
+                      00005 ;****************************************************************************
+                      00006 
+  003D0900            00007 Clock_Freq      equ     d'4000000'      ;4MHz - for wait macro calculations
+                      00008 
+                      00009     udata_ovr   0x20                    ;0x0C 16F84
+0020                  00010 DScommbuff      res     1
+0021                  00011 DSCRC           res     1
+                      00012 
+0022                  00013 tempone         res     1
+0023                  00014 temptwo         res     1
+0024                  00015 count           res     1
+0025                  00016 count2          res     1               ; 2nd loop counter for nested loops
+0026                  00017 bits_byte       res     1
+                      00018 
+0027                  00019 CHARBUF         res     1
+0028                  00020 temp_hi         res     1
+0029                  00021 temp_lo         res     1
+002A                  00022 acc_lo          res     1
+002B                  00023 acc_hi          res     1
+                      00024 
+002C                  00025 vvshift         res     1
+                      00026 
+                      00027 #define PRESENCE_bit    bits_byte, 0
+                      00028 #define round00_bit     bits_byte, 1
+                      00029 #define DSNext_bit      bits_byte, 2
+                      00030 #define neg_temp_bit    bits_byte, 3
+                      00031 #define DALLAS_BUS      PORTA, 4
+                      00032 
+002D                  00033 ROM_no          res     8
+0035                  00034 id_bit_number   res     1
+0036                  00035 last_zero       res     1
+0037                  00036 LastDiscrepancy res     1
+0038                  00037 LastFamilyDiscr res     1
+0039                  00038 id_bits_byte    res     1
+003A                  00039 rom_mask        res     1
+                      00040 
+                      00041 #define id_bit          id_bits_byte, 0 ; first bit read in a search ID sequence
+                      00042 #define cmp_id_bit      id_bits_byte, 1 ; complement of id_bit
+                      00043 #define test_bit        id_bits_byte, 2 ; test id_bit & cmp_id_bit
+                      00044 
+                      00045 #define last_device     id_bits_byte, 6
+                      00046 #define Direction       id_bits_byte, 7
+                      00004     include dal_bus.inc
+MPASM 03.80 Released                             TEMPDEMO.ASM   11-20-2005  18:21:10         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00032         list
+                      00005     include wait.inc
+                      00001 
+                      00002 #define         Nanosec         * D'1'
+                      00003 #define         Microsec        * D'1000'
+                      00004 #define         Millisec        * D'1000000'
+                      00005 #define         Seconds         * D'1000000000'
+                      00006        
+                      00007 
+                      00008 ;**************************************************************
+                      00009 ;*                       The WAIT macro                       *
+                      00010 ;*                      * VERSION 1.01 *                      *
+                      00011 ;*             called by Wait <time>, lesscycles              *
+                      00012 ;**************************************************************
+                      00013 ;History
+                      00014 ;1.00   - Original
+                      00015 ;1.01   - Fixed bug with small even numbers giving an error message
+                      00016 
+                      00017 
+                      00018 Wait    macro   time_ns, lesscycles         ;time_ns gives the wait time required, in ns
+                      00019  radix dec
+                      00020  variable instruct_time_ns =  (( 1 Seconds ) / (Clock_Freq / 4 ))
+                      00021  local cycles
+                      00022  variable cycles = ((time_ns) / instruct_time_ns)   ;required delay in 
+                      00023                                                          ;100ths of instructions
+                      00024 
+                      00025  if (cycles < (lesscycles) )
+                      00026         messg NOTE - negative delay time with lesscycles cycles (no code)
+                      00027                
+                      00028                 exitm
+                      00029  else
+                      00030  variable cycles = (cycles - (lesscycles))
+                      00031  endif
+                      00032 
+                      00033  if (cycles == 0) 
+                      00034         messg "WARNING - delay time less than 1 instructions"
+                      00035                
+                      00036                 nop
+                      00037                 exitm
+                      00038  endif
+                      00039 
+                      00040  if (cycles > (255*(256*3 + 6) + 2 + 3))
+                      00041         messg   "ERROR : Too long a wait for the WAIT macro at present!!"
+                      00042         exitm
+                      00043  endif
+                      00044         
+                      00045 ;        messg Info - calculated number of cycles = #v(cycles)
+                      00046 
+                      00047 
+                      00048  if (cycles > ((255*3)+5))
+                      00049                 
+                      00050                 movlw   ((cycles-5)/(256*3+6))
+                      00051                 call    longdelay
+MPASM 03.80 Released                             TEMPDEMO.ASM   11-20-2005  18:21:10         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00052  
+                      00053  ifndef INCLONGDELAY
+                      00054   #define INCLONGDELAY
+                      00055  endif
+                      00056 
+                      00057  exitm
+                      00058  endif
+                      00059 
+                      00060  if ((cycles > 8 ) && (cycles < (255*3 + 5)))
+                      00061                 
+                      00062                 movlw   ((cycles-5)/3)        
+                      00063                 call    shortdelay
+                      00064  
+                      00065  ifndef INCSHORTDELAY
+                      00066   #define INCSHORTDELAY
+                      00067  endif
+                      00068 
+                      00069  exitm
+                      00070  endif
+                      00071 
+                      00072  if (cycles < 8)
+                      00073  while  ( cycles > 1 )
+                      00074                 
+                      00075                 goto $+1  ;two cycle nop
+                      00076         
+                      00077 cycles -=2
+                      00078  endw
+                      00079  endif
+                      00080  
+                      00081  if (cycles > 0)
+                      00082                nop
+                      00083  
+                      00084  endif
+                      00085  exitm
+                      00086  
+                      00087  messg "ERROR - got to end of WAIT.MAC"
+                      00088 
+                      00089  radix hex
+                      00090  endm
+                      00006     include lm032l.inc
+                      00048     list
+                      00007 
+                      00008 ;------defines for conditional assembly------
+                      00009 ;#define round00
+                      00010 ;#define test
+                      00011 ;#define EEdsrom
+                      00012 ;#define dog
+                      00013 
+                      00014     errorlevel  -302    ;Eliminate bank warning
+                      00015 ;CONFIG CODE
+                      00016 #ifdef dog
+                      00017     __config _BODEN_OFF & _CP_OFF& _DATA_CP_OFF & _PWRTE_ON & _WDT_ON  & _LVP_OFF & _MCLRE_ON & _XT_OSC
+                      00018     messg   "W   A   T   C   H__________D   O   G"
+MPASM 03.80 Released                             TEMPDEMO.ASM   11-20-2005  18:21:10         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00019 #else
+2007   3F21           00020     __config _BODEN_OFF & _CP_OFF& _DATA_CP_OFF & _PWRTE_ON & _WDT_OFF & _LVP_OFF & _MCLRE_ON & _XT_OSC
+                      00021 #endif  ; dog
+                      00022 
+                      00023 ; noexpand
+                      00024 ;****************************************************************************
+                      00025 ;*                                                                          *
+                      00026 ;*                   Dallas 1 Wire Bus Temperature demo                     *
+                      00027 ;*                                                                          *
+                      00028 ;* This file and the resulting compiled code copyright1993-97 Steve Lawther *
+                      00029 ;*      Use of any of this code requires Steve Lawther to have a credit     *
+                      00030 ;*        within the source code. Commercial use of any of this code        *
+                      00031 ;*             requires permission of the author, Steve Lawther             *
+                      00032 ;*   For more details read 'README.TXT' or email 100255.157@compuserve.com  *
+                      00033 ;****************************************************************************
+                      00034 ;* This outline requires IBM line draw chrs                                 *
+                      00035 ;*                             ÚÄÄÄÄ\/ÄÄÄÄ¿                                 *
+                      00036 ;*                   nc       Íµøra2   ra1ÆÍ  spare                   (not )*
+                      00037 ;*                   nc       Íµra3    ra0ÆÍ  led via resistor to +5V (used)*
+                      00038 ;*         Dallas 1 wire bus  Íµra4ck osc1ÆÍ  \ Crystal 10MHz               *
+                      00039 ;*                  Vdd       Íµmclr  osc2ÆÍ  /                             *
+                      00040 ;*                 ground     ÍµVss    VddÆÍ  +5V                           *
+                      00041 ;*                   nc       Íµrb0int rb7ÆÍ LCD data bit 7                 *
+                      00042 ;*             LCD cntrl E    Íµrb1    rb6ÆÍ LCD data bit 6                 *
+                      00043 ;*             LCD cntrl R/W  Íµrb2    rb5ÆÍ LCD data bit 5                 *
+                      00044 ;*             LCD cntrl RS   Íµrb3    rb4ÆÍ LCD data bit 4                 *
+                      00045 ;*                             ÀÄÄÄÄÄÄÄÄÄÄÙ                                 *
+                      00046 ;*                                                                          *
+                      00047 ;****************************************************************************
+                      00048 ;History:-
+                      00049 ;ver 0.01 - original version - raw data output
+                      00050 ;    0.10 - raw data + high resolution temperature
+                      00051 ;    0.11 - corrected one line (btfsc changed to btfss)
+                      00052 
+                      00053 #define LED     PORTB, 0    ; LED - clear for lit, set for off
+                      00054 
+  0000                00055     global uchars
+                      00056 
+  0000                00057     extern DISPLAY_RESET, SEND_CHAR_W, SEND_CHAR, SEND_CMD_W    ;LM032CLK.ASM
+  0000                00058     extern LOAD_CGRAM, LOAD_CGRAM_LOC                           ;LM032CLK.ASM
+                      00059 
+  0000                00060     extern DSReset_Pulse, DSWriteByteW, DSReadByte, DSReadBit   ;DAL_BUS.ASM
+  0000                00061     extern OWSearch                                             ;DAL_BUS.ASM
+                      00062 
+  0000                00063     extern longdelay, shortdelay                                ;DELAY.ASM
+                      00064 
+                      00065 ;****************************************************************************
+                      00066 ;*
+                      00067 ;*   Start
+                      00068 ;*
+                      00069 ;****************************************************************************
+                      00070 
+                      00071 PROG CODE
+MPASM 03.80 Released                             TEMPDEMO.ASM   11-20-2005  18:21:10         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0000                  00072 Begin
+0000   3007           00073     movlw   0x07
+0001   009F           00074     movwf   CMCON
+                      00075 
+0002   1683           00076     bsf     STATUS, RP0     ; Bank 1
+0003   30FF           00077     movlw   0xFF
+0004   0081           00078     movwf   OPTION_REG
+0005   300F           00079     movlw   b'00001111'
+0006   0085           00080     movwf   TRISA           ; RA0-RA3 unused
+0007   1283           00081     bcf     STATUS, RP0     ; Bank 0
+                      00082 
+0008   0185           00083     clrf    PORTA           ; set all port low
+                      00084 
+0009   1683           00085     bsf     STATUS, RP0     ; Bank 1
+000A   3000           00086     movlw   b'00000000'
+000B   0086           00087     movwf   TRISB           ;set all to output
+000C   1283           00088     bcf     STATUS, RP0     ; Bank 0
+                      00089 
+000D   2???           00090     call    DISPLAY_RESET
+                      00091 
+                      00092 ;    call    LOAD_CGRAM      ; load user defined characters
+000E   01??           00093     clrf    bits_byte
+                      00094 
+000F                  00095 Start
+                      00096 ;****************************************************************************
+                      00097 ;*
+                      00098 ;* Main Code - get the ID and display it, then get the temp and display it
+                      00099 ;*
+                      00100 ;****************************************************************************
+                      00101 
+000F   3010           00102     movlw   0x10
+0010   00??           00103     movwf   temp_lo
+0011   2???           00104     call    LOAD_CGRAM      ; load user defined characters
+                      00105 
+0012   3048           00106     movlw   0x48
+0013   2???           00107     call    SEND_CMD_W
+0014   3018           00108     movlw   0x18
+0015   00??           00109     movwf   temp_lo
+0016   2???           00110     call    LOAD_CGRAM_LOC  ; load user defined characters
+0017   3050           00111     movlw   0x50
+0018   2???           00112     call    SEND_CMD_W
+0019   3020           00113     movlw   0x20
+001A   00??           00114     movwf   temp_lo
+001B   2???           00115     call    LOAD_CGRAM_LOC  ; load user defined characters
+001C   3058           00116     movlw   0x58
+001D   2???           00117     call    SEND_CMD_W
+001E   3028           00118     movlw   0x28
+001F   00??           00119     movwf   temp_lo
+0020   2???           00120     call    LOAD_CGRAM_LOC  ; load user defined characters
+                      00121 
+                      00122 
+                      00123 
+0021                  00124 NextTemp
+MPASM 03.80 Released                             TEMPDEMO.ASM   11-20-2005  18:21:10         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0021   01??           00125     clrf    bits_byte
+                      00126 ; skip ID Search if EEPROM is not empty
+0022   0103           00127     clrw
+0023   2???           00128     call    EEread
+0024   3ED8           00129     addlw   (0 - 0x28)
+                      00130 ;    btfsc   STATUS, Z
+                      00131 ;     goto   EndSearch
+0025                  00132 StartNewSearch
+0025   01??           00133     clrf    id_bits_byte    ; last_device flag = 0
+0026   01??           00134     clrf    LastDiscrepancy
+0027   01??           00135     clrf    LastFamilyDiscr
+0028   01??           00136     clrf    temp_lo         ; EEPROM counter
+                      00137 
+0029                  00138 OWReset
+0029   2???           00139     call    DSReset_Pulse
+002A   1406           00140     bsf     LED
+                      00141 ;    Wait    197 Millisec, 0
+002B   1006           00142     bcf     LED
+                      00143 ;    Wait    47 Millisec, 0
+                      00144 #ifndef test
+002C   1C00           00145     btfss   PRESENCE_bit    ; wait for a presence pulse
+002D   2???           00146      goto   OWReset
+002E   1406           00147     bsf LED
+                      00148 #endif
+002F   1B00           00149     btfsc   last_device     ; check last_device flag
+0030   2???           00150      goto   EndSearch
+                      00151 
+0031   2???           00152     call    OWSearch        ; W = 1/W = 0 not/successful search
+0032   39FF           00153     andlw   0xFF            ; update STATUS, Z!
+0033   1D03           00154     btfss   STATUS, Z
+0034   2???           00155      goto   StartNewSearch
+                      00156 ; write ID to EEPROM
+0035   3008           00157     movlw   0x08
+0036   00??           00158     movwf   count
+0037   30??           00159     movlw   ROM_no
+0038   0084           00160     movwf   FSR
+0039                  00161 SaveROM_no
+0039   0800           00162     movf    INDF, W
+003A   2???           00163     call    EEwrite
+003B   0A84           00164     incf    FSR, F
+003C   0A??           00165     incf    temp_lo, F
+003D   0B??           00166     decfsz  count, F
+003E   2???           00167      goto   SaveROM_no
+003F   2???           00168     goto    OWReset
+                      00169 
+0040                  00170 EndSearch
+                      00171 #ifndef test
+0040   2???           00172     call    DSReset_Pulse
+0041   1C00           00173     btfss   PRESENCE_bit    ; wait for a presence pulse
+0042   2???           00174      goto   $-2
+                      00175 #endif
+                      00176 
+                      00177 
+MPASM 03.80 Released                             TEMPDEMO.ASM   11-20-2005  18:21:10         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00178 
+0043   30CC           00179     movlw   DSSkipROM
+0044   2???           00180     call    DSWriteByteW
+0045   3044           00181     movlw   DSConvertTemp   ; set all 1820s on converting
+0046   2???           00182     call    DSWriteByteW
+                      00183 
+0047                  00184 tempnotready
+0047   2???           00185     call    DSReadBit
+0048   1C00           00186     btfss   DScommbuff, 0
+0049   2???           00187      goto   tempnotready
+                      00188 
+004A   3080           00189     movlw   0x80            ; go to first line
+004B   2???           00190     call    SEND_CMD_W
+004C   3001           00191     movlw   0x01            ; 'lamp'
+004D   2???           00192     call    SEND_CHAR_W
+                      00193 
+004E   0064           00194     clrwdt                  ; allow LCD delay variation (BUSY_CHECK)!
+                      00195 
+004F   1683           00196     bsf     STATUS, RP0     ; Bank 1
+0050   30FD           00197     movlw   b'11111101'
+0051   0081           00198     movwf   OPTION_REG
+0052   1283           00199     bcf     STATUS, RP0     ; Bank 0
+                      00200 #ifdef dog
+                      00201     sleep
+                      00202 #endif  ; dog
+0053   3080           00203     movlw   0x80            ; go to first line
+0054   2???           00204     call    SEND_CMD_W
+0055   3002           00205     movlw   0x02            ; 'house'
+0056   2???           00206     call    SEND_CHAR_W
+                      00207 
+0057   1683           00208     bsf     STATUS, RP0     ; Bank 1
+0058   30FF           00209     movlw   0xFF
+0059   0081           00210     movwf   OPTION_REG
+005A   1283           00211     bcf     STATUS, RP0     ; Bank 0
+                      00212 
+                      00213 #ifndef test
+005B   2???           00214     call    DSReset_Pulse
+005C   1C00           00215     btfss   PRESENCE_bit    ; wait for a presence pulse
+005D   2???           00216      goto   $-2
+                      00217 #endif
+005E   3055           00218     movlw   DSMatchROM
+005F   2???           00219     call    DSWriteByteW
+                      00220 ;send dsrom1
+0060   01??           00221     clrf    vvshift
+0061                  00222 dsload1
+0061   08??           00223     movf    vvshift, W
+0062   2???           00224     call    EEread
+0063   2???           00225     call    DSWriteByteW
+0064   0A??           00226     incf    vvshift, F
+0065   08??           00227     movf    vvshift, W
+0066   3EF8           00228     addlw   (0 - .8)
+0067   1D03           00229     btfss   STATUS, Z
+0068   2???           00230      goto   dsload1
+MPASM 03.80 Released                             TEMPDEMO.ASM   11-20-2005  18:21:10         PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0069   2???           00231     goto    DSGettemp
+                      00232 
+006A                  00233 DSNext
+006A   30C0           00234     movlw   0xC0            ; go to second line
+006B   2???           00235     call    SEND_CMD_W
+006C   3003           00236     movlw   0x03            ; 'tree'
+006D   2???           00237     call    SEND_CHAR_W
+                      00238 
+                      00239 #ifndef test
+006E   2???           00240     call    DSReset_Pulse
+006F   1C00           00241     btfss   PRESENCE_bit    ; wait for a presence pulse
+0070   2???           00242      goto   $-2
+                      00243 #endif
+0071   3055           00244     movlw   DSMatchROM
+0072   2???           00245     call    DSWriteByteW
+                      00246 ;send dsrom2
+0073                  00247 dsload2
+0073   08??           00248     movf    vvshift, W
+0074   2???           00249     call    EEread
+0075   2???           00250     call    DSWriteByteW
+0076   0A??           00251     incf    vvshift, F
+0077   08??           00252     movf    vvshift, W
+0078   3EF0           00253     addlw   (0 - .16)
+0079   1D03           00254     btfss   STATUS, Z
+007A   2???           00255      goto   dsload2
+007B   1500           00256     bsf     DSNext_bit
+                      00257 
+007C                  00258 DSGettemp
+007C   30BE           00259     movlw   DSReadScratch
+007D   2???           00260     call    DSWriteByteW
+007E   01??           00261     clrf    DSCRC
+                      00262 
+007F   2???           00263     call    DSReadByte
+0080   08??           00264     movf    DScommbuff, W
+0081   00??           00265     movwf   temp_lo
+0082   2???           00266     call    DSReadByte
+0083   08??           00267     movf    DScommbuff, W
+0084   00??           00268     movwf   temp_hi
+                      00269 
+0085   2???           00270     call    DSReadByte      ;read TH byte and dump
+0086   2???           00271     call    DSReadByte      ;read TL byte and dump
+0087   2???           00272     call    DSReadByte      ;read config byte and dump
+0088   2???           00273     call    DSReadByte      ;read reserved byte and dump
+0089   2???           00274     call    DSReadByte      ;read reserved byte and dump
+008A   2???           00275     call    DSReadByte      ;read reserved byte and dump
+                      00276 
+008B   2???           00277     call    DSReadByte      ;read CRC
+008C   08??           00278     movf    DScommbuff, W
+                      00279 ;    call    HEXtoLCD
+                      00280 
+008D   08??           00281     movf    DSCRC, F
+                      00282 #ifdef test
+                      00283     movlw   b'01011110';
+MPASM 03.80 Released                             TEMPDEMO.ASM   11-20-2005  18:21:10         PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00284     movwf   temp_lo
+                      00285     movlw   b'11111111'
+                      00286     movwf   temp_hi
+                      00287     bsf     STATUS, Z
+                      00288 #endif
+                      00289 ;if there's a CRC error don't display temp, as gash data upsets the temp routines
+008E   1D03           00290     btfss   STATUS, Z       ;corrected 31/07/98 (thanks Marco)
+008F   2???           00291      goto   no_displaytemp
+                      00292 
+                      00293 ;positive or negative temp?
+                      00294 
+0090   1180           00295     bcf     neg_temp_bit
+                      00296 
+0091   1F80           00297     btfss   temp_hi,7
+0092   2???           00298      goto   pos_num
+                      00299 ;it's a negative number so complement
+0093   09??           00300     comf    temp_lo, F
+0094   09??           00301     comf    temp_hi, F
+0095   0A??           00302     incf    temp_lo, F
+0096   1903           00303     btfsc   STATUS, Z
+0097   0A??           00304      incf   temp_hi, F
+0098   1580           00305     bsf     neg_temp_bit
+0099                  00306 pos_num
+                      00307 ;acc_lo = and(0xF0, temp_lo)
+0099   08??           00308     movf    temp_lo,W
+009A   39F0           00309     andlw   0xF0
+009B   00??           00310     movwf   acc_lo
+                      00311 ;temp_hi = and(0x0F, temp_hi)
+009C   300F           00312     movlw   0x0F
+009D   05??           00313     andwf   temp_hi,F
+                      00314 ;temp_hi = or(acc_lo, temp_hi)
+009E   08??           00315     movf    acc_lo, W
+009F   04??           00316     iorwf   temp_hi, F
+                      00317 ;temp_hi = swap(temp_hi)
+00A0   0E??           00318     swapf   temp_hi, F
+                      00319 ;temp_lo = and(0x0F, temp_lo)
+00A1   300F           00320     movlw   0x0F
+00A2   05??           00321     andwf   temp_lo, F
+                      00322 ;round up temp_lo
+00A3   08??           00323     movf    temp_lo, W
+00A4   00??           00324     movwf   acc_lo  ;copy of temp_lo for round to 0.0
+                      00325 #ifdef round00
+                      00326 ;round up temp_lo to 0.00
+                      00327     andlw   b'00000011'
+                      00328     movwf   acc_lo
+                      00329     sublw   b'00000010'
+                      00330     btfsc   STATUS, Z
+                      00331      bsf    round00_bit
+                      00332     movf    acc_lo, W
+                      00333     sublw   b'00000011'
+                      00334     btfsc   STATUS, Z
+                      00335      bsf    round00_bit
+                      00336 #endif
+MPASM 03.80 Released                             TEMPDEMO.ASM   11-20-2005  18:21:10         PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00337 ;temp_lo calculate
+00A5   0103           00338     clrw
+00A6   1800           00339     btfsc   temp_lo, 0
+00A7   3E06           00340      addlw  d'6'
+00A8   1880           00341     btfsc   temp_lo, 1
+00A9   3E0C           00342      addlw  d'12'
+00AA   1900           00343     btfsc   temp_lo, 2
+00AB   3E19           00344      addlw  d'25'
+00AC   1980           00345     btfsc   temp_lo, 3
+00AD   3E32           00346      addlw  d'50'
+00AE   00??           00347     movwf   temp_lo
+                      00348 #ifdef round00
+                      00349 ;round up temp_lo to 0.00
+                      00350     btfsc   round00_bit
+                      00351      incf   temp_lo, F
+                      00352     bcf     round00_bit
+                      00353 #endif
+                      00354 #ifndef round00
+                      00355 ;round up temp_lo to 0.0
+00AF   08??           00356     movf    acc_lo, W
+00B0   2???           00357     call    round
+00B1   07??           00358     addwf   temp_lo, F
+                      00359 #endif
+                      00360 
+00B2   2???           00361     call    displaytemp
+                      00362 
+00B3                  00363 no_displaytemp
+00B3   08??           00364     movf    DSCRC, F        ;check that the CRC is zero
+00B4   3043           00365     movlw   'C'             ;'C' if ok
+00B5   1D03           00366     btfss   STATUS, Z
+00B6   3058           00367     movlw   'X'             ;'cross' if not
+00B7   2???           00368     call    SEND_CHAR_W
+                      00369 ;clear row
+00B8   08??           00370     movf    DSCRC, F        ;check that the CRC is zero
+00B9   1903           00371     btfsc   STATUS, Z
+00BA   2???           00372      goto   skip_clearRow
+00BB   3007           00373     movlw   0x07
+00BC   00??           00374     movwf   count2          ;reuse location
+00BD                  00375 clearRow
+00BD   3020           00376     movlw   ' '
+00BE   2???           00377     call    SEND_CHAR_W
+00BF   0B??           00378     decfsz  count2, F
+00C0   2???           00379      goto   clearRow
+                      00380 
+00C1                  00381 skip_clearRow
+00C1   1D00           00382     btfss   DSNext_bit
+00C2   2???           00383      goto   DSNext
+                      00384 
+                      00385 #ifndef test
+00C3   3005           00386     movlw   d'5' ;50 wait/5 sleep
+00C4   00??           00387     movwf   count2
+00C5                  00388 waitloop
+                      00389 #ifdef dog
+MPASM 03.80 Released                             TEMPDEMO.ASM   11-20-2005  18:21:10         PAGE 11
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00390     sleep
+                      00391 #endif  ; dog
+                      00392 ;    Wait    197 Millisec, 0
+00C5   0B??           00393     decfsz  count2, F
+00C6   2???           00394      goto   waitloop
+                      00395 #endif
+00C7   2???           00396     goto    NextTemp
+                      00397 
+                      00398 
+                      00399 ;*************************************************************************************
+                      00400 ;
+                      00401 ; Converts temp in temp_hi, lo to ASCII characters in form +XXX.xx, & send to display
+                      00402 
+                      00403 ;first sign bit
+                      00404 
+00C8                  00405 displaytemp
+00C8   3020           00406     movlw   ' '
+00C9   1980           00407     btfsc   neg_temp_bit
+00CA   302D           00408      movlw       '-'
+00CB   2???           00409     call    SEND_CHAR_W
+                      00410 
+00CC   3030           00411     movlw   '0'
+00CD   00??           00412     movwf   CHARBUF
+00CE   08??           00413     movf    temp_hi, W
+00CF   3E9C           00414     addlw   (0 - d'100')
+00D0   1C03           00415     btfss   STATUS, C
+00D1   2???           00416      goto   end_of_hund
+00D2   0A??           00417     incf    CHARBUF, F
+00D3   00??           00418     movwf   temp_hi
+00D4                  00419 end_of_hund
+                      00420 ;call    SEND_CHAR
+                      00421 
+00D4   3030           00422     movlw   '0'
+00D5   00??           00423     movwf   CHARBUF
+00D6   08??           00424     movf    temp_hi, W
+00D7                  00425 looptens
+00D7   3EF6           00426     addlw   (0 - d'10')
+00D8   1C03           00427     btfss   STATUS, C
+00D9   2???           00428      goto   end_of_tens
+00DA   0A??           00429     incf    CHARBUF, F
+00DB   2???           00430     goto    looptens
+                      00431 
+00DC                  00432 end_of_tens ;W is now 10 below units figure
+00DC   00??           00433     movwf   temp_hi
+                      00434 
+                      00435 ;skip leading zero
+00DD   3030           00436     movlw   '0'
+00DE   06??           00437     xorwf   CHARBUF, W
+00DF   1D03           00438     btfss   STATUS, Z
+00E0   2???           00439      goto   noskip
+00E1   3020           00440     movlw   ' '
+00E2   00??           00441     movwf   CHARBUF
+00E3                  00442 noskip
+MPASM 03.80 Released                             TEMPDEMO.ASM   11-20-2005  18:21:10         PAGE 12
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00443 
+00E3   2???           00444     call    SEND_CHAR
+                      00445 
+00E4   08??           00446     movf    temp_hi, W
+00E5   3E3A           00447     addlw   d'58'           ;to set to ASCII & correct for being 10 too low
+00E6   2???           00448     call    SEND_CHAR_W     ;saves needing a return
+                      00449 
+00E7   302E           00450     movlw   '.'
+00E8   2???           00451     call    SEND_CHAR_W
+                      00452 
+00E9   3030           00453     movlw   '0'
+00EA   00??           00454     movwf   CHARBUF
+00EB   08??           00455     movf    temp_lo, W
+00EC                  00456 looptenths
+00EC   3EF6           00457     addlw   (0 - d'10')
+00ED   1C03           00458     btfss   STATUS, C
+00EE   2???           00459     goto    end_of_tenths
+00EF   0A??           00460     incf    CHARBUF, F
+00F0   2???           00461     goto    looptenths
+                      00462 
+00F1                  00463 end_of_tenths   ;W is now 10 below hundredths figure
+00F1   00??           00464     movwf   temp_lo
+00F2   2???           00465     call    SEND_CHAR
+                      00466 
+                      00467 #ifdef round00
+                      00468     movf    temp_lo, W
+                      00469     addlw   d'58'           ;to set to ASCII & correct for being 10 too low
+                      00470     call    SEND_CHAR_W     ;saves needing a return
+                      00471 #endif
+                      00472 
+00F3   3000           00473     movlw   0x00            ; 'deg'
+00F4   2???           00474     call    SEND_CHAR_W
+00F5   3400           00475     retlw   0
+                      00476 
+                      00477 ;********************************************************************
+                      00478 ;* HEXtoLCD - Sends 2 digit hex to LCD                              *
+                      00479 ;* This routine splits the character into the upper and lower       *
+                      00480 ;* hex nibbles, and sends them to the LCD as ASCII characters       *
+                      00481 ;********************************************************************
+                      00482 ;Note that once a byte has been sent to the LCD, time is not a major factor
+                      00483 ;as any subequent bytes sent have to wait til LCD not busy (>40us)
+                      00484 
+00F6                  00485 HEXtoLCD
+                      00486 ;calculate the upper hex digit
+00F6   0E??           00487     swapf   DScommbuff, W
+00F7   390F           00488     andlw   b'00001111'
+00F8   3EF0           00489     addlw   -10         ;is it A to F hex
+00F9   1803           00490     btfsc   STATUS, C
+00FA   3E07           00491      addlw  0x07        ;gap of seven between 9 and A
+00FB   3E58           00492     addlw   58          ;set to correct ascii including the 10 took off before
+00FC   2???           00493     call    SEND_CHAR_W
+                      00494 ;calculate the lower hex digit
+00FD   08??           00495     movf    DScommbuff, W
+MPASM 03.80 Released                             TEMPDEMO.ASM   11-20-2005  18:21:10         PAGE 13
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00FE   390F           00496     andlw   b'00001111'
+00FF   3EF0           00497     addlw   -10         ;is it A to F hex
+0100   1803           00498     btfsc   STATUS, C
+0101   3E27           00499      addlw  0x27        ;gap of seven between 9 and a (lower case)
+0102   3E58           00500     addlw   58          ;set to correct ascii including the 10 took off before
+0103   2???           00501     call    SEND_CHAR_W
+                      00502     ;movlw   ' '
+                      00503     ;call    SEND_CHAR_W
+0104   0008           00504     return
+                      00505 
+0105                  00506 EEwrite
+                      00507 ;    movf    temp_hi, W      ; the data is in W
+0105   1683           00508     bsf     STATUS, RP0
+0106   009A           00509     movwf   EEDATA
+0107   1283           00510     bcf     STATUS, RP0
+0108   08??           00511     movf    temp_lo, W
+0109   1683           00512     bsf     STATUS, RP0
+010A   009B           00513     movwf   EEADR
+                      00514 ;    bcf     EECON1, EEPGD  ; for 18Fxxxx
+010B   151C           00515     bsf     EECON1, WREN
+010C   138B           00516     bcf     INTCON, GIE
+010D   3055           00517     movlw   0x55
+010E   009D           00518     movwf   EECON2
+010F   30AA           00519     movlw   0xAA
+0110   009D           00520     movwf   EECON2
+                      00521 
+0111   149C           00522     bsf     EECON1, WR
+0112   111C           00523     bcf     EECON1, WREN
+                      00524 ;    btfsc   EECON1, WR
+0113   1283           00525     bcf     STATUS, RP0
+0114   1F8C           00526     btfss   PIR1, EEIF
+0115   2???           00527      goto   $ - 1
+0116   138C           00528     bcf     PIR1, EEIF
+0117   178B           00529     bsf     INTCON, GIE
+0118   1283           00530     bcf     STATUS, RP0
+0119   0008           00531     return
+                      00532 
+011A                  00533 EEread
+                      00534 ; the address is in W
+011A   1683           00535     bsf     STATUS, RP0
+011B   009B           00536     movwf   EEADR
+                      00537 ;    bcf     EECON1, EEPGD  ; for 18Fxxxx
+011C   141C           00538     bsf     EECON1, RD
+011D   081A           00539     movf    EEDATA, W   ; read data is in W
+011E   1283           00540     bcf     STATUS, RP0
+011F   0008           00541     return
+                      00542 
+0120                  00543 service                 ; Interrupt routine
+0120   0000           00544     nop                 ; Interrupt code would go here
+0121   0000           00545     nop
+0122   0009           00546     retfie
+                      00547 
+                      00548 STARTUP CODE            ; This area is defined in 16f84a.lkr,
+MPASM 03.80 Released                             TEMPDEMO.ASM   11-20-2005  18:21:10         PAGE 14
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00549                         ; the linker script
+0000   2???           00550     goto Begin          ; Jump to main code defined in Example.asm
+0001   0000           00551     nop                 ; Pad out so interrupt
+0002   0000           00552     nop                 ;  service routine gets
+0003   0000           00553     nop                 ;  put at address 0x0004.
+0004   2???           00554     goto service        ; Points to interrupt service routine
+                      00555 
+                      00556 #ifdef  EEdsrom
+                      00557 DEEPROM CODE
+                      00558 ; in 286C 185F 0000 00A0
+                      00559     de      0x28
+                      00560     de      0x6C
+                      00561     de      0x18
+                      00562     de      0x5F
+                      00563     de      0x00
+                      00564     de      0x00
+                      00565     de      0x00
+                      00566     de      0xA0
+                      00567 
+                      00568 ; out 284C 285F 0000 0092
+                      00569     de      0x28
+                      00570     de      0x4C
+                      00571     de      0x28
+                      00572     de      0x5F
+                      00573     de      0x00
+                      00574     de      0x00
+                      00575     de      0x00
+                      00576     de      0x92
+                      00577 #endif  ; EEdsrom
+                      00578 
+                      00579 Table CODE 0x05
+0005   0782           00580 uchars  addwf   PCL, F
+                      00581 ;'4'
+0006   3402           00582     retlw   0x02
+0007   3406           00583     retlw   0x06
+0008   340A           00584     retlw   0x0A
+0009   3412           00585     retlw   0x12
+000A   341F           00586     retlw   0x1F
+000B   3402           00587     retlw   0x02
+000C   3402           00588     retlw   0x02
+000D   3400           00589     retlw   0x00
+                      00590 ;'5'
+000E   341F           00591     retlw   0x1F
+000F   3410           00592     retlw   0x10
+0010   341E           00593     retlw   0x1E
+0011   3401           00594     retlw   0x01
+0012   3401           00595     retlw   0x01
+0013   3411           00596     retlw   0x11
+0014   340E           00597     retlw   0x0E
+0015   3400           00598     retlw   0x00
+                      00599 ;'deg'
+0016   3406           00600     retlw   0x06
+0017   3406           00601     retlw   0x06
+MPASM 03.80 Released                             TEMPDEMO.ASM   11-20-2005  18:21:10         PAGE 15
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0018   3400           00602     retlw   0x00
+0019   3400           00603     retlw   0x00
+001A   3400           00604     retlw   0x00
+001B   3400           00605     retlw   0x00
+001C   3400           00606     retlw   0x00
+001D   3400           00607     retlw   0x00
+                      00608 ;'lamp'
+001E   3400           00609     retlw   0x00
+001F   3404           00610     retlw   0x04
+0020   340A           00611     retlw   0x0A
+0021   3415           00612     retlw   0x15
+0022   340A           00613     retlw   0x0A
+0023   3404           00614     retlw   0x04
+0024   3400           00615     retlw   0x00
+0025   3400           00616     retlw   0x00
+                      00617 ;'house'
+0026   3404           00618     retlw   0x04
+0027   340E           00619     retlw   0x0E
+0028   341F           00620     retlw   0x1F
+0029   3415           00621     retlw   0x15
+002A   341F           00622     retlw   0x1F
+002B   3415           00623     retlw   0x15
+002C   341F           00624     retlw   0x1F
+002D   3400           00625     retlw   0x00
+                      00626 ;'tree'
+002E   3404           00627     retlw   0x04
+002F   340A           00628     retlw   0x0A
+0030   3415           00629     retlw   0x15
+0031   3415           00630     retlw   0x15
+0032   340E           00631     retlw   0x0E
+0033   3404           00632     retlw   0x04
+0034   340E           00633     retlw   0x0E
+0035   3400           00634     retlw   0x00
+                      00635 
+                      00636 #ifndef round00
+0036   0782           00637 round   addwf   PCL, F
+0037   3400           00638     retlw   0x00
+0038   340A           00639     retlw   0x0A
+0039   3400           00640     retlw   0x00
+003A   340A           00641     retlw   0x0A
+003B   340A           00642     retlw   0x0A
+003C   3400           00643     retlw   0x00
+003D   340A           00644     retlw   0x0A
+003E   3400           00645     retlw   0x00
+003F   3400           00646     retlw   0x00
+0040   340A           00647     retlw   0x0A
+0041   3400           00648     retlw   0x00
+0042   340A           00649     retlw   0x0A
+0043   340A           00650     retlw   0x0A
+0044   3400           00651     retlw   0x00
+0045   340A           00652     retlw   0x0A
+0046   3400           00653     retlw   0x00
+                      00654 #endif  ; round00
+MPASM 03.80 Released                             TEMPDEMO.ASM   11-20-2005  18:21:10         PAGE 16
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00655 
+                      00656 #ifdef  test
+                      00657     messg   "T   E   S   T__________M   O   D   E"
+                      00658 #endif  ; test
+                      00659     end
+MPASM 03.80 Released                             TEMPDEMO.ASM   11-20-2005  18:21:10         PAGE 17
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ADEN                              00000003
+BRGH                              00000002
+Begin                             00000000
+C                                 00000000
+C1INV                             00000004
+C1OUT                             00000006
+C2INV                             00000005
+C2OUT                             00000007
+CCP1CON                           00000017
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP1X                             00000005
+CCP1Y                             00000004
+CCPR1H                            00000016
+CCPR1L                            00000015
+CHARBUF                           00000027
+CIS                               00000003
+CLR_DISP                          00000001
+CM0                               00000000
+CM1                               00000001
+CM2                               00000002
+CMCON                             0000001F
+CMIE                              00000006
+CMIF                              00000006
+CREN                              00000004
+CSRC                              00000007
+CURS_RGT                          00000093
+Clock_Freq                        003D0900
+DALLAS_BUS                        PORTA, 4
+DC                                00000001
+DD_RAM_ADDR                       00000080
+DD_RAM_UL                         00000080
+DISPLAY_RESET                     00000000
+DISP_OFF                          00000008
+DISP_ON                           0000000C
+DISP_ON_BC                        0000000F
+DISP_ON_C                         0000000E
+DSAlarmSearch                     000000EC
+DSCRC                             00000021
+DSConvertTemp                     00000044
+DSCopyScratch                     00000048
+DSGettemp                         0000007C
+DSMatchROM                        00000055
+DSNext                            0000006A
+DSNext_bit                        bits_byte, 2
+DSReadBit                         00000000
+DSReadByte                        00000000
+DSReadPS                          000000B4
+DSReadROM                         00000033
+MPASM 03.80 Released                             TEMPDEMO.ASM   11-20-2005  18:21:10         PAGE 18
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+DSReadScratch                     000000BE
+DSRecallE2                        000000B8
+DSReset_Pulse                     00000000
+DSSearchROM                       000000F0
+DSSkipROM                         000000CC
+DSWriteByteW                      00000000
+DSWriteScratch                    0000004E
+DScommbuff                        00000020
+Direction                         id_bits_byte, 7
+EEADR                             0000009B
+EECON1                            0000009C
+EECON2                            0000009D
+EEDATA                            0000009A
+EEIE                              00000007
+EEIF                              00000007
+EEread                            0000011A
+EEwrite                           00000105
+ENTRY_DEC                         00000004
+ENTRY_DEC_S                       00000005
+ENTRY_INC                         00000006
+ENTRY_INC_S                       00000007
+EndSearch                         00000040
+F                                 00000001
+FERR                              00000002
+FSR                               00000004
+FUNC_SET                          00000028
+GIE                               00000007
+HEXtoLCD                          000000F6
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+LED                               PORTB, 0
+LOAD_CGRAM                        00000000
+LOAD_CGRAM_LOC                    00000000
+LastDiscrepancy                   00000037
+LastFamilyDiscr                   00000038
+Microsec                          * D'1000'
+Millisec                          * D'1000000'
+NOT_BO                            00000000
+NOT_BOD                           00000000
+NOT_BOR                           00000000
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+Nanosec                           * D'1'
+NextTemp                          00000021
+OERR                              00000001
+OPTION_REG                        00000081
+MPASM 03.80 Released                             TEMPDEMO.ASM   11-20-2005  18:21:10         PAGE 19
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+OSCF                              00000003
+OWReset                           00000029
+OWSearch                          00000000
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PIE1                              0000008C
+PIR1                              0000000C
+PORTA                             00000005
+PORTB                             00000006
+PR2                               00000092
+PRESENCE_bit                      bits_byte, 0
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+RBIE                              00000003
+RBIF                              00000000
+RCIE                              00000005
+RCIF                              00000005
+RCREG                             0000001A
+RCSTA                             00000018
+RD                                00000000
+ROM_no                            0000002D
+RP0                               00000005
+RP1                               00000006
+RTN_HOME                          00000002
+RX9                               00000006
+RX9D                              00000000
+SEND_CHAR                         00000000
+SEND_CHAR_W                       00000000
+SEND_CMD_W                        00000000
+SHIFT_C_L                         00000010
+SHIFT_C_R                         00000014
+SHIFT_S_L                         00000018
+SHIFT_S_R                         0000001C
+SPBRG                             00000099
+SPEN                              00000007
+SREN                              00000005
+STATUS                            00000003
+SYNC                              00000004
+SaveROM_no                        00000039
+Seconds                           * D'1000000000'
+Start                             0000000F
+StartNewSearch                    00000025
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+MPASM 03.80 Released                             TEMPDEMO.ASM   11-20-2005  18:21:10         PAGE 20
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+T1OSCEN                           00000003
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000012
+TMR0                              00000001
+TMR1CS                            00000001
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TMR2                              00000011
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+TOUTPS0                           00000003
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRISA                             00000085
+TRISB                             00000086
+TRMT                              00000001
+TX9                               00000006
+TX9D                              00000000
+TXEN                              00000005
+TXIE                              00000004
+TXIF                              00000004
+TXREG                             00000019
+TXSTA                             00000098
+VR0                               00000000
+VR1                               00000001
+VR2                               00000002
+VR3                               00000003
+VRCON                             0000009F
+VREN                              00000007
+VROE                              00000006
+VRR                               00000005
+W                                 00000000
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+Wait                              
+Z                                 00000002
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_BOREN_OFF                        00003FBF
+_BOREN_ON                         00003FFF
+_CP_OFF                           00003FFF
+_CP_ON                            00001FFF
+_DATA_CP_OFF                      00003FFF
+_DATA_CP_ON                       00003EFF
+_ER_OSC_CLKOUT                    00003FFF
+_ER_OSC_NOCLKOUT                  00003FFE
+MPASM 03.80 Released                             TEMPDEMO.ASM   11-20-2005  18:21:10         PAGE 21
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_EXTCLK_OSC                       00003FEF
+_HS_OSC                           00003FEE
+_INTOSC_OSC_CLKOUT                00003FFD
+_INTOSC_OSC_NOCLKOUT              00003FFC
+_INTRC_OSC_CLKOUT                 00003FFD
+_INTRC_OSC_NOCLKOUT               00003FFC
+_LP_OSC                           00003FEC
+_LVP_OFF                          00003F7F
+_LVP_ON                           00003FFF
+_MCLRE_OFF                        00003FDF
+_MCLRE_ON                         00003FFF
+_PROG_0042                        00000042
+_PROG_005D                        0000005D
+_PROG_0070                        00000070
+_PROG_0115                        00000115
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC_CLKOUT                    00003FFF
+_RC_OSC_NOCLKOUT                  00003FFE
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FED
+__16F628A                         00000001
+acc_hi                            0000002B
+acc_lo                            0000002A
+bits_byte                         00000026
+clearRow                          000000BD
+cmp_id_bit                        id_bits_byte, 1
+count                             00000024
+count2                            00000025
+displaytemp                       000000C8
+dsload1                           00000061
+dsload2                           00000073
+end_of_hund                       000000D4
+end_of_tens                       000000DC
+end_of_tenths                     000000F1
+id_bit                            id_bits_byte, 0
+id_bit_number                     00000035
+id_bits_byte                      00000039
+last_device                       id_bits_byte, 6
+last_zero                         00000036
+longdelay                         00000000
+looptens                          000000D7
+looptenths                        000000EC
+neg_temp_bit                      bits_byte, 3
+no_displaytemp                    000000B3
+noskip                            000000E3
+pos_num                           00000099
+rom_mask                          0000003A
+round                             00000036
+round00_bit                       bits_byte, 1
+service                           00000120
+shortdelay                        00000000
+MPASM 03.80 Released                             TEMPDEMO.ASM   11-20-2005  18:21:10         PAGE 22
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+skip_clearRow                     000000C1
+temp_hi                           00000028
+temp_lo                           00000029
+tempnotready                      00000047
+tempone                           00000022
+temptwo                           00000023
+test_bit                          id_bits_byte, 2
+uchars                            00000005
+vvshift                           0000002C
+waitloop                          000000C5
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,    15 suppressed
+
+

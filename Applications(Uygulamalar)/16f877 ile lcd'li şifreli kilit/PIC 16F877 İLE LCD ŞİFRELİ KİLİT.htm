@@ -1,0 +1,381 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml"
+xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=Windows-1254">
+<meta name=ProgId content=Word.Document>
+<meta name=Generator content="Microsoft Word 9">
+<meta name=Originator content="Microsoft Word 9">
+<link rel=File-List
+href="./PIC%2016F877%20İLE%20LCD%20ŞİFRELİ%20KİLİT_dosyalar/filelist.xml">
+<link rel=Edit-Time-Data
+href="./PIC%2016F877%20İLE%20LCD%20ŞİFRELİ%20KİLİT_dosyalar/editdata.mso">
+<!--[if !mso]>
+<style>
+v\:* {behavior:url(#default#VML);}
+o\:* {behavior:url(#default#VML);}
+w\:* {behavior:url(#default#VML);}
+.shape {behavior:url(#default#VML);}
+</style>
+<![endif]--><!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author>AHMET</o:Author>
+  <o:Template>Normal</o:Template>
+  <o:LastAuthor>Prof.Ahmet</o:LastAuthor>
+  <o:Revision>3</o:Revision>
+  <o:TotalTime>289</o:TotalTime>
+  <o:Created>2006-03-20T20:38:00Z</o:Created>
+  <o:LastSaved>2006-03-20T20:39:00Z</o:LastSaved>
+  <o:Pages>2</o:Pages>
+  <o:Words>511</o:Words>
+  <o:Characters>2916</o:Characters>
+  <o:Lines>24</o:Lines>
+  <o:Paragraphs>5</o:Paragraphs>
+  <o:CharactersWithSpaces>3581</o:CharactersWithSpaces>
+  <o:Version>9.2812</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:HyphenationZone>21</w:HyphenationZone>
+ </w:WordDocument>
+</xml><![endif]-->
+<style>
+<!--
+ /* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-parent:"";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.MsoBodyText, li.MsoBodyText, div.MsoBodyText
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:Arial;
+	mso-fareast-font-family:"Times New Roman";
+	color:black;
+	font-weight:bold;}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;
+	text-underline:single;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;
+	text-underline:single;}
+@page Section1
+	{size:595.3pt 841.9pt;
+	margin:70.85pt 70.85pt 70.85pt 70.85pt;
+	mso-header-margin:35.4pt;
+	mso-footer-margin:35.4pt;
+	mso-paper-source:0;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
+<!--[if gte mso 9]><xml>
+ <o:shapedefaults v:ext="edit" spidmax="1029"/>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <o:shapelayout v:ext="edit">
+  <o:idmap v:ext="edit" data="1"/>
+ </o:shapelayout></xml><![endif]-->
+</head>
+
+<body lang=TR link=blue vlink=purple style='tab-interval:35.4pt'>
+
+<div class=Section1>
+
+<p class=MsoNormal><b><span style='font-size:24.0pt;mso-bidi-font-size:12.0pt;
+font-family:Arial'><span style='mso-tab-count:1'>     </span><span
+style="mso-spacerun: yes">      </span><span style='color:blue'>PIC 16F877 İLE
+LCD GÖSTERGELİ ŞİFRELİ KİLİT<o:p></o:p></span></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:black'><span
+style='mso-tab-count:1'>            </span>Devrenin Özellikleri Şunlardır:<o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:black'><span
+style='mso-tab-count:1'>            </span></span></b><b><span
+style='font-family:Arial;color:#993300'>1</span></b><b><span style='font-family:
+Arial;color:black'>-Şifreleyici devre PIC 16F877 ile yapılmıştır. Montajı kolay
+ve maliyeti düşüktür.<o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:black'><span
+style='mso-tab-count:1'>            </span></span></b><b><span
+style='font-family:Arial;color:#993300'>2</span></b><b><span style='font-family:
+Arial;color:black'>-Bu devrede PIC 16F84’ün EEPROM hafızasını kullandım.Bundan dolayı
+yazdığımız şifre PIC 16F877’nin besleme enerjisi<o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:black'><span
+style='mso-tab-count:1'>            </span>kesildiğinde kaybolmaz.<o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:black'><span
+style='mso-tab-count:1'>            </span></span></b><b><span
+style='font-family:Arial;color:#993300'>3</span></b><b><span style='font-family:
+Arial;color:black'>- PIC 16F877 i şebekeden gelebilecek parazitlerden korumak
+için <u>filtre düzeneği son derece gereklidir.</u>Aksi halde EEPROM<o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:black'><span
+style='mso-tab-count:1'>            </span>hafızası bozulur veya PIC
+resetlenir.<o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:black'><span
+style='mso-tab-count:1'>            </span></span></b><b><span
+style='font-family:Arial;color:red'>ÖNEMLİ NOT=</span></b><b><span
+style='font-family:Arial;color:blue'> <u>Devrenin +5v beslemesine anahtar
+bağlamayın</u> .Çünkü anahtara basılma sırasında kontak sıçraması oluşur.<o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:blue'><span
+style='mso-tab-count:1'>            </span>Bu sıçrama PIC 16F84’ün EEPROM
+hafızasını etkiler.<o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:blue'><span
+style='mso-tab-count:1'>            </span></span></b><b><span
+style='font-family:Arial;color:#993300'>4</span></b><b><span style='font-family:
+Arial;color:black'>-Yazdığımız şifreyi defalarca değiştirebilir, <u>1 ile 10</u>
+haneli sayılar yazabiliriz</span></b><b><span style='font-family:Arial;
+color:blue'>. <o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:blue'><span
+style='mso-tab-count:1'>            </span></span></b><b><span
+style='font-family:Arial;color:#993300'>5</span></b><b><span style='font-family:
+Arial;color:black'>-Şifreyi sadece 3defa yanlış girme hakkımız var . 3. defa
+yanlış girersek devre kilitlenir ve pin 2 kodunun girilmesi gerekir.<o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:black'><span
+style='mso-tab-count:1'>            </span><u>Pin 2 kodu girildikten sonra
+şifre tekrar yenilenir .<o:p></o:p></u></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:black'><span
+style='mso-tab-count:1'>            </span></span></b><b><span
+style='font-family:Arial;color:#993300'>6</span></b><b><span style='font-family:
+Arial;color:black'>-program açık unutulursa otomatik kapanır. <o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:black'><span
+style='mso-tab-count:1'>            </span></span></b><b><span
+style='font-family:Arial;color:red'>UYARI=</span></b><b><span style='font-family:
+Arial;color:black'> </span></b><b><span style='font-family:Arial;color:blue'>PIC
+16F877 ‘e <u>en az 8MHZ kristal kullanınız</u></span></b><b><span
+style='font-family:Arial;color:black'><o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:blue'><span
+style='mso-tab-count:1'>            </span></span></b><b><span
+style='font-family:Arial;color:#993300'>KULLANMA KILAVUZU<o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:black'><span
+style='mso-tab-count:1'>            </span></span></b><b><span
+style='font-family:Arial;color:#993300'>1</span></b><b><span style='font-family:
+Arial;color:black'>-Filtre bobini ve kondansatörler mutlaka gereklidir bunların
+değerleri şunlar:<o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:black'><span
+style='mso-tab-count:1'>            </span>kutusuz kondansatörler 100n 63v<o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:black'><span
+style='mso-tab-count:1'>            </span>kutuplu elektrolit kondansatör 220mf
+16v veya 470mf 16v <o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:black'><span
+style='mso-tab-count:1'>            </span>filtre bobini<span
+style="mso-spacerun: yes">  </span>0,5mm izoleli telden halka biçimindeki Ferit
+nüveye 10 tur sarılmalı.<o:p></o:p></span></b></p>
+
+<p class=MsoNormal style='margin-left:35.4pt'><b><span style='font-family:Arial;
+color:#993300'>2</span></b><b><span style='font-family:Arial;color:black'>-PIC
+‘i ilk defa çalıştırıyorsanız RB7’ye bağlı yeni şifre yaz uyarı ledi Yanar ve
+LCD ekranda<span style="mso-spacerun: yes">  </span>YENI SIFREYI GIR<span
+style="mso-spacerun: yes">  </span>yazısı çıkar Bu sırada kullanacağımız
+şifreyi yazarız. Yeni Şifreyi yazdıktan sonra # tuşuna basarız. Ekranda SIFRE
+KAYDEDILDI yazısı çıkar bir süre sonra GIRIS ICIN </span></b><b><span
+style='font-size:20.0pt;mso-bidi-font-size:12.0pt;font-family:Arial;color:black'>*</span></b><b><span
+style='font-family:Arial;color:black'> BAS yazısı sürekli gözükür.<o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:black'><span
+style='mso-tab-count:1'>            </span></span></b><b><span
+style='font-family:Arial;color:red'>DİKKAT=</span></b><b><span
+style='font-family:Arial;color:blue'>PIC ‘e sadece 1 ile 10 haneli bir sayı
+yazabiliriz<o:p></o:p></span></b></p>
+
+<p class=MsoNormal style='margin-left:35.4pt'><b><span style='font-family:Arial;
+color:#993300'>3</span></b><b><span style='font-family:Arial;color:black'>-Kilidi
+açmak için önce<span style="mso-spacerun: yes">  </span></span></b><b><span
+style='font-size:20.0pt;mso-bidi-font-size:12.0pt;font-family:Arial;color:black'>*</span></b><b><span
+style='font-family:Arial;color:black'> tuşuna basarız.Sonra GIR ledi sürekli
+yanar ve ekrenda<span style="mso-spacerun: yes">  </span>SIFREYI GIRINIZ yazısı
+gözükür .Bu sırada şifremizi gireriz .son olarak<span style="mso-spacerun:
+yes">  </span>#<span style="mso-spacerun: yes">  </span>ye basarız .Şifre doğru
+girilmişse ekranda SIFRE DOGRU yazısı çıkar RB0 ‘a bağlı LED Yanar.Röle
+enerjilenir. <o:p></o:p></span></b></p>
+
+<p class=MsoNormal style='margin-left:35.25pt'><b><span style='font-family:
+Arial;color:black'>Şifre yanlışsa RB5 ‘e bağlı LED yanar ve ekranda AAAAA<span
+style="mso-spacerun: yes">  </span>YANLIS yazısı çıkar. 3 defa yanlış şifre girildiyse
+ekranda SIFRE<span style="mso-spacerun: yes">                     
+</span>KILITLENDI PUK KODUNU GIRIN<span style="mso-spacerun: yes"> 
+</span>yazısı gözükür<o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:black'><span
+style='mso-tab-count:1'>            </span>Bu durumda pin 2 kodu girilir .<o:p></o:p></span></b></p>
+
+<p class=MsoNormal style='margin-left:35.4pt'><b><span style='font-family:Arial;
+color:#993300'>4</span></b><b><span style='font-family:Arial;color:black'>-PORTA,5
+e bağlı otomatik kapa anahtarına basılı ise kilit bi süre açılır daha sonra
+kapanır anahtara basılı değilse kilit sürekli açık kalır kilidi kapatmak veya
+şifreyi yazmaktan vazgeçmek<span style="mso-spacerun: yes">  </span>için<span
+style="mso-spacerun: yes">  </span></span></b><b><span style='font-size:20.0pt;
+mso-bidi-font-size:12.0pt;font-family:Arial;color:black'>*</span></b><b><span
+style='font-family:Arial;color:black'> tuşuna basarız<o:p></o:p></span></b></p>
+
+<p class=MsoNormal style='text-indent:35.4pt'><b><span style='font-family:Arial;
+color:#993300'>5</span></b><b><span style='font-family:Arial;color:black'>-PIC
+,başla işlemi yapıldıktan sonra 2 dakika çalışır otomatik olarak ana programa
+döner<o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:black'><span
+style='mso-tab-count:1'>            </span></span></b><b><u><span
+style='font-family:Arial;color:purple'>PIN 2 KODU:<o:p></o:p></span></u></b></p>
+
+<p class=MsoBodyText><span style='mso-tab-count:1'>            </span>PIN 2
+Kodu 45 defa 1 tuşuna sonra<span style="mso-spacerun: yes">  </span>#<span
+style="mso-spacerun: yes">  </span>10 defa<span style="mso-spacerun: yes"> 
+</span>0<span style="mso-spacerun: yes">  </span>tuşuna ve<span
+style="mso-spacerun: yes">  </span>#<span style="mso-spacerun: yes">  </span>tuşuna
+basılıp tamamlanır. Bu kodu yanlış girerseniz</p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:black'><span
+style='mso-tab-count:1'>            </span>Program açılmaz. Bu kodları sadece
+asm içinde değişir. <o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:black'><span
+style='mso-tab-count:1'>            </span></span></b><b><u><span
+style='font-family:Arial;color:purple'>ŞİFRE DEĞİŞTİRME:<o:p></o:p></span></u></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:purple'><span
+style='mso-tab-count:1'>            </span></span></b><b><span
+style='font-family:Arial;color:black'>Şifre değiştirmek için önce eski şifre
+girilir ve kilit açılır. Sonra RA4’e bağlı şifre değiştir butonuna basılır.RB7 ‘ye
+bağlı<o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:black'><span
+style='mso-tab-count:1'>            </span>LED yanınca buton bırakılır . yeni
+şifre yazılıp<span style="mso-spacerun: yes">  </span>#<span
+style="mso-spacerun: yes">  </span>tuşuna basılır ve LED1 söner.<o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:black'><span
+style='mso-tab-count:1'>            </span></span></b><b><u><span
+style='font-family:Arial;color:purple'>ŞİFRE<span style="mso-spacerun: yes"> 
+</span>UNUTULURSA :<o:p></o:p></span></u></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:purple'><span
+style='mso-tab-count:1'>            </span></span></b><b><span
+style='font-family:Arial;color:black'>Şifre unutulduğu zaman açmanın sadece iki
+yolu var . Bunlar:<o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:black'><span
+style='mso-tab-count:1'>            </span></span></b><b><span
+style='font-family:Arial;color:#993300'>1</span></b><b><span style='font-family:
+Arial;color:black'>-PIC 16F84 ‘ü programlama kartına takıp EEPROM veri kısmında
+şifre görülür </span></b><b><span style='font-family:Arial;color:blue'>( </span></b><b><span
+style='font-family:Arial;color:black'>EEADR<span style="mso-spacerun: yes"> 
+</span>0......9 arası </span></b><b><span style='font-family:Arial;color:blue'>)</span></b><b><span
+style='font-family:Arial;color:black'> EEADR 11 de en son<o:p></o:p></span></b></p>
+
+<p class=MsoBodyText><span style='mso-tab-count:1'>            </span>kaç
+haneli şifre girildiği görülür.</p>
+
+<p class=MsoBodyText><span style='mso-tab-count:1'>            </span><span
+style='color:#993300'>2</span>-Şifre değiş butonu ile<span style="mso-spacerun:
+yes">  </span>5<span style="mso-spacerun: yes">  </span>tuşuna basılı tutulur.
+Bir süre sonra LED2 ve LED3 birlikte sürekli yanar .pin 2 kodu girilir.</p>
+
+<p class=MsoBodyText><span style='mso-tab-count:1'>            </span>Daha
+sonra LED 1 ışık verir ve diğer ledler söner.yeni şifre yazılıp<span
+style="mso-spacerun: yes">  </span>#<span style="mso-spacerun: yes"> 
+</span>tuşuna basılır .</p>
+
+<p class=MsoBodyText><span style='mso-tab-count:1'>            </span>NOT=PIN 2
+KODUNU ASM DOSYASINDAN DEĞİŞTİREBİLİRSİNİZ ( KILIT ETİKETİNDEN SONRASINI
+İNCELEYİN )</p>
+
+<p class=MsoBodyText><span style='mso-tab-count:1'>            </span></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:black'><span
+style='mso-tab-count:1'>            </span></span></b><b><span
+style='font-family:Arial;color:maroon'>Lütfen LEDleri farklı renkte kullanın<o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:blue'><span
+style='mso-tab-count:1'>            </span><o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><u><span style='font-family:Arial;color:blue'><span
+style="mso-spacerun: yes"> </span><o:p></o:p></span></u></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:blue'><span
+style="mso-spacerun: yes">                        </span><o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:blue'><span
+style='mso-tab-count:2'>                        </span><!--[if gte vml 1]><v:shapetype
+ id="_x0000_t75" coordsize="21600,21600" o:spt="75" o:preferrelative="t"
+ path="m@4@5l@4@11@9@11@9@5xe" filled="f" stroked="f">
+ <v:stroke joinstyle="miter"/>
+ <v:formulas>
+  <v:f eqn="if lineDrawn pixelLineWidth 0"/>
+  <v:f eqn="sum @0 1 0"/>
+  <v:f eqn="sum 0 0 @1"/>
+  <v:f eqn="prod @2 1 2"/>
+  <v:f eqn="prod @3 21600 pixelWidth"/>
+  <v:f eqn="prod @3 21600 pixelHeight"/>
+  <v:f eqn="sum @0 0 1"/>
+  <v:f eqn="prod @6 1 2"/>
+  <v:f eqn="prod @7 21600 pixelWidth"/>
+  <v:f eqn="sum @8 21600 0"/>
+  <v:f eqn="prod @7 21600 pixelHeight"/>
+  <v:f eqn="sum @10 21600 0"/>
+ </v:formulas>
+ <v:path o:extrusionok="f" gradientshapeok="t" o:connecttype="rect"/>
+ <o:lock v:ext="edit" aspectratio="t"/>
+</v:shapetype><v:shape id="_x0000_i1026" type="#_x0000_t75" style='width:453pt;
+ height:317.25pt'>
+ <v:imagedata src="./PIC%2016F877%20İLE%20LCD%20ŞİFRELİ%20KİLİT_dosyalar/image001.jpg"
+  o:title="lcdsifreliklt3"/>
+</v:shape><![endif]--><![if !vml]><img width=604 height=423
+src="./PIC%2016F877%20İLE%20LCD%20ŞİFRELİ%20KİLİT_dosyalar/image002.jpg"
+v:shapes="_x0000_i1026"><![endif]><o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:blue'><span
+style='mso-tab-count:2'>                        </span><o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:blue'><span
+style='mso-tab-count:2'>                        </span>TUŞLARIN<span
+style="mso-spacerun: yes">  </span>BAĞLANIŞI<o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:blue'><span
+style='mso-tab-count:2'>                        </span><!--[if gte vml 1]><v:shape
+ id="_x0000_i1025" type="#_x0000_t75" style='width:366.75pt;height:275.25pt'>
+ <v:imagedata src="./PIC%2016F877%20İLE%20LCD%20ŞİFRELİ%20KİLİT_dosyalar/image003.jpg"
+  o:title="Tuşlar"/>
+</v:shape><![endif]--><![if !vml]><img width=489 height=367
+src="./PIC%2016F877%20İLE%20LCD%20ŞİFRELİ%20KİLİT_dosyalar/image003.jpg"
+v:shapes="_x0000_i1025"><![endif]><o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:black'><span
+style='mso-tab-count:1'>            </span><o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:blue'><span
+style='mso-tab-count:2'>                        </span></span></b><b><span
+style='font-family:Arial;color:#993300'><o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:#993300'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span style='font-family:Arial;color:blue'><span
+style='mso-tab-count:1'>            </span><o:p></o:p></span></b></p>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,197 @@
+<html><head>
+
+<script language="JavaScript" type="text/javascript" src="fm_500_files/frameit.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="Generator" content="Microsoft Word 97"><title>500mW FM PLL transmitter 88-108MHz</title>
+
+<meta name="keywords" content="spolar, coil, toroid, rf, ham, ham radio, circuit, CW, QRP, RX, 
+TX, RF, IF, PCB, PSU, GDO, QRP, home brew, home-brew, amateur radio, 
+amatöradio, construction, transmitter, receiver, key, keys, fm, fet, 
+hams, transistor, power supply, printed circuit boards, 
+amplifier, homebrew, Q, q, keyer, printed circuit board, FET, rfamp, 
+rf-amp, ift, pcb, transmitter, psu, gdo, gdos, tubes, pcbs, gdo, cw, 
+g4vvj, SA602, SA612, mc13135, mc13136, datasheet, zn414, zn416, zn414z, pdf, 
+zn416e, qrp, notepad, tda7000, calc, parallel, series, frequency, a,
+A,  heatsink, software, download">
+
+<meta name="Template" content="C:\Program\Microsoft Office\Mallar\Webbsidor\Webbsideguiden.wiz"></head><body background="fm_500_data/background4.GIF" bgcolor="#ffffff" link="#0000ff" vlink="#800080">
+<img src="fm_500_data/reload2.jpg" alt="" align="right" border="1" height="168" width="141">
+<font color="#0000ff" face="Arial" size="5"><b>500mW FM PLL transmitter 88-108MHz</b></font><br>
+
+<font color="#0000ff" face="Arial" size="2">
+This is strictly an educational project explaining how a transmitter works and can be built.<br>
+According to the law it is legal to build them, but not to use them.<br>
+This transmitter is PLL controlled and the frequency is very stable and can be programmed digitally.
+<br>
+The transmitter will work from 88 to 108 MHz and the output power is up to 500mW.
+<br>
+With minor changes the frequency can be set from 50 to 150 MHz.<br>
+
+</font><font color="#ff0000" face="Arial" size="1">All contribution to this page are most welcome!</font>
+<br>
+<br><br>
+<br>
+
+<font color="#0080ff" face="Arial" size="3"><b>Background</b><br></font>
+
+<font color="#000000" face="Arial" size="2">
+FM transmitters have always been fascinating  and one can find thousand examples of them on 
+the internet.<br>
+Sadly most of them are full of error and miss leading information. Most of them also 
+have low stability and frequency drift, many coils and components which are difficult to find.<br>
+The output power is often set to several watts with just a transistor or two…..can't fool me..<br>
+So therefore I decided to construct a simple transmitter with great performances.<br>
+<br>
+<a href="http://hem.passagen.se/communication/pic/pa_110.jpg" target="fm_5t2"><img src="fm_500_data/pa_110_s.jpg" alt="Click to enlarge!" align="right" border="1" height="77" width="103"></a>
+Some contruction achievements I wanted were:<br>
+<li>Simple construction<br></li>
+<li>Commonly components<br></li>
+<li>High quality and stability<br></li>
+<li>Low number of coils<br></li>
+<li>High output power<br></li>
+<br>
+
+The frequency of this transmitter can easy be changed with software and space/compress 
+an air coil, simple don't you say?<br>
+
+
+The basic hart of this transmitter is a colpitts oscillator. 
+The oscillator is a VCO (voltage controlled oscillator) which is regulated by a PLL circuit and 
+PIC micro controller.
+Don't get upset now…it is not that difficult after all. <br>
+Let's check the schematic and I will explain the function.<br>
+<br>
+<font color="#0080ff" face="Arial" size="3"><b>Hardware and schematic</b><br></font>
+<a href="http://hem.passagen.se/communication/pic/fm_500.gif" target="fm_5v2"><img src="fm_500_data/fm_500s.jpg" alt="Click on the pic to see the large schematic." align="right" border="1" height="152" width="150"></a>
+The main oscillator is based around the transistor T1.<br> 
+This oscillator is called Colpitts oscillator and it is voltage controlled to achieve FM 
+(frequency modulation) and PLL control.
+T1 should be a HF transistor to work well, but in this case I have used a cheap and 
+common BC817 transistor.
+The oscillator needs a LC tank to oscillate properly. <br>
+In this case the LC tank consist of L1 with C1, C2, C3, and the varicap BB139.<br>
+The coil is parallel with C1 and C2 which are in serial . The same with the varicap and C3.<br>
+You can think that L is parallel with [ (C1//C2) + (Varicap//C3)]<br>
+The value of C3 will set the VCO range. The large value of C3 the wider will the VCO range be.<br>
+Since the capacitance of the varicap is dependent of the voltage over it, the capacitance will 
+change with changed voltage. When the voltage change, so will the oscillating frequency. <br>
+In this way you achieve a VCO function.<br>
+
+<br>
+
+<font color="#0080ff" face="Arial" size="3"><b>PLL and Microcontroller</b><br></font>
+
+The oscillator is made to work as "Voltage Controlled Oscillator" VCO. <br>
+To control the frequency a synthesizer circuit LMX 2306 has been added. The PLL circuit has a 
+pickup coil (L2) connected to pin 6.<br>
+This coil should be put close to the L1 coil for picking up some of the oscillating energy.<br>
+The PLL in the LMX2306 will then use this frequency to regulate the VCO and lock it to desired frequency.<br>
+The regulating system also need an external reference crystal. In this case I use 12.8 MHz.<br>	
+<br>
+
+At pin 2 of MX2306 you will find a PLL filter to form the <font color="#ff0000">V<sub>out</sub></font> 
+which is the regulating voltage of the VCO.<br>
+The PLL try to regulate the <font color="#ff0000">V<sub>out</sub></font> so the oscillator 
+keeps the frequency locked to desired frequency.<br>
+The desired frequency is programmed into the PIC EEPROM and is clocked into the synthesizer 
+(LMX2306) at power up.<br>
+I will below explain how to program the EEPROM for different frequencies.<br>
+At pin14 of the synthesizer you have a control output. At this output you will find the 
+reference frequency for testing.<br>
+(I must warn you because the signal is not symetrical in shape.
+The positive pulse are only a few microsecond so you will have difficult to see it at oscilloscope.)
+I solved it by connecting it to a 74HC4020 (14-stage Binary Counter) to pin 10 Clock input.
+At Q0 (pin 9) you will have a symmetrical square wave with <strong>half</strong> frequency since the circuit is a counter.
+At Q1 pin 7 it will be divided by 4, see datasheets for more info.
+<br><br>
+<font color="#0080ff" face="Arial" size="3"><b>LF input</b><br></font>
+The audio you wish to transmit should be connected to the Audio input (left side of schematic).<br>
+The signal will affect the varicap and thereby Frequency Modulate FM the RF carrier.<br>
+A potentiometer P1 has been added to set the modulation depth (Wide FM or Narrow FM).  
+You may have to play a bit with the value of P1 because it tends to modulate to much.
+You may have to add a 500k - 1M  potentiometer instead. You test and find out yourself.<br>
+<br>
+<font color="#0080ff" face="Arial" size="3"><b>Buffer stage</b><br></font>
+Here you find another HF transistor and it is working in class C.<br>
+The resistor R1 and the resistor Re2 set the DC current.
+In this case I found that 9.1k will give good output power and so the same with 150.
+If you wish to increase the power Re2 should be lower. You can add another 150 ohm resistor parallel.
+<br>
+In the table below I show you the output power with different voltages and values of resistor Re2.<br>
+I advice you not to run this transmitter with to high output power. The transistor 
+I use is a small one and tends to get hot.<br>
+I advice you to run the unit from 0 - to 200mW. At 500mW the transistor will be in pain...*smiling*<br>
+At the output you will find a T network. This "filter" will match the antenna impedance to the transmitter output stage.<br>
+You have two variable capacitors 60pF to tune the transmitter for best performances.<br>
+The antenna I used I a 1/4 wave whip antenna (wire) about 75cm long. <br>
+This type of antenna is smaller but not so good performance as a dipole.<br>
+With a dipole you will be able to transmitter much longer distance. <br>
+How long can I transmit?<br>
+That is a very difficult question because the environment affect the transmitting distance very much.<br>
+In a city environment with concrete buildings the transmitter will send maybe 200m.<br>
+I an open filed it will transmit 2000m.<br>
+I did a filed test and with 70mW output power into the "bad" whip antenna placed indoors I could
+transmit 200-300m out into a park with no problem.<br>
+<br>
+
+
+
+<font color="#0080ff" face="Arial" size="3"><b>Output power</b><br></font>
+Table below show you the power measurements I have done.<br>
+The Re2 is 150 ohm and in some test I connect a 50 ohm parallel.<br>
+The output power in measured into a dummy load of 50 ohm.<br>
+<img src="fm_500_data/p_500_w.gif" alt="" align="bottom" border="1" height="86" width="314">
+<br>
+<br>
+<font color="#0080ff" face="Arial" size="3"><b>Testing</b><br></font>
+<img src="fm_500_data/4007.jpg" alt="" align="right" border="1" height="68" width="90">
+The first thing you should test is that the oscillator is working. I disconnected the 
+<font color="#ff0000">V<sub>out</sub></font> from pin 2 of the PLL LMX2306. <br>
+I then connected <font color="#ff0000">V<sub>out</sub></font> to ground and check the oscillator.
+The oscillator should now oscillate at the lowest frequency. <br>
+With my  <a href="http://hem.passagen.se/communication/freq_c.html" target="fm_5v22">Wireless frequency counter </a>
+I found that the oscillator was working at 100 MHz. <br>
+I streatched the coil L1 a bit until it  oscillated at 105 MHz. <br>
+I then connected <font color="#ff0000">V<sub>out</sub></font> to +5V and now the oscillator 
+was oscillating at 108MHz. Great!, just as I wanted.<br>
+By changing the <font color="#ff0000">V<sub>out</sub></font> from 0 to +5V I could change the 
+oscillating frequency from 105 to 108 MHz. <br>
+I then reconnected the Vtune to the PLL.<br>
+<br>
+
+<font color="#0080ff" face="Arial" size="3"><b>Download PIC16F870 programs (INHX8M format)</b><br></font>
+The zip file contains several hex files made for different frequencies (88 to 108) MHz.
+<table bgcolor="#e0fce1" border="1" cellpadding="0" cellspacing="0" width="500">
+<tbody><tr>
+	<td> <a href="http://hem.passagen.se/communication/pic/fm_500.zip" target="pr5">fm_500.zip</a></td>
+	<td>PLL software to FM transmitter (the hex files are zipped!).</td>
+</tr>
+</tbody></table>
+<br>
+
+<font color="#0080ff" face="Arial" size="3"><b>Final word</b></font>
+
+<br>
+This project is explaining how you can build a FM transmitter with great performances.<br>
+I advice you not to use it because it is not legal. You can only use it with a dummy load, not
+with an antenna.<br>
+ If you choose to use an antenna I hope you will use it with good manner.<br>
+<br>
+You can always mail me if there is anything unclear or need help with PLL frequency software.<br>
+I wish you good luck with your projects and thanks for visit my page.
+
+
+
+</font>
+
+
+
+<br><br><br>
+<hr align="center" size="3" width="85%">
+<font color="#0080ff" size="2"><font face="verdana,arial,helvetica,geneva,sans-serif">
+<div align="center"><a href="http://hem.passagen.se/communication/meny.html">Back to main Page</a>&nbsp; | &nbsp;<a href="mailto:maxit91@hotmail.com">Contact Me</a>&nbsp; | &nbsp;<a href="http://rfcandy.com/" target="comp1">Cheap components</a><br></div>
+
+<br><div align="center">Copyright © Last modified on 20 okt 2004.</div> 
+</font>
+
+</font></body></html>

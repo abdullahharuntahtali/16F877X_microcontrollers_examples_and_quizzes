@@ -1,0 +1,110 @@
+<html><head><title>ARDF-Timer PIC 16F84</title>
+
+<meta name="author" content="Bodo">
+<meta content="ARDF-Timer,ARDF,Fuchsjagd,Peilen,DL4CU,DL0HGN,80m RX" name="Description">
+<meta content="INDEX, FOLLOW" name="robots">
+<meta content="Private Homepage" name="page-type">
+<meta name="revisit-after" content="7 days">
+<meta content="ARDF,Fuchsjagd,Peilempfaenger,ARDF-Timer,ARDF-RX,ARDF-TX,Foxhunting" name="Description">
+<meta content="ARDF,ARDF-Timer,Fuchsjagd,Peilempfaenger,ARDF-Timer,ARDF-RX,ARDF-TX,Foxhunting " name="Keywords"></head><body alink="#ff0000" background="ardf-timer_files/hg1.jpg" link="#ff0000" text="#000000" vlink="#ff0000"><img src="ardf-timer_files/count.png" align="left" border="0" height="1" width="1">
+
+<div align="center">
+
+<table style="table-layout: fixed;" border="0">
+<tbody><tr>
+ <td style="width: 598px;">
+
+<div align="center">
+<font color="#0000cf">
+<table border="0">
+    <tbody><tr>
+    <th><font face="Webdings"><font size="+2"><font color="#0000d0">4444</font></font></font> </th>
+<th width="400"><font face="ARIAL"><font size="+2"><b><font color="#0000cf">ARDF-Timer mit PIC 16F84</font></b></font></font></th>
+<th><font face="Webdings"><font size="+2"><font color="#0000d0">3333</font></font></font> </th>
+    </tr>
+</tbody></table>
+</font><div align="left"><font color="#0000cf"><a href="http://www.dl4cu.de/ardf.html" target="_top">Zur HomePage</a></font></div>
+<hr color="#000f00" noshade="noshade" size="1"><font color="#0000cf"><br>
+</font><div align="left"><font color="#0000cf"><i><font face="Arial"><font size="+1"><font color="#ff0000">Amateurfunkpeilen - Eines der letzten grossen Abenteuer</font></font><br><br>
+
+</font></i></font></div><font color="#0000cf"><font color="#000000">
+<table>
+<tbody><tr>
+ <td><a href="http://www.dl4cu.de/ardf/timer/timer-shbig.gif">
+ <img src="ardf-timer_files/timer-sh.jpg" alt="" border="1" height="293" width="434"></a></td>
+ <td width="10"> </td>
+ <td><p align="justify"><b>Der
+hier von mir vorgestellte Timer eignet sich zum automatischen Steuern
+eines 80m oder 2m ARDF Senders. Er generiert die Kennungen MOE ... bis
+MO5, Zielbake MO und eine im Minutentakt arbeitende MOA Bake. Es lässt
+sich 1-Sender- 2- 3- 4- oder 5-Sender </b>
+ </p></td>
+</tr>
+</tbody></table>
+</font></font><p align="justify"><font color="#0000cf"><font color="#000000"><b>Betrieb
+einstellen. Ausserdem kann eine Verzögerungszeit ( Delay ) von 30 min
+bis 3 1/2h gewählt werden. Nachdem mit den DIP-Schaltern der gewünschte
+Modus gewählt wurde, übernimmt der Timer die Werte mit dem Anlegen der
+Spannung oder mit dem Drücken der RESET Taste. Um mehrere Timer zu
+synchronisieren müssen alle mit einem entsprechendem Kabel verbunden
+werden die mit einer Taste verbunden sind. Durch Drücken dieser sind
+dann alle synchronisiert. Die LED D2 wechselt damit von einem 0,3 sek
+in einen 1 sek Blinkrythmus. Ein nochmaliges Synchronisieren ist nun
+nicht mehr möglich. Dazu müssten die Timer resetet oder neu
+eingeschaltet werden.<br>
+<img src="ardf-timer_files/new.gif" alt="" border="0" height="15" width="30">
+Wird die Taste am Synch-Kabel nun ein weiteres Mal gedrückt, so wird
+der 80m- oder der 2m-Sender aktiviert, und das solange, wie die Taste
+gedrückt gehalten wird. Dieses ist von Vorteil beim Ausbringen der
+Sender. Nach dem Aufbau im Wald kann nun ein Test mit einem Helfer am
+START durchgeführt werden.<br>
+</b><table>
+<tbody><tr>
+ <td><b><p align="justify">Für die Steuerung eines
+2m-Senders stehen die Ausgänge A2 und A3 zur Verfügung. A2 bringt einen
+800Hz Ton für die AM, A3 schaltet den Sender jeweils aktiv. Das Herz
+des Timers ist ein PIC 16F84. Rechts im Bild ist das Layout
+dargestellt. Bei 300 dpi ( 5,0 cm x 5,3 cm ) erfolgt der Ausdruck in
+richtiger Grösse. Im Download befindet sich zusätzlich der Schaltplan
+in A4, ein Bestückungsplan der Leiterplatte, das Layout zur Herstellung
+einer Leiterplatte sowie das HEXFILE für die Programmierung des PIC
+16F84. Eine Selbstbau des Timer stellt somit kein Problem mehr da.
+Fertige Baugruppen oder</p></b></td>
+ <td width="10"> </td>
+ <td><img src="ardf-timer_files/timer-lay.jpg" alt="" border="1" height="265" width="250"> </td>
+</tr>
+</tbody></table>
+<b>programmierte PIC's 16F84 können beim <a href="http://www.dl4cu.de/email.html">Ortsverband V19</a> Hagenow bestellt werden.<br><br>
+</b><table>
+<tbody><tr>
+ <td><img src="ardf-timer_files/jumper.gif" alt="" border="1" height="355" width="390"> </td>
+ <td width="10"> </td>
+ <td><p align="justify"><b>Hier
+nochmal die Belegung der DIP Schalter. Im 3 min cycle sind nur die
+Kennungen MOE, MOI und MOS gültig. Im 4 min cycle Mode kommt dann MOH
+dazu. Die Einstellung für MOA ist vorrangig gegenüber DIP 1-3. Die
+DIP's für die DELAY-Auswahl addieren sich. D.h. wenn DIP 6 und 7 aktiv
+sind ergibt dieses 90 min. Für die Auswahl als Zielbake MO sollten die
+DIP's 4 und 5 nicht beide auf ON stehen, da dann die Kennung MOA
+aktiviert wird. Auf der Seite des 80m </b></p></td>
+</tr>
+</tbody></table><b><br>
+ARDF Senders ist ein Bild des Timers im Zusammen-hang mit dem Sender.
+Das sich im Download befindliche HEXFILE der Timersoftware kann z.B.
+mit dem Programm NTPicprog.exe in den PIC gebrannt werden. Das Programm
+ist im INET zu finden. <br> <br>
+Hier nun der <a href="http://www.dl4cu.de/ardf/timer/timer.zip">Download</a> der Zip-Datei.<br>
+</b></font></font></p><div align="left"><ul>
+<font color="#0000cf"><font color="#000000"><li><b>HEX-File</b></li>
+<li><b>Layout</b></li>
+<li><b>Bestückung</b></li>
+<li><b>Schaltplan</b></li>
+</font></font></ul></div>
+<font color="#0000cf"><font color="#000000"><b><br>
+</b></font></font><hr color="#000f00" noshade="noshade" size="1">
+<div align="left"><font color="#0000cf"><font color="#000000"><b><font size="-1">DL4CU 2005/06</font></b></font></font></div>
+<p></p>
+<font color="#0000cf"><b> </b></font></div></td>
+</tr>
+</tbody></table></div>
+</body></html>

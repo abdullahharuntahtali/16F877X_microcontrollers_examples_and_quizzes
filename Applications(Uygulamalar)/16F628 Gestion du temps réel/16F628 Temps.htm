@@ -1,0 +1,401 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta name="keywords" content="16F628,timer,interruption,temps,durée,TMR0"><title>16F628 Gestion temps réel</title>
+
+
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<style type="text/css">
+<!--
+@import url(../../Judo.css);
+-->
+</style></head><body alink="#000000" bgcolor="#e5e5ff" link="#0033ff" text="#999999" vlink="#0033ff">
+<table align="center" border="0" cellpadding="0" cellspacing="0" width="779">
+  <!--DWLayoutTable-->
+  <tbody><tr> 
+    <td colspan="8" height="23" valign="top"><p class="BleuTitre" align="center"><font color="#6666ff" face="Arial, Helvetica, sans-serif" size="+1">16F628 
+        Gestion du temps réel<br>
+        </font></p></td>
+  </tr>
+  <tr> 
+    <td rowspan="31" class="Gauche" valign="top" width="14"><!--DWLayoutEmptyCell-->&nbsp;</td>
+    <td colspan="6" class="BleuClair" height="90" valign="top"> <div align="center"><u><strong><br>
+        </strong></u>C'est un cours qui explique comment gérer le temps 
+        avec le Timer 0 du PIC 16F628.<br>
+        On utilise un quartz de 4,096 MHz et l'interruption provoquée par 
+        le débordement du Timer.<br>
+        La LED connectée à RB0 clignote à une fréquence 
+        de 1 Hz ( 0,5 s allumée et 0,5 seconde éteinte).<br>
+        La LED connectée à RB1 clignote à une fréquence 
+        de 1 mn( 30s allumée et 30seconde éteinte).<br>
+        Le bouton poussoir n'est pas utilisé dans cette configuration.</div></td>
+    <td rowspan="31" class="Droite" valign="top" width="15"><!--DWLayoutEmptyCell-->&nbsp;</td>
+  </tr>
+  <tr> 
+    <td colspan="3" class="BleuClair" height="209" valign="top"><br> <img src="16F628%20Temps_files/16F628%2520Temps%2520Schema.gif" height="181" width="227"></td>
+    <td colspan="3" class="BleuClair" valign="top"><div align="justify"> 
+        <p align="right"><img src="16F628%20Temps_files/16F628%2520Temps%2520CI.jpg" height="209" width="384"> 
+        </p>
+      </div></td>
+  </tr>
+  <tr> 
+    <td colspan="6" class="BleuClair" height="146" valign="top"><div align="center"> 
+        <p><u><strong><font color="#000000">Les documents suivants vous sont proposés, 
+          mais ne sont pas nécessaires à la compréhension 
+          du sujet :</font></strong></u><br>
+          <br>
+          <a href="http://perso.orange.fr/doumai/16F628/Temps/16F628%20Temps%20Schema.pdf">schéma structurel</a><br>
+          <a href="http://perso.orange.fr/doumai/16F628/Temps/16F628%20Temps%20Typon.pdf"> typon</a><a href="http://perso.orange.fr/doumai/Judo%20Faq.htm"><img src="16F628%20Temps_files/FAQ.gif" border="0" height="7" width="40"></a><br>
+          <a href="http://perso.orange.fr/doumai/16F628/Temps/16F628%20Temps%20Implantation.pdf">schéma d'implantation 
+          des composants</a><br>
+          <a href="http://perso.orange.fr/doumai/16F628/Temps/16F628%20Temps.asm">programme du PIC en assembleur</a><br>
+          <br>
+          Pour ceux qui voudraient faire des modifications, le projet MPLAB<br>
+          <a href="http://perso.orange.fr/doumai/16F628/Temps/16F628%20Temps%20MPLAB.zip">Projet Gestion du temps réel</a></p>
+      </div></td>
+  </tr>
+  <tr> 
+    <td colspan="2" class="BleuClair" height="187" valign="top"><div align="left"><strong><u><font color="#000000">Nomenclature 
+        :</font></u></strong><br>
+        <br>
+        Résistances <br>
+        <br>
+        Condensateur <br>
+        <br>
+        Circuit Intégré<br>
+        Diode <br>
+        LED <br>
+        Quartz<br>
+        Bouton poussoir<br>
+        Picot </div></td>
+    <td colspan="2" class="BleuClair" valign="top"><p><br>
+        <br>
+        R1, R2, R3, R5<br>
+        R4, R6<br>
+        C1, C2<br>
+        C3, C5<br>
+        U1 <br>
+        D5<br>
+        D1 à D4<br>
+        Q1 <br>
+        S1 <br>
+        X2 </p></td>
+    <td colspan="2" class="BleuClair" valign="top"><br> <br>
+      330 <br>
+      10 k<br>
+      22 pF<br>
+      10 µF<br>
+      16F628 + support 18 broches DIL<br>
+      5,6 V<br>
+      Rouge 3 mm<br>
+      4,096 MHz<br> <br>
+      Horloge 250 Hz</td>
+  </tr>
+  <tr> 
+    <td colspan="6" class="BleuClair" height="23" valign="top"><strong><u><font color="#000000">Programme 
+      commenté : </font></u></strong></td>
+  </tr>
+  <tr> 
+    <td class="BleuClair" height="55" valign="top" width="46">23</td>
+    <td class="BleuClair" valign="top" width="97">SwapLed : 1</td>
+    <td colspan="4" class="BleuClair" valign="top"><div align="justify">C'est 
+        une variable qui sera l'image du PORTB. Toutes les modifications qui devront 
+        affecter le PORTB seront réalisées sur cette variable. Une 
+        fois ces opérations terminées, le contenu de SwapLed sera 
+        recopié dans le PORTB. Cette méthode est utilisée 
+        lorsque plusieurs évènements doivent être synchrones.<br>
+      </div></td>
+  </tr>
+  <tr> 
+    <td class="BleuClair" height="55" valign="top">34<br>
+      35 </td>
+    <td class="BleuClair" valign="top">movlw<br>
+      movwf </td>
+    <td class="BleuClair" valign="top" width="129">0x07<br>
+      CMCON </td>
+    <td colspan="3" class="BleuClair" valign="top"><div align="justify">Le 16F628 
+        intègre des comparateurs. A la mise sous-tension, ces comparateurs 
+        sont activés. Pour utiliser les broches du PORTB comme des broches 
+        entré/sortie logiques, il faut désactiver le mode comparateur.</div></td>
+  </tr>
+  <tr> 
+    <td class="BleuClair" height="160" valign="top">41<br>
+      42 </td>
+    <td class="BleuClair" valign="top">movlw<br>
+      movwf </td>
+    <td class="BleuClair" valign="top">B'00000010'<br>
+      OPTION_REG </td>
+    <td colspan="3" class="BleuClair" valign="top"><p>Option Register (page 23 
+        doc Microchip) <br>
+        Le bit 5 = 0, le Timer 0 est commandé par l'horloge interne du 
+        PIC.<br>
+        PS&lt;2:0&gt; = 010, le facteur de prédivision associé au 
+        TMR0 est de facteur 8.<br>
+        <u>Pour résumer :</u><br>
+        L'horloge du 16F628 utilise un quartz de 4,096 MHz.<br>
+        Cette fréquence est divisée par 4 pour cadencer le µC. 
+        f1 = 4,096 / 4 = 1,024 MHz.<br>
+        Le prédiviseur effectue une nouvelle division par 8. f2 = 1 024 
+        000 / 8 = 128 kHz<br>
+        Un octet est affecté au Timer 0. Le comptage s'effectue donc de 
+        0 à 255.<br>
+        Il y aura débordement du Timer à une fréquence f3 
+        = 128 000 / 256 = 500 Hz<br>
+        Une interruption Timer aura lieu toutes les 2 ms si son contenu n'est 
+        pas modifié.</p></td>
+  </tr>
+  <tr> 
+    <td colspan="6" class="BleuClair" height="40" valign="top"><div align="justify">On 
+        peut remarquer le programme principal lignes 53, 54, 55. C'est une boucle 
+        d'attente. Le programme est exécuté intégralement 
+        lors de l'interruption. Si on utilise un quartz de 8,192 MHz, l'interruption 
+        sera générée toutes les 1 ms.</div></td>
+  </tr>
+  <tr> 
+    <td class="BleuClair" height="70" valign="top">43<br>
+      44 </td>
+    <td class="BleuClair" valign="top">movlw<br>
+      movwf </td>
+    <td class="BleuClairRetrait" valign="top">B'10100000'<br>
+      INTCON </td>
+    <td colspan="3" class="BleuClair" valign="top">INTCON (page 24 doc Microchip)<br>
+      Le programme ne travaille qu'avec l'interruption engendrée par TMR0.<br>
+      Le bit 7 = 1, autorise toutes les interruptions.<br>
+      Le bit 5 = 1, autorise l'interruption par débordement du Timer 0.</td>
+  </tr>
+  <tr> 
+    <td colspan="6" class="BleuClair" height="45" valign="top"><font color="#000000"><u><strong>L'interruption 
+      : <br>
+      <br>
+      </strong>Sauvegarde des registres<strong>.</strong></u></font></td>
+  </tr>
+  <tr> 
+    <td class="BleuClair" height="16" valign="top">62 à 64</td>
+    <td colspan="5" class="BleuClair" valign="top">Sauvegarde des registres internes 
+      W et STATUS au déclenchement de l'interruption.</td>
+  </tr>
+  <tr> 
+    <td colspan="6" class="BleuClair" height="16" valign="top"><font color="#000000"><u>Gestion 
+      des Leds et de l'horloge.</u></font></td>
+  </tr>
+  <tr> 
+    <td colspan="6" class="BleuClair" height="46" valign="top"><div align="justify">Ce 
+        segment de programme se trouve en tête de l'interruption. Sa particularité 
+        est que indépendamment des instructions et des tests effectués, 
+        la modification apportée au PORTB sera rigoureusement cyclique 
+        et interviendra toutes les 2 ms.<br>
+        Les opérations se font sur la variable SwapLed qui est l'image 
+        du PORTB. Cette image sera recopiée à la fin du traitement.</div></td>
+  </tr>
+  <tr> 
+    <td class="BleuClair" height="136" valign="top">71<br>
+      72 <br>
+      73 <br>
+      74 <br>
+      75 <br>
+      76 <br>
+      77<br>
+      78<br>
+      79 </td>
+    <td class="BleuClair" valign="top">movf<br>
+      sublw <br>
+      btfsc <br>
+      bcf <br>
+      ; <br>
+      movf <br>
+      sublw <br>
+      btfsc<br>
+      bsf </td>
+    <td class="BleuClair" valign="top">T1s,W<br>
+      0 <br>
+      STATUS,Z <br>
+      SwapLed,0 <br> <br>
+      T1s,W <br>
+      5<br>
+      STATUS,Z <br>
+      SwapLed,0 </td>
+    <td colspan="3" class="BleuClair" valign="top">La variable T1s est recopiée 
+      dans le registre W<br>
+      W = 0 - W. On ne cherche à savoir que si le résultat de l'opération 
+      est nul.<br>
+      Si le résultat de l'opération est différent de 0, on 
+      saute l'instruction suivante.<br>
+      T1s = 0, on éteindra ultérieurement la led des secondes.<br> 
+      <br>
+      La variable T1s est recopiée dans le registre W<br>
+      W = 5- W. On ne cherche à savoir que si le résultat de l'opération 
+      est nul.<br>
+      Si le résultat de l'opération est différent de 0, on 
+      saute l'instruction suivante.<br>
+      T1s = 5, on allumera ultérieurement la led des secondes. </td>
+  </tr>
+  <tr> 
+    <td colspan="6" class="BleuClair" height="46" valign="top">On peut remarquer 
+      que quelque soit le résultat des tests, ce segment de programme a 
+      une durée de 8 cycles pour le µC.<br>
+      Le segment de programme suivant ( 84 à 91 ) est identique et assure 
+      le traîtement de la variable T1mn.<br>
+      Le segment ci-dessous assure le traîtement de l'horloge 250 Hz. Lors 
+      de chaque interruption, le bit est concerné est complémenté.</td>
+  </tr>
+  <tr> 
+    <td class="BleuClair" height="46" valign="top">95<br>
+      96 </td>
+    <td class="BleuClair" valign="top">movlw<br>
+      xorwf </td>
+    <td class="BleuClair" valign="top">0x20<br>
+      SwapLed,F </td>
+    <td colspan="3" class="BleuClair" valign="top">Seul le bit 5 du registre W 
+      est à l'état 1.<br>
+      Un OU Exclusif est réalisé avec la variable SwapLed. <br>
+      Le bit 5 de SwapLed est donc complémenté, les autres bits 
+      sont inchangé.</td>
+  </tr>
+  <tr> 
+    <td colspan="6" class="BleuClair" height="31" valign="top"><div align="justify">Le 
+        segment suivant a pour fonction de recopier les 3 bits associés 
+        aux Leds et à l'horloge sur le PORTB. Les autres bits du PORTB 
+        restent inchangés. </div></td>
+  </tr>
+  <tr> 
+    <td class="BleuClair" height="61" valign="top">100<br>
+      101<br>
+      102<br>
+      103 </td>
+    <td class="BleuClair" valign="top">movf<br>
+      andlw<br>
+      iorwf<br>
+      movwf </td>
+    <td class="BleuClair" valign="top">PORTB,W<br>
+      B'11011100'<br>
+      SwapLed,W<br>
+      PORTB </td>
+    <td colspan="3" class="BleuClair" valign="top">Sauvegarde le contenu du PORTB 
+      dans le registre W<br>
+      Forçage à 0 des bits 0, 1 (Leds) et 5 (Horloge) du registre 
+      W.<br>
+      Réalise un OU entre SwapLed et W. Les bits 0,1,5 sont affectés 
+      par leurs valeurs.<br>
+      Recopie SwapLED sur le PORTB (Les trois bits changent d'état en même 
+      temps). </td>
+  </tr>
+  <tr> 
+    <td colspan="6" class="BleuClair" height="16" valign="top"><font color="#000000"><u>Gestion 
+      des variables du Temps.</u></font></td>
+  </tr>
+  <tr> 
+    <td colspan="6" class="BleuClair" height="52" valign="top"><div align="justify">Les 
+        trois variables se traitent de façon identique. Je ne commente 
+        donc que le premier segment de programme. La variable T100ms est incrémentée 
+        de 0 à 49. Comme a chaque passage il s'est écoulé 
+        une durée de 2ms, entre deux remise à 0 de cette variable 
+        il s'est écoulé 100 ms.</div></td>
+  </tr>
+  <tr> 
+    <td class="BleuClair" height="105" valign="top"><p>107<br>
+        108<br>
+        109<br>
+        110<br>
+        111<br>
+        112 </p></td>
+    <td class="BleuClair" valign="top">incf<br>
+      movf<br>
+      sublw<br>
+      btfss<br>
+      goto<br>
+      clrf </td>
+    <td class="BleuClair" valign="top">T100ms,F<br>
+      T100ms,W<br>
+      50<br>
+      STATUS,Z<br>
+      FinT<br>
+      T100ms </td>
+    <td colspan="3" rowspan="2" class="BleuClair" valign="top">Incrémente 
+      la variable T100ms<br>
+      Recopie le contenu de la variable T100ms dans le registre W<br>
+      W = 50- W. On ne cherche à savoir que si le résultat de l'opération 
+      est nul<br>
+      Si le résultat de l'opération est égal à 0, 
+      on saute l'instruction suivante<br>
+      Le résultat de l'opération est différent de 0, le traitement 
+      du temps est terminé<br>
+      C'est le 50 ème passage, la variable T100ms est forcée à 
+      0.<br>
+      On va exécuter l'intruction suivante qui consiste à incrémenter 
+      la vaiable T1s.</td>
+  </tr>
+  <tr> 
+    <td height="1"></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr> 
+    <td colspan="6" class="BleuClair" height="16" valign="top"><font color="#000000"><u>Validation 
+      de la prochaine interruption.</u></font></td>
+  </tr>
+  <tr> 
+    <td class="BleuClair" height="31" valign="top">134</td>
+    <td class="BleuClair" valign="top">bcf</td>
+    <td class="BleuClair" valign="top">INTCON,T0IF</td>
+    <td colspan="3" class="BleuClair" valign="top">Lors de l'interruption, le 
+      Flag T0IF avait été positionné à l'état 
+      1. Pour que la prochaine interruption du TMR0 soit prise en compte, il faut 
+      effacer ce Flag.</td>
+  </tr>
+  <tr> 
+    <td colspan="6" class="BleuClair" height="16" valign="top"><font color="#000000"><u>Restauration 
+      des registres.</u></font> </td>
+  </tr>
+  <tr> 
+    <td colspan="2" class="BleuClair" height="16" valign="top">137 à 140</td>
+    <td colspan="4" class="BleuClair" valign="top">Le traitement de l'interruption 
+      est terminé. Les deux registres STATUS et W sont restaurés.</td>
+  </tr>
+  <tr> 
+    <td colspan="6" class="BleuClair" height="16" valign="top"><font color="#000000"><u>Retour 
+      d'interruption.</u></font></td>
+  </tr>
+  <tr> 
+    <td class="BleuClair" height="15" valign="top">142</td>
+    <td class="BleuClair" valign="top">retfie</td>
+    <td></td>
+    <td width="160"></td>
+    <td width="126"></td>
+    <td width="192"></td>
+  </tr>
+  <tr> 
+    <td colspan="6" class="BleuClair" height="19" valign="top"><!--DWLayoutEmptyCell-->&nbsp;</td>
+  </tr>
+  <tr> 
+    <td colspan="6" class="BleuClair" height="45" valign="top">En gardant cette 
+      structure, on peut donc rajouter les variables heure, jour, semaine sans 
+      problème particulier.<br>
+      Pendant l'interruption de 2 ms, 2000 instructions peuvent être exécutées 
+      (hors sauts).<br>
+      Dans un prochain chapitre, je développerai la manière de traiter<a href="http://perso.orange.fr/doumai/16F628/Poussoir/16F628%20Poussoir.htm"> 
+      l'anti-rebond d'un bouton poussoir</a> avec la même interruption.</td>
+  </tr>
+  <tr> 
+    <td colspan="8" class="Bas" height="20" valign="top"><!--DWLayoutEmptyCell-->&nbsp;</td>
+  </tr>
+  <tr> 
+    <td height="16"></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr> 
+    <td colspan="3" class="BleuTitre" height="18" valign="top"><div align="center"><a href="http://perso.orange.fr/doumai/index.htm">Accueil</a></div></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td colspan="2" class="BleuTitre" valign="top"><div align="center"><a href="mailto:Doumai.Terret@Wanadoo.fr">Une 
+        question ? Écrivez-moi ...</a></div></td>
+  </tr>
+</tbody></table>
+<p class="BleuClair" align="center">&nbsp;</p>
+      </body></html>

@@ -1,0 +1,137 @@
+<html><head>
+
+<script language="JavaScript" type="text/javascript" src="bird_files/frameit.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="Generator" content="Microsoft Word 97"><title>Bird Transmitter</title>
+
+<meta name="keywords" content="spolar, coil, toroid, rf, ham, ham radio, circuit, CW, QRP, RX, 
+TX, RF, IF, PCB, PSU, GDO, QRP, home brew, home-brew, amateur radio, 
+amatöradio, construction, transmitter, receiver, key, keys, fm, fet, 
+hams, transistor, power supply, printed circuit boards, 
+amplifier, homebrew, Q, q, keyer, printed circuit board, FET, rfamp, 
+rf-amp, ift, pcb, transmitter, psu, gdo, gdos, tubes, pcbs, gdo, cw, 
+g4vvj, SA602, SA612, mc13135, mc13136, datasheet, zn414, zn416, zn414z, pdf, 
+zn416e, qrp, notepad, tda7000, calc, parallel, series, frequency, a,
+A,  heatsink, software, download">
+
+<meta name="Template" content="C:\Program\Microsoft Office\Mallar\Webbsidor\Webbsideguiden.wiz"></head><body background="bird_data/background4.GIF" bgcolor="#ffffff" link="#0000ff" vlink="#800080">
+<img src="bird_data/birdf2.jpg" alt="" align="right" border="1" height="177" width="229">
+<font color="#0000ff" face="Arial" size="5"><b>Bird Transmitter</b></font><br>
+
+<font color="#0000ff" face="Arial" size="2">
+This transmitter is custom made for bird listening.<br>
+It is a PLL controlled FM transmitter which deliver 100mW at 88-108MHz.<br>
+The transmitter is based on my FM transmitter and have micro-controller and <br>
+microphone implemented on the circuit board.<br>
+Since it use PLL, the frequency is very stable and can be set by 2 jumpers.<br>
+The antenna is only 30cm and transmitting distance is up to 500m.<br>
+The power supply is 9V and the current is about 90-100mA.<br>
+
+</font><font color="#ff0000" face="Arial" size="1">All contribution to this page are most welcome!</font>
+<br>
+<br>
+<br>
+<font color="#0080ff" face="Arial" size="3"><b>Background</b><br></font>
+<font color="#000000" face="Arial" size="2">
+A mail from Spain started this project. It was Carlos who asked me if I could custom build a 
+transmitter. <br>
+The idea was interesting and most of the work has already been done in my previous RF projects, 
+so I had a go for it. <br>
+The main part of this transmitter is based on my  FM PLL controlled VCO unit (Part II). <br>
+What I needed to implement is a PIC16F870 processor and a microphone amplifier. <br>
+<br>
+One criteria of the construction was a short antenna which makes it more difficult. 
+I can not emphasise how important a proper antenna is in a transmitter. 
+If you are unlucky you might just get a few % of energy out into the air and the rest will reflect back and mess it all <br>up. Anyhow, the antenna of this construction is 30-35cm wire and it works..I will not say more..*smiling* <br>
+<br>
+<font color="#0080ff" face="Arial" size="3"><b>Hardware and schematic</b><br></font>
+<a href="http://hem.passagen.se/communication/pic/bird.gif" target="ddbird"><img src="bird_data/birds.jpg" alt="Click to open in new window" align="right" border="1" height="138" width="150"></a>
+
+So, lets look at the schematic. <br>
+Most parts will be recognised from the FM project, but two parts are different. <br>
+The microphone can be found to the top left corner. <br>
+A NPN transistor amplifies the signal and a potentiometer set the input signal to the FM 
+modulator part. <br>
+If you look at the PIC you will see it controls the PLL and two jumpers SW1 and SW2 will 
+select the frequencies. <br><br>
+The table show you the actual frequencies for this project. <br>
+All you need to do is to change the jumper and the PIC will update the PLL with new frequency. <br>
+
+<table bgcolor="#ffe8fd" border="1" cellpadding="1" cellspacing="1" width="270">
+<tbody><tr>
+    <td width="90"><div align="center">SW2</div></td>
+    <td width="90"><div align="center">SW1</div></td>
+    <td width="90"><div align="center">Freq (MHz)</div></td>
+</tr>
+<tr>
+    <td><div align="center">close</div></td>
+    <td><div align="center">close</div></td>
+    <td><div align="center">105.0</div></td>
+</tr>
+<tr>
+    <td><div align="center">close</div></td>
+    <td><div align="center">open</div></td>
+    <td><div align="center">106.5</div>	</td>
+</tr>
+<tr>
+    <td><div align="center">open</div></td>
+    <td><div align="center">close</div></td>
+    <td><div align="center">105.5</div></td>
+</tr>
+<tr>
+    <td><div align="center">open</div></td>
+    <td><div align="center">open</div></td>
+    <td><div align="center">107.0</div></td>
+</tr>
+</tbody></table>
+
+
+<br>
+<font color="#0080ff" face="Arial" size="3"><b>Field test</b><br></font>
+
+My test was performed in an open area and I used my car to measure the transmitting distance. <br>
+I places the transmitter about 1 m above ground close to some trees with birds. I then went to 
+my car and turned on the radio. <br>
+This transmitter works perfect and the audio quality was beyond my expectations. <br>
+So I drove a way 100m, still with perfect audio..then 200, 300, 400 and at 500m I was not 
+"line in sight" and at that point I started to get some noise and sparks. What a performance! <br>
+<br>
+At 200-300m away I could sit in my car and listen to perfect audio from birds singing. <br>
+It sounded like I had them in the backs seat of my car. <br>
+<br>
+<font color="#0080ff" face="Arial" size="3"><b>Some photo</b><br></font>
+<img src="bird_data/birdf.jpg" alt="" align="bottom" border="1" height="389" width="518"><br><br>
+
+<font color="#0080ff" face="Arial" size="3"><b>Download PIC16F870 programs (INHX8M format)</b><br></font>
+The zip file contains hex file made for this project.
+<table bgcolor="#e0fce1" border="1" cellpadding="0" cellspacing="0" width="500">
+<tbody><tr>
+	<td> <a href="http://hem.passagen.se/communication/pic/bird.zip" target="pr5">bird.zip</a></td>
+	<td>Bird software to FM transmitter (the hex files are zipped!).</td>
+</tr>
+</tbody></table>
+<br>
+
+
+<font color="#0080ff" face="Arial" size="3"><b>Final word</b></font>
+
+<br>
+This project describes the FM PLL controlled VCO unit working with a micro-controller and a microphone.<br>
+Again, this is a strictly educational project explaining how a RF amplifier can be built and used.<br>
+According to the law it is legal to build them, but not to use them.<br>
+<br>
+You can always mail me if there is anything unclear.<br>
+I wish you good luck with your projects and thanks for visit my page.
+</font>
+
+
+
+<br><br>
+<hr align="center" size="3" width="85%">
+<font color="#0080ff" size="2"><font face="verdana,arial,helvetica,geneva,sans-serif">
+<div align="center"><a href="http://hem.passagen.se/communication/meny.html">Back to main Page</a>&nbsp; | &nbsp;<a href="mailto:maxit91@hotmail.com">Contact Me</a>&nbsp; | &nbsp;<a href="http://rfcandy.com/" target="comp1">Cheap components</a><br></div>
+
+<br><div align="center">Copyright © Last modified on 20 july 2005.</div> 
+</font>
+
+</font></body></html>

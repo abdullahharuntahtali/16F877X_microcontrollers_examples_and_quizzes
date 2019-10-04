@@ -1,0 +1,113 @@
+pragma target chip 16f628
+pragma target clock 4_000_000
+pragma target osc internal
+pragma target fuses 0x3f70
+
+var byte foo at 0x70
+var byte bar at 0x71
+var byte i at 0x72
+var byte j at 0x73
+var bit j7 at j : 7
+var bit j6 at j : 6
+var volatile byte ccpr1l at 0x15
+var volatile byte ccp1con at 0x17
+var volatile bit cp1x at ccp1con : 5
+var volatile bit cp1y at ccp1con : 4
+var volatile bit ccp1m3 at ccp1con : 3
+var volatile bit ccp1m2 at ccp1con : 2
+var volatile bit ccp1m1 at ccp1con : 1
+var volatile bit ccp1m0 at ccp1con : 0
+var volatile byte cmcon at 0x1f
+var volatile byte pcon at 0x8e
+var volatile bit oscf at pcon : 3
+var volatile bit porb at pcon : 1
+var volatile bit borb at pcon : 0
+var volatile byte t2con at 0x12
+var volatile byte pr2 at 0x92
+var volatile byte optionreg at 0x81
+var volatile byte f628_eedata at 0x9A
+var volatile byte f628_eeadr at 0x9B
+var volatile byte f628_eecon1 at 0x9C
+var volatile byte f628_eecon2 at 0x9D
+var volatile bit f628_eecon1_wrerr at f628_eecon1 : 3
+var volatile bit f628_eecon1_wren at f628_eecon1 : 2
+var volatile bit f628_eecon1_wr at f628_eecon1 : 1
+var volatile bit f628_eecon1_rd at f628_eecon1 : 0
+
+foo = 0x80
+bar = 0x00
+i = 0x00
+j = 0x00
+
+include jpic
+
+port_a_direction = 0x00
+port_b_direction = 0xF7
+
+assembler
+    -- timer and misc setup
+        bcf status_rp0          -- bank 0
+        bcf status_rp1          -- ...
+        movlw 0x07              -- load 0x07...
+        movwf cmcon             -- ...into cmcon
+        clrwdt                  -- clear wdt
+        clrf tmr0               -- clear tmr0 and prescaler
+        bsf status_rp0          -- bank 1
+        movlw 0xEF              -- be careful about
+        movwf optionreg         -- moving the prescaler
+        clrwdt                  -- into watchdog timer
+        movlw 0xE8              -- set prescaler to 0
+        movwf optionreg         -- ...
+        bcf status_rp0          -- bank 0
+        movlw 0xC4              -- put initial clkset value
+        movwf tmr0              -- into tmr0
+
+    -- set up PWM
+        bsf status_rp0          -- bank 1
+        bsf oscf                -- OSC = 4 MHz
+        movlw 0xFF              -- 0xFF goes into...
+        movwf pr2               -- ...pr2
+        bcf status_rp0          -- bank 0
+        clrf ccpr1l             -- set duty cycle
+        bcf cp1x                -- ...
+        bcf cp1x                -- ...
+        movlw 0x04              -- load config for t2con
+        movwf t2con             -- write it to t2con
+        movlw 0x0F              -- load config for ccp1con
+        movwf ccp1con           -- write it into ccp1con
+
+end assembler
+
+forever loop
+        i = i + 1
+
+        if (i == 10) then
+                i = 0
+        end if
+
+        foo = foo ^ 0b_1100_0000
+        
+        port_a = foo | i
+
+        j = 95
+
+        for 30 loop
+                for 254 loop
+                        for 32 loop
+                                asm nop
+                        end loop
+                end loop
+                assembler
+                        bsf status_rp0  -- bank 1
+                        bcf status_rp1  -- ...
+                        decf j,w        -- decrement j -> w
+                        movwf j         -- save it in j
+                        movwf f628_eeadr -- put the address in eeadr
+                        bsf f628_eecon1_rd -- read the data
+                        movf f628_eedata,w -- get it in w
+                        bcf status_rp0  -- bank 0
+                        movwf ccpr1l    -- put the PWM value in ccpr1l
+                end assembler                         
+        end loop
+
+end loop

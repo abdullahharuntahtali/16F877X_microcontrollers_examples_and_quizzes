@@ -1,0 +1,136 @@
+<html><head><script language="JavaScript" type="text/javascript">
+	var ad_frame = 0;
+	var ad_url_top = "http://pub.chez.com/cgi-bin/perl/frame.pl/popup/default";	
+	var myurl = new String(window.top.location);
+	
+	if(window.location == window.top.location) {
+			var address=window.location;
+			
+			if (myurl.substr(myurl.length-1,1) != "?" && navigator.userAgent.indexOf('Safari') == -1) {
+				var s='<html><head><title>'+'</title></head>' +
+				'<frameset rows="105,*" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">' +
+				'<frame src="' + ad_url_top + '" name="PPAdFrame"  marginwidth="0" marginheight="0" scrolling="no" noresize>' +
+				'<frame src="' + address + '?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>' +
+				'</frameset>' +
+				'</html>';
+			}			
+			else {
+				s = '<div align=center style="width:100%;padding:5px;border-bottom:2px solid #CBCBCB;background:#F2F2F2;"><table width="762" border="0" cellspacing="0" cellpadding="0" align="center"><tr><td align="right" width="17"><img src="http://pub.chez.com/images/onglet_gauche.gif" border="0" alt=""></td><td style="border-top:1px solid #C6C6C6;border-bottom:1px solid #C6C6C6;background:#F2F2F2;width:728px;"><IFRAME WIDTH=728 HEIGHT=90 MARGINWIDTH=0 MARGINHEIGHT=0 HSPACE=0 VSPACE=0 FRAMEBORDER=0 SCROLLING=no BORDERCOLOR="#000000" SRC="http://ads.tiscali.fr/html.ng/site=tiscali&Ads.Segment!=popup&cat=/services/pagesperso/popup&type=largebanner&placement=haut&adsize=728x90&cnt=yes"></IFRAME></td><td align="left" width="17"><img src="http://pub.chez.com/images/onglet_droit.gif" border="0" alt=""></td></tr></table></div>';
+			}
+			document.write(s);
+	}
+</script><title></title><script language="javascript">	
+if (navigator.userAgent.indexOf('Safari') == -1) {
+	var ad_url = "http://pub.chez.com/cgi-bin/perl/frame.pl/popup/default";
+	var ref = window.document.referrer;
+	if(parent.PPAdFrame) {			
+			if(parent.memberPage && parent.memberPage.document.title )
+			{
+				parent.document.title=parent.memberPage.document.title;
+			}
+			if(parent.PPAdFrame && parent.PPAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "/")) ) {
+					parent.PPAdFrame.location.replace(ad_url);
+			}		
+	}
+	else
+	 if(top.PPAdFrame && top.PPAdFrame.location) {
+			if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+					top.PPAdFrame.location.replace(ad_url);
+			}
+	}	
+	if (window.top.location.href.indexOf("www.chez.com") != -1 && window.top.location.href.indexOf("pub.chez.com") == -1)
+	{
+		ad_frame = 1;
+		window.top.document.body.rows = "105, *";
+	}
+	function resizePPAdFrame()
+	{
+		window.top.document.body.rows = "105, *";
+	}
+	if (ad_frame == 1)
+	{
+		setInterval("resizePPAdFrame()", 105);
+	}
+	
+}
+</script><script language="JavaScript" type="text/javascript">
+<!--
+CM_CLIENT = "tiscali";
+CM_SECTION1 = "PagesPersoChez";
+CM_RUBRIQUE = "divers"; 
+// -->
+</script><script language="JavaScript" src="home_api_2004_files/tiscali.js" type="text/javascript"></script><script language="JavaScript" type="text/javascript">
+<!--
+portal_category="/PagesPerso/";
+portal_pagename="Chez";
+document.write('<scr'+'ipt language="javascript1.1" src="http://static.aliceadsl.fr/comportemental/Tagcomportemental.js"></sc'+'ript>');
+-->
+</script></head><frameset rows="105, *" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;"><frame src="home_api_2004_files/default.htm" name="PPAdFrame" marginwidth="0" marginheight="0" noresize="noresize" scrolling="no"><frame src="home_api_2004_files/home_api_2004.htm" name="memberPage" marginwidth="0" marginheight="0" noresize="noresize" scrolling="auto"></frameset>
+ 
+
+
+
+ 
+
+
+<!--<BR><BR><IMG hspace=0 src="bug.gif"><FONT size="+1"><B>Mon systeme de pilotage de reseau "UTS"</B></FONT>-->
+
+
+
+
+
+
+
+
+
+
+   
+
+     
+        
+      
+    
+
+     
+         
+      
+    
+
+     
+        
+       
+    
+   
+
+
+
+
+
+
+ 
+ 
+  
+     
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+<!-- Cyberestat -->
+
+
+<noscript><img src="http://stat3.cybermonitor.com/tiscali_v?R=divers&S=total;PagesPersoChez"></noscript>
+<!-- /Cyberestat -->
+
+</html>

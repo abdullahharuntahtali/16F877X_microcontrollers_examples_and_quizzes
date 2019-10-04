@@ -1,0 +1,91 @@
+pragma target chip 16f628
+pragma target clock 4_000_000
+pragma target osc internal
+pragma target fuses 0x3f70
+
+var byte foo at 0x70 = 0x80
+var byte bar at 0x71 = 0x40
+var byte baz at 0x72 = 0x02
+var bit dispmin at baz : 0
+var byte sixtieths at 0x74 = 0
+var byte seconds at 0x75 = 0
+var byte minutes at 0x76 = 0
+var byte hours at 0x77 = 0
+var byte tmpminutes at 0x78 = 0
+var byte tmphours at 0x79 = 0
+var byte rb7cnt at 0x7a = 0
+var byte rb4cnt at 0x7b = 0
+var volatile byte f628_eedata at 0x9A
+var volatile byte f628_eeaddr at 0x9B
+var volatile byte f628_eecon1 at 0x9C
+var volatile bit f628_eecon1_wrerr at f628_eecon1 : 3
+var volatile bit f628_eecon1_wren at f628_eecon1 : 2
+var volatile bit f628_eecon1_wr at f628_eecon1 : 1
+var volatile bit f628_eecon1_rd at f628_eecon1 : 0
+var volatile byte ccpr1l at 0x15
+var volatile byte ccp1con at 0x17
+var volatile bit cp1x at ccp1con : 5
+var volatile bit cp1y at ccp1con : 4
+var volatile bit ccp1m3 at ccp1con : 3
+var volatile bit ccp1m2 at ccp1con : 2
+var volatile bit ccp1m1 at ccp1con : 1
+var volatile bit ccp1m0 at ccp1con : 0
+var volatile byte cmcon at 0x1f
+var volatile byte pcon at 0x8e
+var volatile bit oscf at pcon : 3
+var volatile bit porb at pcon : 1
+var volatile bit borb at pcon : 0
+var volatile byte t2con at 0x12
+var volatile byte pr2 at 0x92
+var volatile byte optionreg at 0x81
+
+include jpic
+include intrh
+
+port_a_direction = 0x30
+port_b_direction = 0x97
+
+assembler
+    -- timer and misc setup
+        bcf status_rp0          -- bank 0
+        bcf status_rp1          -- ...
+        movlw 0x07              -- load 0x07...
+        movwf cmcon             -- ...into cmcon
+        clrwdt                  -- clear wdt
+        clrf tmr0               -- clear tmr0 and prescaler
+        bsf status_rp0          -- bank 1
+        movlw 0x6F              -- be careful about
+        movwf optionreg         -- moving the prescaler
+        clrwdt                  -- into watchdog timer
+        movlw 0x68              -- set prescaler to 0
+        movwf optionreg         -- ...
+        bcf status_rp0          -- bank 0
+        movlw 0xFF              -- put initial clkset value
+        movwf tmr0              -- into tmr0
+
+    -- set up PWM
+        bsf status_rp0          -- bank 1
+        bsf oscf                -- OSC = 4 MHz
+        movlw 0xFF              -- 0xFF goes into...
+        movwf pr2               -- ...pr2
+        bcf status_rp0          -- bank 0
+        clrf ccpr1l             -- set duty cycle
+        bcf cp1x                -- ...
+        bcf cp1x                -- ...
+        movlw 0x04              -- load config for t2con
+        movwf t2con             -- write it to t2con
+        movlw 0x0F              -- load config for ccp1con
+        movwf ccp1con           -- write it into ccp1con
+
+    -- set up interrupts
+        bcf intcon_t0if         -- clear t0if
+        bsf intcon_t0ie         -- enable timer interrupt
+        bsf intcon_gie          -- unmask interrupts
+
+        movlw 0b_1100_1111
+        movwf port_a
+end assembler
+
+forever loop
+        asm nop
+end loop

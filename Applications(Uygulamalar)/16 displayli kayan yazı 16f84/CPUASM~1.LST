@@ -1,0 +1,884 @@
+MPASM 02.30 Released         CPUASM~1.TXT   6-29-2006  1:17:56         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                    00001 ; PIC0504.ASM
+                    00002 ; PIC16C84 ILE YAPILAN 7*16=112 LED LI KAYAN YAZI DEVRESI
+                    00003 ; 32 KARAKTER KULLANILABILIR
+                    00004         LIST    P = 16C84,  F = INHX8M, n = 66
+Warning[207]: Found label after column 1. (PIC84)
+  000003FF          00005         PIC84   equ     H'03FF'
+                    00006 
+                    00007 ;==========================================================================
+                    00008 ;
+                    00009 ;       Register Definitions
+                    00010 ;
+                    00011 ;==========================================================================
+  00000000          00012 W                            EQU     H'0000'
+  00000001          00013 F                            EQU     H'0001'
+                    00014 ;----- Register Files------------------------------------------------------
+  00000000          00015 INDF                         EQU     H'0000'
+  00000001          00016 TMR0                         EQU     H'0001'
+  00000002          00017 PCL                          EQU     H'0002'
+  00000003          00018 STATUS                       EQU     H'0003'
+  00000004          00019 FSR                          EQU     H'0004'
+  00000005          00020 PORTA                        EQU     H'0005'
+  00000006          00021 PORTB                        EQU     H'0006'
+  00000008          00022 EEDATA                       EQU     H'0008'
+  00000009          00023 EEADR                        EQU     H'0009'
+  0000000A          00024 PCLATH                       EQU     H'000A'
+  0000000B          00025 INTCON                       EQU     H'000B'
+                    00026 
+  00000081          00027 OPTION_REG                   EQU     H'0081'
+  00000085          00028 TRISA                        EQU     H'0085'
+  00000086          00029 TRISB                        EQU     H'0086'
+  00000088          00030 EECON1                       EQU     H'0088'
+  00000089          00031 EECON2                       EQU     H'0089'
+                    00032 ;----- STATUS Bits --------------------------------------------------------
+                    00033 
+  00000007          00034 IRP                          EQU     H'0007'
+  00000006          00035 RP1                          EQU     H'0006'
+  00000005          00036 RP0                          EQU     H'0005'
+  00000004          00037 NOT_TO                       EQU     H'0004'
+  00000003          00038 NOT_PD                       EQU     H'0003'
+  00000002          00039 Z                            EQU     H'0002'
+  00000001          00040 DC                           EQU     H'0001'
+  00000000          00041 C                            EQU     H'0000'
+                    00042 ;----- INTCON Bits --------------------------------------------------------
+  00000007          00043 GIE                          EQU     H'0007'
+  00000006          00044 EEIE                         EQU     H'0006'
+  00000005          00045 T0IE                         EQU     H'0005'
+  00000004          00046 INTE                         EQU     H'0004'
+  00000003          00047 RBIE                         EQU     H'0003'
+  00000002          00048 T0IF                         EQU     H'0002'
+  00000001          00049 INTF                         EQU     H'0001'
+  00000000          00050 RBIF                         EQU     H'0000'
+                    00051 ;----- OPTION Bits --------------------------------------------------------
+  00000007          00052 NOT_RBPU                     EQU     H'0007'
+  00000006          00053 INTEDG                       EQU     H'0006'
+  00000005          00054 T0CS                         EQU     H'0005'
+  00000004          00055 T0SE                         EQU     H'0004'
+  00000003          00056 PSA                          EQU     H'0003'
+  00000002          00057 PS2                          EQU     H'0002'
+  00000001          00058 PS1                          EQU     H'0001'
+  00000000          00059 PS0                          EQU     H'0000'
+MPASM 02.30 Released         CPUASM~1.TXT   6-29-2006  1:17:56         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                    00060 ;----- EECON1 Bits --------------------------------------------------------
+  00000004          00061 EEIF                         EQU     H'0004'
+  00000003          00062 WRERR                        EQU     H'0003'
+  00000002          00063 WREN                         EQU     H'0002'
+  00000001          00064 WR                           EQU     H'0001'
+  00000000          00065 RD                           EQU     H'0000'
+                    00066 ;==========================================================================
+                    00067 ;
+                    00068 ;       RAM Definition
+                    00069 ;
+                    00070 ;==========================================================================
+  000000AF          00071         __MAXRAM H'AF'
+                    00072         __BADRAM H'07', H'30'-H'7F', H'87'
+                    00073 ;==========================================================================
+                    00074 ;
+                    00075 ;       Configuration Bits
+                    00076 ;
+                    00077 ;==========================================================================
+  00003FEF          00078 _CP_ON                       EQU     H'3FEF'
+  00003FFF          00079 _CP_OFF                      EQU     H'3FFF'
+  00003FFF          00080 _PWRTE_ON                    EQU     H'3FFF'
+  00003FF7          00081 _PWRTE_OFF                   EQU     H'3FF7'
+  00003FFF          00082 _WDT_ON                      EQU     H'3FFF'
+  00003FFB          00083 _WDT_OFF                     EQU     H'3FFB'
+  00003FFC          00084 _LP_OSC                      EQU     H'3FFC'
+  00003FFD          00085 _XT_OSC                      EQU     H'3FFD'
+  00003FFE          00086 _HS_OSC                      EQU     H'3FFE'
+  00003FFF          00087 _RC_OSC                      EQU     H'3FFF'
+                    00088 
+                    00089 
+                    00090 
+                    00091 ;----------- USER REGISTERS ----------------------------------------------
+  0000000C          00092 POINTER                      EQU     H'000C'
+  0000000D          00093 HCOUNT                       equ     H'000D'
+  0000000E          00094 LCOUNT                       equ     H'000E'                                    
+  0000002B          00095 TEMP1                        EQU     H'002B'
+  0000002C          00096 TEMP2                        EQU     H'002C'
+  0000002D          00097 TEMP3                        EQU     H'002D'
+  0000002E          00098 ZAMAN                        equ     H'002E'
+  0000002F          00099 DISP                         EQU     H'002F'
+  00000029          00100 msb             equ     0x29            ;general delay register
+  0000002A          00101 lsb             equ     0x2A            ;general delay register
+  00000027          00102 FLCOUNT         equ     H'0027'         ;flas counter
+  00000026          00103 WAITC           equ     H'0026'         ;wait and run
+  00000025          00104 SPECIAL         equ     H'0025'          ;special function register
+  00000022          00105 COUNT1          equ     H'0022'         ;system timer counter
+  00000021          00106 COUNT2          equ     H'0021'         ;system flas timer counter
+  00000020          00107 SYSFUNC         equ     H'0020'         ;system control register
+  00000010          00108 LINE1           EQU     H'0010'
+  00000011          00109 LINE2           EQU     H'0011'
+  00000012          00110 LINE3           EQU     H'0012'
+  00000013          00111 LINE4           EQU     H'0013'
+  00000014          00112 LINE5           EQU     H'0014'
+  00000015          00113 LINE6           EQU     H'0015'
+  00000016          00114 LINE7           EQU     H'0016'
+  00000017          00115 LINE8           EQU     H'0017'
+  00000018          00116 LINE9           EQU     H'0018'
+  00000019          00117 LINE10          EQU     H'0019'
+  0000001A          00118 LINE11          EQU     H'001A'
+  0000001B          00119 LINE12          EQU     H'001B'
+MPASM 02.30 Released         CPUASM~1.TXT   6-29-2006  1:17:56         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+  0000001C          00120 LINE13          EQU     H'001C'
+  0000001D          00121 LINE14          EQU     H'001D'
+  0000001E          00122 LINE15          EQU     H'001E'
+  0000001F          00123 LINE16          EQU     H'001F'
+  00000023          00124 SATIRLAR        EQU     H'0023'
+                    00125 ;
+                    00126 ;
+                    00127 ;
+0000                00128 START
+0000 21C7           00129         call    SETCPUPORTSTATUS
+0001 214A           00130         call    STEP_CLEAR
+0002                00131 KAYANYAZI_1
+0002 3000           00132          MOVLW  H'0000'
+0003 00A3           00133          MOVWF  SATIRLAR
+0004                00134 KAYANYAZI_2
+Message[305]: Using default destination of 1 (file).
+0004 0FA3           00135         INCFSZ  SATIRLAR
+0005 2807           00136         GOTO    KAYANYAZI_3
+0006 2808           00137         GOTO    KAYANYAZI_4
+0007                00138 KAYANYAZI_3
+0007 2809           00139         goto    KAYANYAZI_5
+0008                00140 KAYANYAZI_4
+0008 2802           00141         goto    KAYANYAZI_1
+0009                00142 KAYANYAZI_5
+0009 3000           00143         MOVLW   H'00'
+000A 0723           00144         ADDWF   SATIRLAR,0
+000B 204D           00145         CALL    FINDSHOW
+000C 0090           00146         movwf   LINE1
+000D 3001           00147         MOVLW   H'01'
+000E 0723           00148         ADDWF   SATIRLAR,0
+000F 204D           00149         CALL    FINDSHOW
+0010 0091           00150         movwf   LINE2
+0011 3002           00151         MOVLW   H'02'
+0012 0723           00152         ADDWF   SATIRLAR,0
+0013 204D           00153         CALL    FINDSHOW
+0014 0092           00154         movwf   LINE3
+0015 3003           00155         MOVLW   H'03'
+0016 0723           00156         ADDWF   SATIRLAR,0
+0017 204D           00157         CALL    FINDSHOW
+0018 0093           00158         movwf   LINE4
+0019 3004           00159         MOVLW   H'04'
+001A 0723           00160         ADDWF   SATIRLAR,0
+001B 204D           00161         CALL    FINDSHOW
+001C 0094           00162         movwf   LINE5
+001D 3005           00163         MOVLW   H'05'
+001E 0723           00164         ADDWF   SATIRLAR,0
+001F 204D           00165         CALL    FINDSHOW
+0020 0095           00166         movwf   LINE6
+0021 3006           00167         MOVLW   H'06'
+0022 0723           00168         ADDWF   SATIRLAR,0
+0023 204D           00169         CALL    FINDSHOW
+0024 0096           00170         movwf   LINE7
+0025 3007           00171         MOVLW   H'07'
+0026 0723           00172         ADDWF   SATIRLAR,0
+0027 204D           00173         CALL    FINDSHOW
+0028 0097           00174         movwf   LINE8
+0029 3008           00175         MOVLW   H'08'
+002A 0723           00176         ADDWF   SATIRLAR,0
+002B 204D           00177         CALL    FINDSHOW
+002C 0098           00178         movwf   LINE9
+MPASM 02.30 Released         CPUASM~1.TXT   6-29-2006  1:17:56         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+002D 3009           00179         MOVLW   H'09'
+002E 0723           00180         ADDWF   SATIRLAR,0
+002F 204D           00181         CALL    FINDSHOW
+0030 0099           00182         movwf   LINE10
+0031 300A           00183         MOVLW   H'0A'
+0032 0723           00184         ADDWF   SATIRLAR,0
+0033 204D           00185         CALL    FINDSHOW
+0034 009A           00186         movwf   LINE11
+0035 300B           00187         MOVLW   H'0B'
+0036 0723           00188         ADDWF   SATIRLAR,0
+0037 204D           00189         CALL    FINDSHOW
+0038 009B           00190         movwf   LINE12
+0039 300C           00191         MOVLW   H'0C'
+003A 0723           00192         ADDWF   SATIRLAR,0
+003B 204D           00193         CALL    FINDSHOW
+003C 009C           00194         movwf   LINE13
+003D 300D           00195         MOVLW   H'0D'
+003E 0723           00196         ADDWF   SATIRLAR,0
+003F 204D           00197         CALL    FINDSHOW
+0040 009D           00198         movwf   LINE14
+0041 300E           00199         MOVLW   H'0E'
+0042 0723           00200         ADDWF   SATIRLAR,0
+0043 204D           00201         CALL    FINDSHOW
+0044 009E           00202         movwf   LINE15
+0045 300F           00203         MOVLW   H'0F'
+0046 0723           00204         ADDWF   SATIRLAR,0
+0047 204D           00205         CALL    FINDSHOW
+0048 009F           00206         movwf   LINE16
+0049 300F           00207         MOVLW   D'15'
+004A 00AE           00208         MOVWF   ZAMAN
+004B 215F           00209         CALL    STEP_DELAY
+004C 2804           00210         goto    KAYANYAZI_2
+                    00211 ;****************************************************************************
+                    00212 ;YAZILARINIZI ASAGIDAKI KOD'DA DEGISIKLIK YAPARAK HAZIRLAYINIZ
+                    00213 ;****************************************************************************
+004D                00214 FINDSHOW:
+004D                00215 showdata:
+004D 0782           00216         addwf   PCL,1
+004E 3400           00217         retlw   B'00000000'     ;0
+004F 3400           00218         retlw   B'00000000'     ;1
+0050 3400           00219         retlw   B'00000000'     ;2
+0051 3400           00220         retlw   B'00000000'     ;3
+0052 3400           00221         retlw   B'00000000'     ;4
+0053 3400           00222         retlw   B'00000000'     ;6
+0054 3400           00223         retlw   B'00000000'     ;7
+0055 3400           00224         retlw   B'00000000'     ;8
+0056 3400           00225         retlw   B'00000000'     ;9
+0057 3400           00226         retlw   B'00000000'     ;10
+0058 3400           00227         retlw   B'00000000'     ;11
+0059 3400           00228         retlw   B'00000000'     ;12
+005A 3400           00229         retlw   B'00000000'     ;13
+005B 3400           00230         retlw   B'00000000'     ;14
+005C 3400           00231         retlw   B'00000000'     ;15
+005D 3400           00232         retlw   B'00000000'     ;16
+005E 3477           00233         retlw   B'01110111';A     
+005F 346D           00234         retlw   B'01101101';S    
+0060 343E           00235         retlw   B'00111110';U
+0061 346D           00236         retlw   B'01101101';S
+0062 3400           00237         retlw   B'00000000'; BOÞLUK   
+0063 3473           00238         retlw   B'01110011';p
+MPASM 02.30 Released         CPUASM~1.TXT   6-29-2006  1:17:56         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0064 346D           00239         retlw   B'01101101';5
+0065 3438           00240         retlw   B'00111000';L
+0066 345E           00241         retlw   B'01011110';d
+0067 345B           00242         retlw   B'01011011';2
+0068 3400           00243         retlw   B'00000000'     
+0069 3400           00244         retlw   B'00000000'     
+006A 3400           00245         retlw   B'00000000'     
+006B 3473           00246         retlw   B'01110011';p
+006C 3466           00247         retlw   B'01100110';4
+006D 3400           00248         retlw   B'00000000'; BOÞLUK 
+006E 34CF           00249         retlw   B'11001111';3
+006F 347D           00250         retlw   B'01111101';0
+0070 3400           00251         retlw   B'00000000'     ;36
+0071 347D           00252         retlw   B'01111101';Ð
+0072 3476           00253         retlw   B'01110110';H
+0073 345B           00254         retlw   B'01011011';2
+0074 3400           00255         retlw   B'00000000'     
+0075 3400           00256         retlw   B'00000000'     
+0076 3400           00257         retlw   B'00000000'     
+0077 3486           00258         retlw   B'10000110';1.5
+0078 346D           00259         retlw   B'01101101';5
+0079 3400           00260         retlw   B'00000000'     
+007A 347D           00261         retlw   B'01111101';Ð
+007B 347C           00262         retlw   B'01111100';b    
+007C 3400           00263         retlw   B'00000000'         
+007D 345E           00264         retlw   B'01011110';d
+007E 345E           00265         retlw   B'01011110';d
+007F 345B           00266         retlw   B'01011011';2
+0080 3400           00267         retlw   B'00000000' 
+0081 346D           00268         retlw   B'01101101';5
+0082 344F           00269         retlw   B'01001111';3
+0083 344F           00270         retlw   B'01001111';3    
+0084 3400           00271         retlw   B'00000000'     ;52
+0085 3400           00272         retlw   B'00000000'     ;53
+0086 3400           00273         retlw   B'00000000'     ;54
+0087 3400           00274         retlw   B'00000000'     ;55
+0088 3400           00275         retlw   B'00000000'     ;56
+0089 3471           00276         retlw   B'01110001';f     
+008A 3450           00277         retlw   B'01010000';r
+008B 3479           00278         retlw   B'01111001';E
+008C 3437           00279         retlw   B'00110111';N
+008D 346D           00280         retlw   B'01101101';S
+008E 3440           00281         retlw   B'01000000';-    
+008F 3400           00282         retlw   B'00000000'     
+0090 3400           00283         retlw   B'00000000'     
+0091 3400           00284         retlw   B'00000000'
+0092 346D           00285         retlw   B'01101101';5
+0093 344F           00286         retlw   B'01001111';3
+0094 34CF           00287         retlw   B'11001111';3.
+0095 3407           00288         retlw   B'00000111';7
+0096 3400           00289         retlw   B'00000000'    
+0097 3400           00290         retlw   B'00000000'     
+0098 3400           00291         retlw   B'00000000'     
+0099 3400           00292         retlw   B'00000000'         
+009A 343E           00293         retlw   B'00111110';U
+009B 345C           00294         retlw   B'01011100';o
+009C 3438           00295         retlw   B'00111000';L
+009D 3478           00296         retlw   B'01111000';t   
+009E 3400           00297         retlw   B'00000000'  
+009F 3400           00298         retlw   B'00000000'
+MPASM 02.30 Released         CPUASM~1.TXT   6-29-2006  1:17:56         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00A0 3400           00299         retlw   B'00000000'     
+00A1 34DB           00300         retlw   B'11011011';2
+00A2 347F           00301         retlw   B'01111111';8
+00A3 345B           00302         retlw   B'01011011';2
+00A4 343E           00303         retlw   B'00111110';U    
+00A5 3400           00304         retlw   B'00000000'
+00A6 3400           00305         retlw   B'00000000'     
+00A7 3400           00306         retlw   B'00000000'     
+00A8 3400           00307         retlw   B'00000000'     
+00A9 3478           00308         retlw   B'01111000';t
+00AA 3479           00309         retlw   B'01111001';E
+00AB 3450           00310         retlw   B'01010000';r
+00AC 3400           00311         retlw   B'00000000'     
+00AD 3400           00312         retlw   B'00000000'    
+00AE 3400           00313         retlw   B'00000000'     
+00AF 3406           00314         retlw   B'00000110';1
+00B0 3487           00315         retlw   B'10000111';7   
+00B1 3466           00316         retlw   B'01100110';4
+00B2 3463           00317         retlw   B'01100011';derece isareti
+00B3 3439           00318         retlw   B'00111001';C
+00B4 3400           00319         retlw   B'00000000'     
+00B5 3400           00320         retlw   B'00000000'    
+00B6 3400           00321         retlw   B'00000000'     
+00B7 3400           00322         retlw   B'00000000'     
+00B8 3400           00323         retlw   B'00000000'     
+00B9 3400           00324         retlw   B'00000000'     
+00BA 3430           00325         retlw   B'00110000';I
+00BB 3454           00326         retlw   B'01010100';n
+00BC 3478           00327         retlw   B'01111000';t
+00BD 3479           00328         retlw   B'01111001';E
+00BE 3438           00329         retlw   B'00111000';L
+00BF 3400           00330         retlw   B'00000000'    
+00C0 3400           00331         retlw   B'00000000'     
+00C1 3400           00332         retlw   B'00000000'     
+00C2 346D           00333         retlw   B'01101101';S
+00C3 3479           00334         retlw   B'01111001';E
+00C4 3450           00335         retlw   B'01010000';r
+00C5 3430           00336         retlw   B'00110000';I
+00C6 3479           00337         retlw   B'01111001';E
+00C7 346D           00338         retlw   B'01101101';S
+00C8 3400           00339         retlw   B'00000000'     
+00C9 3400           00340         retlw   B'00000000'     
+00CA 3400           00341         retlw   B'00000000'     
+00CB 3400           00342         retlw   B'00000000'     
+00CC 3400           00343         retlw   B'00000000'    
+00CD 3400           00344         retlw   B'00000000'     
+00CE 3439           00345         retlw   B'00111001';C
+00CF 3430           00346         retlw   B'00110000';I
+00D0 3473           00347         retlw   B'01110011';p
+00D1 346D           00348         retlw   B'01101101';S
+00D2 3479           00349         retlw   B'01111001';E
+00D3 3478           00350         retlw   B'01111000';t
+00D4 3400           00351         retlw   B'00000000'     
+00D5 3400           00352         retlw   B'00000000'     
+00D6 346F           00353         retlw   B'01101111';9
+00D7 3466           00354         retlw   B'01100110';4
+00D8 346D           00355         retlw   B'01101101';5
+00D9 3473           00356         retlw   B'01110011';p
+00DA 3400           00357         retlw   B'00000000'     ;98
+00DB 3400           00358         retlw   B'00000000'     ;99
+MPASM 02.30 Released         CPUASM~1.TXT   6-29-2006  1:17:56         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00DC 3400           00359         retlw   B'00000000'     ;100
+00DD 3400           00360         retlw   B'00000000'     ;101
+00DE 3400           00361         retlw   B'00000000'     ;102
+00DF 3400           00362         retlw   B'00000000'     ;103
+00E0 3400           00363         retlw   B'00000000'     ;104
+00E1 3400           00364         retlw   B'00000000'     ;105
+00E2 3400           00365         retlw   B'00000000'     ;106
+00E3 3400           00366         retlw   B'00000000'     ;107
+00E4 3400           00367         retlw   B'00000000'     ;108
+00E5 3400           00368         retlw   B'00000000'     ;109
+00E6 3400           00369         retlw   B'00000000'     ;110
+00E7 3400           00370         retlw   B'00000000'     ;111
+00E8 3400           00371         retlw   B'00000000'     ;112
+00E9 3400           00372         retlw   B'00000000'     ;113
+00EA 3400           00373         retlw   B'00000000'     ;114
+00EB 3400           00374         retlw   B'00000000'     ;115
+00EC 3400           00375         retlw   B'00000000'     ;116
+00ED 3400           00376         retlw   B'00000000'     ;117
+00EE 3400           00377         retlw   B'00000000'     ;118
+00EF 3400           00378         retlw   B'00000000'     ;119
+00F0 3400           00379         retlw   B'00000000'     ;120
+00F1 3400           00380         retlw   B'00000000'     ;121
+00F2 3400           00381         retlw   B'00000000'     ;122
+00F3 3400           00382         retlw   B'00000000'     ;123
+00F4 3400           00383         retlw   B'00000000'     ;124
+00F5 3400           00384         retlw   B'00000000'     ;125
+00F6 3400           00385         retlw   B'00000000'     ;126
+00F7 3400           00386         retlw   B'00000000'     ;127
+00F8 3400           00387         retlw   B'00000000'     ;128
+00F9 3400           00388         retlw   B'00000000'     ;129
+00FA 3400           00389         retlw   B'00000000'     ;130
+00FB 3400           00390         retlw   B'00000000'     ;131
+00FC 3400           00391         retlw   B'00000000'     ;132
+00FD 3400           00392         retlw   B'00000000'     ;133
+00FE 3400           00393         retlw   B'00000000'     ;134
+00FF 3400           00394         retlw   B'00000000'     ;135
+0100 3400           00395         retlw   B'00000000'     ;136
+0101 3400           00396         retlw   B'00000000'     ;137
+0102 3400           00397         retlw   B'00000000'     ;138
+0103 3400           00398         retlw   B'00000000'     ;139
+0104 3400           00399         retlw   B'00000000'     ;140
+0105 3400           00400         retlw   B'00000000'     ;141
+0106 3400           00401         retlw   B'00000000'     ;142
+0107 3400           00402         retlw   B'00000000'     ;143
+0108 3400           00403         retlw   B'00000000'     ;144
+0109 3400           00404         retlw   B'00000000'     ;145
+010A 3400           00405         retlw   B'00000000'     ;146
+010B 3400           00406         retlw   B'00000000'     ;147
+010C 3400           00407         retlw   B'00000000'     ;148
+010D 3400           00408         retlw   B'00000000'     ;149
+010E 3400           00409         retlw   B'00000000'     ;150
+010F 3400           00410         retlw   B'00000000'     ;151
+0110 3400           00411         retlw   B'00000000'     ;152
+0111 3400           00412         retlw   B'00000000'     ;153
+0112 3400           00413         retlw   B'00000000'     ;154
+0113 3400           00414         retlw   B'00000000'     ;155
+0114 3400           00415         retlw   B'00000000'     ;156
+0115 3400           00416         retlw   B'00000000'     ;157
+0116 3400           00417         retlw   B'00000000'     ;158
+0117 3400           00418         retlw   B'00000000'     ;159
+MPASM 02.30 Released         CPUASM~1.TXT   6-29-2006  1:17:56         PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0118 3400           00419         retlw   B'00000000'     ;160
+0119 3400           00420         retlw   B'00000000'     ;161
+011A 3400           00421         retlw   B'00000000'     ;162
+011B 3400           00422         retlw   B'00000000'     ;163
+011C 3400           00423         retlw   B'00000000'     ;164
+011D 3400           00424         retlw   B'00000000'     ;165
+011E 3400           00425         retlw   B'00000000'     ;166
+011F 3400           00426         retlw   B'00000000'     ;167
+0120 3400           00427         retlw   B'00000000'     ;168
+0121 3400           00428         retlw   B'00000000'     ;169
+0122 3400           00429         retlw   B'00000000'     ;170
+0123 3400           00430         retlw   B'00000000'     ;171
+0124 3400           00431         retlw   B'00000000'     ;172
+0125 3400           00432         retlw   B'00000000'     ;173
+0126 3400           00433         retlw   B'00000000'     ;174
+0127 3400           00434         retlw   B'00000000'     ;175
+0128 3400           00435         retlw   B'00000000'     ;176
+0129 3400           00436         retlw   B'00000000'     ;177
+012A 3400           00437         retlw   B'00000000'     ;178
+012B 3400           00438         retlw   B'00000000'     ;179
+012C 3400           00439         retlw   B'00000000'     ;180
+012D 3400           00440         retlw   B'00000000'     ;181
+012E 3400           00441         retlw   B'00000000'     ;182
+012F 3400           00442         retlw   B'00000000'     ;183
+0130 3400           00443         retlw   B'00000000'     ;184
+0131 3400           00444         retlw   B'00000000'     ;185
+0132 3400           00445         retlw   B'00000000'     ;186
+0133 3400           00446         retlw   B'00000000'     ;187
+0134 3400           00447         retlw   B'00000000'     ;188
+0135 3400           00448         retlw   B'00000000'     ;189
+0136 3400           00449         retlw   B'00000000'     ;190
+0137 3400           00450         retlw   B'00000000'     ;191
+0138 3400           00451         retlw   B'00000000'     ;192
+0139 3400           00452         retlw   B'00000000'     ;193
+013A 3400           00453         retlw   B'00000000'     ;194
+013B 3400           00454         retlw   B'00000000'     ;195
+013C 3400           00455         retlw   B'00000000'     ;196
+013D 3400           00456         retlw   B'00000000'     ;197
+013E 3400           00457         retlw   B'00000000'     ;198
+013F 3400           00458         retlw   B'00000000'     ;199
+0140 3400           00459         retlw   B'00000000'     ;200
+0141 3400           00460         retlw   B'00000000'     ;201
+0142 3400           00461         retlw   B'00000000'     ;202
+0143 3400           00462         retlw   B'00000000'     ;203
+0144 3400           00463         retlw   B'00000000'     ;204
+0145 3400           00464         retlw   B'00000000'     ;205
+0146 3400           00465         retlw   B'00000000'     ;206
+0147 3400           00466         retlw   B'00000000'     ;207
+0148 3400           00467         retlw   B'00000000'     ;208
+Warning[203]: Found opcode in column 1. (return)
+0149 0008           00468 return
+                    00469 ;****************************************************************************
+014A                00470 STEP_CLEAR
+014A 3000           00471         movlw   B'00000000'
+014B 0090           00472         movwf   LINE1
+014C 0091           00473         movwf   LINE2
+014D 0092           00474         movwf   LINE3
+014E 0093           00475         movwf   LINE4
+014F 0094           00476         movwf   LINE5
+0150 0095           00477         movwf   LINE6
+MPASM 02.30 Released         CPUASM~1.TXT   6-29-2006  1:17:56         PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0151 0096           00478         movwf   LINE7
+0152 0097           00479         movwf   LINE8
+0153 0098           00480         movwf   LINE9
+0154 0099           00481         movwf   LINE10
+0155 009A           00482         movwf   LINE11
+0156 009B           00483         movwf   LINE12
+0157 009C           00484         movwf   LINE13
+0158 009D           00485         movwf   LINE14
+0159 009E           00486         movwf   LINE15
+015A 009F           00487         movwf   LINE16
+015B 3032           00488         MOVLW   D'50'
+015C 00AE           00489         MOVWF   ZAMAN
+015D 215F           00490         CALL    STEP_DELAY
+Warning[203]: Found opcode in column 1. (RETURN)
+015E 0008           00491 RETURN
+                    00492 ;****************************************************************************
+015F                00493 STEP_DELAY
+015F 0064           00494         clrwdt
+                    00495        ; call    DELAYSYS                        ;20 msec delay
+0160 2164           00496         CALL    RUNTIME
+Message[305]: Using default destination of 1 (file).
+0161 0BAE           00497         decfsz  ZAMAN
+0162 295F           00498         goto    STEP_DELAY
+Warning[203]: Found opcode in column 1. (return)
+0163 0008           00499 return
+                    00500 ;****************************************************************************
+0164                00501 RUNTIME
+0164                00502 WRITEDISP
+                    00503         ;test
+                    00504         ;call    delay20
+                    00505         ;test
+0164 0064           00506         clrwdt
+0165 3000           00507         movlw   D'0'
+0166 0085           00508         movwf   PORTA
+0167 0810           00509         movf    LINE1,0
+0168 0086           00510         movwf   PORTB
+0169 21DF           00511         call    delay1
+016A 0064           00512         clrwdt
+016B 3001           00513         movlw   D'1'
+016C 0085           00514         movwf   PORTA
+016D 0811           00515         movf    LINE2,0
+016E 0086           00516         movwf   PORTB
+016F 21DF           00517         call    delay1
+0170 0064           00518         clrwdt
+0171 3002           00519         movlw   D'2'
+0172 0085           00520         movwf   PORTA
+0173 0812           00521         movf    LINE3,0
+0174 0086           00522         movwf   PORTB
+0175 21DF           00523         call    delay1
+0176 0064           00524         clrwdt
+0177 3003           00525         movlw   D'3'
+0178 0085           00526         movwf   PORTA
+0179 0813           00527         movf    LINE4,0
+017A 0086           00528         movwf   PORTB
+017B 21DF           00529         call    delay1
+017C 0064           00530         clrwdt
+017D 3004           00531         movlw   D'4'
+017E 0085           00532         movwf   PORTA
+017F 0814           00533         movf    LINE5,0
+0180 0086           00534         movwf   PORTB
+MPASM 02.30 Released         CPUASM~1.TXT   6-29-2006  1:17:56         PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0181 21DF           00535         call    delay1
+0182 0064           00536         clrwdt
+0183 3005           00537         movlw   D'5'
+0184 0085           00538         movwf   PORTA
+0185 0815           00539         movf    LINE6,0
+0186 0086           00540         movwf   PORTB
+0187 21DF           00541         call    delay1
+0188 0064           00542         clrwdt
+0189 3006           00543         movlw   D'6'
+018A 0085           00544         movwf   PORTA
+018B 0816           00545         movf    LINE7,0
+018C 0086           00546         movwf   PORTB
+018D 21DF           00547         call    delay1
+018E 0064           00548         clrwdt
+018F 3007           00549         movlw   D'7'
+0190 0085           00550         movwf   PORTA
+0191 0817           00551         movf    LINE8,0
+0192 0086           00552         movwf   PORTB
+0193 21DF           00553         call    delay1
+0194 0064           00554         clrwdt
+0195 3008           00555         movlw   D'8'
+0196 0085           00556         movwf   PORTA
+0197 0818           00557         movf    LINE9,0
+0198 0086           00558         movwf   PORTB
+0199 21DF           00559         call    delay1
+019A 0064           00560         clrwdt
+019B 3009           00561         movlw   D'9'
+019C 0085           00562         movwf   PORTA
+019D 0819           00563         movf    LINE10,0
+019E 0086           00564         movwf   PORTB
+019F 21DF           00565         call    delay1
+01A0 0064           00566         clrwdt
+01A1 300A           00567         movlw   D'10'
+01A2 0085           00568         movwf   PORTA
+01A3 081A           00569         movf    LINE11,0
+01A4 0086           00570         movwf   PORTB
+01A5 21DF           00571         call    delay1
+01A6 0064           00572         clrwdt
+01A7 300B           00573         movlw   D'11'
+01A8 0085           00574         movwf   PORTA
+01A9 081B           00575         movf    LINE12,0
+01AA 0086           00576         movwf   PORTB
+01AB 21DF           00577         call    delay1
+01AC 0064           00578         clrwdt
+01AD 300C           00579         movlw   D'12'
+01AE 0085           00580         movwf   PORTA
+01AF 081C           00581         movf    LINE13,0
+01B0 0086           00582         movwf   PORTB
+01B1 21DF           00583         call    delay1
+01B2 0064           00584         clrwdt
+01B3 300D           00585         movlw   D'13'
+01B4 0085           00586         movwf   PORTA
+01B5 081D           00587         movf    LINE14,0
+01B6 0086           00588         movwf   PORTB
+01B7 21DF           00589         call    delay1
+01B8 0064           00590         clrwdt
+01B9 300E           00591         movlw   D'14'
+01BA 0085           00592         movwf   PORTA
+01BB 081E           00593         movf    LINE15,0
+01BC 0086           00594         movwf   PORTB
+MPASM 02.30 Released         CPUASM~1.TXT   6-29-2006  1:17:56         PAGE 11
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+01BD 21DF           00595         call    delay1
+01BE 0064           00596         clrwdt
+01BF 300F           00597         movlw   D'15'
+01C0 0085           00598         movwf   PORTA
+01C1 081F           00599         movf    LINE16,0
+01C2 0086           00600         movwf   PORTB
+01C3 21DF           00601         call    delay1
+01C4 3000           00602         movlw   H'00'
+01C5 0086           00603         movwf   PORTB
+01C6 0008           00604         RETURN
+                    00605 ;***************************************************************************
+01C7                00606 SETCPUPORTSTATUS
+01C7 1683           00607         bsf     STATUS,RP0
+01C8 3000           00608         movlw   H'00'
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+01C9 0086           00609         movwf   TRISB           ;PORTB pins : O-O-O-O-O-O-O-O
+01CA 3000           00610         movlw   B'00000000'
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+01CB 0085           00611         movwf   TRISA           ;PORTA pins : X-X-X-O-O-O-O-O
+01CC 1283           00612         bcf     STATUS,RP0
+01CD 3000           00613         movlw   H'00'   
+01CE 0085           00614         movwf   PORTA
+01CF 0086           00615         movwf   PORTB
+Warning[203]: Found opcode in column 1. (RETURN)
+01D0 0008           00616 RETURN
+                    00617 ;****************************************************************************
+                    00618 ;*-     Delay Routines                                                     -*
+                    00619 ;****************************************************************************
+01D1                00620 vlong   
+01D1 30FF           00621         movlw   0xff            ;200msec
+01D2 00A9           00622         movwf   msb
+01D3 29E1           00623         goto    d1
+01D4                00624 DELAYSYS                        ;20 msec delay
+01D4 301A           00625         movlw   .26
+01D5 00A9           00626         movwf   msb
+01D6 0064           00627         CLRWDT
+01D7 2164           00628         CALL    RUNTIME
+01D8 29E1           00629         goto    d1
+01D9                00630 delay20                         ;20 msec delay
+01D9 301A           00631         movlw   .26
+01DA 00A9           00632         movwf   msb
+01DB 29E1           00633         goto    d1
+01DC                00634 delay16                         ;16 msec delay
+01DC 3015           00635         movlw   .21
+01DD 00A9           00636         movwf   msb
+01DE 29E1           00637         goto    d1
+01DF                00638 delay1                          ;750nsec delay
+01DF 3001           00639         movlw   .1      
+01E0 00A9           00640         movwf   msb
+01E1 30FF           00641 d1      movlw   0xff
+01E2 00AA           00642         movwf   lsb
+01E3 0BAA           00643 d2      decfsz  lsb,F
+01E4 29E3           00644         goto    d2
+01E5 0BA9           00645         decfsz  msb,F
+01E6 29E1           00646         goto    d1
+01E7 0008           00647         return
+                    00648 ;****************************************************************************
+01E8                00649 FINISH
+01E8 2800           00650         goto    START
+Warning[205]: Found directive in column 1. (end)
+MPASM 02.30 Released         CPUASM~1.TXT   6-29-2006  1:17:56         PAGE 12
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                    00651 end
+MPASM 02.30 Released         CPUASM~1.TXT   6-29-2006  1:17:56         PAGE 13
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+C                                 00000000
+COUNT1                            00000022
+COUNT2                            00000021
+DC                                00000001
+DELAYSYS                          000001D4
+DISP                              0000002F
+EEADR                             00000009
+EECON1                            00000088
+EECON2                            00000089
+EEDATA                            00000008
+EEIE                              00000006
+EEIF                              00000004
+F                                 00000001
+FINDSHOW                          0000004D
+FINISH                            000001E8
+FLCOUNT                           00000027
+FSR                               00000004
+GIE                               00000007
+HCOUNT                            0000000D
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+KAYANYAZI_1                       00000002
+KAYANYAZI_2                       00000004
+KAYANYAZI_3                       00000007
+KAYANYAZI_4                       00000008
+KAYANYAZI_5                       00000009
+LCOUNT                            0000000E
+LINE1                             00000010
+LINE10                            00000019
+LINE11                            0000001A
+LINE12                            0000001B
+LINE13                            0000001C
+LINE14                            0000001D
+LINE15                            0000001E
+LINE16                            0000001F
+LINE2                             00000011
+LINE3                             00000012
+LINE4                             00000013
+LINE5                             00000014
+LINE6                             00000015
+LINE7                             00000016
+LINE8                             00000017
+LINE9                             00000018
+NOT_PD                            00000003
+NOT_RBPU                          00000007
+NOT_TO                            00000004
+OPTION_REG                        00000081
+PCL                               00000002
+PCLATH                            0000000A
+PIC84                             000003FF
+POINTER                           0000000C
+PORTA                             00000005
+PORTB                             00000006
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+MPASM 02.30 Released         CPUASM~1.TXT   6-29-2006  1:17:56         PAGE 14
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+PSA                               00000003
+RBIE                              00000003
+RBIF                              00000000
+RD                                00000000
+RP0                               00000005
+RP1                               00000006
+RUNTIME                           00000164
+SATIRLAR                          00000023
+SETCPUPORTSTATUS                  000001C7
+SPECIAL                           00000025
+START                             00000000
+STATUS                            00000003
+STEP_CLEAR                        0000014A
+STEP_DELAY                        0000015F
+SYSFUNC                           00000020
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+TEMP1                             0000002B
+TEMP2                             0000002C
+TEMP3                             0000002D
+TMR0                              00000001
+TRISA                             00000085
+TRISB                             00000086
+W                                 00000000
+WAITC                             00000026
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+WRITEDISP                         00000164
+Z                                 00000002
+ZAMAN                             0000002E
+_CP_OFF                           00003FFF
+_CP_ON                            00003FEF
+_HS_OSC                           00003FFE
+_LP_OSC                           00003FFC
+_PWRTE_OFF                        00003FF7
+_PWRTE_ON                         00003FFF
+_RC_OSC                           00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FFD
+__16C84                           00000001
+d1                                000001E1
+d2                                000001E3
+delay1                            000001DF
+delay16                           000001DC
+delay20                           000001D9
+lsb                               0000002A
+msb                               00000029
+showdata                          0000004D
+vlong                             000001D1
+MPASM 02.30 Released         CPUASM~1.TXT   6-29-2006  1:17:56         PAGE 15
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+00C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0100 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0140 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0180 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+01C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXX------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:   489
+Program Memory Words Free:   535
+
+
+Errors   :     0
+Warnings :     6 reported,     0 suppressed
+Messages :     4 reported,     0 suppressed
+
+

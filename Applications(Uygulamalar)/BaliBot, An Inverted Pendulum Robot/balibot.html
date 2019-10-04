@@ -1,0 +1,347 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html><head>
+
+
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="Author" content="Bill Sherman">
+  <meta name="GENERATOR" content="Mozilla/4.79 [en] (Win98; U) [Netscape]">
+  <meta name="KeyWords" content="Balibot, Inverted Pendulum,  Robot, Two-wheeled  Robot">
+  <meta name="Description" content="Construction of a two-wheeled, inverted pendulum type of robot."><title>Balibot ,The Inverted Pendulum Robot</title>
+  
+  <meta content="Botronics" name="author">
+  <meta content="Inverted Pendulum" name="description"></head><body background="balibot_files/glass.jpg">
+&nbsp;
+<br>
+<font color="#ff0000"><font size="+2">BaliBot, An Inverted Pendulum
+Robot</font></font>
+<p><img src="balibot_files/balbot.jpg" alt="BaliBot" height="432" width="237"></p>
+<p>Balibot is the prototype of a two-wheeled robot that has its center
+of gravity above the wheels.&nbsp; Without an active control system,
+the
+robot would just fall over.&nbsp; If the robot could sense its
+direction
+as it is falling, the wheels could move toward the fall and upright
+itself.
+<br>
+</p>
+<hr width="100%">
+<blockquote>
+  <center><img src="balibot_files/tsensor.jpg" alt="Tilt Sensor" height="288" width="368"></center>
+</blockquote>
+<p><br>
+<font color="#ff0000">Tilt Sensor:</font>&nbsp; To measure the tilt
+of the robot, a Motorola MMA2260 low G Accelerometer was used.&nbsp;
+The
+device consists of a micromachined structure formed from polysilcon
+materials.
+It can be described as two stationary plates with a movable plate
+in-between.
+The center plate moves as the device is subjected to tilt.&nbsp; The
+output
+is an analog voltage that is further amplified and conditioned by
+circuitry
+on the controller board.
+<br>
+</p>
+<hr width="100%">
+<center>
+<p><img src="balibot_files/balbrain.JPG" alt="Controller Board" height="360" width="480"></p>
+</center>
+<font color="#ff0000">Controller:</font>&nbsp; A 16F876 PIC
+microcontroller
+from Microchip© was selected for the controller.&nbsp; The PIC has
+onboard a multichannel analog to digital converter suitable to measure
+the tilt sensor sensor and digital I/O lines to control the two servos
+modified for continuous rotation.&nbsp; Power is supplied by four "AA"
+batteries and regulated by a low dropout regulator.&nbsp; Unregulated 6
+volts is delivered to the servos with a 3300 microfarad capacitor
+across
+the power to prevent the microcontroller from resetting when power is
+drawn
+from the servos.&nbsp; The electronics was constructed on a Radio Shack
+RS 276-150 project board and mounted above the servos on an aluminum
+chassis.&nbsp;
+The batteries are near the top and act as an inverted pendulum weight.
+<br>
+<hr width="100%">
+<br>
+<font color="#ff0000">Problems:</font>&nbsp; The program written in
+Basic using PIC Basic Pro©, continuously samples the tilt angle
+and
+drives the servos using PWM.&nbsp; Control is proportional; the speed
+to
+catch the fall is greater the further the robot is off-balanced; less
+force
+is applied when the robot is balanced. The robot encountered many
+problems
+to maintain balance with such a simple control.&nbsp; Some of these
+problems
+are overshoot causing the robot to oscillate, vibration transmission to
+the sensor and mismatched wheel speed.&nbsp; Issues such as response
+time,
+damping ratio and settling time need to be clearly identified. The
+addition
+of wheel encoders and a better algorithm to control the servos are
+currently
+under development.
+<br>
+<hr width="100%">
+<br>
+<font color="#ff0000">Fixes:</font>
+<br>
+Using The Sharp GP2D12 to sense tilt instead of the low G Accelerometer
+improved balancing enough for the robot to stay upright.&nbsp; The
+GP2D12
+is an IR range finder that can sense a height from 4 to 30 inches. The
+sensor's analog output voltage is measured by the PIC's on-board
+A/D.&nbsp;
+The robot keeps it's balance by measuring the height at the front and
+back
+of itself and adjusts the wheels position to maintain equal
+height.&nbsp;
+Performance was greatly improved by increasing the wheel diameter (CD
+rom
+disc wheels), providing increased speed of correction to keep the robot
+upright.&nbsp; Presently the robot performs fairly well and was shown
+at
+the <a href="http://www.botball.org/">2003 National Conference on
+Educational
+Robotics</a>.
+<br>
+&nbsp;
+<p><img src="balibot_files/balibot_2.jpg" alt="Side View of Balibot" height="500" width="329"><img src="balibot_files/balibot_2b.jpg" alt="Back View of Balibot" height="500" width="211"><br>
+Two Sharp GP2D12 sensors replace the silicon accelerometer. The sensors
+are mounted on an aluminum strip just below the batteries and placed at
+the front and back of the robot.&nbsp; The line of sight is toward the
+ground at an angle.&nbsp; One inch spacers are used to hold and protect
+the sensors. These photos were taken before moving the sensor bar to
+the
+top of the robot.
+</p>
+<p><img src="balibot_files/etsensor.jpg" alt="ET sensor" height="113" width="200"><br>
+View of the Sharp GP2D12&nbsp; "ET Sensor".
+<br>
+</p>
+<hr width="100%"><br>
+<font color="#ff0000">Design Changes:</font>
+<br>
+<font color="#000000">To allow for variation of sensitivity from sensor
+to sensor, the angle to ground of the sensor support bar required to be
+adjustable. Using springs and a thumbscrew solved this problem.&nbsp;
+See
+photo below.</font>
+<p><font color="#000000">The sensor bar is now at the top of the robot
+instead of below the battery pack.&nbsp; Mounting the bar in this
+manner
+makes it easier to adjust the sensor to ground relationship.&nbsp; The
+increased height also adds "gain" to the feedback. Line of sight
+distance
+from sensor to ground is about 17 inches.</font>
+</p>
+<p><img src="balibot_files/adjuster.jpg" height="169" width="504"><br>
+Sensor angle adjuster detail
+<br>
+</p>
+<hr width="100%">
+<p><img src="balibot_files/2003poster.jpg" height="377" width="544"><br>
+Balibot, Cambot and Rollie at the 2003 National Conference of
+Educational
+Robotics, Norman OK
+<br>
+&nbsp;
+</p>
+<p>You can get these sensors (very good prices!) at the <a href="http://www.junun.org/MarkIII/Store.jsp">Mark
+III Robot Store</a>
+</p>
+<p>Movie of Balibot (Balibot falls over when the PIC resets due low
+battery
+voltage)&nbsp;&nbsp;&nbsp; <a href="http://home.earthlink.net/%7Ebsherman002000/robots/balibot.MOV">Balibot.MOV</a>
+<br>
+</p>
+<hr width="100%"><br>
+<font color="#ff0000">Program Listing:</font>
+<p>' PicBasic Pro program
+<br>
+' 10-bit A/D conversion
+<br>
+' Balancing robot using two "ET" sensors (Sharp GP2D12)
+<br>
+' Use analog inputs channel 0, 1, 2, 4
+<br>
+' Use a 16f876 pic mcu from microchip (www.digikey.com)
+</p>
+<p>Define osc 20&nbsp;&nbsp;&nbsp; 'crystal speed 20 Mhz
+</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'Define ADCIN and DEBUG
+parameters
+<br>
+Define ADC_BITS 10&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' Set number of bits
+in result was 10
+<br>
+Define ADC_CLOCK 3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' Set clock source
+(3=rc)
+<br>
+Define ADC_SAMPLEUS 50&nbsp; ' Set sampling time to 50 microsecs
+<br>
+Define DEBUG_REG PORTB
+<br>
+Define DEBUG_BIT 5
+<br>
+Define DEBUG_BAUD 9600
+<br>
+Define DEBUG_MODE 1
+<br>
+Define DEBUG_PACING 500
+<br>
+&nbsp;
+</p>
+<p>tiltfor&nbsp;&nbsp;&nbsp; var
+word&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+' ET Sensor Forward
+<br>
+tiltbac&nbsp;&nbsp; var word&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+' ET sensor Back
+<br>
+lwheel&nbsp;&nbsp; var word&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' Left
+wheel zero speed
+<br>
+rwheel&nbsp; var word&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' Right
+wheel zero speed
+<br>
+speed&nbsp;&nbsp;&nbsp; var
+word&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+' speed variable
+<br>
+k&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; con
+7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+' k factor (gain)
+<br>
+smax&nbsp;&nbsp;&nbsp;&nbsp; con
+500&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+' speed limiter
+</p>
+<p>&nbsp;TRISA =
+%11111111&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+' Set PORTA to all input
+<br>
+&nbsp;ADCON1 = %10000010&nbsp;&nbsp;&nbsp;&nbsp; ' Set PORTA analog
+and right justify result
+<br>
+&nbsp;
+</p>
+<p>'lwheel=747&nbsp;&nbsp;&nbsp;&nbsp; 'zero calibrate left wheel
+<br>
+'rwheel=747&nbsp;&nbsp;&nbsp;&nbsp; 'zero calibrate right wheel
+</p>
+<p>speed=0
+<br>
+start:
+<br>
+&nbsp;&nbsp;&nbsp; debug "Balbot4"&nbsp; 'send program name over debug
+to ID program
+<br>
+&nbsp;&nbsp;&nbsp; pause 1000
+<br>
+&nbsp;&nbsp;&nbsp; high
+portc.2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+'flash led to indicate reset
+<br>
+&nbsp;&nbsp;&nbsp; pause 1000
+<br>
+&nbsp;&nbsp;&nbsp; low portc.2
+</p>
+<p>&nbsp;&nbsp;&nbsp; adcin 1, lwheel&nbsp;&nbsp;&nbsp; 'read trimmer
+for
+left wheel zero speed setting
+<br>
+&nbsp;&nbsp;&nbsp; adcin 2, rwheel&nbsp;&nbsp;&nbsp; 'read trimmer
+for right wheel zero speed setting
+</p>
+<p>loop:
+<br>
+&nbsp;&nbsp;&nbsp; adcin 0, tiltfor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'read
+A/D for forward sensor value
+<br>
+&nbsp;&nbsp;&nbsp; adcin 4, tiltbac&nbsp;&nbsp;&nbsp;&nbsp; 'read A/D
+for back sensor value
+<br>
+&nbsp;&nbsp;&nbsp; speed = abs (tiltfor - tiltbac)* k
+<br>
+&nbsp;&nbsp;&nbsp; if speed &gt; smax then speed =
+smax&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+'limits maximum servo speed
+<br>
+&nbsp;&nbsp;&nbsp; if tiltbac &gt; tiltfor then back
+</p>
+<p>forward:&nbsp;&nbsp;&nbsp; 'PWM to drive servos forward
+<br>
+&nbsp;&nbsp;&nbsp; low portc.0
+<br>
+&nbsp;&nbsp;&nbsp; pulsout portc.0,(lwheel + speed)&nbsp; 'left wheel
+<br>
+&nbsp;&nbsp;&nbsp; pause 5
+<br>
+&nbsp;&nbsp;&nbsp; low portc.1
+<br>
+&nbsp;&nbsp;&nbsp; pulsout portc.1,(rwheel - speed)&nbsp;&nbsp; 'right
+wheel
+<br>
+&nbsp;&nbsp;&nbsp; pause 5
+</p>
+<p>goto loop
+</p>
+<p>back:&nbsp;&nbsp;&nbsp; 'PWM to drive servos backward
+<br>
+&nbsp;&nbsp;&nbsp; low portc.0
+<br>
+&nbsp;&nbsp;&nbsp; pulsout portc.0,(lwheel - speed)&nbsp;&nbsp; 'left
+wheel
+<br>
+&nbsp;&nbsp;&nbsp; pause 5
+<br>
+&nbsp;&nbsp;&nbsp; low portc.1
+<br>
+&nbsp;&nbsp;&nbsp; pulsout portc.1,(rwheel + speed)&nbsp; 'right wheel
+<br>
+&nbsp;&nbsp;&nbsp; pause 5
+</p>
+<p>goto loop
+</p>
+<p>End
+<br>
+</p>
+<hr width="100%"><br>
+Pic Basic Program to control balibot. (Use editor to view)&nbsp; <a href="http://home.comcast.net/%7Ebotronics/ETbalibot.bas">Balibot.bas</a>
+<p>Hex file for 16f876&nbsp;&nbsp;&nbsp;<a href="http://home.comcast.net/%7Ebotronics/ETbalibot.hex">
+ETbalibot.hex</a>
+</p>
+<p>Schematic (PDF)&nbsp;&nbsp; <a href="http://home.comcast.net/%7Ebotronics/balibot.pdf">balibot.pdf</a>
+<br>
+</p>
+<hr width="100%"><br>
+<font color="#ff0000"><font size="+1">Links to balancing robots:</font></font>
+<p><font size="+1"><a href="http://geology.heroy.smu.edu/%7Edpa-www/robo/nbot/">Nbot</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</font>
+David Anderson
+<br>
+<font size="+1"><a href="http://perso.freelug.org/legway/LegWay.html">LegWay</a>&nbsp;&nbsp;&nbsp;&nbsp;
+</font>Steve Hassenplug&nbsp;&nbsp;&nbsp;&nbsp; Robot built with Legos
+<br>
+<font size="+1"><a href="http://leiwww.epfl.ch/joe/index.html">Joe</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</font>Built by Students at LEI (french)
+<br>
+<font size="+1"><a href="http://www.barello.net/Robots/gyrobot/index.htm">Gyrobot</a>&nbsp;&nbsp;&nbsp;&nbsp;
+</font>Larry Barello
+</p>
+<p><font size="+1"><a href="http://www.tedlarson.com/robots/balancingbot.htm">Ted
+Larson's Balancing Robot</a></font>
+<br>
+Shown at the July 27, 2003 San Francisco Robotics Society Expo
+</p>
+<p><img src="balibot_files/larson1.jpg" height="504" width="367"><br>
+&nbsp;
+<br>
+&nbsp;
+</p>
+<p><a href="http://home.comcast.net/%7Ebotronics/robots.html#robot%20related"><img src="balibot_files/back.gif" height="20" width="50"></a></p>
+</body></html>

@@ -1,0 +1,697 @@
+MPASM 03.80 Released                                 NICD.ASM   10-29-2004  10:19:45         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 
+                      00002 ; *********************************************************************
+                      00003 ; NiCd fast loader
+                      00004 ; implements delta-U off-switch
+                      00005 ;
+                      00006 ; Jaap Havinga 5 jun 2000 
+                      00007 ; 
+                      00008 ;
+                      00009 ; *********************************************************************
+                      00010         list    p=16F84A
+                      00011         include <p16f84a.inc>
+                      00001         LIST
+                      00002 ; P16F84A.INC  Standard Header File, Version 2.00    Microchip Technology, Inc.
+                      00134         LIST
+                      00012         
+                      00013 ; genereer config data
+2007   3FFE           00014  __config       _HS_OSC
+                      00015 ; __config      _RC_OSC
+                      00016 
+                      00017 ; RA0 = (IN)  ADC comparator 0=RC < U_measure, 1 = RC > U_measure
+                      00018 ; RA1 = (OUT) ADC reset (active HI)
+                      00019 ; RA2 = (OUT) charge current on=1/off=0
+                      00020 
+                      00021 #define ADC_COMP_BIT    0
+                      00022 #define ADC_RESET_BIT   1
+                      00023 #define CHARGE_BIT      2
+                      00024 
+                      00025 
+                      00026 #define BANK_LOW        bcf     STATUS,RP0
+                      00027 #define BANK_HIGH       bsf     STATUS,RP0
+                      00028 
+                      00029 
+                      00030 #define TIMER_PERIOD    D'250'   
+                      00031 
+                      00032         ; tmr0 is sinds het optreden van de irq 7 steps verder
+                      00033         ; daarnaast zal na het laden van de nieuwe waarde de
+                      00034         ; tmr 2 steps stilstaan.
+                      00035         ; voor een juiste periode moet de timer value met 7+2 = 9 steps
+                      00036         ; gecorrigeerd worden
+                      00037 #define TIMER_CORRECTION_VALUE  D'9'
+                      00038 
+                      00039 #define TIMERCOUNT       (H'ff'-TIMER_PERIOD+TIMER_CORRECTION_VALUE)  
+                      00040 
+                      00041 ; geeft periode tussen twee metingen aan  
+                      00042 ;       (1 sec = 4000 * 250 us, 4000 = fa0h)
+                      00043 #define MEASURE_TIME_HI H'0f'
+                      00044 #define MEASURE_TIME_LO H'a0'
+                      00045 
+                      00046 ; geeft charge-periode aan in MEASURE_TIME perioden
+                      00047 ; 2uur = 2*60*(60*1 sec) = 7200 * 1 sec, 7200 = 1C20
+                      00048 #define CHARGE_TIME_HI  H'1C'
+                      00049 #define CHARGE_TIME_LO  H'20'
+                      00050 
+MPASM 03.80 Released                                 NICD.ASM   10-29-2004  10:19:45         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00051 #define RESET_PULSE     D'4'
+                      00052 
+                      00053 #define STATE_CHARGE_READY      0
+                      00054 #define STATE_RESET_ADC         1
+                      00055 #define STATE_MEASURE_ADC       2
+                      00056 
+                      00057 ; 30 measures with negative delta before end charge
+                      00058 #define NEG_DELTA_COUNT         D'30'   
+                      00059 ; delta is considered negative if Umax - Uactual > 1 = Umargin
+                      00060 #define DELTA_MARGIN            D'1'
+                      00061 
+                      00062 ; display defines
+                      00063 #define RS_BIT  1
+                      00064 #define RW_BIT  2
+                      00065 #define E_BIT   3
+                      00066 
+                      00067 ; *************** used registers *********************
+                      00068  
+                      00069 
+  0000000C            00070 TIME_MeasureLo          equ     H'0C'
+  0000000D            00071 TIME_MeasureHi          equ     H'0D'
+  0000000E            00072 TIME_ChargeLo           equ     H'0E'
+  0000000F            00073 TIME_ChargeHi           equ     H'0F'
+  00000010            00074 MEASUREMENT             equ     H'10' 
+  00000012            00075 MaxMEASUREMENT          equ     H'12' 
+  00000014            00076 CURRENT_STATE           equ     H'14'
+  00000015            00077 TIME_ResetPulse         equ     H'15'
+  00000016            00078 nNegDelta               equ     H'16'
+                      00079 
+  00000017            00080 temp                    equ     H'17'
+  00000018            00081 temp1                   equ     H'18'
+  00000019            00082 temp2                   equ     H'19'
+  0000001A            00083 tempHex                 equ     H'1A'
+  0000001B            00084 tempHexNibble           equ     H'1B'
+                      00085 
+                      00086 
+                      00087 ; *************** Start of program *********************
+                      00088 
+                      00089 ; hier starten we
+0000                  00090         org     0x00 
+0000                  00091 reset 
+0000   2859           00092         goto    init
+                      00093 
+                      00094 ; *************** IRQ handler *********************
+0004                  00095         org     0x04
+0004                  00096 irq
+0004   1283           00097         BANK_LOW
+0005   0064           00098         CLRWDT                          ; eerst moeten we de waakhond uitzetten!
+                      00099         
+0006   1E8B           00100         btfss   INTCON,T0IE             ; was timer going off? 
+0007   0009           00101         retfie                          ;  goodbye
+                      00102         
+0008   300E           00103         movlw   TIMERCOUNT              ; reload timer
+MPASM 03.80 Released                                 NICD.ASM   10-29-2004  10:19:45         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0009   0081           00104         movwf   TMR0;
+                      00105 
+000A   1814           00106         btfsc   CURRENT_STATE,STATE_CHARGE_READY
+000B   0009           00107         retfie                          ;  not charging anymore, goodbye (do not enable irq again )
+                      00108 
+000C   1C94           00109         btfss   CURRENT_STATE,STATE_RESET_ADC
+000D   2815           00110         goto    test_StateIsMeasurement
+                      00111         
+000E   0B95           00112         decfsz  TIME_ResetPulse,F               ; reset should last a few ms
+000F   284F           00113         goto    goodbye
+                      00114 
+0010   0190           00115         clrf    MEASUREMENT             ; clear result 
+0011   1094           00116         bcf     CURRENT_STATE, STATE_RESET_ADC   ; reset state is over
+0012   1514           00117         bsf     CURRENT_STATE, STATE_MEASURE_ADC ; and goto measurement-state
+0013   1085           00118         bcf     PORTA,ADC_RESET_BIT             ; clear reset output
+0014   284F           00119         goto    goodbye
+                      00120 
+0015                  00121 test_StateIsMeasurement
+0015   1D14           00122         btfss   CURRENT_STATE,STATE_MEASURE_ADC
+0016   2838           00123         goto    dec_counters
+                      00124 
+0017   0A90           00125         incf    MEASUREMENT , F ; increment measurement counters
+                      00126 
+0018   1805           00127         btfsc   PORTA, ADC_COMP_BIT     ; Comparator says ready?
+0019   2838           00128         goto    dec_counters
+001A   1114           00129         bcf     CURRENT_STATE,STATE_MEASURE_ADC         ; turn off measurementstate
+                      00130         
+001B   20D4           00131         call    Home1  
+001C   0810           00132         movfw   MEASUREMENT 
+001D   20D7           00133         call    Display_Hex
+001E   3006           00134         movlw   D'6'
+001F   20D5           00135         call    MoveTo1 
+0020   0812           00136         movfw   MaxMEASUREMENT 
+0021   20D7           00137         call    Display_Hex
+                      00138  
+0022   300A           00139         movlw   D'10'
+0023   20D2           00140         call    MoveTo0 
+0024   080F           00141         movfw   TIME_ChargeHi
+0025   20D7           00142         call    Display_Hex
+0026   080E           00143         movfw   TIME_ChargeLo
+0027   20D7           00144         call    Display_Hex
+                      00145 
+                      00146         ; compare with prev. measurement
+                      00147 
+0028   0812           00148         movfw   MaxMEASUREMENT 
+0029   0210           00149         subwf   MEASUREMENT ,W          ;f-w = measure - prev   
+002A   1803           00150         btfsc   STATUS,C                ; negative?
+002B   2832           00151         goto    no_measurement_carry    
+002C   3E01           00152         addlw   DELTA_MARGIN                    ;see if we get it positive now...
+002D   1803           00153         btfsc   STATUS,C                ; negative?
+002E   2834           00154         goto    no_measurement_carry_NoMax      
+                      00155         
+002F   0B96           00156         decfsz  nNegDelta,F             ; yes, decrement negative delta counter
+MPASM 03.80 Released                                 NICD.ASM   10-29-2004  10:19:45         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0030   2836           00157         goto    no_NegDelta             ; not ended
+0031   2854           00158         goto    Charge_Ready            ; counter is 0, so stop charging
+                      00159                                         
+0032                  00160 no_measurement_carry            
+0032   0810           00161         movfw   MEASUREMENT             ; so measurement is larger, set maxValue
+0033   0092           00162         movwf   MaxMEASUREMENT  
+                      00163 
+0034                  00164 no_measurement_carry_NoMax
+0034   301E           00165         movlw   NEG_DELTA_COUNT         ; we want to be sure
+0035   0096           00166         movwf   nNegDelta
+0036                  00167 no_NegDelta 
+0036   1505           00168         bsf     PORTA,CHARGE_BIT        ; set charging on
+0037   284F           00169         goto    goodbye                 ; leave now 
+                      00170 
+0038                  00171 dec_counters 
+0038   3001           00172         movlw   D'1'
+0039   028C           00173         subwf   TIME_MeasureLo, F
+003A   1803           00174         btfsc   STATUS,C
+003B   284F           00175         goto    goodbye
+003C   038D           00176         decf    TIME_MeasureHi, F  
+003D   1D03           00177         btfss   STATUS,Z                ; should start measurement?
+003E   284F           00178         goto    goodbye
+                      00179  
+003F   300F           00180         movlw   MEASURE_TIME_HI         ; yes, first reset counters
+0040   008D           00181         movwf   TIME_MeasureHi
+0041   30A0           00182         movlw   MEASURE_TIME_LO
+0042   008C           00183         movwf   TIME_MeasureLo
+                      00184          
+0043   3001           00185         movlw   D'1'
+0044   028E           00186         subwf   TIME_ChargeLo, F
+0045   1803           00187         btfsc   STATUS,C
+0046   284A           00188         goto    no_charge_Carry
+0047   038F           00189         decf    TIME_ChargeHi, F
+0048   1903           00190         btfsc   STATUS,Z                ; is charge-timeout reached?
+0049   2851           00191         goto    Charge_Timeout
+                      00192 
+004A                  00193 no_charge_Carry
+004A   3004           00194         movlw   RESET_PULSE
+004B   0095           00195         movwf   TIME_ResetPulse
+004C   1494           00196         bsf     CURRENT_STATE,STATE_RESET_ADC   ; goto reset-state
+004D   1485           00197         bsf     PORTA,ADC_RESET_BIT             ; set reset output
+004E   1105           00198         bcf     PORTA,CHARGE_BIT                ; shut off charging
+                      00199         
+                      00200           
+004F                  00201 goodbye
+004F   110B           00202         bcf     INTCON,T0IF             ; enable irq again 
+0050   0009           00203         retfie                          ;  goodbye
+                      00204 
+0051                  00205 Charge_Timeout
+0051   20CF           00206         call    Cls
+0052   2101           00207         call    STR_TIMEOUT
+0053   2856           00208         goto    finish
+0054                  00209 Charge_Ready
+MPASM 03.80 Released                                 NICD.ASM   10-29-2004  10:19:45         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0054   20CF           00210         call    Cls
+0055   20F7           00211         call    STR_READY
+0056                  00212 finish
+0056   1414           00213         bsf     CURRENT_STATE,STATE_CHARGE_READY
+0057   1105           00214         bcf     PORTA,CHARGE_BIT        ; shut off
+0058   0009           00215         retfie                          ;  goodbye(do not enable irq again )
+                      00216         
+                      00217         
+                      00218                 
+                      00219 ; *************** End of IRQ handler *********************
+                      00220 
+                      00221 
+                      00222 ; *************** INIT part ****************
+0059                  00223 init 
+                      00224         
+0059   1283           00225         BANK_LOW
+                      00226 
+                      00227 ; *************** init ports ***************
+005A   0185           00228         clrf    PORTA   ; set data A op 0 
+005B   0186           00229         clrf    PORTB 
+                      00230 
+005C   1683           00231         BANK_HIGH
+                      00232         
+005D   3001           00233         movlw   H'1'
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+005E   0085           00234         movwf   TRISA   ; set A to input
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+005F   0186           00235         clrf    TRISB   ; set B  to output 
+                      00236 
+0060   1283           00237         BANK_LOW
+                      00238 
+0061   300F           00239         movlw   MEASURE_TIME_HI  
+0062   008D           00240         movwf   TIME_MeasureHi
+0063   30A0           00241         movlw   MEASURE_TIME_LO
+0064   008C           00242         movwf   TIME_MeasureLo
+                      00243 
+0065   301C           00244         movlw   CHARGE_TIME_HI           
+0066   008F           00245         movwf   TIME_ChargeHi
+0067   3020           00246         movlw   CHARGE_TIME_LO
+0068   008E           00247         movwf   TIME_ChargeLo
+                      00248          
+0069   0194           00249         clrf    CURRENT_STATE
+006A   0192           00250         clrf    MaxMEASUREMENT  
+                      00251 
+006B   301E           00252         movlw   NEG_DELTA_COUNT  
+006C   0096           00253         movwf   nNegDelta
+                      00254         
+                      00255         
+006D   1683           00256         BANK_HIGH
+                      00257         
+                      00258 ; *************** 16F84 initialisatie ***************
+                      00259                                         ; zet de opties
+006E   30C8           00260         movlw   B'11001000'             ; PullUp disabled, rb0 rising edge irq, psa to wdt, rate = 0
+MPASM 03.80 Released                                 NICD.ASM   10-29-2004  10:19:45         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+006F   0081           00261         movwf   OPTION_REG
+                      00262         
+0070   1283           00263         BANK_LOW
+                      00264 
+0071   20B6           00265         call    InitDisplay
+0072   20EB           00266         call    STR_CHARGE
+0073   0064           00267         CLRWDT                          ; de waakhond uitzetten! (gaat om de 18 ms af!!)
+                      00268                                 
+0074   300E           00269         movlw   TIMERCOUNT              ;; initialiseer timer
+0075   0081           00270         movwf   TMR0
+0076   178B           00271         bsf     INTCON,GIE              ; enable interrupts
+0077   168B           00272         bsf     INTCON,T0IE             ; enable timer 0 irq   
+                      00273  
+                      00274 
+                      00275 ; *************** main function ***************
+0078   2878           00276 loop    goto    loop                    ; wait for interrupt
+                      00277  
+0079   0064           00278 delay40us       CLRWDT
+007A   300B           00279         movlw   D'11'   
+007B   0098           00280         movwf   temp1
+007C   0B98           00281 loop40us decfsz temp1,f
+007D   287C           00282         goto    loop40us        
+007E   0008           00283         return
+                      00284         
+                      00285 
+007F                  00286 delay4ms
+007F   3064           00287         movlw   D'100'
+0080   0099           00288         movwf   temp2
+0081                  00289 loop4ms         
+0081   2079           00290         call delay40us 
+0082   0B99           00291         decfsz  temp2,f
+0083   2881           00292         goto    loop4ms 
+0084   0008           00293         return   
+                      00294 
+0085                  00295 WaitDisplayReady 
+0085   0064           00296         CLRWDT
+0086   1683           00297         BANK_HIGH
+0087   30F0           00298         movlw   H'f0'
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0088   0086           00299         movwf   TRISB   ; set B to input
+0089   1283           00300         BANK_LOW 
+008A   0186           00301         clrf    PORTB
+008B   1506           00302         bsf     PORTB,RW_BIT
+008C   1586           00303         bsf     PORTB,E_BIT 
+008D                  00304 WaitLoop        
+008D   0000           00305         nop
+008E   0000           00306         nop  
+008F   1B86           00307         btfsc   PORTB,7
+0090   288D           00308         goto    WaitLoop
+                      00309 
+0091   0186           00310         clrf    PORTB
+0092   1683           00311         BANK_HIGH
+MPASM 03.80 Released                                 NICD.ASM   10-29-2004  10:19:45         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0093   3000           00312         movlw   H'00'
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0094   0086           00313         movwf   TRISB   ; set B to output
+0095   1283           00314         BANK_LOW
+0096   0008           00315         return
+                      00316         
+0097                  00317 write_nibbleD
+0097   39F0           00318         andlw   H'f0'
+0098   3802           00319         iorlw   h'02'
+0099   0086           00320         movwf   PORTB
+009A   1586           00321         bsf     PORTB,E_BIT 
+009B   0000           00322         nop
+009C   1186           00323         bcf     PORTB,E_BIT  
+009D   0008           00324         return
+                      00325 
+009E                  00326 write_byteD
+009E   0097           00327         movwf   temp
+009F   2097           00328         call    write_nibbleD
+00A0   0D97           00329         rlf     temp,f
+00A1   0D97           00330         rlf     temp,f
+00A2   0D97           00331         rlf     temp,f
+00A3   0D97           00332         rlf     temp,f
+00A4   0817           00333         movfw   temp
+00A5   2097           00334         call    write_nibbleD 
+00A6   2885           00335         goto    WaitDisplayReady
+                      00336 
+00A7                  00337 write_nibbleC
+00A7   39F0           00338         andlw   H'f0'
+00A8   0086           00339         movwf   PORTB
+00A9   1586           00340         bsf     PORTB,E_BIT 
+00AA   0000           00341         nop
+00AB   1186           00342         bcf     PORTB,E_BIT  
+00AC   0008           00343         return
+                      00344 
+00AD                  00345 write_byteC 
+00AD   0097           00346         movwf   temp
+00AE   20A7           00347         call    write_nibbleC
+00AF   0D97           00348         rlf     temp,f
+00B0   0D97           00349         rlf     temp,f
+00B1   0D97           00350         rlf     temp,f
+00B2   0D97           00351         rlf     temp,f
+00B3   0817           00352         movfw   temp
+00B4   20A7           00353         call    write_nibbleC
+00B5   2885           00354         goto    WaitDisplayReady
+                      00355 
+00B6                  00356 InitDisplay
+00B6   207F           00357         call    delay4ms                ; delay power up
+00B7   207F           00358         call    delay4ms
+00B8   207F           00359         call    delay4ms
+00B9   207F           00360         call    delay4ms 
+00BA   207F           00361         call    delay4ms 
+00BB   3030           00362         movlw   H'30'                   ; 8 bit mode
+00BC   20A7           00363         call    write_nibbleC
+MPASM 03.80 Released                                 NICD.ASM   10-29-2004  10:19:45         PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00BD   207F           00364         call    delay4ms 
+00BE   3030           00365         movlw   H'30'                   ; 8 bit mode
+00BF   20A7           00366         call    write_nibbleC
+00C0   207F           00367         call    delay4ms 
+00C1   3030           00368         movlw   H'30'                   ; 8 bit mode
+00C2   20A7           00369         call    write_nibbleC
+00C3   207F           00370         call    delay4ms 
+                      00371 
+00C4   3020           00372         movlw   H'20'                   ; 4 bit mode
+00C5   20A7           00373         call    write_nibbleC
+00C6   207F           00374         call    delay4ms 
+                      00375 
+00C7   3028           00376         movlw   H'28'                   ; 4 bit mode
+00C8   20AD           00377         call    write_byteC 
+                      00378 
+                      00379 
+00C9   3008           00380         movlw   H'08'                   ; display off, cursor off,  
+00CA   20AD           00381         call    write_byteC 
+                      00382 
+00CB   300E           00383         movlw   H'0e'                   ; display on, cursor on,   blinking cursor
+00CC   20AD           00384         call    write_byteC 
+                      00385 
+00CD   3006           00386         movlw   H'06'                   ; cursor moving right, no shift display
+00CE   20AD           00387         call    write_byteC  
+                      00388 
+00CF   3001           00389 Cls     movlw   H'01'                   ;  
+00D0   28AD           00390         goto    write_byteC             ; exit init also
+                      00391  
+00D1   0103           00392 Home0   clrw
+00D2   3880           00393 MoveTo0 iorlw   H'80'                   ;  
+00D3   28AD           00394         goto    write_byteC             ;  
+                      00395 
+00D4   0103           00396 Home1   clrw
+00D5   38C0           00397 MoveTo1 iorlw   H'C0'                   ;  
+00D6   28AD           00398         goto    write_byteC             ;  
+                      00399 
+00D7                  00400 Display_Hex     
+00D7   009A           00401         movwf   tempHex
+00D8   009B           00402         movwf   tempHexNibble
+00D9   0C9B           00403         rrf     tempHexNibble,f
+00DA   0C9B           00404         rrf     tempHexNibble,f
+00DB   0C9B           00405         rrf     tempHexNibble,f
+00DC   0C9B           00406         rrf     tempHexNibble,f
+00DD   20E0           00407         call    display_hexNibble
+00DE   081A           00408         movfw   tempHex
+00DF   009B           00409         movwf   tempHexNibble
+                      00410 
+00E0                  00411 display_hexNibble
+00E0   300F           00412         movlw   h'0f'
+00E1   059B           00413         andwf   tempHexNibble,f
+00E2   300A           00414         movlw   D'10'
+00E3   021B           00415         subwf   tempHexNibble,w ;f-w = d-10
+00E4   1803           00416         btfsc   STATUS,C
+MPASM 03.80 Released                                 NICD.ASM   10-29-2004  10:19:45         PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00E5   28E9           00417         goto    hex_af  
+00E6   081B           00418         movfw   tempHexNibble
+00E7   3830           00419         iorlw   H'30'
+00E8   289E           00420         goto    write_byteD
+00E9   3E41           00421 hex_af  addlw   h'41'
+00EA   289E           00422         goto    write_byteD
+                      00423          
+00EB                  00424 STR_CHARGE  
+00EB   3043           00425         movlw   A'C'
+00EC   209E           00426         call    write_byteD
+00ED   3068           00427         movlw   A'h'
+00EE   209E           00428         call    write_byteD
+00EF   3061           00429         movlw   A'a'
+00F0   209E           00430         call    write_byteD
+00F1   3072           00431         movlw   A'r'
+00F2   209E           00432         call    write_byteD
+00F3   3067           00433         movlw   A'g'
+00F4   209E           00434         call    write_byteD
+00F5   3065           00435         movlw   A'e'
+00F6   289E           00436         goto    write_byteD
+                      00437 
+                      00438 
+00F7                  00439 STR_READY 
+00F7   3052           00440         movlw   A'R'
+00F8   209E           00441         call    write_byteD
+00F9   3065           00442         movlw   A'e'
+00FA   209E           00443         call    write_byteD
+00FB   3061           00444         movlw   A'a'
+00FC   209E           00445         call    write_byteD
+00FD   3064           00446         movlw   A'd'
+00FE   209E           00447         call    write_byteD
+00FF   3079           00448         movlw   A'y'
+0100   289E           00449         goto    write_byteD
+                      00450 
+0101                  00451 STR_TIMEOUT  
+0101   3054           00452         movlw   A'T'
+0102   209E           00453         call    write_byteD
+0103   3069           00454         movlw   A'i'
+0104   209E           00455         call    write_byteD
+0105   306D           00456         movlw   A'm'
+0106   209E           00457         call    write_byteD
+0107   3065           00458         movlw   A'e'
+0108   209E           00459         call    write_byteD
+0109   304F           00460         movlw   A'O'
+010A   289E           00461         goto    write_byteD
+010B   3075           00462         movlw   A'u'
+010C   289E           00463         goto    write_byteD
+010D   3074           00464         movlw   A't'
+010E   289E           00465         goto    write_byteD
+                      00466         END
+MPASM 03.80 Released                                 NICD.ASM   10-29-2004  10:19:45         PAGE 10
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ADC_COMP_BIT                      0
+ADC_RESET_BIT                     1
+BANK_HIGH                         bsf     STATUS,RP0
+BANK_LOW                          bcf     STATUS,RP0
+C                                 00000000
+CHARGE_BIT                        2
+CHARGE_TIME_HI                    H'1C'
+CHARGE_TIME_LO                    H'20'
+CURRENT_STATE                     00000014
+Charge_Ready                      00000054
+Charge_Timeout                    00000051
+Cls                               000000CF
+DC                                00000001
+DELTA_MARGIN                      D'1'
+Display_Hex                       000000D7
+EEADR                             00000009
+EECON1                            00000088
+EECON2                            00000089
+EEDATA                            00000008
+EEIE                              00000006
+EEIF                              00000004
+E_BIT                             3
+F                                 00000001
+FSR                               00000004
+GIE                               00000007
+Home0                             000000D1
+Home1                             000000D4
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+InitDisplay                       000000B6
+MEASUREMENT                       00000010
+MEASURE_TIME_HI                   H'0f'
+MEASURE_TIME_LO                   H'a0'
+MaxMEASUREMENT                    00000012
+MoveTo0                           000000D2
+MoveTo1                           000000D5
+NEG_DELTA_COUNT                   D'30'
+NOT_PD                            00000003
+NOT_RBPU                          00000007
+NOT_TO                            00000004
+OPTION_REG                        00000081
+PCL                               00000002
+PCLATH                            0000000A
+PORTA                             00000005
+PORTB                             00000006
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+MPASM 03.80 Released                                 NICD.ASM   10-29-2004  10:19:45         PAGE 11
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+RBIE                              00000003
+RBIF                              00000000
+RD                                00000000
+RESET_PULSE                       D'4'
+RP0                               00000005
+RP1                               00000006
+RS_BIT                            1
+RW_BIT                            2
+STATE_CHARGE_READY                0
+STATE_MEASURE_ADC                 2
+STATE_RESET_ADC                   1
+STATUS                            00000003
+STR_CHARGE                        000000EB
+STR_READY                         000000F7
+STR_TIMEOUT                       00000101
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+TIMERCOUNT                        (H'ff'-TIMER_PERIOD+TIMER_CORRECTION_VALUE)
+TIMER_CORRECTION_VALUE            D'9'
+TIMER_PERIOD                      D'250'
+TIME_ChargeHi                     0000000F
+TIME_ChargeLo                     0000000E
+TIME_MeasureHi                    0000000D
+TIME_MeasureLo                    0000000C
+TIME_ResetPulse                   00000015
+TMR0                              00000001
+TRISA                             00000085
+TRISB                             00000086
+W                                 00000000
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+WaitDisplayReady                  00000085
+WaitLoop                          0000008D
+Z                                 00000002
+_CP_OFF                           00003FFF
+_CP_ON                            0000000F
+_HS_OSC                           00003FFE
+_LP_OSC                           00003FFC
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FFD
+__16F84A                          00000001
+dec_counters                      00000038
+delay40us                         00000079
+delay4ms                          0000007F
+display_hexNibble                 000000E0
+finish                            00000056
+MPASM 03.80 Released                                 NICD.ASM   10-29-2004  10:19:45         PAGE 12
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+goodbye                           0000004F
+hex_af                            000000E9
+init                              00000059
+irq                               00000004
+loop                              00000078
+loop40us                          0000007C
+loop4ms                           00000081
+nNegDelta                         00000016
+no_NegDelta                       00000036
+no_charge_Carry                   0000004A
+no_measurement_carry              00000032
+no_measurement_carry_NoMax        00000034
+reset                             00000000
+temp                              00000017
+temp1                             00000018
+temp2                             00000019
+tempHex                           0000001A
+tempHexNibble                     0000001B
+test_StateIsMeasurement           00000015
+write_byteC                       000000AD
+write_byteD                       0000009E
+write_nibbleC                     000000A7
+write_nibbleD                     00000097
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : X---XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+00C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0100 : XXXXXXXXXXXXXXX- ---------------- ---------------- ----------------
+2000 : -------X-------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:   268
+Program Memory Words Free:   756
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     5 reported,     0 suppressed
+
+

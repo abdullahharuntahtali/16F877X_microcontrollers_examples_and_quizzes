@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0048)http://www.trektech.de/Smallpanel/smallpanel.htm -->
+<HTML><HEAD><TITLE>Kleines LED Panel</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=windows-1252">
+<META content="MSHTML 6.00.2900.2180" name=GENERATOR></HEAD>
+<BODY text=#ff9700 vLink=#cfffff aLink=lime link=#ced6ff bgColor=black><FONT 
+face="Haettenschweiler, Arial, Verdana" size=+1><BASEFONT 
+face="Haettenschweiler, Verdana,Arial,Helvetica,Geneva">
+<P align=center><A 
+href="http://www.trektech.de/Smallpanel/images/SmallPanel3.jpg"><IMG 
+src="smallpanel_dosyalar/S_SmallPanel3.jpg" border=0></A></P>
+<P align=center><FONT color=#cf97ff size=+3>Kleines LED Panel</FONT></P>
+<P>Dies ist der kleine Bruder des <A 
+href="http://www.trektech.de/ledpanel/ledpanel.htm">großen Panels</A>. Die Idee 
+stammt mal wieder von Matthias. Er hat mein Riesenpanel gesehen und meinte das 
+man darauf gut das "Game of Life" darstellen könnte und wollte daher sowas in 
+klein haben. Ethernet war hier nicht notwendig, also haben wir eine eigene 
+Platine entwickelt. Das Panel sollte also "Life" können, vielleicht die Uhrzeit 
+anzeigen und sogar einfache Spiele erlauben. Auch Blinkenmovies sollten möglich 
+sein. Daraus ergab sich dann die folgende Hardware: </P>
+<P></P>
+<UL>
+  <LI>ATmega128 CPU 
+  <LI>32kB externes RAM 
+  <LI>4MBit Dataflash zu Abspeichern von Animationen etc. 
+  <LI>RTC Chip mit Batteriepufferung 
+  <LI>Joystickport (zunächst digital, analog gibt die Hardware aber auch her) 
+  <LI>Lautsprecher 
+  <LI>Serielle Schnittstelle 
+  <LI>ISP Anschluss 
+  <LI>IrDA oder RC5 Empfänger 
+  <LI>16 stelliges 7-Segment Display für Punktestände etc. 
+  <LI>7 Taster (Cursorkreuz plus drei Einzeltasten) 
+  <LI>NTC für Messung der Zimmertemperatur </LI></UL>
+<P>Die Software ist bisher noch sehr rudimentär. Ich bin gerade dabei das 
+"Betriebssystem" zu basteln. An "Anwendungen" gibts bisher nur das "Life" und 
+eine "Analoguhr". Blinkenmovies kann man auch schon abspielen. Desweiteren gibt 
+es eine Art Konsole auf der seriellen Schnittstelle. Diese unterstützt bisher 
+einige Grafikbefehle, unter anderem auch eine Laufschrift. Geplant sind dann 
+noch so Dinge wie Tetris oder Pong. </P>
+<P>Damit das ganze nicht so groß wird ist es komplett in SMD aufgebaut. Auch 
+gibt es eine automatische Dunkeltastung falls die Software mal keine Lust mehr 
+zum Multiplexen hat. Hilft während der Softwareentwicklung deutlich LED Module 
+zu sparen. Es können übrigens verschiedene Arten von LED Modulen angeschlossen 
+werden. Die Samsung Module ebenso wie diskret mit Schieberegistern aufgebaute 
+Teile. Letztere werden dann per SPI angesteuert. </P>
+<P>Hier gibts dann noch die Layoutfiles und die Software für den Atmel</P>
+<P align=center>
+<TABLE 
+style="FONT-SIZE: 16px; COLOR: #9097ff; FONT-FAMILY: Haettenschweiler, Arial, Verdana" 
+cellSpacing=0 cellPadding=0 width=500 border=0>
+  <TBODY>
+  <TR>
+    <TD vAlign=center width=100 height=40><A 
+      href="http://www.trektech.de/Smallpanel/bin/smallpanel_software.zip"><IMG 
+      hspace=0 loop=0 src="smallpanel_dosyalar/software.gif" border=0></A></TD>
+    <TD vAlign=center>Download Panel Programm inkl. Sources</TD></TR>
+  <TR>
+    <TD vAlign=center width=100 height=40><A 
+      href="http://www.trektech.de/Smallpanel/bin/smallpanel_hardware.zip"><IMG 
+      hspace=0 loop=0 src="smallpanel_dosyalar/hardware.gif" border=0></A></TD>
+    <TD style="COLOR: #cf97cf" vAlign=center>Download Panel Platine 
+  (Eagle)</TD></TR></TBODY></TABLE></P>
+<TABLE 
+style="FONT-SIZE: 16px; COLOR: #ff9700; FONT-FAMILY: Haettenschweiler, Arial, Verdana" 
+borderColor=#cf97ff cellSpacing=0 cellPadding=2 width=256 align=center 
+  border=1><TBODY>
+  <TR vAlign=top>
+    <TD>
+      <DIV align=center>
+      <P><A href="http://www.trektech.de/Smallpanel/images/SmallPanel1.jpg"><IMG 
+      src="smallpanel_dosyalar/S_SmallPanel1.jpg" border=0></A></P>
+      <P>Der Aufbau mit den LED Modulen aus den grossen Panel</P>
+      <P>&nbsp;</P></DIV></TD>
+    <TD>
+      <DIV align=center>
+      <P><A href="http://www.trektech.de/Smallpanel/images/SmallPanel2.jpg"><IMG 
+      src="smallpanel_dosyalar/S_SmallPanel2.jpg" border=0></A></P>
+      <P>Die Platine im Detail</P></DIV></TD>
+    <TD>
+      <DIV align=center>
+      <P><A href="http://www.trektech.de/Smallpanel/images/SmallPanel3.jpg"><IMG 
+      src="smallpanel_dosyalar/S_SmallPanel3.jpg" border=0></A></P>
+      <P>Und hier das Ganze in Betrieb, diesmal mit etwas größeren Modulen 
+      (40x32)</P></DIV></TD></TR></TBODY></TABLE>
+<P>&nbsp;</P></BASEFONT></FONT></BODY></HTML>

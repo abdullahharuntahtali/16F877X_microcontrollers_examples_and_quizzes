@@ -1,0 +1,133 @@
+MPASM 03.80 Released                                DELAY.ASM   11-20-2005  18:21:08         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001                 ;**********************************
+                      00002                 ;*    The Delay routines          *
+                      00003                 ;*                                *
+                      00004                 ;* used by Wait <time>            *
+                      00005                 ;**********************************
+                      00006 
+                      00007     include tempdemo.inc
+                      00001 ;****************************************************************************
+                      00002 ;*                                                                          *
+                      00003 ;*                   Dallas 1 Wire Bus Temperature demo                     *
+                      00004 ;*                                                                          *
+                      00005 ;****************************************************************************
+                      00006 
+  003D0900            00007 Clock_Freq      equ     d'4000000'      ;4MHz - for wait macro calculations
+                      00008 
+                      00009     udata_ovr   0x20                    ;0x0C 16F84
+0020                  00010 DScommbuff      res     1
+0021                  00011 DSCRC           res     1
+                      00012 
+0022                  00013 tempone         res     1
+0023                  00014 temptwo         res     1
+0024                  00015 count           res     1
+0025                  00016 count2          res     1               ; 2nd loop counter for nested loops
+0026                  00017 bits_byte       res     1
+                      00018 
+0027                  00019 CHARBUF         res     1
+0028                  00020 temp_hi         res     1
+0029                  00021 temp_lo         res     1
+002A                  00022 acc_lo          res     1
+002B                  00023 acc_hi          res     1
+                      00024 
+002C                  00025 vvshift         res     1
+                      00026 
+                      00027 #define PRESENCE_bit    bits_byte, 0
+                      00028 #define round00_bit     bits_byte, 1
+                      00029 #define DSNext_bit      bits_byte, 2
+                      00030 #define neg_temp_bit    bits_byte, 3
+                      00031 #define DALLAS_BUS      PORTA, 4
+                      00032 
+002D                  00033 ROM_no          res     8
+0035                  00034 id_bit_number   res     1
+0036                  00035 last_zero       res     1
+0037                  00036 LastDiscrepancy res     1
+0038                  00037 LastFamilyDiscr res     1
+0039                  00038 id_bits_byte    res     1
+003A                  00039 rom_mask        res     1
+                      00040 
+                      00041 #define id_bit          id_bits_byte, 0 ; first bit read in a search ID sequence
+                      00042 #define cmp_id_bit      id_bits_byte, 1 ; complement of id_bit
+                      00043 #define test_bit        id_bits_byte, 2 ; test id_bit & cmp_id_bit
+                      00044 
+                      00045 #define last_device     id_bits_byte, 6
+                      00046 #define Direction       id_bits_byte, 7
+MPASM 03.80 Released                                DELAY.ASM   11-20-2005  18:21:08         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00008 
+  0000                00009     global longdelay, shortdelay
+                      00010 
+                      00011 PROG CODE
+                      00012 
+0000   00??           00013 longdelay   movwf   tempone
+0001   01??           00014 ldloop1     clrf    temptwo
+0002   0B??           00015 ldloop2     decfsz  temptwo, F  ;becomes 11111111
+0003   2???           00016             goto    ldloop2
+0004   0B??           00017             decfsz  tempone, F
+0005   2???           00018             goto    ldloop1
+0006   0008           00019             return
+                      00020 
+0007   00??           00021 shortdelay  movwf   tempone
+0008   0B??           00022 sdloop      decfsz  tempone, F
+0009   2???           00023             goto    sdloop
+000A   0008           00024             return
+                      00025 
+                      00026         end
+MPASM 03.80 Released                                DELAY.ASM   11-20-2005  18:21:08         PAGE  3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+CHARBUF                           00000027
+Clock_Freq                        003D0900
+DALLAS_BUS                        PORTA, 4
+DSCRC                             00000021
+DSNext_bit                        bits_byte, 2
+DScommbuff                        00000020
+Direction                         id_bits_byte, 7
+LastDiscrepancy                   00000037
+LastFamilyDiscr                   00000038
+PRESENCE_bit                      bits_byte, 0
+ROM_no                            0000002D
+__16F628A                         00000001
+acc_hi                            0000002B
+acc_lo                            0000002A
+bits_byte                         00000026
+cmp_id_bit                        id_bits_byte, 1
+count                             00000024
+count2                            00000025
+id_bit                            id_bits_byte, 0
+id_bit_number                     00000035
+id_bits_byte                      00000039
+last_device                       id_bits_byte, 6
+last_zero                         00000036
+ldloop1                           00000001
+ldloop2                           00000002
+longdelay                         00000000
+neg_temp_bit                      bits_byte, 3
+rom_mask                          0000003A
+round00_bit                       bits_byte, 1
+sdloop                            00000008
+shortdelay                        00000007
+temp_hi                           00000028
+temp_lo                           00000029
+tempone                           00000022
+temptwo                           00000023
+test_bit                          id_bits_byte, 2
+vvshift                           0000002C
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

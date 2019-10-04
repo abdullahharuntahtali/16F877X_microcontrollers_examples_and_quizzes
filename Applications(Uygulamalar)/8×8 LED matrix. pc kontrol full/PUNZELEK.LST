@@ -1,0 +1,574 @@
+PUNZELEK                                                                                                      PAGE 1
+
+                       1    ; Punktmatrix - Anzeige - Steuerung
+                       2    ; Variante ELEKTOR    (22,1184 MHz)
+                       3    ; mit Anzeigen TA 07-11 (klein) 6 Stueck je Modul
+                       4    ; im Interruppt Betrieb (V.24 Schnittstelle)
+                       5    ; Mit Schalter wird Position im Anzeigeverband festgelegt
+                       6    ; m”glich ist 0...5 6...11 12...17 .....  90...95
+                       7    ; Datenuebertragung erfolgt fuer alle Module mit 9600 baud
+                       8    ; jedes Modul sucht sich seine Zeichen
+                       9    ; Port 3.2 bis 3.5 bestimmt die Position im Verband
+                      10    ; Uebertragung zur Anzeige erfolgt mit 9600 Baud
+                      11    ; Vereinbarungen
+----                  12            DSEG
+  00E0                13    ACC     DATA 0E0H
+  00F0                14    B       DATA 0F0H               ;Hilfsregister B
+  0090                15    P1      DATA 90H
+  00B0                16    P3      DATA 0B0H
+  0083                17    DPH     DATA 83H
+  0082                18    DPL     DATA 82H
+  0098                19    SCON    DATA 98H                ;Controlregister seriell
+  0089                20    TMOD    DATA 89H                ;Timercontrollregister
+  0087                21    PCON    DATA 87H                ;SMOD
+  008D                22    TH1     DATA 8DH                ;Timer 1
+  0099                23    SBUF    DATA 99H                ;Empfangspuffer
+  00A8                24    IE      DATA 0A8H               ;Interupptfreigabe
+  00B8                25    IP      DATA 0B8H               ;Interrupptprioritaet
+  00D0                26    PSW     DATA 0D0H               ;Programmstatuswort
+  0081                27    SP      DATA 81H                ;Stackpointer
+  0020                28    ZAE     DATA 20H                ;Zeichenzaehler
+  0021                29    APOS    DATA 21H                ;Anfangsposition im Verband
+  0022                30    ZPOS    DATA 22H                ;zweite Position im Verband
+  0023                31    DPOS    DATA 23H                ;dritte Position im Verband
+  0024                32    VPOS    DATA 24H                ;vierte Position im Verband
+  0025                33    FPOS    DATA 25H                ;fuenfte Position im Verband
+  0026                34    EPOS    DATA 26H                ;Endposition im Verband
+                      35    ;
+----                  36            BSEG
+                      37    ;ACC.0   BIT 0E0H
+                      38    ;ACC.1   BIT 0E1H
+                      39    ;ACC.2   EQU 0E2H
+                      40    ;ACC.3   EQU 0E3H
+                      41    ;ACC.4   EQU 0E4H
+                      42    ;ACC.5   EQU 0E5H
+                      43    ;ACC.6   EQU 0E6H
+                      44    ;P1.6    EQU 96H
+                      45    ;P1.7    EQU 97H
+  008E                46    TR1     BIT 8EH         ;Timerregister
+  0098                47    RI      BIT 98H         ;Empfangsflag
+  0099                48    TI      BIT 99H         ;Sendeflag
+                      49    
+  0400                50    BITMAP  EQU 0400h
+                      51    
+----                  52            CSEG
+0000                  53            ORG 0000H
+0000 0200AB           54            JMP START
+                      55    ;
+0023                  56            ORG 0023H
+                      57    ;  Verarbeitungsroutine fuer seriellen Interrupt
+                      58    ;
+PUNZELEK                                                                                                      PAGE 2
+
+0023 C0E0             59    SERIN:  PUSH ACC
+0025 C0D0             60            PUSH PSW
+0027 C0F0             61            PUSH B
+0029 8599F0           62            MOV B,SBUF              ;Zeichen nach B
+002C E520             63            MOV A,ZAE               ;Zeichenzaehler holen
+002E 04               64            INC A                   ;Zeichenzaehler erhoehen
+002F F520             65            MOV ZAE,A               ;Zeichenzaehler sichern
+0031 E5F0             66            MOV A,B                 ;Empfangszeichen holen
+0033 B40C06           67            CJNE A,#0CH,SER0        ;Zeichen fuer Loeschen
+0036 120159           68            CALL LOE                ;loeschen
+0039 0200A0           69            JMP SER7                ;in diesem Fall wars das
+003C C3               70    SER0:   CLR  C                  ;Carry loeschen
+003D E5F0             71            MOV A,B                 ;Zeichen holen
+003F C0E0             72            PUSH ACC                ;Accu sichern
+0041 9420             73            SUBB A,#20H             ;pruefen kleiner 20H
+0043 D0E0             74            POP ACC
+0045 5008             75            JNC SER1                ;gueltiges Zeichen groesser 20 H
+0047 E520             76            MOV A,ZAE               ;Zeichenzaehler holen
+0049 14               77            DEC A                   ;Zeichenzaehler korrigieren
+004A F520             78            MOV ZAE,A               ;Zeichenzaehler sichern
+004C 0200A0           79            JMP SER7                ;das wars
+004F E521             80    SER1:   MOV A,APOS              ;Anfangsposition holen
+0051 B52009           81            CJNE A,ZAE,SER2         ;Vergleich Soll-Ist Position
+0054 E5F0             82            MOV A,B                 ;Zeichen nach A
+0056 C3               83            CLR C                   ;Carry loeschen
+0057 9420             84            SUBB A,#20H             ;ASCII Code korrigieren
+0059 FA               85            MOV R2,A                ;erstes Zeichen nach R2
+005A 0200A0           86            JMP SER7                 ;das wars
+005D E522             87    SER2:   MOV A,ZPOS              ;zweite Position holen
+005F B52009           88            CJNE A,ZAE,SER3         ;Vergleich Soll-Ist Position
+0062 E5F0             89            MOV A,B                 ;Zeichen nach A
+0064 C3               90            CLR C                   ;Carry loeschen
+0065 9420             91            SUBB A,#20H             ;ASCII Code korrigieren
+0067 FB               92            MOV R3,A                ;zweites Zeichen nach R3
+0068 0200A0           93            JMP SER7                ;das wars
+006B E523             94    SER3:   MOV A,DPOS              ;dritte Position holen
+006D B52009           95            CJNE A,ZAE,SER4         ;Vergleich Soll-Ist Position
+0070 E5F0             96            MOV A,B                 ;Zeichen nach A
+0072 C3               97            CLR C                   ;Carry loeschen
+0073 9420             98            SUBB A,#20H             ;ASCII Code krrigieren
+0075 FC               99            MOV R4,A                ;drittes Zeichen nach R4
+0076 0200A0          100            JMP SER7                ;das wars
+0079 E524            101    SER4:   MOV A,VPOS              ;vierte Position holen
+007B B52009          102            CJNE A,ZAE,SER5         ;Vergleich Soll-Ist Position
+007E E5F0            103            MOV A,B                 ;Zeichen nach A
+0080 C3              104            CLR C                   ;Carry loeschen
+0081 9420            105            SUBB A,#20H             ;ASCII Code korrigieren
+0083 FD              106            MOV R5,A                ;viertes Zeichen nach R5
+0084 0200A0          107            JMP SER7                ;das wars
+0087 E525            108    SER5:   MOV A,FPOS              ;fuenfte Position holen
+0089 B52009          109            CJNE A,ZAE,SER6         ;Vergleich Soll-Ist Position
+008C E5F0            110            MOV A,B                 ;Zeichen nach A
+008E C3              111            CLR C                   ;Carry loeschen
+008F 9420            112            SUBB A,#20H             ;ASCII Code korrigieren
+0091 FE              113            MOV R6,A                ;fuenftes Zeichen nach R6
+0092 0200A0          114            JMP SER7                ;das wars
+0095 E526            115    SER6:   MOV A,EPOS              ;Endposition holen
+0097 B52006          116            CJNE A,ZAE,SER7         ;Vergleich Soll-Ist Position
+PUNZELEK                                                                                                      PAGE 3
+
+009A E5F0            117            MOV A,B                 ;Zeichen nach A
+009C C3              118            CLR C                   ;Carry loeschen
+009D 9420            119            SUBB A,#20H             ;ASCII Kode korrigieren
+009F FF              120            MOV R7,A                ;letztes Zeichen nach R7
+00A0 C298            121    SER7:   CLR RI                  ;Empfangsflag loeschen
+00A2 C299            122            CLR TI                  ;Sendeflag loeschen
+00A4 D0F0            123            POP B
+00A6 D0D0            124            POP PSW                 ;
+00A8 D0E0            125            POP ACC         ;
+00AA 32              126            RETI                    ;Zeichen ausserhalb dieser Anzeige
+                     127    
+                     128    
+                     129    
+                     130    ; ***********************************************************
+                     131    ; * Start of program                                        *
+                     132    ; ***********************************************************
+                     133    
+00AB 758170          134    START:  MOV SP,#70H
+00AE 75A890          135            MOV IE,#90H             ;Int seriell  und allgemein frei
+00B1 75B810          136            MOV IP,#10H             ;serieller Int hohe Prioritaet
+00B4 759850          137            MOV SCON,#50H           ;serielle Schnittstelle Mod 1
+00B7 758920          138            MOV TMOD,#20H           ;Timer 1 Mode 2 Timer 2 keine Funktion
+00BA 758780          139            MOV PCON,#80H           ;SMOD = 0 kein Teiler /2
+00BD 758DF4          140            MOV TH1,#0F4H           ;9600 baud bei 22,1184MHz
+00C0 D28E            141            SETB TR1                ;Timer starten
+00C2 C298            142            CLR RI                  ;Empfangsint loeschen
+00C4 C299            143            CLR TI                  ;Sendeint loeschen
+00C6 1200CF          144            CALL PBE                ;Positionsbestimmung im Verband
+00C9 120159          145            CALL LOE                ;Anfangszustand herstellen
+00CC 0200F3          146            JMP ZZE                 ;zum Beginn des Programms
+                     147    
+                     148    
+                     149    
+                     150    
+                     151    
+                     152    ;
+                     153    ; Unterprogramm zur Bestimmung der Position der Anzeige
+                     154    ; innerhalb eines Verbandes von maximal 16 Anzeigen
+                     155    ; mit der einstellbaren Adresse 0 ... 15
+                     156    ;
+00CF E5B0            157    PBE:    MOV A,P3                ;Port 3 Schalter lesen
+00D1 543C            158            ANL A,#3CH              ;nur Schalter bewerten
+00D3 C3              159            CLR C                   ;Carry loeschen
+00D4 13              160            RRC A                   ;verschieben :2
+00D5 C3              161            CLR C                   ;Carry loeschen
+00D6 13              162            RRC A                   ;verschieben :4
+00D7 540F            163            ANL A,#0FH              ;nur Schalterwert
+00D9 F5F0            164            MOV B,A                 ;in B sichern
+00DB 25F0            165            ADD A,B                 ;A = A * 2
+00DD 25F0            166            ADD A,B                 ;A = A * 3
+00DF 25E0            167            ADD A,ACC               ;A = A * 6
+00E1 F521            168            MOV APOS,A              ;Anfangsposition der Anzeige im Verband
+00E3 04              169            INC A                   ;2. Position der Anzeige berechnen
+00E4 F522            170            MOV ZPOS,A              ;zweite Position ablegen
+00E6 04              171            INC A                   ;3. Position im Verband berechnen
+00E7 F523            172            MOV DPOS,A              ;dritte Position der Anzeige ablegen
+00E9 04              173            INC A                   ;4. Position im Verband bestimmen
+00EA F524            174            MOV VPOS,A              ;vierte Position der Anzeige ablegen
+PUNZELEK                                                                                                      PAGE 4
+
+00EC 04              175            INC A                   ;5. Position im Verband bestimmen
+00ED F525            176            MOV FPOS,A              ;fuenfte Position der Anzeige ablegen
+00EF 04              177            INC A                   ;6. Position im Verband berechnen
+00F0 F526            178            MOV EPOS,A              ;sechste Position der Anzeige ablegen
+00F2 22              179            RET
+                     180    ;
+                     181    ; eigentliche Anzeigeroutine
+                     182    ;
+00F3 75F006          183    ZZE:    MOV B,#06H              ;sieben Zeilen
+00F6 EA              184    ZZS:    MOV A,R2                ;First character
+00F7 3176            185            ACALL AZGW              ;wandeln
+                     186    ;       MOV A,B                 ;Zeile von ZG festlegen
+00F9 93              187            MOVC A,@A+DPTR          ;Zeichengeneratorcode holen
+00FA 3133            188            ACALL ANZ               ;erstes Zeichen in Schiebereg
+00FC EB              189            MOV A,R3                ;zweites Zeichen
+00FD 3176            190            ACALL AZGW              ;wandeln
+                     191    ;       MOV A,B                 ;Zeile von ZG festlegen
+00FF 93              192            MOVC A,@A+DPTR          ;Zeichengeneratorcode holen
+0100 3133            193            ACALL ANZ               ;zweites Zeichen in Schiebereg
+0102 EC              194            MOV A,R4                ;drittes Zeichen
+0103 3176            195            ACALL AZGW              ;wandeln
+                     196    ;       MOV A,B                 ;Zeile von ZG festlegen
+0105 93              197            MOVC A,@A+DPTR          ;Zeichengeneratorcode holen
+0106 3133            198            ACALL ANZ               ;drittes Zeichen in Schiebereg
+0108 ED              199            MOV A,R5                ;viertes Zeichen
+0109 3176            200            ACALL AZGW              ;wandeln
+                     201    ;       MOV A,B                 ;Zeile von ZG festlegen
+010B 93              202            MOVC A,@A+DPTR          ;Zeichengeneratorcode holen
+010C 3133            203            ACALL ANZ               ;viertes Zeichen in Schiebereg
+010E EE              204            MOV A,R6                ;fuenftes Zeichen holen
+010F 3176            205            ACALL AZGW              ;wandeln
+                     206    ;       MOV A,B                 ;Zeile von ZG festlegen
+0111 93              207            MOVC A,@A+DPTR          ;Zeichengeneratorcode holen
+0112 3133            208            ACALL ANZ               ;fuenftes Zeichen in Schiebereg
+0114 EF              209            MOV A,R7                ;sechstes Zeichen holen
+0115 3176            210            ACALL AZGW              ;wandeln
+                     211    ;       MOV A,B                 ;Zeile von ZG festlegen
+0117 93              212            MOVC A,@A+DPTR          ;Zeichengeneratorcode holen
+0118 3133            213            ACALL ANZ               ;sechstes Zeichen in Schiebereg
+                     214    
+011A 5390F8          215            ANL P1,#0F8H            ;Zeilendecoder ruecksetzen
+011D E5F0            216            MOV A,B                 ;umladen
+011F 4290            217            ORL P1,A                ;Zeile aktivieren
+0121 318C            218            ACALL ZEIT              ;und leuchten lassen
+0123 318C            219            ACALL ZEIT
+0125 318C            220            ACALL ZEIT
+0127 439007          221            ORL P1,#07H             ;alle Zeilen unsichtbar
+012A 15F0            222            DEC B                   ;bis zur letzten Zeile
+012C E5F0            223            MOV A,B                 ;nach A
+012E B4FFC5          224            CJNE A,#0FFH,ZZS        ;wars schon Zeile Null ?
+0131 01F3            225            AJMP ZZE                ;und weiter gehts
+                     226    ;
+0133 A2E4            227    ANZ:    MOV C,ACC.4             ;Zustand Bit 5 aus ZG nach Carry
+0135 9297            228            MOV P1.7,C              ;zum Portbit
+0137 3152            229            ACALL CLK               ;Taktimpuls
+0139 A2E3            230            MOV C,ACC.3             ;Zustand Bit 4 aus ZG nach Carry
+013B 9297            231            MOV P1.7,C              ;zum Portbit
+013D 3152            232            ACALL CLK               ;Taktimpuls
+PUNZELEK                                                                                                      PAGE 5
+
+013F A2E2            233            MOV C,ACC.2             ;Zustand Bit 3 aus ZG nach Carry
+0141 9297            234            MOV P1.7,C              ;zum Portbit
+0143 3152            235            ACALL CLK               ;Taktimpuls
+0145 A2E1            236            MOV C,ACC.1             ;Zustand Bit 2 aus ZG nach Carry
+0147 9297            237            MOV P1.7,C              ;zum Portbit
+0149 3152            238            ACALL CLK               ;Taktimpuls
+014B A2E0            239            MOV C,ACC.0             ;Zustand Bit 1 aus ZG nach Carry
+014D 9297            240            MOV P1.7,C              ;das wars
+014F 3152            241            ACALL CLK               ;Taktimpuls
+0151 22              242            RET
+                     243    ;
+                     244    ; Takt fuer Schieberegister erzeugen
+                     245    ;
+0152 D296            246    CLK:    SETB P1.6               ;Takt auf High
+0154 C296            247              CLR P1.6              ;Takt auf Low
+0156 D296            248              SETB P1.6             ;Takt wieder auf High
+0158 22              249              RET
+                     250    ;
+                     251    ; Anzeige loeschen
+                     252    ; alle Bits der Schieberegister werden auf High gesetzt
+                     253    ;
+0159 C0F0            254    LOE:    PUSH B                  ;B auf Stack
+015B 75F02E          255            MOV B,#2EH              ;6 Anzeigen = 30 Bit
+015E D297            256    LOE1:   SETB P1.7               ;Daten auf High
+0160 3152            257            ACALL CLK               ;Taktimpuls
+0162 D5F0F9          258            DJNZ B,LOE1             ;alles auf High ?
+0165 D0F0            259            POP B
+0167 74FF            260            MOV A,#0FFH             ;Zeichenzaehler auf
+0169 F520            261            MOV ZAE,A               ;Anfangsposition setzen
+016B 439007          262            ORL P1,#07H             ;alle Zeilen unscichtbar
+016E 04              263            INC A                   ;A = 00H
+016F FA              264            MOV R2,A                ;erstes Zeichen blank
+0170 FB              265            MOV R3,A                ;zweites Zeichen blank
+0171 FC              266            MOV R4,A                ;drittes Zeichen blank
+0172 FD              267            MOV R5,A                ;viertes Zeichen blank
+0173 FE              268            MOV R6,A                ;fuenftes Zeichen blank
+0174 FF              269            MOV R7,A                ;letztes Zeichen blank
+0175 22              270            RET
+                     271    ;
+                     272    ; Umwandeln ASCII Code in Zeichengeneratorcode
+                     273    ; ASCII Zeichen steht in ACC
+                     274    ; danach steht in DPTR der Anfang der Codetabelle fuer
+                     275    ; das betreffende Zeichen
+                     276    ; der Charactercode besteht aus 7 Bytes deren niedere 5 bit
+                     277    ; die leuchtenden LED's repr„sentieren
+                     278    ;
+0176                 279    AZGW:   
+                     280    
+                     281    
+0176 23              282            RL      A
+0177 23              283            RL      A
+0178 23              284            RL      A
+0179 F9              285            MOV R1,A
+017A 54F8            286            ANL A,#11111000B
+017C 25F0            287            ADD A,B
+017E 2400            288            ADD A,#LOW BITMAP
+0180 F582            289            MOV DPL,A
+                     290    
+PUNZELEK                                                                                                      PAGE 6
+
+0182 E9              291            MOV A,R1
+0183 5407            292            ANL A,#00000111B
+0185 2404            293            ADD A,#HIGH BITMAP
+0187 F583            294            MOV DPH,A
+0189 65E0            295            XRL A,ACC
+018B 22              296            RET
+                     297    
+                     298    ;
+018C C0F0            299    ZEIT:   PUSH B
+018E 75F0FF          300            MOV B,#0FFH             ;Zeitkonstante
+0191 D5F0FD          301    ZEIT1:  DJNZ B,ZEIT1
+0194 D0F0            302            POP B
+0196 22              303            RET
+                     304    ;
+0400                 305            ORG BITMAP
+                     306    
+0400 FFFFFFFF        307    ACZT:   DB 0FFH,0FFH,0FFH,0FFH,0FFH,0FFH,0FFH,00H  ;Space
+0404 FFFFFF00   
+0408 FBFBFBFB        308            DB 0FBH,0FBH,0FBH,0FBH,0FBH,0FFH,0FBH,00H  ;!
+040C FBFFFB00   
+0410 F5F5F5FF        309            DB 0F5H,0F5H,0F5H,0FFH,0FFH,0FFH,0FFH,00H  ;"
+0414 FFFFFF00   
+0418 F5F5E0F5        310            DB 0F5H,0F5H,0E0H,0F5H,0E0H,0F5H,0F5H,00H  ;#
+041C E0F5F500   
+0420 FBF0EBF1        311            DB 0FBH,0F0H,0EBH,0F1H,0FAH,0E1H,0FBH,00H  ;$
+0424 FAE1FB00   
+0428 E3EAE5FB        312            DB 0E3H,0EAH,0E5H,0FBH,0F4H,0EAH,0F8H,00H  ;%
+042C F4EAF800   
+0430 F7EBEBF7        313            DB 0F7H,0EBH,0EBH,0F7H,0EAH,0EDH,0F2H,00H  ;&
+0434 EAEDF200   
+0438 F9F9FDFB        314            DB 0F9H,0F9H,0FDH,0FBH,0FFH,0FFH,0FFH,00H  ;'
+043C FFFFFF00   
+0440 FDFBF7F7        315            DB 0FDH,0FBH,0F7H,0F7H,0F7H,0FBH,0FDH,00H  ;(
+0444 F7FBFD00   
+0448 F7FBFDFD        316            DB 0F7H,0FBH,0FDH,0FDH,0FDH,0FBH,0F7H,00H  ;)
+044C FDFBF700   
+0450 FBEAF1FB        317            DB 0FBH,0EAH,0F1H,0FBH,0F1H,0EAH,0FBH,00H  ;*
+0454 F1EAFB00   
+0458 FFFBFBE0        318            DB 0FFH,0FBH,0FBH,0E0H,0FBH,0FBH,0FFH,00H  ;+
+045C FBFBFF00   
+0460 FFFFFFF3        319            DB 0FFH,0FFH,0FFH,0F3H,0F3H,0FBH,0F7H,00H  ;,
+0464 F3FBF700   
+0468 FFFFFFF1        320            DB 0FFH,0FFH,0FFH,0F1H,0FFH,0FFH,0FFH,00H  ;-
+046C FFFFFF00   
+0470 FFFFFFFF        321            DB 0FFH,0FFH,0FFH,0FFH,0FFH,0F3H,0F3H,00H  ;.
+0474 FFF3F300   
+0478 FFFEFDFB        322            DB 0FFH,0FEH,0FDH,0FBH,0F7H,0EFH,0FFH,00H  ;/
+047C F7EFFF00   
+0480 F1EEECEA        323            DB 0F1H,0EEH,0ECH,0EAH,0E6H,0EEH,0F1H,00H  ;0
+0484 E6EEF100   
+0488 FBF3FBFB        324            DB 0FBH,0F3H,0FBH,0FBH,0FBH,0FBH,0F1H,00H  ;1
+048C FBFBF100   
+0490 F1EEFEF1        325            DB 0F1H,0EEH,0FEH,0F1H,0EFH,0EFH,0E0H,00H  ;2
+0494 EFEFE000   
+0498 F1EEFEF9        326            DB 0F1H,0EEH,0FEH,0F9H,0FEH,0EEH,0F1H,00H  ;3
+049C FEEEF100   
+04A0 FDF9F5ED        327            DB 0FDH,0F9H,0F5H,0EDH,0E0H,0FDH,0FDH,00H  ;4
+04A4 E0FDFD00   
+PUNZELEK                                                                                                      PAGE 7
+
+04A8 E0EFE1FE        328            DB 0E0H,0EFH,0E1H,0FEH,0FEH,0FEH,0E1H,00H  ;5
+04AC FEFEE100   
+04B0 F9F7EFE1        329            DB 0F9H,0F7H,0EFH,0E1H,0EEH,0EEH,0F1H,00H  ;6
+04B4 EEEEF100   
+04B8 E0FEFDFB        330            DB 0E0H,0FEH,0FDH,0FBH,0F7H,0F7H,0F7H,00H  ;7
+04BC F7F7F700   
+04C0 F1EEEEF1        331            DB 0F1H,0EEH,0EEH,0F1H,0EEH,0EEH,0F1H,00H  ;8
+04C4 EEEEF100   
+04C8 F1EEEEF0        332            DB 0F1H,0EEH,0EEH,0F0H,0FEH,0FDH,0F3H,00H  ;9
+04CC FEFDF300   
+04D0 FFF3F3FF        333            DB 0FFH,0F3H,0F3H,0FFH,0F3H,0F3H,0FFH,00H  ;:
+04D4 F3F3FF00   
+04D8 F3FBF3F3        334            DB 0F3H,0FBH,0F3H,0F3H,0FFH,0F3H,0F3H,00H  ;;
+04DC FFF3F300   
+04E0 FDFBF7EF        335            DB 0FDH,0FBH,0F7H,0EFH,0F7H,0FBH,0FDH,00H  ;<
+04E4 F7FBFD00   
+04E8 FFFFF1FF        336            DB 0FFH,0FFH,0F1H,0FFH,0F1H,0FFH,0FFH,00H  ;=
+04EC F1FFFF00   
+04F0 F7FBFDFE        337            DB 0F7H,0FBH,0FDH,0FEH,0FDH,0FBH,0F7H,00H  ;>
+04F4 FDFBF700   
+04F8 F1EEFEFD        338            DB 0F1H,0EEH,0FEH,0FDH,0FBH,0FFH,0FBH,00H  ;?
+04FC FBFFFB00   
+0500 F1EEFEF2        339            DB 0F1H,0EEH,0FEH,0F2H,0EAH,0EAH,0F1H,00H  ;@
+0504 EAEAF100   
+0508 FBF5EEEE        340            DB 0FBH,0F5H,0EEH,0EEH,0E0H,0EEH,0EEH,00H  ;A
+050C E0EEEE00   
+0510 E1F6F6F1        341            DB 0E1H,0F6H,0F6H,0F1H,0F6H,0F6H,0E1H,00H  ;B
+0514 F6F6E100   
+0518 F1EEEFEF        342            DB 0F1H,0EEH,0EFH,0EFH,0EFH,0EEH,0F1H,00H  ;C
+051C EFEEF100   
+0520 E1F6F6F6        343            DB 0E1H,0F6H,0F6H,0F6H,0F6H,0F6H,0E1H,00H  ;D
+0524 F6F6E100   
+0528 E0EFEFE3        344            DB 0E0H,0EFH,0EFH,0E3H,0EFH,0EFH,0E0H,00H  ;E
+052C EFEFE000   
+0530 E0EFEFE3        345            DB 0E0H,0EFH,0EFH,0E3H,0EFH,0EFH,0EFH,00H  ;F
+0534 EFEFEF00   
+0538 F1EEEFE8        346            DB 0F1H,0EEH,0EFH,0E8H,0EEH,0EEH,0F1H,00H  ;G
+053C EEEEF100   
+0540 EEEEEEE0        347            DB 0EEH,0EEH,0EEH,0E0H,0EEH,0EEH,0EEH,00H  ;H
+0544 EEEEEE00   
+0548 F1FBFBFB        348            DB 0F1H,0FBH,0FBH,0FBH,0FBH,0FBH,0F1H,00H  ;I
+054C FBFBF100   
+0550 F8FDFDFD        349            DB 0F8H,0FDH,0FDH,0FDH,0FDH,0FDH,0F3H,00H  ;J
+0554 FDFDF300   
+0558 EEEDEBE7        350            DB 0EEH,0EDH,0EBH,0E7H,0EBH,0EDH,0EEH,00H  ;K
+055C EBEDEE00   
+0560 EFEFEFEF        351            DB 0EFH,0EFH,0EFH,0EFH,0EFH,0EFH,0E0H,00H  ;L
+0564 EFEFE000   
+0568 EEE4EAEA        352            DB 0EEH,0E4H,0EAH,0EAH,0EEH,0EEH,0EEH,00H  ;M
+056C EEEEEE00   
+0570 EEE6EAEC        353            DB 0EEH,0E6H,0EAH,0ECH,0EEH,0EEH,0EEH,00H  ;N
+0574 EEEEEE00   
+0578 F1EEEEEE        354            DB 0F1H,0EEH,0EEH,0EEH,0EEH,0EEH,0F1H,00H  ;O
+057C EEEEF100   
+0580 E1EEEEE1        355            DB 0E1H,0EEH,0EEH,0E1H,0EFH,0EFH,0EFH,00H  ;P
+0584 EFEFEF00   
+0588 F1EEEEEE        356            DB 0F1H,0EEH,0EEH,0EEH,0EAH,0EDH,0F2H,00H  ;Q
+058C EAEDF200   
+PUNZELEK                                                                                                      PAGE 8
+
+0590 E1EEEEE1        357            DB 0E1H,0EEH,0EEH,0E1H,0EBH,0EDH,0EEH,00H  ;R
+0594 EBEDEE00   
+0598 F1EEEFF1        358            DB 0F1H,0EEH,0EFH,0F1H,0FEH,0EEH,0F1H,00H  ;S
+059C FEEEF100   
+05A0 E0FBFBFB        359            DB 0E0H,0FBH,0FBH,0FBH,0FBH,0FBH,0FBH,00H  ;T
+05A4 FBFBFB00   
+05A8 EEEEEEEE        360            DB 0EEH,0EEH,0EEH,0EEH,0EEH,0EEH,0F1H,00H  ;U
+05AC EEEEF100   
+05B0 EEEEEEF5        361            DB 0EEH,0EEH,0EEH,0F5H,0F5H,0FBH,0FBH,00H  ;V
+05B4 F5FBFB00   
+05B8 EEEEEEEA        362            DB 0EEH,0EEH,0EEH,0EAH,0EAH,0E4H,0EEH,00H  ;W
+05BC EAE4EE00   
+05C0 EEEEF5FB        363            DB 0EEH,0EEH,0F5H,0FBH,0F5H,0EEH,0EEH,00H  ;X
+05C4 F5EEEE00   
+05C8 EEEEF5FB        364            DB 0EEH,0EEH,0F5H,0FBH,0FBH,0FBH,0FBH,00H  ;Y
+05CC FBFBFB00   
+05D0 E0FEFDFB        365            DB 0E0H,0FEH,0FDH,0FBH,0F7H,0EFH,0E0H,00H  ;Z
+05D4 F7EFE000   
+05D8 F1F7F7F7        366            DB 0F1H,0F7H,0F7H,0F7H,0F7H,0F7H,0F1H,00H  ;[
+05DC F7F7F100   
+05E0 FFEFF7FB        367            DB 0FFH,0EFH,0F7H,0FBH,0FDH,0FEH,0FFH,00H  ;\
+05E4 FDFEFF00   
+05E8 F1FDFDFD        368            DB 0F1H,0FDH,0FDH,0FDH,0FDH,0FDH,0F1H,00H  ;[
+05EC FDFDF100   
+05F0 FBF5EEFF        369            DB 0FBH,0F5H,0EEH,0FFH,0FFH,0FFH,0FFH,00H  ;^
+05F4 FFFFFF00   
+05F8 FFFFFFFF        370            DB 0FFH,0FFH,0FFH,0FFH,0FFH,0FFH,0E0H,00H  ;_
+05FC FFFFE000   
+0600 F3F3F7FB        371            DB 0F3H,0F3H,0F7H,0FBH,0FFH,0FFH,0FFH,00H  ;'
+0604 FFFFFF00   
+0608 FFFFF1FE        372            DB 0FFH,0FFH,0F1H,0FEH,0F0H,0EEH,0F1H,00H  ;a
+060C F0EEF100   
+0610 EFEFE9E6        373            DB 0EFH,0EFH,0E9H,0E6H,0EEH,0E6H,0E9H,00H  ;b
+0614 EEE6E900   
+0618 FFFFF8F7        374            DB 0FFH,0FFH,0F8H,0F7H,0F7H,0F7H,0F8H,00H  ;c
+061C F7F7F800   
+0620 FEFEF2EC        375            DB 0FEH,0FEH,0F2H,0ECH,0EEH,0ECH,0F2H,00H  ;d
+0624 EEECF200   
+0628 FFFFF1EE        376            DB 0FFH,0FFH,0F1H,0EEH,0E0H,0EFH,0F1H,00H  ;e
+062C E0EFF100   
+0630 F9F6F7E1        377            DB 0F9H,0F6H,0F7H,0E1H,0F7H,0F7H,0F7H,00H  ;f
+0634 F7F7F700   
+0638 FFFFF0EE        378            DB 0FFH,0FFH,0F0H,0EEH,0F0H,0FEH,0F1H,00H  ;g
+063C F0FEF100   
+0640 EFEFE9E6        379            DB 0EFH,0EFH,0E9H,0E6H,0EEH,0EEH,0EEH,00H  ;h
+0644 EEEEEE00   
+0648 FBFFF3FB        380            DB 0FBH,0FFH,0F3H,0FBH,0FBH,0FBH,0F1H,00H  ;i
+064C FBFBF100   
+0650 FDFFF9FD        381            DB 0FDH,0FFH,0F9H,0FDH,0FDH,0FDH,0F3H,00H  ;j
+0654 FDFDF300   
+0658 F7F7F6F5        382            DB 0F7H,0F7H,0F6H,0F5H,0F3H,0F5H,0F6H,00H  ;k
+065C F3F5F600   
+0660 F3FBFBFB        383            DB 0F3H,0FBH,0FBH,0FBH,0FBH,0FBH,0F1H,00H  ;l
+0664 FBFBF100   
+0668 FFFFE5EA        384            DB 0FFH,0FFH,0E5H,0EAH,0EAH,0EAH,0EAH,00H  ;m
+066C EAEAEA00   
+0670 FFFFE9E6        385            DB 0FFH,0FFH,0E9H,0E6H,0EEH,0EEH,0EEH,00H  ;n
+0674 EEEEEE00   
+PUNZELEK                                                                                                      PAGE 9
+
+0678 FFFFF1EE        386            DB 0FFH,0FFH,0F1H,0EEH,0EEH,0EEH,0F1H,00H  ;o
+067C EEEEF100   
+0680 FFFFE1EE        387            DB 0FFH,0FFH,0E1H,0EEH,0E1H,0EFH,0EFH,00H  ;p
+0684 E1EFEF00   
+0688 FFFFF0EE        388            DB 0FFH,0FFH,0F0H,0EEH,0F0H,0FEH,0FEH,00H  ;q
+068C F0FEFE00   
+0690 FFFFE9E6        389            DB 0FFH,0FFH,0E9H,0E6H,0EFH,0EFH,0EFH,00H  ;r
+0694 EFEFEF00   
+0698 FFFFF0EF        390            DB 0FFH,0FFH,0F0H,0EFH,0F1H,0FEH,0E1H,00H  ;s
+069C F1FEE100   
+06A0 FBFBF0FB        391            DB 0FBH,0FBH,0F0H,0FBH,0FBH,0FBH,0FCH,00H  ;t
+06A4 FBFBFC00   
+06A8 FFFFEEEE        392            DB 0FFH,0FFH,0EEH,0EEH,0EEH,0ECH,0F2H,00H  ;u
+06AC EEECF200   
+06B0 FFFFEEEE        393            DB 0FFH,0FFH,0EEH,0EEH,0EEH,0F5H,0FBH,00H  ;v
+06B4 EEF5FB00   
+06B8 FFFFEEEE        394            DB 0FFH,0FFH,0EEH,0EEH,0EAH,0EAH,0F4H,00H  ;w
+06BC EAEAF400   
+06C0 FFFFEEF5        395            DB 0FFH,0FFH,0EEH,0F5H,0FBH,0F5H,0EEH,00H  ;x
+06C4 FBF5EE00   
+06C8 FFFFEEF5        396            DB 0FFH,0FFH,0EEH,0F5H,0FBH,0FBH,0F3H,00H  ;y
+06CC FBFBF300   
+06D0 FFFFE0FD        397            DB 0FFH,0FFH,0E0H,0FDH,0FBH,0F7H,0E0H,00H  ;z
+06D4 FBF7E000   
+06D8 F9F7F7E7        398            DB 0F9H,0F7H,0F7H,0E7H,0F7H,0F7H,0F7H,00H  ;{
+06DC F7F7F700   
+06E0 FBFBFBFF        399            DB 0FBH,0FBH,0FBH,0FFH,0FBH,0FBH,0FBH,00H  ;|
+06E4 FBFBFB00   
+06E8 F3FDFDFC        400            DB 0F3H,0FDH,0FDH,0FCH,0FDH,0FDH,0F3H,00H  ;}
+06EC FDFDF300   
+06F0 F5EAFFFF        401            DB 0F5H,0EAH,0FFH,0FFH,0FFH,0FFH,0FFH,00H  ;~
+06F4 FFFFFF00   
+06F8 F5EAF5EA        402            DB 0F5H,0EAH,0F5H,0EAH,0F5H,0EAH,0F5H,00H  ;DEL
+06FC F5EAF500   
+                     403    
+0700 0D              404            DB 0DH
+0701 0A              405            DB 0AH
+0702 0D              406            DB 0DH
+0703 0A              407            DB 0AH
+                     408    
+                     409    END
+
+VERSION 1.2h ASSEMBLY COMPLETE, 0 ERRORS FOUND
+PUNZELEK                                                                                                      PAGE 10
+
+ACC. . . . . . . . . . . . . . .  D ADDR  00E0H  
+ACZT . . . . . . . . . . . . . .  C ADDR  0400H  NOT USED  
+ANZ. . . . . . . . . . . . . . .  C ADDR  0133H  
+APOS . . . . . . . . . . . . . .  D ADDR  0021H  
+AZGW . . . . . . . . . . . . . .  C ADDR  0176H  
+B. . . . . . . . . . . . . . . .  D ADDR  00F0H  
+BITMAP . . . . . . . . . . . . .    NUMB  0400H  
+CLK. . . . . . . . . . . . . . .  C ADDR  0152H  
+DPH. . . . . . . . . . . . . . .  D ADDR  0083H  
+DPL. . . . . . . . . . . . . . .  D ADDR  0082H  
+DPOS . . . . . . . . . . . . . .  D ADDR  0023H  
+EPOS . . . . . . . . . . . . . .  D ADDR  0026H  
+FPOS . . . . . . . . . . . . . .  D ADDR  0025H  
+IE . . . . . . . . . . . . . . .  D ADDR  00A8H  
+IP . . . . . . . . . . . . . . .  D ADDR  00B8H  
+LOE. . . . . . . . . . . . . . .  C ADDR  0159H  
+LOE1 . . . . . . . . . . . . . .  C ADDR  015EH  
+P1 . . . . . . . . . . . . . . .  D ADDR  0090H  
+P3 . . . . . . . . . . . . . . .  D ADDR  00B0H  
+PBE. . . . . . . . . . . . . . .  C ADDR  00CFH  
+PCON . . . . . . . . . . . . . .  D ADDR  0087H  
+PSW. . . . . . . . . . . . . . .  D ADDR  00D0H  
+RI . . . . . . . . . . . . . . .  B ADDR  0098H  
+SBUF . . . . . . . . . . . . . .  D ADDR  0099H  
+SCON . . . . . . . . . . . . . .  D ADDR  0098H  
+SER0 . . . . . . . . . . . . . .  C ADDR  003CH  
+SER1 . . . . . . . . . . . . . .  C ADDR  004FH  
+SER2 . . . . . . . . . . . . . .  C ADDR  005DH  
+SER3 . . . . . . . . . . . . . .  C ADDR  006BH  
+SER4 . . . . . . . . . . . . . .  C ADDR  0079H  
+SER5 . . . . . . . . . . . . . .  C ADDR  0087H  
+SER6 . . . . . . . . . . . . . .  C ADDR  0095H  
+SER7 . . . . . . . . . . . . . .  C ADDR  00A0H  
+SERIN. . . . . . . . . . . . . .  C ADDR  0023H  NOT USED  
+SP . . . . . . . . . . . . . . .  D ADDR  0081H  
+START. . . . . . . . . . . . . .  C ADDR  00ABH  
+TH1. . . . . . . . . . . . . . .  D ADDR  008DH  
+TI . . . . . . . . . . . . . . .  B ADDR  0099H  
+TMOD . . . . . . . . . . . . . .  D ADDR  0089H  
+TR1. . . . . . . . . . . . . . .  B ADDR  008EH  
+VPOS . . . . . . . . . . . . . .  D ADDR  0024H  
+ZAE. . . . . . . . . . . . . . .  D ADDR  0020H  
+ZEIT . . . . . . . . . . . . . .  C ADDR  018CH  
+ZEIT1. . . . . . . . . . . . . .  C ADDR  0191H  
+ZPOS . . . . . . . . . . . . . .  D ADDR  0022H  
+ZZE. . . . . . . . . . . . . . .  C ADDR  00F3H  
+ZZS. . . . . . . . . . . . . . .  C ADDR  00F6H  

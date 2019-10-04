@@ -1,0 +1,899 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
+<!-- saved from url=(0056)http://www.piclist.com/techref/piclist/weedfreq/WCT5.htm -->
+<HTML><HEAD><TITLE>WCT5.ASM</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=windows-1252">
+<META content="Terry J. Weeder" name=author>
+<META content="MSHTML 6.00.2900.2912" name=GENERATOR>
+<META content="Frequency counter, PIC" name=keywords>
+<META content="" name=description><!-- AP: Last modified: 5-Dec-2005 --><LINK 
+rev=made href="mailto:www.weedtech.com">
+<SCRIPT src="WCT5_ASM_dosyalar/massmind.js" type=text/javascript></SCRIPT>
+
+<SCRIPT src="WCT5_ASM_dosyalar/AmiJS.js" type=text/javascript></SCRIPT>
+
+<SCRIPT src="WCT5_ASM_dosyalar/googiespell.js" type=text/javascript></SCRIPT>
+<LINK media=all href="WCT5_ASM_dosyalar/googiespell.css" type=text/css 
+rel=stylesheet></HEAD>
+<BODY onload="javascript:et=new Date();eol();">
+<SCRIPT type=text/javascript><!--
+var st=new Date();					
+var et=new Date();					
+var avgBndWdth=0;						
+function eol() {						
+var s=12818;					
+var i=document.images;				
+ for (var j=0;j<i.length;j++) 		
+  { s += parseInt(i[j].fileSize); };	
+ avgBndWdth = s/((et-st)||1);				
+ s= ' '+parseInt(s/1024)+'KB'; 		
+ i=' ('+(document.images.length-1)+' imgs) in '+((et-st)||1)/1000+'s is ';	
+ if (document.getElementById) 		
+  {document.getElementById('lt').innerText=s+i+parseInt(avgBndWdth)+'KBps';}
+ else {document.info.lt.value=i;}		
+ };						
+//--></SCRIPT>
+<A onclick="return false;" 
+href="http://www.piclist.com/techref/indexok.asp?38930.0097106481"><IMG height=1 
+alt="please dont rip this site" src="WCT5_ASM_dosyalar/null.gif" width=1 
+align=left border=0></A> 
+<H2><A href="http://www.piclist.com/techref/piclist/weedfreq.htm">PICList 
+Project The Weeder Frequency Counter PIC 16F84 port by Peter Cousens</A> </H2><PRE>;******************************************************************************
+;                           FREQUENCY COUNTER
+;                           Model  : WTCNT
+;                           Author : Terry J. Weeder
+;                           Date   : November 18, 1993
+;                           Version: 1.0
+;
+;                           WWW.WEEDTECH.COM
+;
+;                           Ported to 16f84 by
+;                           Peter Cousens 
+;                           October  1998
+;
+;  
+;******************************************************************************
+;
+;watchdog disabled
+;
+	list	P=16F84
+ind	equ	0h
+rtcc	equ	1h
+pc	equ	2h
+status	equ	3h
+fsr	equ	4h
+port_a	equ	5h
+port_b	equ	6h
+;port_c	equ	7h
+c	equ	0h
+dc	equ	1h
+z	equ	2h
+pd	equ	3h
+to	equ	4h
+MSB	equ	7h
+LSB	equ	0h
+;
+cnt	equ	2h  
+rs	equ	2h
+rw	equ	1h
+e	equ	0h
+o	equ	7h
+;
+count1	equ	2ch
+count2	equ	2dh
+in_reg	equ	2eh 
+addcnt	equ	2fh
+gate	equ	0Ch
+cnt1	equ	0Dh
+cnt2	equ	0Eh
+cnt3	equ	0Fh
+calc1	equ	10h
+calc2	equ	11h
+calc3	equ	12h
+sum1	equ	13h
+sum2	equ	14h
+sum3	equ	15h
+rtcc2	equ	16h
+;
+	org	0
+	goto	start
+			
+;
+int_del	movlw	0x05		;delay 5.000 ms (4 MHz clock)
+	movwf	count1
+d1	movlw	0xA5
+	movwf	count2
+d2	decfsz	count2	,f
+	goto	d2
+	decfsz	count1	,f
+	goto	d1
+	retlw	0x00
+;
+lcd_out	movwf	port_b		;load data into port_b
+	movlw	b'00000000'	;define port_b as output
+	tris	port_b
+	bsf	port_a,rs	;rs = data
+	bcf	port_a,rw	;r/w = write
+	bsf	port_a,e	;toggle enable
+	bcf	port_a,e
+	movlw	b'11111111'	;define port_b as input
+	tris	port_b
+	bcf	port_a,rs	;rs = instruction
+	bsf	port_a,rw	;r/w = read
+	bsf	port_a,e	;enable high
+	movf	port_b,w	;get address counter
+	movwf	addcnt
+	bsf	addcnt,7
+	bcf	port_a,e	;enable low
+out1	bsf	port_a,e	;enable high
+	btfss	port_b,7	;test busy flag
+	goto	out2
+	bcf	port_a,e	;enable low
+	goto	out1
+out2	bcf	port_a,e	;enable low
+	goto	shift
+;
+inst	movwf	port_b		;load instruction into port_b
+	movlw	b'00000000'	;define port_b as output
+	tris	port_b
+	bcf	port_a,rs	;rs = instruction
+	bcf	port_a,rw	;r/w = write
+	bsf	port_a,e	;toggle enable
+	bcf	port_a,e
+	movlw	b'11111111'	;define port_b as input
+	tris	port_b
+	bsf	port_a,rw	;r/w = read
+inst1	bsf	port_a,e	;enable high
+	btfss	port_b,7	;test busy flag
+	goto	inst2
+	bcf	port_a,e	;enable low
+	goto	inst1
+inst2	bcf	port_a,e	;enable low
+	retlw	0x00
+;
+shift	btfss	addcnt,0	;shift to opposite side of display?
+	retlw	0x00
+	btfss	addcnt,1
+	retlw	0x00
+	btfss	addcnt,2
+	retlw	0x00
+	btfss	addcnt,3
+	retlw	0x00
+	movlw	0x39
+	addwf	addcnt	,f
+	bsf	addcnt,7
+	movf	addcnt,w
+	goto	inst
+;
+sub	bcf	status,o	;clear overflow bit
+	movf	calc1,w		;subtract calc1 from cnt1 
+	subwf	cnt1	,f
+	btfsc	status,c
+	goto	sb1
+	movlw	0x01		;borrow from cnt2 if overflow
+	subwf	cnt2	,f
+	btfsc	status,c
+	goto	sb1
+	subwf	cnt3	,f		;borrow from cnt3 if cnt2 overflow
+	btfss	status,c
+	bsf	status,o	;set overflow bit if result is negative
+sb1	movf	calc2,w		;subtract calc2 from cnt2
+	subwf	cnt2	,f
+	btfsc	status,c
+	goto	sb2
+	movlw	0x01		;borrow from cnt3 if cnt2 overflow
+	subwf	cnt3	,f
+	btfss	status,c
+	bsf	status,o	;set overflow bit if result is negative
+sb2	movf	calc3,w		;subtract calc3 from cnt3
+	subwf	cnt3	,f
+	btfss	status,c
+	bsf	status,o	;set overflow bit if result is negative
+	retlw	0x00
+;
+add	movf	calc1,w		;add calc1 to cnt1
+	addwf	cnt1	,f
+	btfss	status,c
+	goto	ad1
+	incfsz	cnt2	,f		;add to cnt2 if cnt1 overflow
+	goto	ad1
+	incf	cnt3	,f		;add to cnt3 if cnt2 overflow
+ad1	movf	calc2,w		;add calc2 to cnt2
+	addwf	cnt2	,f
+	btfsc	status,c
+	incf	cnt3	,f		;add to cnt3 if cnt2 overflow
+	movf	calc3,w		;add calc3 to cnt3
+	addwf	cnt3	,f
+	retlw	0x00
+;
+cnvt	movlw	0x07		;7 digits in display
+	movwf	count1
+	movlw	0x19		;set fsr for MSB in display
+	movwf	fsr
+	movlw	0x2F		;one less that ASCII "0"
+cnvt0	movwf	ind
+	incf	fsr	,f
+	decfsz	count1	,f
+	goto	cnvt0
+	movlw	0x0F		;load "1,000,000" in calc1-3
+	movwf	calc3
+	movlw	0x42
+	movwf	calc2
+	movlw	0x40
+	movwf	calc1
+cnvt1	call	sub		;subtract number from count
+	incf	19	,f		;increment 1,000,000's register
+	movlw	0x3A
+	xorwf	19,w
+	btfsc	status,z
+	goto	overflow
+	btfss	status,o	;check if overflow
+	goto	cnvt1
+	call	add		;add back last number
+	movlw	0x01		;load "100,000" in calc1-3
+	movwf	calc3
+	movlw	0x86
+	movwf	calc2
+	movlw	0xA0
+	movwf	calc1
+cnvt2	call	sub		;subtract number from count
+	incf	1A	,f		;increment 100,000's register
+	btfss	status,o	;check if overflow
+	goto	cnvt2
+	call	add		;add back last number
+	clrf	calc3		;load "10,000" in calc1-3
+	movlw	0x27
+	movwf	calc2
+	movlw	0x10
+	movwf	calc1
+cnvt3	call	sub		;subtract number from count
+	incf	1B	,f		;increment 10,000's register
+	btfss	status,o	;check if overflow
+	goto	cnvt3
+	call	add		;add back last number
+	movlw	0x03		;load "1,000" in calc1-3
+	movwf	calc2
+	movlw	0xE8
+	movwf	calc1
+cnvt4	call	sub		;subtract number from count
+	incf	1C	,f		;increment 1,000's register
+	btfss	status,o	;check if overflow
+	goto	cnvt4
+	call	add		;add back last number
+	clrf	calc2		;load "100" in calc1-3
+	movlw	0x64
+	movwf	calc1
+cnvt5	call	sub		;subtract number from count
+	incf	1D	,f		;increment 100's register
+	btfss	status,o	;check if overflow
+	goto	cnvt5
+	call	add		;add back number
+	movlw	0x0A		;load "10" in calc1-3
+	movwf	calc1
+cnvt6	call	sub		;subtract number from count
+	incf	1E	,f		;increment 10's register
+	btfss	status,o	;check if overflow
+	goto	cnvt6
+	call	add		;add back last number
+	movf	cnt1,w		;put remainder in 1's register
+	addwf	1F	,f
+	incf	1F	,f
+	retlw	0x00
+;
+count	movlw	b'00110111'	;rtcc = ext, 1/256
+	option
+	movlw	b'00010000'	;define port_a as output 
+	tris	port_a
+	bcf	port_a,3
+	bcf	port_a,2
+	clrf	cnt3
+	clrf	rtcc
+	clrf	rtcc2
+	bsf	port_a,2	;toggle rtcc pin
+	bcf	port_a,2
+	movf	gate,w		;get gate time
+	movwf	count1
+	bsf	port_a,3	;start count
+fr4	movlw	0xFA
+	movwf	count2
+	goto	fr6
+fr5	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+fr6	movf	rtcc,w		;test for rtcc rollover (12)
+	subwf	rtcc2	,f
+	btfss	status,z
+	goto	fr7
+	nop
+	goto	fr8
+fr7	btfsc	status,c
+	incf	cnt3	,f
+fr8	movwf	rtcc2
+	nop
+	nop
+	nop
+	decfsz	count2	,f
+	goto	fr5
+	decfsz	count1	,f
+	goto	fr4
+	bcf	port_a,3	;stop count
+	movf	rtcc,w		;get rtcc count
+	movwf	cnt2
+	subwf	rtcc2	,f		;test for rtcc rollover
+	btfss	status,c
+	goto	fr9
+	btfss	status,z
+	incf	cnt3	,f
+fr9	clrf	cnt1		;set to get prescaler count
+fr10	decf	cnt1	,f
+	bsf	port_a,2	;toggle rtcc pin
+	bcf	port_a,2
+	movf	rtcc,w		;test if rtcc has changed
+	xorwf	cnt2,w
+	btfsc	status,z
+	goto	fr10
+	retlw	0x00
+;
+;******************************************************************************
+;                                   START
+;******************************************************************************
+;
+start	clrf	port_a		;instruction, write, enable low
+	movlw	b'00010000'
+	tris	port_a
+	clrf	port_b
+	movlw	b'00000000'
+	tris	port_b
+	call	int_del
+	call	int_del
+	call	int_del
+	movlw	0x38		;initialize display
+	movwf	port_b
+	bsf	port_a,e	;toggle enable
+	call	int_del
+	bcf	port_a,e
+	bsf	port_a,e	;toggle enable
+	call	int_del
+	bcf	port_a,e
+	bsf	port_a,e	;toggle enable
+	call	int_del
+	bcf	port_a,e
+	movlw	0x38		;function
+	call	inst
+	movlw	b'00001100'	;display on, cursor off
+	call	inst
+	movlw	b'00000001'	;clear display
+	call	inst
+	movlw	b'00000110'	;entry mode
+	call	inst
+;
+mhz	movlw	0x14		;0.1 sec gate
+	movwf	gate
+	call	count
+	call	cnvt		;convert binary to BCD
+	movlw	0x30		;test if "0"
+	xorwf	19,w
+	btfss	status,z
+	goto	mhz1
+	movlw	0x30		;test if "0"
+	xorwf	1A,w
+	btfsc	status,z
+	goto	khz1
+mhz1	movlw	0x82		;set display address
+	call	inst
+	movlw	0x02		;output first 2 characters
+	movwf	count1
+	movlw	0x19		;MSD of freq
+	movwf	fsr
+mhz2	movlw	0x30		;test if "0"
+	xorwf	ind,w
+	btfss	status,z
+	goto	mhz3
+	movlw	0x20		;change preceeding "0's" to "space"
+	call	lcd_out
+	incf	fsr	,f
+	decfsz	count1	,f
+	goto	mhz2
+	goto	mhz4
+mhz3	movf	ind,w
+	call	lcd_out
+	incf	fsr	,f
+	decfsz	count1	,f
+	goto	mhz3
+mhz4	movlw	0x2E		;"."
+	call	lcd_out
+	movlw	0x05		;output last 5 characters
+	movwf	count1	
+mhz5	movf	ind,w
+	call	lcd_out
+	incf	fsr	,f
+	decfsz	count1	,f
+	goto	mhz5
+	movlw	0x20		;"space"
+	call	lcd_out
+	movlw	0x4D		;"M"
+	call	lcd_out
+	movlw	0x48		;"H"
+	call	lcd_out
+	movlw	0x7A		;"z"
+	call	lcd_out
+	movlw	0x20		;"space"
+	call	lcd_out
+	movlw	0x20		;"space"
+	call	lcd_out
+	goto	mhz
+;
+khz	movlw	0x14		;0.1 sec gate
+	movwf	gate
+	call	count
+	call	cnvt		;convert binary to BCD
+	movlw	0x30		;test if 0
+	xorwf	19,w
+	btfss	status,z
+	goto	mhz1
+	movlw	0x32		;test if &lt; 2
+	subwf	1A,w
+	btfsc	status,c
+	goto	mhz1
+	movlw	0x30		;test if "0"
+	xorwf	1A,w
+	btfss	status,z
+	goto	khz1
+	movlw	0x30		;test if "0"
+	xorwf	1B,w
+	btfsc	status,z
+	goto	xkhz
+khz1	movlw	0x82		;set display address
+	call	inst
+	movlw	0x05		;output first 5 characters
+	movwf	count1
+	movlw	0x19		;MSD of freq
+	movwf	fsr
+khz2	movlw	0x30		;test if "0"
+	xorwf	ind,w
+	btfss	status,z
+	goto	khz3
+	movlw	0x20		;change preceeding "0's" to "space"
+	call	lcd_out
+	incf	fsr	,f
+	decfsz	count1	,f
+	goto	khz2
+	goto	khz4
+khz3	movf	ind,w
+	call	lcd_out
+	incf	fsr	,f
+	decfsz	count1	,f
+	goto	khz3
+khz4	movlw	0x2E		;"."
+	call	lcd_out
+	movf	ind,w		;output last 2 characters
+	call	lcd_out
+	incf	fsr	,f
+	movf	ind,w
+	call	lcd_out
+	movlw	0x20		;"space"
+	call	lcd_out
+	movlw	0x4B		;"K"
+	call	lcd_out
+	movlw	0x48		;"H"
+	call	lcd_out
+	movlw	0x7A		;"z"
+	call	lcd_out
+	movlw	0x20		;"space"
+	call	lcd_out
+	movlw	0x20		;"space"
+	call	lcd_out
+	goto	khz
+;
+xkhz	movlw	0xC8		;1 sec gate
+	movwf	gate
+	call	count
+	call	cnvt		;convert binary to BCD
+	movlw	0x30		;test if 0
+	xorwf	19,w
+	btfss	status,z
+	goto	khz
+	movlw	0x32		;test if &lt; 2
+	subwf	1A,w
+	btfsc	status,c
+	goto	khz
+	movlw	0x30		;test if 0
+	xorwf	1A,w
+	btfss	status,z
+	goto	xkhz1
+	movlw	0x30		;test if 0
+	xorwf	1B,w
+	btfsc	status,z
+	goto	hz0
+xkhz1	movlw	0x82		;set display address
+	call	inst
+	movlw	0x04		;output first 4 characters
+	movwf	count1
+	movlw	0x19		;MSD of freq
+	movwf	fsr
+xkhz2	movlw	0x30		;test if "0"
+	xorwf	ind,w
+	btfss	status,z
+	goto	xkhz3
+	movlw	0x20		;change preceeding "0's" to "space"
+	call	lcd_out
+	incf	fsr	,f
+	decfsz	count1	,f
+	goto	xkhz2
+	goto	xkhz4
+xkhz3	movf	ind,w
+	call	lcd_out
+	incf	fsr	,f
+	decfsz	count1	,f
+	goto	xkhz3
+xkhz4	movlw	0x2E		;"."
+	call	lcd_out
+	movf	ind,w		;output last 3 characters
+	call	lcd_out
+	incf	fsr	,f
+	movf	ind,w
+	call	lcd_out
+	incf	fsr	,f
+	movf	ind,w
+	call	lcd_out
+	movlw	0x20		;"space"
+	call	lcd_out
+	movlw	0x4B		;"K"
+	call	lcd_out
+	movlw	0x48		;"H"
+	call	lcd_out
+	movlw	0x7A		;"z"
+	call	lcd_out
+	movlw	0x20		;"space"
+	call	lcd_out
+	movlw	0x20		;"space"
+	call	lcd_out
+	goto	xkhz
+;
+hz	movlw	0xC8		;1 sec gate
+	movwf	gate
+	call	count
+	call	cnvt		;convert binary to BCD
+	movlw	0x30		;test if "0"
+	xorwf	19,w
+	btfss	status,z
+	goto	xkhz1
+	movlw	0x30		;test if "0"
+	xorwf	1A,w
+	btfss	status,z
+	goto	xkhz1
+	movlw	0x32		;test if &lt; 2
+	subwf	1B,w
+	btfsc	status,c
+	goto	xkhz1
+hz0	movlw	0x82		;set display address
+	call	inst
+	movlw	0x07		;output first 7 characters
+	movwf	count1
+	movlw	0x19		;MSD of freq
+	movwf	fsr
+hz1	movlw	0x30		;test if "0"
+	xorwf	ind,w
+	btfss	status,z
+	goto	hz2
+	movlw	0x20		;change preceeding "0's" to "space"
+	call	lcd_out
+	incf	fsr	,f
+	decfsz	count1	,f
+	goto	hz1
+	goto	hz3
+hz2	movf	ind,w
+	call	lcd_out
+	incf	fsr	,f
+	decfsz	count1	,f
+	goto	hz2
+hz3	movlw	0x20		;"space"
+	call	lcd_out
+	movlw	0x48		;"H"
+	call	lcd_out
+	movlw	0x7A		;"z"
+	call	lcd_out
+	movlw	0x20		;"space"
+	call	lcd_out
+	movlw	0x20		;"space"
+	call	lcd_out
+	movlw	0x20		;"space"
+	call	lcd_out
+	movlw	0x20		;"space"
+	call	lcd_out
+	goto	hz
+;
+overflow	movlw	0x01		;clear display
+	call	inst
+	movlw	0x84		;display address
+	call	inst
+	movlw	0x4F		;"O"
+	call	lcd_out
+	movlw	0x76		;"v"
+	call	lcd_out
+	movlw	0x65		;"e"
+	call	lcd_out
+	movlw	0x72		;"r"
+	call	lcd_out
+	movlw	0x66		;"f"
+	call	lcd_out
+	movlw	0x6C		;"l"
+	call	lcd_out
+	movlw	0x6F		;"o"
+	call	lcd_out
+	movlw	0x77		;"w"
+	call	lcd_out
+	movlw	0x02		;cursor at home
+	call	inst
+	goto	mhz
+;
+	end
+</PRE>
+<P>Questions: 
+<UL>
+  <LI></LI></UL>
+<P>
+<P>Code: 
+<UL>
+  <LI></LI></UL>
+<HR>
+
+<TABLE>
+  <TBODY>
+  <TR>
+    <TD>
+      <FORM name=info action=/techref/postsearch.asp method=post><SMALL>file: 
+      /techref/piclist/weedfreq/WCT5.htm, <SPAN id=lt>12KB, <INPUT size=30 
+      name=lt></SPAN>, updated: 2005/12/5 10:31, local time: 2006/8/1 00:13,
+      <SCRIPT type=text/javascript><!--
+ eol();
+ for (var j=0;j<document.images.length;j++) 		
+  { document.images[j].onload = new Function('eol();'); };	
+//-->
+</SCRIPT>
+       </SMALL>
+      <DIV id=upperright 
+      onmouseover="this.style.backgroundColor='#FFFF00';this.style.borderStyle='outset';" 
+      style="BORDER-TOP-WIDTH: 2px; BORDER-LEFT-WIDTH: 2px; RIGHT: 0px; BORDER-BOTTOM-WIDTH: 2px; WIDTH: 200px; COLOR: gray; POSITION: absolute; TOP: 0px; BACKGROUND-COLOR: #ffffff; TEXT-ALIGN: right; BORDER-RIGHT-WIDTH: 2px" 
+      onmouseout="this.style.backgroundColor='#FFFFFF';this.style.borderStyle='ridge';"><SMALL><SUP><A 
+      title="Go to the top page" style="COLOR: #af4040; TEXT-DECORATION: none" 
+      href="http://www.piclist.com/techref/index.htm">TOP</A> <A 
+      title="Monthly Change Log for this folder" 
+      style="COLOR: #af4040; TEXT-DECORATION: none" 
+      href="http://www.piclist.com/techref/piclist/weedfreq/new200608.txt">NEW</A>
+      <SCRIPT type=text/javascript>
+<!--- Hide script from old browsers.
+document.write('<A style="color:#AF4040;text-decoration:none;" TITLE="More pages like this." HREF="/techref/postsearch.asp\077from=%2Ftechref%2Fpiclist%2Fweedfreq%2FWCT5%2Ehtm">MORE<\/A> ')
+// End the hiding here. -->
+</SCRIPT>
+       <A 
+      title="I'm willing to pay for help, please refer me to a qualified consultant" 
+      style="COLOR: #af4040; TEXT-DECORATION: none" 
+      href="mailto:webmaster@piclist.com?subject=I need someone to help me with:">HELP</A> 
+      <A title="Advanced search" style="COLOR: #af4040; TEXT-DECORATION: none" 
+      href="http://www.piclist.com/techref/postsearch.asp">FIND:</A>&nbsp;<BR><INPUT 
+      id=search title="Free text search" 
+      style="BORDER-RIGHT: #af0000 1px solid; PADDING-RIGHT: 0px; BORDER-TOP: #af0000 1px solid; PADDING-LEFT: 0px; FONT-SIZE: small; PADDING-BOTTOM: 0px; BORDER-LEFT: #af0000 1px solid; PADDING-TOP: 0px; BORDER-BOTTOM: #af0000 1px solid; BACKGROUND-COLOR: transparent" 
+      onclick="this.value='';" maxLength=100 value=Search name=SearchString> 
+      <INPUT type=hidden value=ON name=FreeText> <INPUT type=hidden 
+      value=/techref/piclist/weedfreq/WCT5.htm name=from> </SUP></SMALL></DIV>
+      <DIV id=upperleft 
+      onmouseover="this.style.backgroundColor='#FFFF00';this.style.borderStyle='outset';" 
+      style="FILTER: progid:DXImageTransform.Microsoft.Alpha(opacity=75); LEFT: 0px; COLOR: gray; POSITION: absolute; TOP: 0px" 
+      onmouseout="this.style.backgroundColor='transparent';this.style.borderStyle='none';"><SMALL><A 
+      href="http://www.piclist.com/techref/indexok.asp?top"></A><SUP>85.99.153.99:<A 
+      style="COLOR: #af4040" 
+      href="http://www.piclist.com/techref/login/default.asp?req=403%3Bhttp%3A%2F%2Fwww%2Epiclist%2Ecom%2Ftechref%2Fpiclist%2Fweedfreq%2FWCT5%2Ehtm">LOG 
+      IN</A></SUP></SMALL></DIV>
+      <DIV style="LEFT: 25%; WIDTH: 25%; POSITION: absolute; TOP: 0px" 
+      align=center><SMALL><SUP><FONT color=#ff0000><B><A 
+      title="Why does RIP/GRAB/SPIDERing lead to ads and sponsors? Click here." 
+      style="COLOR: red" 
+      href="http://www.piclist.com/dontripthissite.htm">PLEASE DON'T 
+      RIP!</A></B></FONT><FONT color=#008000><B> <A 
+      title="Click to copy link HTML to your clipboard" 
+      onclick="window.clipboardData.setData('Text','<A HREF=&quot;http://www.piclist.com/techref/piclist/weedfreq/WCT5.htm&quot;>WCT5.ASM</A>');">DO&nbsp;LINK</A></B></FONT></SUP></SMALL> 
+      </DIV>
+      <SCRIPT language=JavaScript type=text/javascript>
+<!--- Hide script from old browsers.
+if (AJS) AJS.getElement("upperright").style.filter = "progid:DXImageTransform.Microsoft.Alpha(opacity=75);";
+
+var old = 1;
+var to;
+
+function scrollHold() {
+var pos=1;
+	if (to) clearTimeout(to);
+	if (window.innerHeight) {
+		pos = window.pageYOffset;
+		}
+	else if (document.documentElement && document.documentElement.scrollTop) {
+		pos = document.documentElement.scrollTop;
+		}
+	else if (document.body) {
+		pos = document.body.scrollTop;
+		}
+	if (pos < 0) pos = 1;
+	else pos += 1;
+	if (pos != old) {
+		AJS.getElement("upperright").style.top = pos;
+		AJS.getElement("upperleft").style.top = pos;
+		}
+	old = pos;
+	if (window.onscroll==null) {to=setInterval('scrollHold()',100);}
+}
+
+window.onscroll = scrollHold;
+scrollHold();
+
+// End the hiding here. -->
+</SCRIPT>
+      </FORM></TD></TR></TBODY></TABLE>
+<HR>
+
+<DIV>
+<TABLE width="30%" align=right bgColor=#f0f0f0>
+  <TBODY>
+  <TR>
+    <TD>&nbsp;</TD>
+    <TD><SMALL>These pages are served without commercial sponsorship. (No 
+      popup ads, etc...).Bandwidth abuse increases hosting cost forcing 
+      sponsorship or shutdown. This server aggressively defends against 
+      automated copying for any reason including offline viewing, duplication, 
+      etc... Please respect this requirement and <FONT face="Comic Sans MS" 
+      color=#ff0000>DO NOT RIP THIS SITE</FONT>.<A 
+      href="http://www.piclist.com/dontripthissite.htm">Questions?</A><BR>Please 
+      <I>DO</I> link to this page!<BR><TT>&lt;A 
+      HREF="http://www.piclist.com<BR>/techref/piclist/weedfreq/WCT5.htm"&gt;WCT5.ASM&lt;/A&gt;</TT></SMALL><BR><A 
+      href="http://digg.com/submit?phase=2&amp;url=http://www.piclist.com/techref%2Fpiclist%2Fweedfreq%2FWCT5%2Ehtm&amp;title=WCT5%2EASM">Digg 
+      it!</A></TD></TR></TBODY></TABLE>Did you find what you needed? From: "<I><A 
+href="http://www.piclist.com/techref/piclist/weedfreq.htm">/piclist/weedfreq.htm</A></I>" 
+
+<UL>
+  <LI>
+  <SCRIPT type=text/javascript>
+<!--- Hide script from old browsers.
+document.write('<I>&quot;Not quite. <A HREF="/techref/postsearch.asp\077from=%2Ftechref%2Fpiclist%2Fweedfreq%2FWCT5%2Ehtm"> Look for more pages like this one.&quot;<\/A><\/I> ')
+// End the hiding here. -->
+</SCRIPT>
+
+  <LI>
+  <FORM action=/techref/postsearch.asp#result method=post><I>"No. I'm looking 
+  for: <INPUT maxLength=100 size=40 name=SearchString> <INPUT type=hidden 
+  value=on name=FreeText> <INPUT type=hidden 
+  value=/techref/piclist/weedfreq/WCT5.htm name=from> <INPUT type=submit value=Fetch name=Action>"</I></FORM>
+  <LI><A href="http://www.piclist.com/techref/postsearch.asp"><I>"No. Take me to 
+  the search page."</I></A> 
+  <LI><A href="http://www.piclist.com/techref/index.htm"><I>"No. Take me to the 
+  top so I can drill down by catagory"</I></A> 
+  <LI><A 
+  href="mailto:webmaster@piclist.com?subject=I need someone to help me with:"><I>"No. 
+  I'm willing to pay for help, please refer me to a qualified 
+  consultant"</I></A> 
+  <LI>
+  <FORM action=/techref/update.asp method=post><INPUT type=hidden 
+  value=Interested: name=act> <INPUT type=hidden value=on name=private> <INPUT 
+  type=hidden value=85.99.153.99 name=id> <INPUT type=hidden 
+  value=/techref/piclist/weedfreq/WCT5.htm name=url> <I>"No. But I'm interested. 
+<INPUT type=submit value=Email> me at <INPUT name=email> when this page is 
+  expanded."</I></FORM></LI></UL></DIV>
+<HR>
+<A name=form></A>
+<FORM action=/techref/update.asp method=post><INPUT type=hidden value=on 
+name=private> <INPUT type=hidden value=85.99.153.99 name=id> <INPUT type=hidden 
+value=/techref/piclist/weedfreq/WCT5.htm name=url> After you find an appropriate 
+page, you are invited to <INPUT type=submit value=Post> your <SELECT size=4 
+name=act> <OPTION value=Questions: selected>question</OPTION> <OPTION 
+  value=Comments:>comment</OPTION> <OPTION value="See also:">link</OPTION> 
+  <OPTION value=Code:>program listing</OPTION></SELECT> to this <A 
+href="http://www.piclist.com/idea/websites.htm"><I>massmind</I></A> site! 
+<SMALL>(posts will be reviewed)</SMALL> Just type in the box and press the Post 
+button. (<A 
+href="http://www.piclist.com/techref/language/html/index.htm">HTML</A> 
+welcomed!): <A 
+href="http://www.piclist.com/techref/idea/website/codetutorial.htm">A tutorial 
+is available</A> <A 
+href="http://www.piclist.com/techref/private.asp?req=membership">Members</A> can 
+<A 
+href="http://www.piclist.com/techref/login/default.asp?req=403%3Bhttp%3A%2F%2Fwww%2Epiclist%2Ecom%2Ftechref%2Fpiclist%2Fweedfreq%2FWCT5%2Ehtm%23form">login</A> 
+to post directly, become page editors, and be credited for their posts. <BR>
+<SCRIPT type=text/javascript>
+<!--- Hide script from old browsers.
+doButton("Bold Ctrl+B","doTag(\'txt\',\'b\')","<b>&nbsp;B <\/b>");
+doButton("Italic Ctrl+I","doTag(\'txt\',\'i\')","<i>&nbsp;I <\/i>");
+doButton("Underline Ctrl+U","doTag(\'txt\',\'u\')","<u>&nbsp;u <\/u>");
+doButton("Blockquote","doTag(\'txt\',\'blockquote\')",'<img src="/images/bq.gif" alt="Blockquote"> ');
+doButton("Link Ctrl+L","doLink(\'txt\')","&nbsp;&infin; <\/A>");
+document.write('<span id="spell_container" style="background-color:silver;border-style:outset;border-width:thin"><\/span>');
+// End the hiding here. -->
+</SCRIPT>
+<BR><TEXTAREA id=txt onblur="javascript:if (this.value.indexOf('?')>0) {this.form.act.selectedIndex=0};" onkeyup=storeCaret(this); onclick=storeCaret(this); name=txt rows=4 cols=65 onchange=storeCaret(this); onselect=storeCaret(this);></TEXTAREA> 
+<SMALL><BR>Link?&nbsp;Put&nbsp;it&nbsp;here:&nbsp;<INPUT 
+onblur="javascript:if (this.value.indexOf('http')>-1) {this.form.act.selectedIndex=2};" 
+size=60 name=file> <BR>if&nbsp;you&nbsp;want&nbsp;a&nbsp;response, 
+please&nbsp;enter&nbsp;your&nbsp;email&nbsp;address:&nbsp;<INPUT size=40 
+name=email> </SMALL></FORM>
+<SCRIPT type=text/javascript>
+<!--- 
+AJS.getElement("txt").onkeydown=doKey;
+var googie1 = new GoogieSpell("/images/", "http://www.piclist.com/techref/spell.asp?lang=");
+googie1.decorateTextarea("txt","spell_container");
+// -->
+</SCRIPT>
+
+<HR>
+
+<TABLE width="30%" align=left bgColor=#f0f0f0>
+  <TBODY>
+  <TR>
+    <TD>&nbsp;</TD>
+    <TD><!-- piclist.com --><!-- WCT5.ASM --><!-- WCT5.ASM -->
+      <TABLE cellSpacing=1 cellPadding=10 align=left border=5>
+        <TBODY>
+        <TR>
+          <TD bgColor=#f0f0f0><BIG><B><FONT color=#c00000>R</FONT><FONT 
+            color=#0000a0><SUB>p</SUB></FONT><FONT color=#c00000>S</FONT><FONT 
+            color=#0000a0><SUB> i </SUB></FONT><FONT 
+            color=#c00000><SUP>2</SUP></FONT><FONT 
+            color=#0000a0><SUB>o</SUB></FONT><FONT 
+            color=#c00000><SUP>3</SUP></FONT><FONT color=#b700b7>i</FONT><FONT 
+            color=#800040><SUP>2</SUP></FONT><FONT 
+            color=#b700b7>c</FONT></B></BIG></TD></TR></TBODY></TABLE><B>Cheap &amp; 
+      easy I<SUP>2</SUP>C I/O and Monitor</B> <BR>Watch, recieve and send 
+      I<SUP>2</SUP>C via serial port. 100Kb/s. Also 5 TTL out &amp; 8 in. <BR><A 
+      href="http://www.piclist.com/techref/scenix/rsi2o3i2c/version3_2.htm">$15</A>&nbsp;chip 
+      <A 
+      href="http://www.piclist.com/techref/scenix/rsi2o3i2c/version3_2.htm">$30</A>&nbsp;w/&nbsp;PCB 
+      <A 
+      href="http://www.piclist.com/techref/scenix/rsi2o3i2c/version3_2.htm">$40</A>&nbsp;kit 
+      <A 
+      href="http://www.piclist.com/techref/scenix/rsi2o3i2c/version3_2.htm">$50</A>&nbsp;A&amp;T 
+    </TD></TR></TBODY></TABLE>
+<TABLE width="30%" align=right bgColor=#f0f0f0>
+  <TBODY>
+  <TR>
+    <TD>&nbsp;</TD>
+    <TD>
+      <CENTER>
+      <H3><A href="http://www.piclist.com/techref/robotics.htm" 
+      target=_top>Robotics nuts!</A></H3>Check out <A 
+      href="http://www.verinet.com/~dlc/" 
+      target=_top>http://www.verinet.com/~dlc/</A> email: <A 
+      href="mailto:dlc@verinet.com">dlc@verinet.com</A>... This guy ROCKS! He 
+      has made (and sells but also <I>releases code, docs, etc...</I>) for a 
+      number of cool little robotic modules including whiskers, IR proximity 
+      detect and remote control, Sonar proximity detect, PWM, Servo, compass. 
+      Most of these use the little <A 
+      href="http://www.piclist.com/techref/microchip/index.htm">PIC</A> 12C508 
+      controller which costs basically nothing and is <I>soooo</I> tiny.<BR>The 
+      4 servos, 2400 baud serial servo controller is a <I>wonder of magic</I> 
+      and he sells the programmed chip for <FONT size=+2>$8</FONT>. Wow! 
+      </CENTER></TD></TR></TBODY></TABLE>
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P> 
+<P>&nbsp; . </P></BODY></HTML>

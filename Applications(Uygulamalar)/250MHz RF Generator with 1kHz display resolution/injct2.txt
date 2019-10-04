@@ -1,0 +1,61 @@
+Component list for the "Main PCB of RF generator"
+
+
+RESISTORS
+=========
+
+ 100 = R3, R5, R6, R7
+ 330 = R15
+3.3k = R4, R11, R12
+ 10k = R1, R2, R8, R9, R10, R13
+150k = R14
+
+ 50k = P1 (any value from 1 to 50k works)
+ 10k = P2 (any value from 1 to 10k works, 10 turns pot is a good choise)
+
+CAPACITORS
+==========
+
+  1pF = C12
+ 10pF = C16
+ 15pF = C7, C8
+ 47pF = C17, C20
+150pF = C21
+  1nF = C5, C6, C9, C10, C11, C15, C19
+100nF = C2, C3, C14
+2.2uF = C4, C13, C18
+220uF = C1
+
+INDUCTOR
+========
+
+ 40nH = L1  
+ 10uH = L2, L3, L4 
+
+
+Ferrite Bead
+============
+
+BK1608LM182-T = FB1, FB2, FB3, FB4 (10uH inductor works good too)
+
+
+IC
+===============
+
+PIC16F870 = IC1
+LMX2322   = IC2
+
+
+Semicoductor
+============
+
+BF998  = Q1
+BC817  = Q2
+BFG193 = Q3
+
+13MHz   = X1
+12.8MHz = X2  (NKG3001B is a good choise)
+
+SMV1251 = D1
+
+78L05   = V1

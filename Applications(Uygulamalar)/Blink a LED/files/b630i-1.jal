@@ -1,0 +1,43 @@
+-- --------------------------------------------------------------------------
+--
+-- blink LED in pins RA0 and RC0 of a 16F639/676 at 1 Hz internal oscillator)
+-- see: http://www.voti.nl/wisp628
+-- 
+-- --------------------------------------------------------------------------
+--
+-- (c) Wouter van Ooijen / voti
+--
+-- Redistribution and use in source and binary forms, with or without 
+-- modification, are permitted.
+--
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER "AS IS" AND ANY EXPRESS 
+-- OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+-- WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+-- DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
+-- LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+-- CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+-- SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+-- INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+-- CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+-- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
+-- THE POSSIBILITY OF SUCH DAMAGE.
+--
+-- --------------------------------------------------------------------------
+
+
+include f675_4i  -- no 16F630/676 support yet, use 12F675
+include jlib     
+
+var bit LED1 is pin_a0
+var bit LED2 is pin_c0
+pin_a0_direction = output
+pin_c0_direction = output
+
+forever loop
+  delay_10ms( 50 )
+  LED1 = high
+  LED2 = high
+  delay_10ms( 50 )
+  LED1 = low
+  LED2 = low
+end loop

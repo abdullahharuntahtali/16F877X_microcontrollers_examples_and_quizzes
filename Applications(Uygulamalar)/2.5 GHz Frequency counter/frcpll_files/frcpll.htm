@@ -1,0 +1,398 @@
+<html><head>
+
+<script language="JavaScript" type="text/javascript" src="frcpll_files/frameit.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="Generator" content="Microsoft Word 97"><title>2.5 GHz Frequency counter</title>
+
+<meta name="keywords" content="spolar, coil, toroid, rf, ham, ham radio, circuit, CW, QRP, RX, 
+TX, RF, IF, PCB, PSU, GDO, QRP, home brew, home-brew, amateur radio, 
+amatöradio, construction, transmitter, receiver, key, keys, fm, fet, 
+hams, transistor, power supply, printed circuit boards, 
+amplifier, homebrew, Q, q, keyer, printed circuit board, FET, rfamp, 
+rf-amp, ift, pcb, transmitter, psu, gdo, gdos, tubes, pcbs, gdo, cw, 
+g4vvj, SA602, SA612, mc13135, mc13136, datasheet, zn414, zn416, zn414z, pdf, 
+zn416e, qrp, notepad, tda7000, calc, parallel, series, frequency, a,
+A,  heatsink, software, download">
+
+<meta name="Template" content="C:\Program\Microsoft Office\Mallar\Webbsidor\Webbsideguiden.wiz"></head><body background="frcpll_data/background4.GIF" bgcolor="#ffffff" link="#0000ff" vlink="#800080">
+<form method="post" action="http://fp1.formmail.com/cgi-bin/fm192">
+<input name="_pid" value="31103" type="hidden">
+<input name="_fid" value="R0JNTEMI" type="hidden">
+<input name="recipient" value="2" type="hidden">
+<img src="frcpll_data/frontleds.jpg" alt="" align="right" border="1" height="129" width="236">
+<font color="#0000ff" face="Arial" size="5"><b>2.5 GHz Frequency counter</b></font><br>
+
+<font color="#0000ff" face="Arial" size="2">
+
+This project describes a very powerful frequency counter. <br>
+Very simple construction which everyone can build. <br>
+6 LED display will present the frequency with 1kHz resolution and <br>
+RS232 communication to computer is available as option. <br>
+The software has also been implemented with some smart functions, <br>
+for calculating frequencies in receivers where IF is 455kHz or 10.7MHz. <br>
+I present schematic, PCB, components and window software. <br>
+
+
+</font><font color="#ff0000" face="Arial" size="1">All contribution to this page are most welcome!</font>
+<br>
+<br>
+<font color="#0080ff" face="Arial" size="3"><b>Background</b><br></font>
+<font color="#000000" face="Arial" size="2">
+It is time to update the frequency counter again. <br>
+A frequency counter is one of the most important measuring tool we need as homebrewers of RF 
+electronic. <br>
+This frequency counter has very high performance and still is very easy to build and 
+to use. Anyone can build it and have fun. <br>
+The counter is based around 6 LED displays which will present the frequency with 1kHz resolution.<br> 
+I don’t find it necessary to have more digits. <br>
+
+The frequency will be presented on the LED display and at the same time also sent on the RS232 line.<br>
+If you want you can connect the counter to a computer and display the frequency information there.<br>
+In that case you don't need any LED displays. This frequency counter is very sensitive and need just a 
+few millivolt of RF to measure the frequency. You can easy connect it to any oscillator or you can 
+make a pic-up coil to probe the oscillator. (More about this later) <br>
+To make this counter even more useful and intelligent, I have added an option for offsetting the 
+frequency showed on the LED display with 2 jumpers SW1 and SW2. The offset calculation is easy 
+activated with 2 jumpers, one for 455 kHz and one for 10.7 MHz.
+<br><br>
+<strong>It works like this:</strong> <br>
+Imagine you have a radio receiver and you wish to display the receiving frequency. 
+As you know the oscillator in a radio receiver works 455 kHz or 10.7 MHz above the receiving 
+frequency. The 455 kHz and 10.7 MHz difference is called IF (Intermediate Frequency). 
+<br>
+So to display correct frequency, the counter needs to subtract the incoming frequency with 
+455 kHz or 10.7 MHz depending on your receiver system. 
+455 kHz is used in (narrow) band units and AM reception. 
+10.7 MHz is used in WB  (wide band) and commercial receivers. <br>
+<br>
+<strong>Example:</strong> <br>
+You have a radio and you want to listen at 100.0 MHz (the IF is 10.7 MHz) 
+The oscillator will be oscillating 10.7 MHz above the 100 MHz, so the oscillator is at 110.7 MHz. 
+If you would measure the frequency with an ordinary counter you would get 110.7 MHz on the 
+LED display but, by activating the offsetting function this counter will subtract and display 
+100.0 MHz. 
+
+The offset calculation is easy activated with 2 switches, one for 455 kHz and one for 10.7 MHz. 
+<br>
+Boy, I wish I had this counter when I was building my first receiver for aircraft-band, 
+which was manually tuned and not very stable.
+
+<br>
+<br>
+<font color="#0080ff" face="Arial" size="3"><b>Photo with a simple pick-up coil</b><br></font>
+<img src="frcpll_data/P1010010s.jpg" alt="" align="bottom" border="1" height="209" width="457">
+<br>
+<br>
+<font color="#0080ff" face="Arial" size="3"><b>Hardware and schematic</b><br></font>
+<a href="http://hem.passagen.se/communication/pic/fcpllz1.gif" target="wrsfw4"><img src="frcpll_data/fcpllz1s.jpg" alt="Click to open in new window" align="right" border="1" height="106" width="200"></a>
+
+Most HF frequency counters need a prescaler in front of the counter unit. <br>
+In this case I use a circuit called LMX2322 which has prescaler function. <br>
+Of course you can use any prescaler as long as it divides by 64. <br>
+I have chosen this circuit since I have them and they are very sensitive and easy to work with. <br> 
+The sensitivity is so good that in many cases you will need a attenuator based on a few resistors 
+to make it work properly. More details later. <br>
+The prescaler has two differential inputs called Fin and /Fin. <br>
+If you wish you can connect /Fin to ground and use only Fin going to pin 8. 
+Two 100 resistor forms 50ohm for impedance input matching. <br>
+<br>
+The output of the prescaler (CPo) is a TLL lever where the frequency is divided by 64. <br>
+The signal then enters the microcontroller into its counting register (RC0). 
+The microcontroller count the input pulses during 64mS. <br>
+The accuracy of this counter is set by the frequency of the 13MHz crystal. <br>
+I advice you to choose a good and stable crystal. In my case I use a very stable and accurate 
+SMD 13.000MHz crystal. <br>The crystal frequency can be fine tuned by a variable capacitor C11 to 
+obtain very high accuracy. <br>
+The frequency is displayed on the 6 LED display in multiplexed way. It means that only one LED is 
+turned on at the same time. <br>
+First LED 1 is lightning, then LED 2 and so one. 
+This goes so fast that it appears that all are lightning. 
+During the 64mS counting, the LEDs are off to decrease noise on the power line. 
+When the display are updated the info is also sent on the RS232 line (RC6). <br>
+A PNP transistor convert the TTL voltage to RS232 voltage. 
+The connector is a standard 9-pol female dsub which will fit into any computers comport. 
+If you are not going to use this part you don’t have to build it. 
+<br>
+ <br>
+<font color="#0080ff" face="Arial" size="3"><b>Frequency offset by SW1 and SW2.</b><br></font>
+When SW1 and SW2 is not activated the counter show actual frequency. <br>
+When SW1 is activated (short circuit) the counter subtract the measured frequency with 455 KHz. <br>
+When SW2 is activated (short circuit) the counter subtract the measured frequency with 10.7 MHz. 
+
+<br>
+<br>
+<font color="#0080ff" face="Arial" size="3"><b>PCB</b><br></font>
+<table bgcolor="#e0fce1" border="1" cellpadding="0" cellspacing="0" width="400">
+<tbody><tr>
+	<td> <a href="http://hem.passagen.se/communication/pic/fq232.pdf" target="pr5">fq232.pdf</a></td>
+	<td>PCB file for 1GHz frequency counter (pdf).</td>
+</tr>
+</tbody></table>
+<br>
+<a href="http://hem.passagen.se/communication/pic/smd23.gif" target="dw13"><img src="frcpll_data/smd23s.jpg" alt="Click on rhe picture to enlarge." align="" border="1" height="106" width="202"></a>
+
+<a href="http://hem.passagen.se/communication/pic/smd24.gif" target="dw15"><img src="frcpll_data/smd24s.jpg" alt="Click on rhe picture to enlarge." align="" border="1" height="106" width="202"></a>
+
+
+<br>
+
+Above you can download a (pdf) filer which is the black PCB.<br>
+Above you will find two pic showing the assembly of all components on the same board.<br>
+The scale of the pdf is 1:1 and the two picture are magnified 4 times.<br>
+This is how the real board should look when you are going to solder the components.<br>
+It is a board made for hole mounted components and at the bottom layer you will have some 
+surface mounted components.<br>
+ Grey area is cuppar and each component is draw in different colours all to make it easy to 
+identify for you.<br>
+
+Click on the two picw to enlarge them.
+
+<br>
+<br>
+
+
+<font color="#0080ff" face="Arial" size="3"><b>Sensitivity of input signal</b><br></font>
+Table below show my measurements of the sensitivity of this unit.<br>
+I have not measured below 60MHz and the upper limit is 220MHz since my generator ends there.<br>
+This counter should be able to measure up to 2.5 GHz easy.<br>
+The input signal is terminated at the prescaler with 50 ohm (2 x 100 ohm resistor parallell)<br>
+This is to match impedances and to give dBm measurements.<br>
+<br>
+
+<font color="#0000ff" face="Arial" size="2">
+<table bgcolor="#dfeeff" border="1" cellpadding="1" cellspacing="1" width="600">
+<tbody><tr>
+    <td bgcolor="#cce6ff" width="150"><div align="center">Frequency (MHz)</div></td>
+    <td bgcolor="#cce6ff" width="150"><div align="center">mV rms</div></td>
+    <td bgcolor="#cce6ff" width="150"><div align="center">uW (into 50 ohm) </div></td>
+    <td bgcolor="#cce6ff" width="150"><div align="center">dBm (into 50 ohm)</div></td>
+</tr>
+<tr>
+    <td><div align="center">60</div></td>
+    <td><div align="center">90</div></td>
+    <td><div align="center">160</div></td>
+    <td><div align="center">-8.0</div></td>
+</tr>
+<tr>
+    <td><div align="center">80</div></td>
+    <td><div align="center">60</div></td>
+    <td><div align="center">69</div></td>
+    <td><div align="center">-11.6</div></td>
+</tr>
+<tr>
+    <td><div align="center">100</div></td>
+    <td><div align="center">48</div></td>
+    <td><div align="center">46</div></td>
+    <td><div align="center">-13.3</div></td>
+</tr>
+<tr>
+    <td><div align="center">120</div></td>
+    <td><div align="center">40</div></td>
+    <td><div align="center">32</div></td>
+    <td><div align="center">-15.0</div></td>	
+</tr>
+<tr>
+    <td><div align="center">140</div></td>
+    <td><div align="center">33</div></td>
+    <td><div align="center">22</div></td>
+    <td><div align="center">-16.6</div></td>	
+</tr>
+<tr>
+    <td><div align="center">160</div></td>
+    <td><div align="center">27</div></td>
+    <td><div align="center">15</div></td>
+    <td><div align="center">-18.2</div></td>	
+</tr>
+<tr>
+    <td><div align="center">180</div></td>
+    <td><div align="center">24</div></td>
+    <td><div align="center">12</div></td>
+    <td><div align="center">-19.2</div></td>	
+</tr>
+<tr>
+    <td><div align="center">200</div></td>
+    <td><div align="center">24</div></td>
+    <td><div align="center">12</div></td>
+    <td><div align="center">-19.2</div></td>	
+</tr>
+<tr>
+    <td><div align="center">220</div></td>
+    <td><div align="center">24</div></td>
+    <td><div align="center">12</div></td>
+    <td><div align="center">-19.2</div></td>	
+</tr>
+
+</tbody></table></font>
+<br>
+<font color="#0080ff" face="Arial" size="3"><b>Attenuator</b><br></font>
+<img src="frcpll_data/attfm.gif" alt="" align="right" border="1" height="187" width="246">
+Attenuator is some resistor to lower the input power and still obtain matching impedance.<br>
+It is very simple to build and works really good.<br>
+The picture at right show you how to build it and how to calculate damping.<br>
+You can serial connect several attenuators if you need to.<br>
+<br>
+This attenuator damp 6dB.<br>
+6dB means that tge output power is only 1/4 of the input power.<br>
+It also means that the output voltage is 1/2 of the input voltage.<br>
+As you see I have used 100ohm resistor becasue I use SMD and they are cheap and accurate.<br>
+<br><br>
+
+
+<br>
+<font color="#0080ff" face="Arial" size="3"><b>Windows software</b><br></font>
+
+<img src="frcpll_data/compfq.jpg" alt="" align="bottom" border="1" height="109" width="256"><br>
+<br>
+
+<table bgcolor="#e0fce1" border="1" cellpadding="7" cellspacing="0" width="480">
+<tbody><tr>
+    <td colspan="2" bgcolor="#c7f5fe"><strong></strong><div align="center"><strong>Download windows software</strong><br>fq.zip (1.41Mb)</div></td>
+</tr>
+<tr>
+    <td><font face="Arial" size="2"><a href="http://hem.passagen.se/communication/software.html" target="se3"><div align="center">Click here to go to the software download page!</div> </a></font></td>
+</tr>
+</tbody></table>
+<br>
+
+Unzip it and run setup, that is all.  Just install the program and connect the cable to the 
+frequency counter. <br>Make sure you set right comport in the software (Com1 or Com2).<br>
+If you want to make your own software you should know that the baud rate of 
+the transmission is 1200 baud, 8 bit, 1 stop and no parity.<br>
+<br>
+The PIC send data like this:<br>
+If the frequency is 128.250MHz the string will be : 01h, 02h, 08h, 2eh, 02h, 05h, 00h <br>
+<br>
+<br>
+<font color="#0080ff" face="Arial" size="3"><b>Download PIC16F870 programs (INHX8M format)</b><br></font>
+The zip file contains hex file made for this project.
+<table bgcolor="#e0fce1" border="1" cellpadding="0" cellspacing="0" width="600">
+<tbody><tr>
+	<td> <a href="http://hem.passagen.se/communication/pic/led_counter.zip" target="pvr5">led_counter.zip</a></td>
+	<td> Software 999MHz with 1kHz resolution (the hex files are zipped!)</td>
+</tr>
+<tr>
+	<td> <a href="http://hem.passagen.se/communication/pic/led_counter_uhf.zip" target="pvr5">led_counter_uhf.zip</a></td>
+	<td> Software 2.5 GHz with 10kHz resolution(the hex files are zipped!)</td>
+</tr>
+
+</tbody></table>
+<!--
+<br>
+<FONT SIZE=3 COLOR="#0080FF" FACE="Arial"><B>Kit </B><BR></FONT>
+Many people write to me and ask for PCB and components.<br>
+Mail me for more info!<br>
+
+To help all of you I have put everything you need on this page. <br>
+I have also made a kit for all of you who doesn't want to chase components and make PCB yourself. <br>
+
+<table cellspacing="0" cellpadding="0" border="1" WIDTH=500 BGCOLOR="#E0FCE1">
+
+<tr>
+    <td colspan="2" BGCOLOR="#c7f5fe"><strong><div align="center">The kit cost 45 Euro and include these components:</div></strong></td>
+</tr>
+<tr>
+    <td WIDTH="70"><div align="center">1 pcs</div></td>
+    <td WIDTH="430"><FONT SIZE=2 FACE="Arial"><li><strong>PCB</strong> (etched and drilled vias)</li></FONT></td>
+</tr>
+<tr>
+    <td><div align="center">1 pcs</div></td>
+    <td><FONT SIZE=2 FACE="Arial"><li><strong>PIC16F870</strong> PIC16F870 pre-programmed with software (DIP)</li></FONT></td>
+</tr>
+<tr>
+    <td><div align="center">1 pcs</div></td>
+    <td><FONT SIZE=2 FACE="Arial"><li><strong>PLL circuit</strong> LMX2322 smd</li></FONT></td>
+</tr>
+<tr>
+    <td><div align="center">6 pcs</div></td>
+    <td><FONT SIZE=2 FACE="Arial"><li><strong>LED HDSP-3600</strong> Displays</li></FONT></td>
+</tr>
+<tr>
+    <td><div align="center">6 pcs</div></td>
+    <td><FONT SIZE=2 FACE="Arial"><li><strong>BC817-25</strong> NPN smd</li></FONT></td>
+</tr>
+<tr>
+    <td><div align="center">1 pcs</div></td>
+    <td><FONT SIZE=2 FACE="Arial"><li><strong>BC807</strong> PNP smd</li></FONT></td>
+</tr>
+<tr>
+    <td><div align="center">2 pcs</div></td>
+    <td><FONT SIZE=2 FACE="Arial"><li><strong>Crystal 13.000MHz</strong> smd high performance</li></FONT></td>
+</tr>
+<tr>
+    <td><div align="center">1 pcs</div></td>
+    <td><FONT SIZE=2 FACE="Arial"><li><strong>Variable capacitor</strong> smd C11</li></FONT></td>
+</tr>
+<tr>
+    <td><div align="center">11 pcs</div></td>
+    <td><FONT SIZE=2 FACE="Arial"><li><strong>Resistors</strong> 3.3k smd</li></FONT></td>
+</tr>
+<tr>
+    <td><div align="center">5 pcs</div></td>
+    <td><FONT SIZE=2 FACE="Arial"><li><strong>100nF</strong> smd </li></FONT></td>
+</tr>
+<tr>
+    <td><div align="center">10 pcs</div></td>
+    <td><FONT SIZE=2 FACE="Arial"><li><strong>Resistors</strong> 100 ohm smd</li></FONT></td>
+</tr>
+<tr>
+    <td><div align="center">1 pcs</div></td>
+    <td><FONT SIZE=2 FACE="Arial"><li><strong>Diode</strong> 1N4148 smd</li></FONT></td>
+</tr>
+<tr>
+    <td><div align="center">2 pcs</div></td>
+    <td><FONT SIZE=2 FACE="Arial"><li><strong>jumpers stift</strong></li></FONT></td>
+</tr>
+
+<tr>
+
+    <td colspan="2" BGCOLOR="#ffd9ff">
+			<strong><div align="center">Order/question</div></strong>
+			<FONT SIZE=2 COLOR="#000000" FACE="Arial">Please enter your email, so I can reply.</font><br>
+			<INPUT TYPE="text" NAME="e-mail freq sida" SIZE="55" VALUE=""> <br>
+			<FONT SIZE=2 COLOR="#000000" FACE="Arial">
+			Please type your Order/Question  </font><br>
+
+			<TEXTAREA NAME="kommentar freq sida" ROWS=5 COLS=55></TEXTAREA><br>
+	
+			<br>
+			<div align="center"><INPUT TYPE="submit" VALUE="Send Order/Question"></div><br>
+			<div align="center"><A HREF="mailto:maxit91@hotmail.com">You can also mail me.</A></div>	
+			<input type="hidden" name="redirect" value="http://hem.passagen.se/communication/componenta.html">
+
+	</td>
+</tr>
+</table>
+-->
+
+<br>
+
+
+<font color="#0080ff" face="Arial" size="3"><b>Component support</b></font><br>
+This project has be constructed to use standard (and easy to find) components. <br>
+You can find all necessary components at my <a href="http://hem.passagen.se/communication/component.html" target="vvs">component page</a>. 
+<br>
+<br>
+
+<font color="#0080ff" face="Arial" size="3"><b>Final word</b></font>
+
+<br>
+This part describes the construction of a very powerful frequency counting tool. <br>
+I hope you will have lot of use of your counter. <br>
+Do please send a photo of your construction and I put it onto the coming gallery.<br> 
+
+<br>
+You can always mail me if there is anything unclear.<br>
+I wish you good luck with your projects and thanks for visit my page.
+
+</font>
+
+
+<br><br><br>
+<hr align="center" size="3" width="85%">
+<font color="#0080ff" size="2"><font face="verdana,arial,helvetica,geneva,sans-serif">
+<div align="center"><a href="http://hem.passagen.se/communication/meny.html">Back to main Page</a>&nbsp; | &nbsp;<a href="mailto:maxit91@hotmail.com">Contact Me</a>&nbsp; | &nbsp;<a href="http://rfcandy.com/" target="comp1">Cheap components</a><br></div>
+
+<br><div align="center">Copyright © Last modified on 7 august 2005.</div> 
+</font>
+
+</font></form></body></html>

@@ -1,0 +1,245 @@
+;**************************************************
+; Contador de 3 digitos UP/DOWN
+; piccounter3d.txt
+;
+; (c) 2001 Elias Jahn
+; (elias_jahn@clix.pt)
+; http://electronicaxxdelphi.cjb.net
+;**************************************************        
+
+
+        PROCESSOR       16F84
+        RADIX           DEC
+        INCLUDE         "p16f84.inc"
+        ERRORLEVEL      -302
+
+        
+
+	;__CONFIG        ????H     usar este "ajuste" dos Bits de Configuração do PIC apenas, 
+                                   ;se o programador que usa não tiver a opção de as configurar.
+                                   ;neste caso insere um valor onde estão os ? que configura o seguinte:
+                                   ;XT Oscillator, Code Protect Disabled (0), WatchDog Timer enabled (1), PowerUp Timer enabled (1).
+                                   ;Assim tambem terá que por os bits no caso do programador ser capaz disso.
+	                           ;os valores hex da configuração aqui no codigo não os conheço ainda, perdoe-me... tb nunca os irei usar, eu
+                                   ;uso o PonyProg, e ai dá para ajustar os bits todos. Bem, agora ao Programa: ;)
+Digit0	    EQU      2
+Digit1      EQU	     1
+Digit2      EQU      0
+Reset       EQU      0
+Count       EQU      3
+UpDown      EQU      4     
+	
+            ORG      0Ch
+Number      RES      3
+Zero        RES      3 
+Counter     RES      1
+Counter2    RES      1
+Idle        RES      2
+Down        RES      1
+            ORG	     00h
+
+            bsf      STATUS,RP0
+            movlw    B'00011000'
+            movwf    TRISA
+            movlw    B'00000001'
+            movwf    TRISB
+            bcf      STATUS,RP0
+	      
+	    movlw    0
+	    movwf    Number             ;todos os valores dos digitos em zero
+	    movlw    0
+	    movwf    Number+1
+	    movlw    0  
+	    movwf    Number+2
+	    bcf      PORTA,Digit0       ;todos os digitos desligados
+	    bcf      PORTA,Digit1
+	    bcf      PORTA,Digit2
+            bcf      Idle+1,0           ;incicializar as variaveis
+            bcf      Down,0           
+Main
+            call     Delaywait          
+	    call     TheDigit0          ;fazer aparecer no display o valor devido no primeiro digito 
+	    call     Delaywait
+            call     TheDigit1          ;proceder assim tb com os outros dois digitos
+	    call     Delaywait
+            call     TheDigit2
+            btfss    Idle+1,0           ;estamos ocupados por um botão ter sido premido anteriormente?
+            goto     Continue           ;não? então bora lá continuar
+            decfsz   Idle,1             ;ai sim? então decrementa lá isso, pá
+            goto     Main               ;já acabou? não? vamos para Main repetir a cena toda
+	    btfss    PORTB,Reset        ;sim? então teste se botão Reset ainda está premido
+            goto     Prepare            ;prepare mais uma longa espera... 
+            btfss    PORTA,Count        ;teste se botão Count ainda está premido
+	    goto     Prepare            
+            btfss    PORTA,UpDown       ;teste se botão Up/Down ainda está premido
+            goto     Prepare
+Continue                                ;vamos aqui no caso normal 
+            bcf      Idle+1,0           ;nada de esperas desnecessarias
+            btfss    PORTB,Reset        ;Reset premido?
+            goto     ResetIt            ;então reseta-me lá isso
+            btfss    PORTA,UpDown       ;para cima ou para baixo?!
+            goto     SetUpDown          
+            btfsc    PORTA,Count        ;Vamos ou não vamos contar?
+            goto     Main               ;não?? então repete tudo de novo
+Increment
+            btfsc    Down,0             ;vamos contar para baixo?
+            goto     Decrement          ;então vamos a Decrement
+            incf     Number,F           ;não, vamos é incrementar 
+	    movf     Number,W           
+	    sublw    10                 ;tudo isto aqui para baixo serve para detectar a passagem do 9 para 10 e para por isso a zero neste caso
+	    btfss    STATUS,Z
+	    goto     Prepare
+	    movlw    0
+	    movwf    Number 
+	    incf     Number+1,F         
+	    movf     Number+1,W
+	    sublw    10
+	    btfss    STATUS,Z
+	    goto     Prepare
+	    movlw    0
+	    movwf    Number+1
+	    incf     Number+2,F
+	    movf     Number+2,W
+	    sublw    10
+	    btfss    STATUS,Z
+	    goto     Prepare
+            movlw    0
+	    movwf    Number+2   
+Prepare                               ;em caso de espera prolongada telefona para:
+            bsf      Idle+1,0         ;temos que esperar...
+	    movlw    50               ;mais precisamente 50 vezes (valor pode ser mudado para tempos maiores ou menores de reposta dos botões)
+            movwf    Idle
+       	    goto     Main 
+ResetIt                               ;o nome diz tudo...
+            movlw    0
+            movwf    Number
+            movwf    Number+1
+            movwf    Number+2
+            bsf      Zero,0
+            bsf      Zero+1,0
+            bsf      Zero+2,0 
+            goto     Prepare                
+SetUpDown                             ;para cima ou para baixo?
+            btfsc    Down,0           ;testar a variavel
+            goto     NextUp           ;estava para baixo? então vai para NextUp
+            bsf      Down,0           ;estava para cima? então Down = 1
+            movf     Number,W
+            sublw    0                ;aqui é para ver se o digito mais á direita está em 0
+            btfsc    STATUS,Z
+            goto     Set1             ;sim? então vamos ver
+            bcf      Zero,0           ;não? então Zero(+0) = 0
+            goto     Continue1
+Set1
+            bsf      Zero,0           ;Zero(+0) = 1
+Continue1
+            movf     Number+1,W       ;aqui é que continua
+            sublw    0
+            btfsc    STATUS,Z         ;será que o outro digito está a zero? proceder como antes.
+            goto     Set2
+            bcf      Zero+1,0
+            goto     Continue2
+Set2
+            bsf      Zero+1,0
+Continue2
+            movf     Number+2,W       ;ou será que o digito mais á esquerda está a zero? Proceder igualmente.
+            sublw    0
+            btfsc    STATUS,Z 
+            goto     Set3
+            bcf      Zero+2,0
+            goto     Prepare          ;mas aqui é diferente: já que todos os digitos foram verificados, voltamos ao inicio
+Set3
+            bsf      Zero+2,0
+            goto     Prepare          ;mas aqui é diferente: já que todos os digitos foram verificados, voltamos ao inicio
+NextUp
+            bcf      Down,0           ;carece de explicação...
+            goto     Prepare
+Decrement
+            btfsc    Zero,0           ;digito 0 (mais direito) tá em zero??
+            goto     Zero1            ;então vai para Zero1
+            decfsz   Number,F         ;não? então decrementa
+            goto     Prepare          ;se não está zero, volta ao inicio
+            bsf      Zero,0           ;está zero? então Zero(+0) = 1
+            goto     Prepare         
+Zero1
+            btfsc    Zero+1,0         ;e o digito 1?? está em zero tambem?
+            goto     Check            ;sim, então checke isso
+            bcf      Zero,0           ;não? então este digito 0 já vai deixar de estar em zero, por isso Zero(+0) = 0
+            movlw    9                ;depois do zero vem o que? resposta: nove! ;-)
+            movwf    Number
+            decfsz   Number+1,F       ;decrementa o outro digito!!
+            goto     Prepare          
+            bsf      Zero+1,0         ;mas n me digas que está em zero já! Zero(+1) = 1
+            goto     Prepare
+Check
+            btfsc    Zero+2,0         ;bem, dois digitos já estão em zero, falta ver o ultimo
+            goto     ThirdZero        ;tambem?!
+            bcf      Zero,0           ;ainda bem que não... ;), então os outros também não merecem estar em zero
+            bcf      Zero+1,0
+            movlw    9                ;e como dois digitos estavam em zero... vamos pô-los em 99
+            movwf    Number
+            movwf    Number+1
+            decfsz   Number+2,F       ;e decrementar o terceiro digito
+            goto     Prepare
+            bsf      Zero+2,0         ;já tá em zero?! então Zero(+2) = 1
+            goto     Prepare
+ThirdZero
+            bcf      Zero,0           ;carecem de explicação, pois após 000 vem o que? 999, claro!
+            bcf      Zero+1,0
+            bcf      Zero+2,0
+            movlw    9
+            movwf    Number
+            movwf    Number+1
+            movwf    Number+2
+            goto     Prepare    
+            
+                                      ;e acabou... aqui vão as subrotinas:
+
+Delaywait
+            movlw    255         
+            movwf    Counter2
+Loop2
+      	    decfsz   Counter2,1 
+	    goto     Loop2
+	    return
+Delay
+            movlw    255          
+	    movwf    Counter
+Loop
+            decfsz   Counter,1
+            goto     Loop
+	    return
+TheDigit0                               ;aqui vai o truque do display multiplexado!!
+    	    movf     Number,W         
+	    call     Table              ;ver na tabela qual o valor para as saidas...
+            movwf    PORTB              ;por este nas saidas
+	    bsf      PORTA,Digit0       ;ligar digito 0
+	    bcf      PORTA,Digit2       ;desligar digito 2
+	    return
+TheDigit1	      	
+            movf     Number+1,W
+            call     Table
+            movwf    PORTB
+	    bsf      PORTA,Digit1       ;ligar digito 1
+	    bcf      PORTA,Digit0       ;desligar digito 0
+	    return
+TheDigit2	      
+	    movf     Number+2,W
+	    call     Table  
+            movwf    PORTB
+	    bsf      PORTA,Digit2       ;ligar digito 2
+	    bcf      PORTA,Digit1       ;desligar digito 1
+            return
+Table                                   ;Tabela
+            addwf    PCL,1              ;o truque conhecido
+            retlw    B'01111110'        ;return with literal in W
+            retlw    B'00001100'
+            retlw    B'10110110'
+            retlw    B'10011110'
+            retlw    B'11001100'
+            retlw    B'11011010'
+            retlw    B'11111010'
+            retlw    B'00001110'
+            retlw    B'11111110'
+            retlw    B'11011110'
+                  
+            END

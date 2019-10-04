@@ -1,0 +1,333 @@
+<html><head>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252"><title>New Page 17</title>
+
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta name="Microsoft Border" content="l, default"></head><body><!--msnavigation--><table border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr><td valign="top" width="1%">
+
+<font face="Arial"><nobr><a href="http://www.g4gxo.cwc.net/index.htm">Home</a></nobr><br><nobr><a href="http://www.g4gxo.cwc.net/new_page_18.htm">Schematic</a></nobr></font>
+
+</td><td valign="top" width="24"></td><!--msnavigation--><td valign="top">
+<p><font face="Arial" size="3"><b>A FAST TUNING 16F877 DDS CONTROLLER</b><br>
+</font>
+</p><p><a href="#Tuning%20Rate"><font face="Arial">Tuning Rate</font></a>&nbsp;&nbsp;&nbsp;<font face="Arial">
+<a href="#Hardware">Hardware</a>&nbsp;&nbsp; <a href="#Bootloader">Bootloader</a>&nbsp;&nbsp;&nbsp;
+<a href="#Software">Software</a>&nbsp;&nbsp;&nbsp;</font>
+</p><p><font face="Arial" size="3">
+<br>
+The dual PIC controller was developed to produce a fast tuning rate
+when used
+with fairly slow LCD modules. Since this was designed faster PIC's
+became available allowing the performance of the Dual PIC design to be
+improved by
+simply increasing the speed of the DDS controller PIC to 20MHz. I was
+considering using spare processing time in the LCD PIC to implement and
+A to D
+allowing line 2 of the LCD to be used as an S-Meter. However Microchips
+range
+of PIC devices has expanded considerably over the past few years and
+one device
+in particular, the 16F877, offers many advantages to the designer;<br>
+<br>
+</font></p><ul><font face="Arial" size="3"><li>&nbsp;&nbsp;&nbsp; Expanded I/O</li><li>
+&nbsp;&nbsp;&nbsp; 8k Flash Memory</li><li>
+&nbsp;&nbsp;&nbsp; Integral A to D</li><li>
+&nbsp;&nbsp;&nbsp; In Circuit Debugger</li><li>
+&nbsp;&nbsp;&nbsp; In Circuit Programming</li><li>
+&nbsp;&nbsp;&nbsp; 20MHz clock speed</li><li>
+&nbsp;&nbsp;&nbsp; 16F84 Code easily adapted</li></font></ul>
+<font face="Arial" size="3"><br>
+I decided to replace my dual DDS controller with a single 16F877. The features of 
+this device would allow me to easily incorporate new functionality with
+minimal additional hardware and software development. The basic requirements for
+the new controller were;<br>
+<br>
+</font><ul><font face="Arial" size="3"><li>&nbsp;&nbsp;&nbsp; Fast Tuning (no need for variable tuning rate)</li><li>
+&nbsp;&nbsp;&nbsp; S-Meter on Line 2</li><li>
+&nbsp;&nbsp;&nbsp; IF Offset - switched sum/difference</li><li>
+&nbsp;&nbsp;&nbsp; IF Offset - switched enable/disable (for Direct Tx/Superhet Rx)</li><li>
+&nbsp;&nbsp;&nbsp; RIT</li><li>
+&nbsp;&nbsp;&nbsp; LCD Display</li><li>
+&nbsp;&nbsp;&nbsp; Minimal external components</li></font></ul>
+<font face="Arial" size="3"><br>
+<b>
+Speeding It Up</b><br>
+<br>
+The fast tuning feature was at the heart of the design. Without a good tuning
+rate of around 20kHz/Second the system would be too slow for comfortable use. I didn't 
+want to use variable rate tuning, personally I dislike this approach, my
+preference is for a "true vfo feel". To realise a fast tuning rate it
+was
+essential to streamline the overall tuning process. This comprises of many
+routines to process encoder information and translate it into display and DDS
+data with appropriate compensation for IF frequencies and RIT. One of the most
+time consuming routines is the LCD interface. In the Dual PIC design the
+processing was split between two PIC's with the LCD only being updated every
+10mS or so. The relatively infrequent LCD update rate is the key to increasing
+the tuning rate of this type of design. This is based upon the principle that
+the human eye/brain could not possibly process changing display information at a
+rate of more than about 20 updates per second. On this basis any display
+activity above this rate is unnecessary and a waste of processing time - a
+critical aspect of single processor design. The routine associated with the LCD
+update control is shown below;<br>
+</font>
+<p><font color="#0000ff" face="Arial" size="2">;
+**************************************************************************************************<br>
+; Determine whether we need to update the LCD frequency and S-Meter, this decision<br>
+; is based upon the state of counters which decrement with each polling loop cycle.<br>
+; The principle is that the LCD does not need to be updated on every polling cycle&nbsp;<br>
+; or frequency step. If the software were configured this way the tuning rate would&nbsp;<br>
+; be slow and the user would not be able to process visual information from the LCD<br>
+; fast enough to notice any benefit. The S-Meter is updated fewer times than the<br>
+; frequency display because the time constant of a typical agc system makes a high<br>
+; update rate unnecessary.<br>
+; **************************************************************************************************<br>
+<br>
+; LCD Updates<br>
+<br>
+; Frequency Display Update<br>
+<br>
+&nbsp;&nbsp;&nbsp; decfsz main_LCD_counter,f&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ; Count loop cycles and call LCD update<br>
+&nbsp;&nbsp;&nbsp; goto
+check_controls&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; Not time to update LCD Freq, move on<br>
+&nbsp;&nbsp;&nbsp; movlw
+0xFF&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; Re-load loop counter<br>
+&nbsp;&nbsp;&nbsp; movwf	main_LCD_counter<br>
+&nbsp;&nbsp;&nbsp; call
+bin2BCD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; Update LCD Frequency<br>
+&nbsp;&nbsp;&nbsp; call	show_freq<br>
+<br>
+; S-Meter Update<br>
+<br>
+&nbsp;&nbsp;&nbsp; decfsz	main_S_counter,f&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; Count loop cycles and call S-Meter update<br>
+&nbsp;&nbsp;&nbsp; goto
+check_controls&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; Not time to update S-Meter, move onto IF checks<br>
+&nbsp;&nbsp;&nbsp; movlw
+0x20&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; Re-load loop counter (Nested counter within LCD Updates<br>
+&nbsp;&nbsp;&nbsp; movwf
+main_S_counter&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; routine S-Meter rate =polling rate/(main_LCD_Counter*main_S_Counter)<br>
+&nbsp;&nbsp;&nbsp; call
+S_Meter&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; Update LCD S-Meter<br>
+<br>
+check_controls&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; Check state of Port D Controls<br>
+<br>
+&nbsp;&nbsp;&nbsp; movf
+PortD,w&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;
+Get the current Port D value<br>
+&nbsp;&nbsp;&nbsp; movwf
+cntl_read&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;
+Save it<br>
+&nbsp;&nbsp;&nbsp; movlw
+b'00111111'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;
+Get switch mask<br>
+&nbsp;&nbsp;&nbsp; andwf
+cntl_read,w&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;
+Isolate control switch bits<br>
+&nbsp;&nbsp;&nbsp; movwf
+cntl_new&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;
+Save new value<br>
+&nbsp;&nbsp;&nbsp; xorwf
+cntl_old,w&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;
+Has it changed?<br>
+&nbsp;&nbsp;&nbsp; btfsc
+STATUS,B_Z&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;<br>
+&nbsp;&nbsp;&nbsp; goto
+tuning_step&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;
+No, jump to tuning routine&nbsp;</font></p>
+<font face="Arial" size="3">
+<p>
+<br>
+A second technique is used in this design to reduce the time taken to update the
+display. An 8 bit interface, rather than the more common 4 bit configuration, is
+used to transfer data to the display a byte at a time. This almost halves the
+display update time further reducing processing time required to be dedicated to
+display activity.<br>
+<br>
+<b>
+Display Updates</b><br>
+<br>
+The display update process has two branches, one to update the
+frequency and the
+second to drive the S-Meter bar graph on line 2. The separation of
+these two
+display activities from a single process offers a further improvement
+in
+efficiency. A faster update rate is desirable for the frequency
+information to
+give the user the impression that the displayed frequency is closely
+tracking
+the DDS output. The S-Meter bar graph updates can be much slower,
+principally
+because of the relatively slow response time of the analogue voltage
+that it is
+representing. This slow response is set by the AGC time constant of the
+host
+receiver. Similarly if the bar graph were to be used to represent a Tx
+output
+power, a damped (slow) response is desired to average out fast changes.
+The
+frequency and S-Meter update routines are called from a nested counter
+routine
+where a full counter cycle of the frequency updates occurs before the
+secondary
+S-Meter counter is decremented. The constants in both counters can be
+adjusted
+in the program to suit personal preference, note that reducing the
+counts (i.e. increasing the update rate) will slow the tuning speed.
+The counter routines sit
+inside the main polling loop used to scan the controls and shaft
+encoder. This
+runs continuously regardless of tuning activity and is a convenient way
+of
+efficiently driving the display counters routine. During each cycle of
+the
+polling loop the frequency update counter is decremented, during each
+zero and
+reload cycle of the frequency update counter, the frequency display is
+updated
+and the S-Meter counter is decremented. During each zero and reload
+cycle of the
+S-Meter counter the bar graph is updated.<br>
+</p>
+<p>
+<a href="http://www.g4gxo.cwc.net/images/16F877%20DDS/Display.JPG"><img src="new_page_17_files/Display_small.JPG" alt="Display.JPG (21739 bytes)" border="2" height="38" width="100"></a>
+</p>
+</font>
+<p><font face="Arial" size="2"><b>Fig.1</b> Display under Beta version software&nbsp;</font>
+</p>
+<font face="Arial" size="3">
+<p>
+<br>
+<b>
+<a name="Tuning Rate" href="#Bootloader"></a>
+Tuning Rate</b><br>
+<br>
+Normal tuning rate employs 10Hz steps. The action of the software is such that
+with every transition of the shaft encoder a frequency step in incremented or
+decremented. Therefore the number of steps per revolution is twice the encoder
+wheel step size. With the 512 step HP Agilent code wheel specified the normal
+tuning rate is 10,240kHz per revolution. A slower rate using a&nbsp; 1Hz step
+size is selectable. This fine tuning rate offers a 1,024kHz per revolution tuning speed
+for netting purposes. The 1Hz tuning rate is also selected during RIT operation
+as it is presumed that this function will be used to compensate for small
+differences between the transmit and receive frequency of the distant station.
+<br>
+</p>
+<p>
+<b>
+<a name="Hardware"></a>
+ Hardware</b><br>
+<br>
+The prototype was built using a PIC40 prototype board from Olimex
+(<a href="http://www.olimex.com/pcb">www.olimex.com/pcb</a>). This had the
+advantage of a useful prototype area and an
+integral RS232 interface to support ICD/ICP. This latter feature greatly speeded
+up development of the software by allowing programming access with the device in
+situ. A <u> strongly recommended</u> approach to any PIC development of this scale.
+<br>
+</p>
+<p>
+<a href="http://www.g4gxo.cwc.net/images/16F877%20DDS/2002_0530_204937AA.JPG"><img src="new_page_17_files/2002_0530_204937AA_small.JPG" alt="2002_0530_204937AA.JPG (26027 bytes)" border="2" height="75" width="100"></a></p>
+</font>
+<p><font face="Arial" size="2"><b>Fig.2</b> Controller Board with connectors and pull up SIL packages fitted</font></p>
+<font face="Arial" size="3">
+<p><a href="http://www.g4gxo.cwc.net/images/16F877%20DDS/Transceiver.JPG"><img src="new_page_17_files/Transceiver_small.JPG" alt="Transceiver.JPG (35334 bytes)" border="2" height="75" width="100"></a></p>
+</font>
+<p><font face="Arial" size="2"><b>Fig.3</b> Transceiver showing from left to right Shaft Encoder, Controller Board and
+DDS unit</font></p>
+<font face="Arial" size="3">
+</font><p><font face="Arial" size="3">&nbsp;</font></p>
+<p>
+<font face="Arial" size="3"><b>
+<a name="Bootloader"></a>
+ Bootloader</b><br>
+<br>
+The Bootloader program&nbsp; <a href="http://www.workingtex.com/htpic/PIC_bootloader.htm">
+http://www.workingtex.com/htpic/PIC_bootloader.htm</a>
+offered as freeware by Shane Tolmie was used in conjunction with the
+WLdownloader program written by Petr Kolomaznik <a href="http://www.ehl.cz/pic/pic_e.htm">
+http://www.ehl.cz/pic/pic_e.htm</a>.
+These two pieces of software are well proven and reliable. The program can be
+downloaded direct into the PIC, whilst it is in circuit, in a few seconds. A
+tremendous advantage over repeated removal and replacement for external
+programming.&nbsp;</font></p>
+<p>
+<font face="Arial" size="3"> The Bootloader program has to be first installed into the target
+PIC, for this you will need to perform a "one off" programming of the
+16F877 in a standard 40 pin compatible programmer. I use P16PRO40 hardware in conjunction 
+with IC-Prog software; <a href="http://www.ic-prog.com/">http://</a><font color="#008000">
+<a href="http://www.ic-prog.com/">www.ic-prog.com</a>
+.</font><font color="#000000">This is an excellent combination for most PIC's up
+to 40 Pins.</font><font color="#008000"> </font>Note that this Bootloader uses different pins on the 16F877 than the
+Microchip version. The Olimex board RS232 interface is wired to PortB 6 and 7
+for ICD/ICP. These connections are easily extended to the PortC 6 and 7 pins
+used by Shane's Bootloader.<br>
+<br>
+A new version of the Bootloader is now available that is compatible with
+MPLAB-ICD. I haven't tried this yet.<br>
+<br>
+<b>
+<a name="Software" href="#Tuning%20Rate"></a>
+PIC Software</b>
+</font></p>
+<p><font face="Arial" size="3">Several variants are presented below to suit
+different hardware configurations. <u>Port allocations are given in the header
+text of each asm file</u>. Please note any comments relating to the test status
+and hardware. </font><font face="Arial" size="3"> This software contains modules adapted from
+software published by others, notably the NJQRP Club. Please note original
+author details!</font></p>
+<p><font face="Arial"><b>1. Original Version.</b></font></p>
+<p><font face="Arial" size="3">This is the first published Beta version. Later
+versions include additional functionality, however I have retained this version
+on the web page for archive purposes.&nbsp;</font></p>
+<p><a href="http://www.g4gxo.cwc.net/images/16F877%20DDS/877_1n.asm"><font face="Arial" size="3">Beta
+16F877 DDS Controller 877_1n.asm</font></a></p>
+<p><font face="Arial"><b>2. Band Select Outputs.</b></font></p>
+<p><font face="Arial" size="3">This version offers 4 bit binary band select
+outputs which can be used to drive Band Filter switching. A typical application
+might use a 4 to 16 line decoder and two ULN2003's, or similar Darlington
+drivers, to operate filter selection relays. <b>NOTE THE RE-ALLOCATION OF PORTS!!</b>
+Port A is kept free&nbsp;for future analogue uses.</font></p>
+<p><font face="Arial" size="3">This version supercedes the 2d revision and
+features changes to the configuration word to disable the Watchdog Timer, a
+correction to the Calibrate function (this now works) and a general tidy up of
+the narrative. Ignore any previous mention of the removal of the 4 "nop's"
+in front of the band table when programming without a Bootloader, it works fine
+with them left in.</font></p>
+<p><a href="http://www.g4gxo.cwc.net/images/16F877%20DDS/877_2f.asm"><font face="Arial">16F877 DDS Controller
+with Band Filter Selection outputs 877_2f.asm</font></a></p>
+<font face="Arial"><b>3. 4 Bit LCD DT106 Board</b></font>
+<p><font face="Arial">This version has been developed for used with commercial
+16F877 boards employing a 4 bit LCD interface on Port B. One of the more popular
+units in this category is the very reasonably priced Dontronics DT106. Note that
+for access to all of the ports used for control inputs and data/control outputs,
+it is necessary to build a simple interface board to provide pull up resistors
+and connectivity. This is easily achieved by making an IDC cable to extend the
+40 pin connector on the DT106 to a separate interface board constructed on a
+Dontronics DT202 proto board.</font></p>
+<p><font face="Arial">I have tested this software as far as the display, I
+haven't added an interface board for full implementation however, as there are
+no changes other than to the display routines it should function successfully.</font></p>
+<p><font face="Arial">If you try this drop me an email to let me know how it
+goes, better still if you have the spare time to lift the 4bit interface in this
+version and drop it into the 8 bit version above please go ahead. If you get it
+working email it to me and I'll post it below.</font></p>
+<p><font face="Arial"><a href="http://www.g4gxo.cwc.net/images/16F877%20DDS/877_4_1a.asm">16F877 DDS
+Controller for Dontronics DT106 or similar 4 bit Port B boards
+877_4_1a.asm&nbsp;</a></font></p>
+<p><font face="Arial">Enjoy!</font></p>
+<p><font face="Arial">rontaylor@g4gxo.freeserve.co.uk</font></p>
+<p>&nbsp;</p>
+<p><font face="Arial">&nbsp;</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+<!--msnavigation--></td></tr><!--msnavigation--></tbody></table></body></html>

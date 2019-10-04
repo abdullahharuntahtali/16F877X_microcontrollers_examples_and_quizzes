@@ -1,0 +1,253 @@
+;	Nicad/NiMH Battery Charger
+;	4/98 Luhan Monat
+
+	device	PIC16C84,hs_osc,wdt_off,pwrte_on
+
+NOBAT	=	40		;0.87 volts
+NOCHRG	=	75		;1.48  volts (?)
+
+	org	12
+
+w_save	ds	1
+s_save	ds	1
+data	ds	1
+temp	ds	1
+temp1	ds	1
+count	ds	1
+xcnt	ds	1
+mtime	ds	1
+mvon	ds	1
+mvoff	ds	1
+addr	ds	1
+bcnt	ds	1
+bmask	ds	1
+lochrg	ds	1
+hichrg	ds	1
+ischrg	ds	1
+flag	ds	1
+
+; FLAG bit definitions
+
+BATIN	=	0		;battery inserted
+
+	org	0
+	goto	start
+
+	org	4
+
+; interrupt routine with context save
+
+inter	movwf	w_save		;save w register
+	swapf	status,w	;reverse nibble of status
+	movwf	s_save		;in status save
+	bcf	status,5	;now, force to primary registers
+;	end of entrance code
+	bcf	INTCON,2	;clear rtcc int flag
+
+;	begin exit code	
+	swapf	s_save,w	;re-reverse status data
+	movwf	status		;restore to status register
+	swapf	w_save		;pre-swap w saved
+	swapf	w_save,w	;swap into w without affection status
+	reti			;enable global interrupt
+
+
+start	bsf	STATUS,5	;alt regs
+	movlw	01000000b	;only bit 6 is input
+	movwf	TRISB
+	movlw	00000b
+	movwf	TRISA
+	movlw	10001000b
+	movwf	OPTION		;clk/4 -> rtcc
+	bcf	STATUS,5
+	clrf	mvon
+	incf	mvon
+	call	adjust
+	bsf	rb,4
+	bcf	rb,5
+	clrf	hichrg
+	clrf	ischrg
+	movlw	0fh
+	movwf	lochrg
+		
+main	movlw	0
+	movwf	mtime
+	call	dobats
+:m1	movlw	50
+	movwf	xcnt
+	call	adjust		;adjust switching voltage
+	call	engage		;engage battery power
+:m2	call	pulse
+	decfsz	xcnt
+	goto	:m2
+	decfsz	mtime
+	goto	:m1
+	goto	main
+
+
+engage	movf	mtime,w		;get cycle counter
+	andlw	7		;divide into 1/4, 3/4 timeslots
+	btfss	z
+	goto	:e2		;most of the time
+	call	setlo		;only if high charging
+	goto	:e5
+:e2	call	sethi		;low charge for dead cells
+:e5	movf	mtime,w
+	sublw	250
+	btfss	c		;
+	call	setis		;for fully charged
+	ret
+
+
+setlo	movf	rb,w		;port rb data
+	iorlw	0Fh		;clear bits for battery enables
+	xorwf	lochrg,w	;set battery bits
+	movwf	rb		;back out to port
+	ret
+
+
+sethi	movf	rb,w		;port rb data
+	iorlw	0Fh		;clear bits for battery enables
+	xorwf	hichrg,w	;set battery bits
+	movwf	rb		;back out to port
+	ret
+
+setis	movf	rb,w
+	andlw	0F0h		;all bits on
+	movwf	rb
+	ret
+
+dobats	bcf	flag,BATIN	;assume no battery present
+	movlw	0fh
+	iorwf	rb		;disconnect all batteries
+	movlw	1
+	movwf	addr		;first address
+	movlw	4
+	movwf	bcnt
+	movlw	1
+	movwf	bmask		;battery bit
+:bat	movf	addr,w
+	movwf	ra
+	movlw	10
+	call	sdelay
+	call	atod		;read battery
+	movf	data,w
+	sublw	NOBAT		;battery present?
+	btfsc	c		;under threshhold?
+	goto	:no		;yes - skip it.
+	bsf	flag,BATIN	;got at least one.
+	movf	data,w
+	sublw	NOCHRG
+	btfsc	c
+	goto	:chrg
+	goto	:done		;all charged up
+:chrg	movf	bmask,w
+	andwf	ischrg,w	;already charged?
+	btfss	z		;
+	goto	:done		;yes.
+	movf	bmask,w
+	iorwf	hichrg		;set for max charge rate
+	goto	:end
+:no	movf	bmask,w
+	iorwf	lochrg		;low charge for dead cells
+	xorlw	0ffh		;reverse bits
+	andwf	ischrg		;clear is-charged bit
+	andwf	hichrg
+	goto	:end
+:done	movf	bmask,w
+	iorwf	ischrg		;mark already charged
+	movf	bmask,w
+	xorlw	0ffh		;invert all bits
+	andwf	lochrg		;no low charge
+	andwf	hichrg		;no high charge
+:end	incf	addr		;next address
+	bcf	c
+	rlf	bmask
+	decfsz	bcnt
+	goto	:bat
+	ret
+
+
+adjust	clrf	ra		;address = 0
+	call	atod		;read voltage
+	sublw	170		;2.2 volts for charging
+	btfsc	c
+	goto	:up
+	decf	mvon
+	btfsc	z
+	incf	mvon
+	goto	:off
+:up	incf	mvon
+	btfsc	mvon,3		;max of 63
+	decf	mvon
+:off	movf	mvon,w
+	sublw	16
+	movwf	mvoff
+	ret
+
+
+pulse	bcf	rb,7
+	movf	mvon,w
+	movwf	temp
+:p2	decfsz	temp
+	goto	:p2
+	bsf	rb,7
+	movf	mvoff,w
+	movwf	temp
+:p4	decfsz	temp
+	goto	:p4
+	ret
+	
+
+delay	movwf	temp
+	clrf	temp1
+:d2	decfsz	temp1
+	goto	:d2
+	decfsz	temp
+	goto	:d2
+	ret
+	
+	
+sdelay	movwf	temp
+del2	nop
+	nop
+	decfsz	temp
+	goto	del2
+	ret
+
+; reads ADC0831 serial d/a in 73 usec
+; coded for maximum conversion w/ 10mhz pic16f84
+
+atod	bcf	rb,4		;CS low
+	clrf	data		;clear data byte
+	bsf	rb,5		;first clock
+	nop
+	nop
+	nop
+	bcf	rb,5
+	nop
+	nop
+	nop
+	bsf	rb,5		;second clock
+	nop
+	nop
+	nop
+	bcf	rb,5
+	movlw	8		;set bit count
+	movwf	count		;into count
+	clrf	data		;zero out data
+	bcf	c		;clear carry bit
+atod2	bsf	rb,5		;clock hi
+	rlf	data		;hi order is first
+	btfsc	rb,6		;test input bit
+	bsf	data,0		;if hi - set data bit
+	bcf	rb,5		;clock low
+	decfsz	count		;8 times
+	goto	atod2
+	bsf	rb,4		;CS hi
+	movf	data,w		;data in w
+	ret
+
+
+	end
+QED                                    

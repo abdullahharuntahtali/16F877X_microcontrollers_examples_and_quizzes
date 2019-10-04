@@ -1,0 +1,71 @@
+'****************************************************************
+'*  Name    : UNTITLED.BAS                                      *
+'*  Author  : [select VIEW...EDITOR OPTIONS]                    *
+'*  Notice  : Copyright (c) 2006 [select VIEW...EDITOR OPTIONS] *
+'*          : All Rights Reserved                               *
+'*  Date    : 25.03.2006                                        *
+'*  Version : 1.0                                               *
+'*  Notes   :                                                   *
+'*          :                                                   *
+'****************************************************************
+INCLUDE "modedefs.bas"
+A VAR BYTE
+B VAR BYTE
+C VAR BYTE
+D VAR BYTE
+E VAR BYTE
+F VAR BYTE
+G VAR BYTE
+H VAR BYTE
+I VAR BYTE
+K VAR BYTE
+L VAR BYTE
+ENTER VAR BYTE
+define osc 10
+
+basla:
+serout portc.1,N2400,["   ",13,10]
+serout portc.1,N2400,["   ",13,10]
+serout portc.1,N2400,["   ",13,10]
+serout portc.1,N2400,["****PC DEN MENU SECME****",13,10]
+serout portc.1,N2400,[".  1)MENU_A      2)MENU_B",13,10]
+serout portc.1,N2400,[".  3)YAZI GIR    4)MENU_B",13,10]
+serout portc.1,N2400,[".  5)MENU_A      6)MENU_B",13,10]
+serout portc.1,N2400,[".  7)MENU_A      8)MENU_B",13,10]
+serout portc.1,N2400,["************************************",13,10]
+serout portc.1,N2400,["MENU SECTINMI:"]
+serIN portc.2,N2400,A
+serout portc.1,N2400,[A,13,10]
+IF A<>"3" THEN GOTO BASLA
+serOUT portc.1,N2400,["METiN GiR:"]
+serIN portc.2,N2400,B
+serOUT portc.1,N2400,[B]
+serIN portc.2,N2400,C
+serOUT portc.1,N2400,[C]
+serIN portc.2,N2400,D
+serOUT portc.1,N2400,[D]
+serIN portc.2,N2400,E
+serOUT portc.1,N2400,[E]
+serIN portc.2,N2400,F
+serOUT portc.1,N2400,[F]
+serIN portc.2,N2400,G
+serOUT portc.1,N2400,[G]
+serIN portc.2,N2400,H
+serOUT portc.1,N2400,[H]
+serIN portc.2,N2400,I
+serOUT portc.1,N2400,[I]
+serIN portc.2,N2400,K
+serOUT portc.1,N2400,[K]
+serIN portc.2,N2400,L
+serOUT portc.1,N2400,[L]
+BEKLE:
+serIN portc.2,N2400,ENTER
+IF ENTER<> 13 THEN BEKLE:
+serOUT portc.1,N2400,[" ",13,10]
+serOUT portc.1,N2400,["ENTER TUSU CALISIYOR",13,10]
+
+PAUSE 2000
+'LCDOUT $FE,128,"MENU A SECILDI",A
+goto basla
+end
+

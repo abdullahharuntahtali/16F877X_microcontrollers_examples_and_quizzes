@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html><head><title>Stepper drive circuits</title>
+
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="Author" content="Arjan te Marvelde">
+<meta name="Description" content="About my 250mm Newton telescope">
+<meta name="KeyWords" content="ATM, telescope, newton, fork mount, design">
+<link href="stepper_files/atm.css" type="text/css" rel="stylesheet"></head><body bgcolor="#fffff0">
+
+
+<table>
+
+<tbody><tr>
+<td align="left" valign="top" width="10">&nbsp;</td>
+<td align="left" valign="top">
+
+<h1><u>Building a stepper drive</u></h1>
+<p>This page discusses driving a telescope using stepper motors from 5.25" floppy drives (can you still finde these?).
+</p><ul>
+<li><a href="#mechanics">Mechanical aspects</a></li>
+<li><a href="#circuits">How to drive a stepper motor?</a></li>
+<li><a href="#examples">Examples</a></li>
+<br><br>
+<li><a href="http://home.hetnet.nl/%7Eartm/atm/stepper/18F452step.html" target="top">Current status</a></li>
+</ul>
+<p></p>
+
+<hr>
+<a name="Mechanics"><h2>Mechanics</h2></a>
+<p>Unipolar stepper motors can easily be retrieved from old 5.25"
+floppy drives (together with a lot of other useful components: see the
+"Floppy Tester" page). Because the speed has to be slowed down to
+siderial or even lower, the effective torque will increase
+proportionally. Therefore it is perfectly possible to drive relatively
+large scopes with such small motors.<br><br>
+<img src="stepper_files/flopstep.jpg"><br><br>
+When properly driven, stepping rates of a few steps per second are
+possible, although these rates are in the danger zone with respect to
+resonance effects. The floppy motors do 200 full steps per second, and
+the revolution rate can then be as low as 10 rpm. For tracking in an
+equatorial mount this has to be converted to 1 revolution per siderial
+day (approximately 23h 56m), which is a ratio in the order of 14360:1.
+This ratio has to be realized mechanically, for exmple with a gear
+train.<br>
+When the steppers are driven binary, i.e. with square waves, the best
+you can do is half steps, or 400 per revolution. The resolution of a
+half step must be lower than de resolving power of the scope, say 0.25
+arcsecond. This means that resolutionwise, each half step (0.9°) must
+be reduced to 0.25". This would require a reduction ratio of 12960:1,
+again to be realized mechanically.<br>
+As an example, my RFT scope has an equatorial fork mount riding on a
+polar disk of 230mm diameter, which is driven by an axle of 5mm
+diameter. This axle is the output of a geartrain of 12:20 and a 1:40
+worm. In total the reduction is just over 3000, requiring a stepper
+revolution rate of approximately 2rpm.
+</p>
+
+<hr>
+<a name="circuits"><h2>Driving the stepper motor</h2></a>
+<p>In general a stepper drive citcuit splits up in two parts: the
+control logic and the current driver. The drive logic generates the
+signal patterns that will activate the windings of the stepper motor,
+and hence control the stepping rate and direction. The current driver
+converts these signals into a current through the motor windings, where
+the torque is proportional to the current.<br>
+See <a href="http://www.cs.uiowa.edu/%7Ejones/step/">"Jones on Stepping motors"</a> for an extensive treaty on controlling steppers.<br><br>
+<img src="stepper_files/blocksch.gif"><br><br>
+Below three modes are described: discrete steps (half or full), analog control, microstepping.</p>
+<h3>Full or half stepping</h3>
+<p>The nice thing about the unipolar stepper is that the drive circuit
+can be relatively simple. Given a stepping rate well away from the
+resonance frequency, some discrete logic combined with a <a href="http://www.st.com/stonline/books/ascii/docs/1538.htm">2803</a><a>
+octal darlington driving chip will do. Disadvantages are a jerky step
+behaviour, resulting in all kinds of vibrations, and relatively high
+minimum stepping rate (50 halfsteps per sec or so). Many examples of
+such simple driver circuits can be found on the web.</a></p>
+<h3><a>Sine/cosine drive</a></h3>
+<p><a>A better approach, allowing much lower stepping rates, is to use
+sine/cosine waves (or at least an approximation) to drive the motor
+windings. The signal is similar to the halfstep driver, but instead of
+blocks the positive halves of the sine wave are used to control the
+current in each winding. This could in principle be realized with an
+analogue quadrature oscillator, which delivers a sine and a cosine
+signal of the same frequency. The downside of this method is that a
+quadrature oscillator is almost impossible to make, without the phase
+difference, amplitude and shape of the signal to be frequency
+dependent. This means that a certain design can only be used in a very
+limited range of stepping rates.</a></p>
+<h3><a>Microstepping</a></h3>
+<p><a>The usual way to overcome this problem is to use Pulse Width
+Modulation (PWM) or an A/D converter to determine the current value.
+Such circuits are usually microprocessor controlled and can have a wide
+bandwidth of stepping rates. The microcontroller divides a full step
+into a number of microsteps, and outputs the corresponding sine values
+ether by changing the PWM dutycycle, or as a binary input for an ADC.</a></p>
+
+<hr>
+<a name="examples"><h2>Practical examples</h2></a>
+
+<h3>PIC 16F628 and ULN2803</h3>
+<img src="stepper_files/d_circuit.gif"><br><br>
+<b>Note</b> that this circuit has not been built or tested<p></p>
+<p>The circuit consists of only three ICs, a ULN2803 that drives the
+steppers, a MAX232 for interfacing to the PC, and a PIC 16F628
+microcontroller. This PIC type has built in USART circuits, that make
+implementation of an RS232 interface a breeze. All that is needed is to
+connect a RS232 line driver to the USART I/O pins of the PIC, being
+port B bits 1 and 2. For driving the darlington array both I/O ports
+are used: port A(0..3) and port B(4..7). Vdd (12V) leads directly to
+the stepper driver, the stepper itself and also to an LM78L05 voltage
+regulator, which makes the Vcc. Last two items are the crystal
+oscillator, and the reset circuit R1/C7.</p>
+<p>The PC interface is intended to work on 9600 baud, which should be
+plenty fast for the few controls that pass through it. These controls
+should facilitate setting the current coordinates and time, retrieving
+the current coordinates (and time?), slewing and possibly also some
+calibration of the tracking speed.<br>
+Part of the intelligence, such as conversions of coordinates to steps
+and v.v., taking acceleration into account when moving between
+coordinates and such, is contained in the PIC firmware itself.
+Calculation of the angles and user interface is contained by a PC
+program, or possibly a program in a PDA.</p>
+
+<br>
+<h3>An analog sin-cos driver</h3>
+<table>
+<tbody><tr>
+<td><img src="stepper_files/sincos_osc.gif"></td>
+<td><p>The circuit to the left consists of a low frequency triangle
+wave generator and two integrators. The first integration of a triangle
+wave yields a sinewave, and integration of a sine yields a cosine. The
+generator is quite hard to tune, and probably not too stable.<br><br>
+The integrators have a resistor in their feedback loop, to suppress DC
+offsets. Also for that reason the generator and integrators are coupled
+with C10.<br><br>
+It must be noted that the phasedifference is slightly more than 90°,
+but this probably doesn't harm too much. Amplitude difference can be
+tuned by selecting a different value for R17.<br><br>
+This circuit has been built an tested, but in general it sucks. This is
+due to its frequency dependency and inherent instability.</p></td>
+</tr>
+<tr>
+<td><p>This is the circuit that converts the signal into the current
+through the motorwindings. The OpAmps will regulate the voltage over
+the 1&#937; emitter resistors, according to the input signal. Per motor half
+the signal is inverted for one of the windings, which together with
+diodes and transistors implicitly functions as a rectifier. The
+non-inverting branch produces the current for the positive half period,
+and the inverting branch for the negative half.<br><br>
+The input signals for the winding couples are quadrature signals, i.e.
+the sine and cosine from the generator circuit. This driver stage can
+be used with other quadrature generators too, for example based on a
+controller and a couple of DACs. In this case the current drivers can
+be simpler, since any signal can be generated by the controller.<br><br>
+The peak current for the floppy stepper is approximately 150mA, so the
+signal at the input of the OpAmp should be comparable. This is achieved
+with a 1/10 resistor divider for the non-inverting and a 0.1
+amplification factor for the inverting branches.<br>
+</p></td>
+<td><img src="stepper_files/sincos_drv.gif"></td>
+</tr>
+</tbody></table>
+
+<br>
+<h3>A digital sin-cos driver</h3>
+<p>The analog quadrature oscillator appers to be extremely hard to get
+stable, variable in frequency and amplitude, and to produce sine waves
+at the same time. Therefore the next plan is to make a digital
+oscillator with a PIC 18F452 and a pair of MAX534 DACs. Since the motor
+only consumes 150mA, and the driving voltage is fairly smooth, the need
+for real power transistors is relaxed. A set of darlingtons (bc517) are
+used instead.<br><br>
+<img src="stepper_files/sincos_dig.gif"><br><br>
+This design is currently being built and tested, results can be found <a href="http://home.hetnet.nl/%7Eartm/atm/stepper/18F452step.html">here</a>. The schematics and PCB layout can be downloaded from the <a href="http://home.hetnet.nl/%7Eartm/atm/resource/resource.html">Resources</a> page.
+</p>
+
+<br>
+</td>
+</tr>
+</tbody></table>
+
+</body></html>
